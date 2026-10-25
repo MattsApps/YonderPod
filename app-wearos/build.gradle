@@ -11,7 +11,7 @@ android {
     enableKotlin true
 
     defaultConfig {
-        applicationId "de.danoeh.antennapod"
+        applicationId "com.mattsapps.yonderpod"
         minSdk 25
         targetSdk 36
         versionCode 1
@@ -31,7 +31,6 @@ android {
 
     buildTypes {
         debug {
-            applicationIdSuffix ".debug"
         }
         release {
             minifyEnabled true
