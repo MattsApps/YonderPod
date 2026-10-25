@@ -22,6 +22,7 @@ include ':app-wearos'
 include ':event'
 include ':model'
 include ':system'
+include ':smartplay'
 
 include ':net:common'
 include ':net:discovery'
