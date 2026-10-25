@@ -43,6 +43,7 @@ import java.util.Collections;
 import java.util.List;
 
 import de.danoeh.antennapod.R;
+import de.danoeh.antennapod.smartplay.app.SmartPlayQueueManager;
 import de.danoeh.antennapod.activity.MainActivity;
 import de.danoeh.antennapod.ui.episodeslist.EpisodeItemListAdapter;
 import de.danoeh.antennapod.ui.common.ConfirmationDialog;
@@ -293,6 +294,9 @@ public class QueueFragment extends Fragment implements MaterialToolbar.OnMenuIte
         final int itemId = item.getItemId();
         if (itemId == R.id.queue_lock) {
             toggleQueueLock();
+            return true;
+        } else if (itemId == R.id.smartplay_rebuild) {
+            SmartPlayQueueManager.getInstance().rebuildNow();
             return true;
         } else if (itemId == R.id.queue_sort) {
             new QueueSortDialog().show(getChildFragmentManager().beginTransaction(), "SortDialog");

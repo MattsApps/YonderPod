@@ -634,6 +634,7 @@
     <!-- About screen -->
     <string name="about_pref">About</string>
     <string name="antennapod_version">YonderPod version</string>
+    <string name="smartplay_rebuild_now">Rebuild now</string>
     <string name="about_based_on_title">Based on AntennaPod</string>
     <string name="about_based_on_summary">YonderPod is based on AntennaPod, licensed under the GPL v3</string>
     <string name="contributors">Contributors</string>

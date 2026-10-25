@@ -32,69 +32,115 @@ public class SmartPlayEngine {
     }
 
     public List<SmartPlayEpisode> rebuild(SmartPlayDefinition definition, List<SmartPlayEpisode> candidates) {
-        List<SmartPlayEpisode> result = new ArrayList<>();
-        Set<Long> used = new HashSet<>();
+        return rebuild(definition, candidates, Collections.emptyList(), ManualEdits.none());
+    }
 
-        List<SmartPlayEpisode> halfPlayed = new ArrayList<>();
+    public List<SmartPlayEpisode> rebuild(SmartPlayDefinition definition, List<SmartPlayEpisode> candidates,
+                                          List<SmartPlayEpisode> currentList, ManualEdits edits) {
+        Map<Long, SmartPlayEpisode> latestState = byId(candidates);
+        List<Integer> handAddedPositions = new ArrayList<>();
+        List<SmartPlayEpisode> handAdded = new ArrayList<>();
+        Set<Long> used = new HashSet<>();
+        for (int i = 0; i < currentList.size(); i++) {
+            SmartPlayEpisode current = latest(latestState, currentList.get(i));
+            if (edits.isHandAdded(current.getId()) && !edits.isRemoved(current.getId())
+                    && !current.isPlayed() && used.add(current.getId())) {
+                handAddedPositions.add(i);
+                handAdded.add(current);
+            }
+        }
+
+        List<SmartPlayEpisode> pool = new ArrayList<>();
         for (SmartPlayEpisode episode : candidates) {
+            if (!edits.isRemoved(episode.getId())) {
+                pool.add(episode);
+            }
+        }
+
+        List<SmartPlayEpisode> result = new ArrayList<>();
+        List<SmartPlayEpisode> halfPlayed = new ArrayList<>();
+        for (SmartPlayEpisode episode : pool) {
             if (episode.isHalfPlayed()) {
                 halfPlayed.add(episode);
             }
         }
         halfPlayed.sort(MOST_RECENTLY_PLAYED_FIRST);
         addAll(result, used, halfPlayed);
+        addAll(result, used, priorityEpisodes(definition, pool, used));
+        addAll(result, used, ruleEpisodes(definition, pool, used));
 
-        addAll(result, used, priorityEpisodes(definition, candidates, used));
-        addAll(result, used, ruleEpisodes(definition, candidates, used));
+        for (int i = 0; i < handAdded.size(); i++) {
+            result.add(Math.min(handAddedPositions.get(i), result.size()), handAdded.get(i));
+        }
         return result;
     }
 
     public List<SmartPlayEpisode> onNewDownloads(SmartPlayDefinition definition,
                                                  List<SmartPlayEpisode> candidates,
                                                  List<SmartPlayEpisode> currentList) {
-        Map<Long, SmartPlayEpisode> latestState = new HashMap<>();
-        for (SmartPlayEpisode episode : candidates) {
-            latestState.put(episode.getId(), episode);
-        }
+        return onNewDownloads(definition, candidates, currentList, ManualEdits.none());
+    }
 
+    public List<SmartPlayEpisode> onNewDownloads(SmartPlayDefinition definition,
+                                                 List<SmartPlayEpisode> candidates,
+                                                 List<SmartPlayEpisode> currentList, ManualEdits edits) {
+        Map<Long, SmartPlayEpisode> latestState = byId(candidates);
         List<SmartPlayEpisode> kept = new ArrayList<>();
         Set<Long> used = new HashSet<>();
         for (SmartPlayEpisode episode : currentList) {
-            SmartPlayEpisode current = latestState.containsKey(episode.getId())
-                    ? latestState.get(episode.getId()) : episode;
+            SmartPlayEpisode current = latest(latestState, episode);
             if (!current.isPlayed() && used.add(current.getId())) {
                 kept.add(current);
             }
         }
         if (kept.isEmpty()) {
-            return rebuild(definition, candidates);
+            return rebuild(definition, candidates, Collections.emptyList(), edits);
         }
 
+        List<SmartPlayEpisode> pool = new ArrayList<>();
+        for (SmartPlayEpisode episode : candidates) {
+            if (!edits.isRemoved(episode.getId())) {
+                pool.add(episode);
+            }
+        }
         int insertAt = 0;
         while (insertAt < kept.size() && kept.get(insertAt).isHalfPlayed()) {
             insertAt++;
         }
-        kept.addAll(insertAt, priorityEpisodes(definition, candidates, used));
+        kept.addAll(insertAt, priorityEpisodes(definition, pool, used));
         return kept;
+    }
+
+    private static Map<Long, SmartPlayEpisode> byId(List<SmartPlayEpisode> episodes) {
+        Map<Long, SmartPlayEpisode> result = new HashMap<>();
+        for (SmartPlayEpisode episode : episodes) {
+            result.put(episode.getId(), episode);
+        }
+        return result;
+    }
+
+    private static SmartPlayEpisode latest(Map<Long, SmartPlayEpisode> latestState, SmartPlayEpisode episode) {
+        SmartPlayEpisode current = latestState.get(episode.getId());
+        return current != null ? current : episode;
     }
 
     private List<SmartPlayEpisode> priorityEpisodes(SmartPlayDefinition definition,
                                                     List<SmartPlayEpisode> candidates, Set<Long> used) {
-        boolean oldestFirst = definition.getPriorityOrder() == SmartPlayDefinition.PriorityOrder.OLDEST_FIRST;
-        Comparator<SmartPlayEpisode> order = oldestFirst ? OLDEST_FIRST : LATEST_FIRST;
         List<SmartPlayEpisode> result = new ArrayList<>();
         Set<Long> seenFeeds = new HashSet<>();
-        for (long feedId : definition.getPriorityFeedIds()) {
-            if (!seenFeeds.add(feedId)) {
+        for (SmartPlayDefinition.PriorityFeed priorityFeed : definition.getPriorityFeeds()) {
+            if (!seenFeeds.add(priorityFeed.getFeedId())) {
                 continue;
             }
             List<SmartPlayEpisode> fromFeed = new ArrayList<>();
             for (SmartPlayEpisode episode : candidates) {
-                if (episode.getFeedId() == feedId && episode.isAvailable() && !used.contains(episode.getId())) {
+                if (episode.getFeedId() == priorityFeed.getFeedId() && episode.isAvailable()
+                        && !used.contains(episode.getId())) {
                     fromFeed.add(episode);
                 }
             }
-            fromFeed.sort(order);
+            boolean oldestFirst = priorityFeed.getOrder() == SmartPlayDefinition.PriorityOrder.OLDEST_FIRST;
+            fromFeed.sort(oldestFirst ? OLDEST_FIRST : LATEST_FIRST);
             result.addAll(fromFeed);
         }
         return result;

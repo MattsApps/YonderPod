@@ -11,15 +11,31 @@ public final class SmartPlayDefinition {
         LATEST_FIRST
     }
 
+    public static final class PriorityFeed {
+        private final long feedId;
+        private final PriorityOrder order;
+
+        private PriorityFeed(long feedId, PriorityOrder order) {
+            this.feedId = feedId;
+            this.order = order;
+        }
+
+        public long getFeedId() {
+            return feedId;
+        }
+
+        public PriorityOrder getOrder() {
+            return order;
+        }
+    }
+
     private final String name;
-    private final List<Long> priorityFeedIds;
-    private final PriorityOrder priorityOrder;
+    private final List<PriorityFeed> priorityFeeds;
     private final List<SmartPlayRule> rules;
 
     private SmartPlayDefinition(Builder builder) {
         this.name = builder.name;
-        this.priorityFeedIds = Collections.unmodifiableList(new ArrayList<>(builder.priorityFeedIds));
-        this.priorityOrder = builder.priorityOrder;
+        this.priorityFeeds = Collections.unmodifiableList(new ArrayList<>(builder.priorityFeeds));
         this.rules = Collections.unmodifiableList(new ArrayList<>(builder.rules));
     }
 
@@ -27,12 +43,8 @@ public final class SmartPlayDefinition {
         return name;
     }
 
-    public List<Long> getPriorityFeedIds() {
-        return priorityFeedIds;
-    }
-
-    public PriorityOrder getPriorityOrder() {
-        return priorityOrder;
+    public List<PriorityFeed> getPriorityFeeds() {
+        return priorityFeeds;
     }
 
     public List<SmartPlayRule> getRules() {
@@ -53,8 +65,7 @@ public final class SmartPlayDefinition {
 
     public static final class Builder {
         private final String name;
-        private final List<Long> priorityFeedIds = new ArrayList<>();
-        private PriorityOrder priorityOrder = PriorityOrder.OLDEST_FIRST;
+        private final List<PriorityFeed> priorityFeeds = new ArrayList<>();
         private final List<SmartPlayRule> rules = new ArrayList<>();
 
         private Builder(String name) {
@@ -62,12 +73,11 @@ public final class SmartPlayDefinition {
         }
 
         public Builder priorityFeed(long feedId) {
-            priorityFeedIds.add(feedId);
-            return this;
+            return priorityFeed(feedId, PriorityOrder.OLDEST_FIRST);
         }
 
-        public Builder priorityOrder(PriorityOrder priorityOrder) {
-            this.priorityOrder = priorityOrder;
+        public Builder priorityFeed(long feedId, PriorityOrder order) {
+            priorityFeeds.add(new PriorityFeed(feedId, order));
             return this;
         }
 

@@ -585,6 +585,45 @@ public class DBWriter {
         });
     }
 
+    public static Future<?> setQueue(final List<FeedItem> items) {
+        return runOnDbThread(() -> {
+            final PodDBAdapter adapter = PodDBAdapter.getInstance();
+            adapter.open();
+            final List<FeedItem> oldQueue = DBReader.getQueue();
+            List<FeedItem> queue = new ArrayList<>();
+            List<FeedItem> updatedItems = new ArrayList<>();
+            List<FeedItem> markAsUnplayed = new ArrayList<>();
+            for (FeedItem item : items) {
+                if (!item.hasMedia() || itemListContains(queue, item.getId())) {
+                    continue;
+                }
+                queue.add(item);
+                item.addTag(FeedItem.TAG_QUEUE);
+                if (!itemListContains(oldQueue, item.getId())) {
+                    updatedItems.add(item);
+                    if (item.isNew()) {
+                        markAsUnplayed.add(item);
+                    }
+                }
+            }
+            for (FeedItem item : oldQueue) {
+                if (!itemListContains(queue, item.getId())) {
+                    item.removeTag(FeedItem.TAG_QUEUE);
+                    updatedItems.add(item);
+                }
+            }
+            adapter.setQueue(queue);
+            adapter.close();
+            EventBus.getDefault().post(QueueEvent.setQueue(queue));
+            if (!updatedItems.isEmpty()) {
+                EventBus.getDefault().post(new FeedItemEvent(updatedItems, false));
+            }
+            if (!markAsUnplayed.isEmpty()) {
+                DBWriter.markItemsPlayed(FeedItem.UNPLAYED, false, markAsUnplayed);
+            }
+        });
+    }
+
     public static Future<?> moveQueueItemsToTop(final List<FeedItem> items) {
         return runOnDbThread(() -> moveQueueItemsSynchronous(true, items));
     }

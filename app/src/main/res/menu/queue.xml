@@ -15,6 +15,11 @@
         custom:showAsAction="never" />
 
     <item
+        android:id="@+id/smartplay_rebuild"
+        android:title="@string/smartplay_rebuild_now"
+        custom:showAsAction="never" />
+
+    <item
         android:id="@+id/queue_lock"
         android:title="@string/lock_queue"
         android:menuCategory="container"

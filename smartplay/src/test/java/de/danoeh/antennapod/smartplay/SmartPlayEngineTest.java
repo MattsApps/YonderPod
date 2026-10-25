@@ -99,8 +99,7 @@ public class SmartPlayEngineTest {
     @Test
     public void priorityFeedCanBeLatestFirst() {
         SmartPlayDefinition definition = SmartPlayDefinition.builder("With Bugle")
-                .priorityFeed(BUGLE)
-                .priorityOrder(SmartPlayDefinition.PriorityOrder.LATEST_FIRST)
+                .priorityFeed(BUGLE, SmartPlayDefinition.PriorityOrder.LATEST_FIRST)
                 .build();
         List<SmartPlayEpisode> candidates = Arrays.asList(
                 downloaded(2, BUGLE, 3),
@@ -354,5 +353,88 @@ public class SmartPlayEngineTest {
         assertTrue(repeated);
         assertFalse(ids(list).contains(id - 3));
         assertFalse(ids(list).contains(id - 2));
+    }
+
+    @Test
+    public void priorityOrderIsSetPerFeed() {
+        SmartPlayDefinition definition = SmartPlayDefinition.builder("Two priorities")
+                .priorityFeed(BUGLE)
+                .priorityFeed(NEWS, SmartPlayDefinition.PriorityOrder.LATEST_FIRST)
+                .build();
+        List<SmartPlayEpisode> candidates = Arrays.asList(
+                downloaded(1, BUGLE, 5), downloaded(2, BUGLE, 1),
+                downloaded(3, NEWS, 2), downloaded(4, NEWS, 8));
+        assertEquals(Arrays.asList(2L, 1L, 4L, 3L), ids(engine.rebuild(definition, candidates)));
+    }
+
+    @Test
+    public void rebuildKeepsHandAddedEpisodesWhereTheyWere() {
+        SmartPlayEpisode handAddedOld = downloaded(50, SCIENCE, 1);
+        SmartPlayEpisode handAddedEnd = downloaded(51, SCIENCE, 2);
+        List<SmartPlayEpisode> candidates = Arrays.asList(
+                downloaded(1, COMEDY, 10), downloaded(2, NEWS, 9), downloaded(3, DRAMA, 8),
+                downloaded(4, COMEDY, 7), handAddedOld, handAddedEnd);
+        List<SmartPlayEpisode> current = Arrays.asList(
+                downloaded(4, COMEDY, 7), handAddedOld, downloaded(3, DRAMA, 8), handAddedEnd);
+        ManualEdits edits = new ManualEdits(Arrays.asList(50L, 51L), Collections.emptyList());
+        SmartPlayDefinition definition = SmartPlayDefinition.builder("Comedy and news")
+                .rule(SmartPlayRule.of(SmartPlayRule.Order.LATEST, 3, EpisodeSource.allFeeds()))
+                .build();
+        List<SmartPlayEpisode> list = engine.rebuild(definition, candidates, current, edits);
+        assertEquals(Arrays.asList(1L, 50L, 2L, 51L, 3L), ids(list));
+    }
+
+    @Test
+    public void handAddedEpisodesAreNotCountedOrPickedAgainByRules() {
+        SmartPlayEpisode handAdded = downloaded(9, COMEDY, 99);
+        List<SmartPlayEpisode> candidates = Arrays.asList(handAdded, downloaded(1, NEWS, 5), downloaded(2, NEWS, 4));
+        ManualEdits edits = new ManualEdits(Arrays.asList(9L), Collections.emptyList());
+        List<SmartPlayEpisode> list = engine.rebuild(allFeedsLatest(2), candidates,
+                Arrays.asList(handAdded), edits);
+        assertEquals(Arrays.asList(9L, 1L, 2L), ids(list));
+    }
+
+    @Test
+    public void playedHandAddedEpisodesAreDropped() {
+        List<SmartPlayEpisode> candidates = Arrays.asList(
+                episode(9, COMEDY, 99).played(true).build(), downloaded(1, NEWS, 5));
+        ManualEdits edits = new ManualEdits(Arrays.asList(9L), Collections.emptyList());
+        List<SmartPlayEpisode> list = engine.rebuild(allFeedsLatest(1), candidates,
+                Arrays.asList(downloaded(9, COMEDY, 99)), edits);
+        assertEquals(Arrays.asList(1L), ids(list));
+    }
+
+    @Test
+    public void removedEpisodesAreNotAddedBackByRebuild() {
+        SmartPlayDefinition definition = SmartPlayDefinition.builder("With Bugle")
+                .priorityFeed(BUGLE)
+                .rule(SmartPlayRule.of(SmartPlayRule.Order.LATEST, 2, EpisodeSource.allFeeds()))
+                .build();
+        List<SmartPlayEpisode> candidates = Arrays.asList(
+                episode(1, NEWS, 1).position(1000).build(),
+                downloaded(2, BUGLE, 2),
+                downloaded(3, COMEDY, 9), downloaded(4, COMEDY, 8), downloaded(5, COMEDY, 7));
+        ManualEdits edits = new ManualEdits(Collections.emptyList(), Arrays.asList(1L, 2L, 3L));
+        List<SmartPlayEpisode> list = engine.rebuild(definition, candidates, Collections.emptyList(), edits);
+        assertEquals(Arrays.asList(4L, 5L), ids(list));
+    }
+
+    @Test
+    public void newDownloadsDoNotAddBackRemovedPriorityEpisodes() {
+        SmartPlayDefinition definition = SmartPlayDefinition.builder("With Bugle").priorityFeed(BUGLE).build();
+        List<SmartPlayEpisode> current = Arrays.asList(downloaded(2, COMEDY, 2));
+        List<SmartPlayEpisode> candidates = Arrays.asList(
+                downloaded(2, COMEDY, 2), downloaded(5, BUGLE, 9), downloaded(6, BUGLE, 10));
+        ManualEdits edits = new ManualEdits(Collections.emptyList(), Arrays.asList(5L));
+        assertEquals(Arrays.asList(6L, 2L), ids(engine.onNewDownloads(definition, candidates, current, edits)));
+    }
+
+    @Test
+    public void rebuildWhenEmptyAlsoRespectsRemovedEpisodes() {
+        List<SmartPlayEpisode> candidates = Arrays.asList(downloaded(2, NEWS, 2), downloaded(3, DRAMA, 3));
+        ManualEdits edits = new ManualEdits(Collections.emptyList(), Arrays.asList(3L));
+        List<SmartPlayEpisode> list = engine.onNewDownloads(allFeedsLatest(2), candidates,
+                Collections.emptyList(), edits);
+        assertEquals(Arrays.asList(2L), ids(list));
     }
 }
