@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:custom="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/smartplay_save"
+        android:icon="@drawable/ic_check"
+        android:title="@string/smartplay_save"
+        custom:showAsAction="always" />
+</menu>

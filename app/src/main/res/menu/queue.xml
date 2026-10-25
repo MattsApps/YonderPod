@@ -20,6 +20,11 @@
         custom:showAsAction="never" />
 
     <item
+        android:id="@+id/smartplay_manage"
+        android:title="@string/smartplay_list_title"
+        custom:showAsAction="never" />
+
+    <item
         android:id="@+id/queue_lock"
         android:title="@string/lock_queue"
         android:menuCategory="container"

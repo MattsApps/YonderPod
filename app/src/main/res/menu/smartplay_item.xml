@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/smartplay_edit"
+        android:title="@string/smartplay_edit" />
+
+    <item
+        android:id="@+id/smartplay_duplicate"
+        android:title="@string/smartplay_duplicate" />
+
+    <item
+        android:id="@+id/smartplay_delete"
+        android:title="@string/smartplay_delete" />
+</menu>

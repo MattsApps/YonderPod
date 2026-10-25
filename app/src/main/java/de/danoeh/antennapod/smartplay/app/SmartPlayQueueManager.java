@@ -2,6 +2,8 @@ package de.danoeh.antennapod.smartplay.app;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
 import androidx.preference.PreferenceManager;
@@ -26,6 +28,7 @@ import de.danoeh.antennapod.event.FeedItemEvent;
 import de.danoeh.antennapod.event.QueueEvent;
 import de.danoeh.antennapod.model.feed.Feed;
 import de.danoeh.antennapod.model.feed.FeedItem;
+import de.danoeh.antennapod.model.feed.FeedMedia;
 import de.danoeh.antennapod.model.feed.FeedItemFilter;
 import de.danoeh.antennapod.model.feed.FeedPreferences;
 import de.danoeh.antennapod.model.feed.SortOrder;
@@ -33,14 +36,20 @@ import de.danoeh.antennapod.smartplay.ManualEdits;
 import de.danoeh.antennapod.smartplay.SmartPlayDefinition;
 import de.danoeh.antennapod.smartplay.SmartPlayEngine;
 import de.danoeh.antennapod.smartplay.SmartPlayEpisode;
+import de.danoeh.antennapod.playback.service.PlaybackServiceStarter;
 import de.danoeh.antennapod.storage.database.DBReader;
 import de.danoeh.antennapod.storage.database.DBWriter;
+import de.danoeh.antennapod.storage.preferences.PlaybackPreferences;
 import de.danoeh.antennapod.storage.preferences.UserPreferences;
 
 public class SmartPlayQueueManager {
     private static final String TAG = "SmartPlayQueue";
     private static final long UPDATE_DELAY_MS = 3000;
     private static final String PREF_ENQUEUE_DOWNLOADED = "prefEnqueueDownloaded";
+    private static final String PREF_SKIP_KEEPS_EPISODE = "prefSkipKeepsEpisode";
+    private static final String STATE_PREFS = "SmartPlayState";
+    private static final String KEY_ACTIVE_ID = "activeId";
+    private static final String KEY_PAUSED = "paused";
     private static final boolean FEEDS_MAY_STREAM = false;
 
     private static SmartPlayQueueManager instance;
@@ -48,13 +57,17 @@ public class SmartPlayQueueManager {
     private final Context context;
     private final ManualEditStore editStore;
     private final SmartPlayEngine engine = new SmartPlayEngine();
-    private final SmartPlayDefinition definition = SmartPlayLists.stuff();
+    private final SmartPlayStore store;
+    private final SharedPreferences state;
     private final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
     private ScheduledFuture<?> pendingUpdate;
+    private volatile String activeName = "";
 
     private SmartPlayQueueManager(Context context) {
         this.context = context.getApplicationContext();
         this.editStore = new ManualEditStore(this.context);
+        this.store = SmartPlayStore.getInstance(this.context);
+        this.state = this.context.getSharedPreferences(STATE_PREFS, Context.MODE_PRIVATE);
     }
 
     public static synchronized void init(Context context) {
@@ -72,13 +85,16 @@ public class SmartPlayQueueManager {
     private void start() {
         disableConflictingQueueSettings();
         EventBus.getDefault().register(this);
+        executor.execute(this::activeSmartPlay);
         scheduleUpdate();
     }
 
     private void disableConflictingQueueSettings() {
         UserPreferences.setQueueKeepSorted(false);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        SharedPreferences.Editor editor = prefs.edit().putBoolean(PREF_ENQUEUE_DOWNLOADED, false);
+        SharedPreferences.Editor editor = prefs.edit()
+                .putBoolean(PREF_ENQUEUE_DOWNLOADED, false)
+                .putBoolean(PREF_SKIP_KEEPS_EPISODE, true);
         if (UserPreferences.getNewEpisodesAction() == FeedPreferences.NewEpisodesAction.ADD_TO_QUEUE) {
             editor.putString(UserPreferences.PREF_NEW_EPISODES_ACTION,
                     String.valueOf(FeedPreferences.NewEpisodesAction.ADD_TO_INBOX.code));
@@ -88,6 +104,89 @@ public class SmartPlayQueueManager {
 
     public void rebuildNow() {
         executor.execute(() -> update(true));
+    }
+
+    public String getActiveName() {
+        return activeName;
+    }
+
+    public long getActiveId() {
+        return state.getLong(KEY_ACTIVE_ID, -1);
+    }
+
+    public boolean isPaused() {
+        return state.getBoolean(KEY_PAUSED, false);
+    }
+
+    public void activate(long smartPlayId) {
+        executor.execute(() -> {
+            state.edit().putLong(KEY_ACTIVE_ID, smartPlayId).apply();
+            update(true);
+            List<FeedItem> queue = DBReader.getQueue();
+            if (!queue.isEmpty() && queue.get(0).getMedia() != null) {
+                FeedMedia media = queue.get(0).getMedia();
+                new Handler(Looper.getMainLooper()).post(() -> new PlaybackServiceStarter(context, media)
+                        .callEvenIfRunning(true)
+                        .start());
+            }
+        });
+    }
+
+    public void onSmartPlaysChanged() {
+        executor.execute(this::activeSmartPlay);
+    }
+
+    public void playNext(FeedItem item) {
+        executor.execute(() -> {
+            try {
+                List<FeedItem> queue = DBReader.getQueue();
+                long playingMediaId = PlaybackPreferences.getCurrentlyPlayingFeedMediaId();
+                int existing = -1;
+                for (int i = 0; i < queue.size(); i++) {
+                    if (queue.get(i).getId() == item.getId()) {
+                        existing = i;
+                    }
+                }
+                if (existing >= 0) {
+                    queue.remove(existing);
+                }
+                int target = 0;
+                for (int i = 0; i < queue.size(); i++) {
+                    FeedMedia media = queue.get(i).getMedia();
+                    if (media != null && media.getId() == playingMediaId) {
+                        target = i + 1;
+                    }
+                }
+                if (existing >= 0) {
+                    editStore.markHandAdded(item.getId());
+                    DBWriter.moveQueueItem(existing, target, true).get();
+                } else {
+                    DBWriter.addQueueItemAt(context, item.getId(), target).get();
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Play next failed", e);
+            }
+        });
+    }
+
+    private SmartPlayDefinition activeSmartPlay() {
+        List<SmartPlayStore.StoredSmartPlay> all = store.getAll();
+        if (all.isEmpty()) {
+            store.insert(SmartPlayLists.stuff());
+            all = store.getAll();
+        }
+        long activeId = state.getLong(KEY_ACTIVE_ID, -1);
+        SmartPlayStore.StoredSmartPlay active = all.get(0);
+        for (SmartPlayStore.StoredSmartPlay stored : all) {
+            if (stored.getId() == activeId) {
+                active = stored;
+            }
+        }
+        if (active.getId() != activeId) {
+            state.edit().putLong(KEY_ACTIVE_ID, active.getId()).apply();
+        }
+        activeName = active.getDefinition().getName();
+        return active.getDefinition();
     }
 
     private synchronized void scheduleUpdate() {
@@ -113,7 +212,7 @@ public class SmartPlayQueueManager {
                 break;
             case CLEARED:
                 editStore.clearHandAdded();
-                scheduleUpdate();
+                state.edit().putBoolean(KEY_PAUSED, true).apply();
                 break;
             case IRREVERSIBLE_REMOVED:
                 scheduleUpdate();
@@ -134,7 +233,13 @@ public class SmartPlayQueueManager {
     }
 
     private void update(boolean fullRebuild) {
+        if (fullRebuild) {
+            state.edit().putBoolean(KEY_PAUSED, false).apply();
+        } else if (isPaused()) {
+            return;
+        }
         try {
+            SmartPlayDefinition definition = activeSmartPlay();
             List<FeedItem> queue = DBReader.getQueue();
             Map<Long, FeedItem> itemsById = loadCandidates(queue);
             boolean mobileStreaming = UserPreferences.isAllowMobileStreaming();

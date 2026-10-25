@@ -21,6 +21,11 @@
         android:title="@string/mark_as_unplayed_label" />
 
     <item
+        android:id="@+id/play_next_item"
+        android:menuCategory="container"
+        android:title="@string/smartplay_play_next" />
+
+    <item
         android:id="@+id/add_to_queue_item"
         android:menuCategory="container"
         android:title="@string/add_to_queue_label" />

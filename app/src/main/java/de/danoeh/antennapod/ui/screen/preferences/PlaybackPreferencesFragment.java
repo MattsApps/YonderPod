@@ -27,6 +27,8 @@ public class PlaybackPreferencesFragment extends AnimatedPreferenceFragment {
 
         setupPlaybackScreen();
         buildSmartMarkAsPlayedPreference();
+        findPreference("prefEnqueueDownloaded").setVisible(false);
+        findPreference("prefSkipKeepsEpisode").setVisible(false);
     }
 
     @Override

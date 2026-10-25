@@ -44,6 +44,8 @@ import java.util.List;
 
 import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.smartplay.app.SmartPlayQueueManager;
+import de.danoeh.antennapod.smartplay.app.SmartPlayStore;
+import de.danoeh.antennapod.smartplay.app.SmartPlaysFragment;
 import de.danoeh.antennapod.activity.MainActivity;
 import de.danoeh.antennapod.ui.episodeslist.EpisodeItemListAdapter;
 import de.danoeh.antennapod.ui.common.ConfirmationDialog;
@@ -298,6 +300,9 @@ public class QueueFragment extends Fragment implements MaterialToolbar.OnMenuIte
         } else if (itemId == R.id.smartplay_rebuild) {
             SmartPlayQueueManager.getInstance().rebuildNow();
             return true;
+        } else if (itemId == R.id.smartplay_manage) {
+            ((MainActivity) getActivity()).loadChildFragment(new SmartPlaysFragment());
+            return true;
         } else if (itemId == R.id.queue_sort) {
             new QueueSortDialog().show(getChildFragmentManager().beginTransaction(), "SortDialog");
             return true;
@@ -430,6 +435,7 @@ public class QueueFragment extends Fragment implements MaterialToolbar.OnMenuIte
         progressBar.setVisibility(View.VISIBLE);
 
         infoBar = root.findViewById(R.id.info_bar);
+        infoBar.setOnClickListener(v -> showSmartPlaySwitcher());
         boolean largePadding = displayUpArrow || !UserPreferences.isBottomNavigationEnabled();
         int paddingHorizontal = (int) (getResources().getDisplayMetrics().density * (largePadding ? 60 : 16));
         infoBar.setPadding(paddingHorizontal, 0, paddingHorizontal, 0);
@@ -517,13 +523,44 @@ public class QueueFragment extends Fragment implements MaterialToolbar.OnMenuIte
         }
         String episodes = getResources().getQuantityString(R.plurals.num_episodes, queue.size(), queue.size());
         String time = Converter.getDurationStringLocalized(getResources(), timeLeft, false);
-        infoBar.setText(getString(R.string.queue_time_left_label, episodes, time));
+        infoBar.setText(getString(R.string.smartplay_header, SmartPlayQueueManager.getInstance().getActiveName(),
+                getString(R.string.queue_time_left_label, episodes, time)));
 
         if (recyclerAdapter.inActionMode()) {
             infoBar.setVisibility(View.INVISIBLE);
         } else {
             infoBar.setVisibility(View.VISIBLE);
         }
+    }
+
+    private void showSmartPlaySwitcher() {
+        Observable.fromCallable(() -> SmartPlayStore.getInstance(requireContext()).getAll())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(smartPlays -> {
+                    if (!isAdded()) {
+                        return;
+                    }
+                    String[] names = new String[smartPlays.size()];
+                    int checked = -1;
+                    long activeId = SmartPlayQueueManager.getInstance().getActiveId();
+                    for (int i = 0; i < smartPlays.size(); i++) {
+                        names[i] = smartPlays.get(i).getDefinition().getName();
+                        if (smartPlays.get(i).getId() == activeId) {
+                            checked = i;
+                        }
+                    }
+                    new MaterialAlertDialogBuilder(requireContext())
+                            .setTitle(R.string.smartplay_switch_title)
+                            .setSingleChoiceItems(names, checked, (dialog, which) -> {
+                                SmartPlayQueueManager.getInstance().activate(smartPlays.get(which).getId());
+                                dialog.dismiss();
+                            })
+                            .setNeutralButton(R.string.smartplay_manage, (dialog, which) ->
+                                    ((MainActivity) getActivity()).loadChildFragment(new SmartPlaysFragment()))
+                            .setNegativeButton(android.R.string.cancel, null)
+                            .show();
+                }, error -> Log.e(TAG, Log.getStackTraceString(error)));
     }
 
     private void loadItems() {
@@ -550,6 +587,12 @@ public class QueueFragment extends Fragment implements MaterialToolbar.OnMenuIte
                         emptyView.setButtonOnClickListener(v -> ((MainActivity) getActivity())
                                 .loadChildFragment(new InboxFragment()));
                     }
+                    if (SmartPlayQueueManager.getInstance().isPaused()) {
+                        emptyView.setMessage(R.string.smartplay_paused_message);
+                    }
+                    emptyView.setButtonText(R.string.smartplay_rebuild_button);
+                    emptyView.setButtonVisibility(View.VISIBLE);
+                    emptyView.setButtonOnClickListener(v -> SmartPlayQueueManager.getInstance().rebuildNow());
                     progressBar.setVisibility(View.GONE);
                     recyclerAdapter.setDummyViews(0);
                     recyclerAdapter.updateItems(queue);
@@ -594,7 +637,7 @@ public class QueueFragment extends Fragment implements MaterialToolbar.OnMenuIte
                 sortOrder = UserPreferences.getQueueKeepSortedOrder();
             }
             final View view = super.onCreateView(inflater, container, savedInstanceState);
-            viewBinding.keepSortedCheckbox.setVisibility(View.VISIBLE);
+            viewBinding.keepSortedCheckbox.setVisibility(View.GONE);
             viewBinding.keepSortedCheckbox.setChecked(UserPreferences.isQueueKeepSorted());
             // Disable until something gets selected
             viewBinding.keepSortedCheckbox.setEnabled(UserPreferences.isQueueKeepSorted());
@@ -603,7 +646,8 @@ public class QueueFragment extends Fragment implements MaterialToolbar.OnMenuIte
 
         @Override
         protected void onAddItem(int title, SortOrder ascending, SortOrder descending, boolean ascendingIsDefault) {
-            if (ascending == SortOrder.EPISODE_FILENAME_A_Z || ascending == SortOrder.SIZE_SMALL_LARGE) {
+            if (ascending == SortOrder.EPISODE_FILENAME_A_Z || ascending == SortOrder.SIZE_SMALL_LARGE
+                    || ascending == SortOrder.SMART_SHUFFLE_OLD_NEW) {
                 return;
             }
             if (ascending == SortOrder.DATE_OLD_NEW || ascending == SortOrder.SMART_SHUFFLE_OLD_NEW) {

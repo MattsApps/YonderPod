@@ -842,6 +842,9 @@ public class Media3PlaybackService extends MediaLibraryService {
         int startPosition = playbackStartPosition;
         queueLoaderDisposable = Maybe.fromCallable(() -> {
             FeedItem nextItem = DBReader.getNextInQueue(item);
+            if (wasSkipped && (nextItem == null || nextItem.getMedia() == null)) {
+                nextItem = getFirstOtherInQueue(item);
+            }
             boolean hasNext = nextItem != null && nextItem.getMedia() != null;
             updateDatabaseAfterPlayback(media, startPosition, ended, wasSkipped, hasNext);
             if (hasNext) {
@@ -866,6 +869,9 @@ public class Media3PlaybackService extends MediaLibraryService {
                         },
                         error -> Log.e(TAG, "Failed to load next queue item", error),
                         () -> {
+                            if (wasSkipped && currentPlayable != null && player != null) {
+                                return;
+                            }
                             currentPlayable = null;
                             player.stop();
                             player.clearMediaItems();
@@ -877,6 +883,15 @@ public class Media3PlaybackService extends MediaLibraryService {
                                 EventBus.getDefault().post(new MessageEvent(getString(R.string.no_following_in_queue)));
                             }
                         });
+    }
+
+    private static FeedItem getFirstOtherInQueue(FeedItem item) {
+        for (FeedItem queueItem : DBReader.getQueue()) {
+            if (queueItem.getId() != item.getId() && queueItem.getMedia() != null) {
+                return queueItem;
+            }
+        }
+        return null;
     }
 
     @UnstableApi
