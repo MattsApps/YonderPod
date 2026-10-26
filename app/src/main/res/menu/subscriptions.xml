@@ -24,6 +24,11 @@
             android:title="@string/pref_nav_drawer_feed_counter_title"
             custom:showAsAction="never" />
     <item
+            android:id="@+id/subscriptions_group_by_category"
+            android:title="@string/smartplay_group_by_category"
+            android:checkable="true"
+            custom:showAsAction="never" />
+    <item
             android:id="@+id/subscription_num_columns"
             android:title="@string/subscription_num_columns"
             custom:showAsAction="never">

@@ -3,6 +3,7 @@ package de.danoeh.antennapod.smartplay;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 public final class SmartPlayDefinition {
 
@@ -49,6 +50,34 @@ public final class SmartPlayDefinition {
 
     public List<SmartPlayRule> getRules() {
         return rules;
+    }
+
+    public boolean coversFeed(long feedId, Set<String> categories) {
+        for (PriorityFeed priorityFeed : priorityFeeds) {
+            if (priorityFeed.getFeedId() == feedId) {
+                return true;
+            }
+        }
+        for (SmartPlayRule rule : rules) {
+            EpisodeSource source = rule.getSource();
+            switch (source.getType()) {
+                case ALL_FEEDS:
+                    return true;
+                case FEED:
+                    if (source.getFeedId() == feedId) {
+                        return true;
+                    }
+                    break;
+                case CATEGORY:
+                    if (categories.contains(source.getCategory())) {
+                        return true;
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+        return false;
     }
 
     public int getTargetLength() {

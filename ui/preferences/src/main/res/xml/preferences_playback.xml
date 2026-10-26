@@ -70,6 +70,7 @@
                 android:defaultValue="true"
                 android:enabled="true"
                 android:key="prefEnqueueDownloaded"
+                search:ignore="true"
                 android:summary="@string/pref_enqueue_downloaded_summary"
                 android:title="@string/pref_enqueue_downloaded_title" />
         <SwitchPreferenceCompat
@@ -89,6 +90,7 @@
                 android:defaultValue="true"
                 android:enabled="true"
                 android:key="prefSkipKeepsEpisode"
+                search:ignore="true"
                 android:summary="@string/pref_skip_keeps_episodes_sum"
                 android:title="@string/pref_skip_keeps_episodes_title"/>
     </PreferenceCategory>

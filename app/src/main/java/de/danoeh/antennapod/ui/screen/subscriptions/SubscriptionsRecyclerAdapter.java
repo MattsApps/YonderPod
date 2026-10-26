@@ -28,17 +28,48 @@ import java.util.Map;
  * Adapter for subscriptions
  */
 public class SubscriptionsRecyclerAdapter extends SelectableAdapter<SubscriptionViewHolder> {
+    private static final long GROUP_ID_FACTOR = 1000;
+
     private final WeakReference<MainActivity> mainActivityRef;
-    private List<Feed> listItems;
+    private List<Object> listItems;
+    private List<Long> rowIds;
     private Map<Long, Integer> feedCounters;
     private int columnCount = 3;
+    private OnCategoryHeaderClickListener headerClickListener;
+
+    public interface OnCategoryHeaderClickListener {
+        void onCategoryHeaderClick(CategoryHeader header);
+    }
+
+    public static class CategoryHeader {
+        public final String key;
+        public final String title;
+        public final int count;
+        public final boolean collapsed;
+
+        public CategoryHeader(String key, String title, int count, boolean collapsed) {
+            this.key = key;
+            this.title = title;
+            this.count = count;
+            this.collapsed = collapsed;
+        }
+    }
 
     public SubscriptionsRecyclerAdapter(MainActivity mainActivity) {
         super(mainActivity);
         this.mainActivityRef = new WeakReference<>(mainActivity);
         this.listItems = new ArrayList<>();
+        this.rowIds = new ArrayList<>();
         this.feedCounters = Map.of();
         setHasStableIds(true);
+    }
+
+    public void setOnCategoryHeaderClickListener(OnCategoryHeaderClickListener listener) {
+        this.headerClickListener = listener;
+    }
+
+    public boolean isHeader(int position) {
+        return position >= 0 && position < listItems.size() && listItems.get(position) instanceof CategoryHeader;
     }
 
     public void setColumnCount(int columnCount) {
@@ -52,6 +83,11 @@ public class SubscriptionsRecyclerAdapter extends SelectableAdapter<Subscription
     @NonNull
     @Override
     public SubscriptionViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        if (viewType == R.id.view_type_subscription_category_header) {
+            View itemView = LayoutInflater.from(mainActivityRef.get())
+                    .inflate(R.layout.subscription_category_header, parent, false);
+            return new CategoryHeaderViewHolder(itemView, mainActivityRef.get());
+        }
         if (viewType == R.id.view_type_subscription_list) {
             View itemView = LayoutInflater.from(mainActivityRef.get())
                     .inflate(R.layout.subscription_list_item, parent, false);
@@ -66,7 +102,19 @@ public class SubscriptionsRecyclerAdapter extends SelectableAdapter<Subscription
 
     @Override
     public void onBindViewHolder(@NonNull SubscriptionViewHolder holder, int position) {
-        Feed feed = listItems.get(position);
+        if (holder instanceof CategoryHeaderViewHolder) {
+            CategoryHeader header = (CategoryHeader) listItems.get(position);
+            ((CategoryHeaderViewHolder) holder).headerTitle.setText(holder.itemView.getContext().getString(
+                    header.collapsed ? R.string.smartplay_category_header_collapsed
+                            : R.string.smartplay_category_header_expanded, header.title, header.count));
+            holder.itemView.setOnClickListener(v -> {
+                if (headerClickListener != null) {
+                    headerClickListener.onCategoryHeaderClick(header);
+                }
+            });
+            return;
+        }
+        Feed feed = (Feed) listItems.get(position);
         holder.bind(feed, columnCount, feedCounters.containsKey(feed.getId()) ? feedCounters.get(feed.getId()) : 0);
         int cardMargin = 0;
         if (inActionMode()) {
@@ -112,6 +160,14 @@ public class SubscriptionsRecyclerAdapter extends SelectableAdapter<Subscription
                 mainActivityRef.get().loadChildFragment(fragment);
             }
         });
+    }
+
+    @Override
+    public void setSelected(int pos, boolean selected) {
+        if (isHeader(pos)) {
+            return;
+        }
+        super.setSelected(pos, selected);
     }
 
     @Override
@@ -170,27 +226,56 @@ public class SubscriptionsRecyclerAdapter extends SelectableAdapter<Subscription
         if (position >= listItems.size()) {
             return RecyclerView.NO_ID; // Dummy views
         }
-        return listItems.get(position).getId();
+        return rowIds.get(position);
     }
 
     public List<Feed> getSelectedItems() {
         List<Feed> items = new ArrayList<>();
+        List<Long> seen = new ArrayList<>();
         for (int i = 0; i < getItemCount(); i++) {
-            if (isSelected(i)) {
-                items.add(listItems.get(i));
+            if (!isHeader(i) && isSelected(i)) {
+                Feed feed = (Feed) listItems.get(i);
+                if (!seen.contains(feed.getId())) {
+                    seen.add(feed.getId());
+                    items.add(feed);
+                }
             }
         }
         return items;
     }
 
     public void setItems(List<Feed> listItems, Map<Long, Integer> feedCounters) {
-        this.listItems = listItems;
+        this.listItems = new ArrayList<>(listItems);
+        this.rowIds = new ArrayList<>();
+        for (Feed feed : listItems) {
+            rowIds.add(feed.getId());
+        }
+        this.feedCounters = feedCounters;
+        notifyDataSetChanged();
+    }
+
+    public void setGroupedItems(List<Object> rows, Map<Long, Integer> feedCounters) {
+        this.listItems = new ArrayList<>(rows);
+        this.rowIds = new ArrayList<>();
+        int group = 0;
+        for (int i = 0; i < rows.size(); i++) {
+            Object row = rows.get(i);
+            if (row instanceof CategoryHeader) {
+                group++;
+                rowIds.add(-1L - i);
+            } else {
+                rowIds.add(((Feed) row).getId() * GROUP_ID_FACTOR + group);
+            }
+        }
         this.feedCounters = feedCounters;
         notifyDataSetChanged();
     }
 
     @Override
     public int getItemViewType(int position) {
+        if (isHeader(position)) {
+            return R.id.view_type_subscription_category_header;
+        }
         if (columnCount == 1) {
             return R.id.view_type_subscription_list;
         } else if (UserPreferences.shouldShowSubscriptionTitle()) {

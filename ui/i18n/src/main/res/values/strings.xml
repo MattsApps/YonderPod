@@ -683,6 +683,24 @@
     <string name="smartplay_later">Later</string>
     <string name="smartplay_remove">Remove</string>
     <string name="smartplay_reorder">Drag to reorder</string>
+    <string name="smartplay_group_by_category">Group by category</string>
+    <string name="smartplay_uncategorised">Uncategorised</string>
+    <string name="smartplay_category_header_expanded">▾ %1$s · %2$d</string>
+    <string name="smartplay_category_header_collapsed">▸ %1$s · %2$d</string>
+    <string name="smartplay_choose_categories">Choose categories</string>
+    <string name="smartplay_skip">Skip</string>
+    <string name="smartplay_included_in">Included in: %1$s</string>
+    <string name="smartplay_not_included">Not in any Smart Play</string>
+    <plurals name="smartplay_category_option">
+        <item quantity="one">Category: %1$s · %2$d show</item>
+        <item quantity="other">Category: %1$s · %2$d shows</item>
+    </plurals>
+    <plurals name="smartplay_uncovered_shows">
+        <item quantity="one">%1$d show isn\'t covered by any rule: %2$s</item>
+        <item quantity="other">%1$d shows aren\'t covered by any rule: %2$s</item>
+    </plurals>
+    <string name="smartplay_unsubscribed_show">⚠ %1$s (no longer subscribed)</string>
+    <string name="smartplay_rule_unsubscribed">Some rules point at shows you\'re no longer subscribed to.</string>
     <string name="about_based_on_title">Based on AntennaPod</string>
     <string name="about_based_on_summary">YonderPod is based on AntennaPod, licensed under the GPL v3</string>
     <string name="contributors">Contributors</string>

@@ -7,8 +7,10 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
+import com.google.android.material.chip.ChipGroup;
 import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.model.feed.Feed;
+import de.danoeh.antennapod.smartplay.app.CategoryChips;
 import de.danoeh.antennapod.storage.preferences.UserPreferences;
 import de.danoeh.antennapod.ui.CoverLoader;
 import de.danoeh.antennapod.ui.common.ThemeUtils;
@@ -25,6 +27,7 @@ public class SubscriptionViewHolder extends RecyclerView.ViewHolder {
     public final ImageView selectIcon;
     public final CardView card;
     public final View errorIcon;
+    public final ChipGroup categoryChips;
     public final WeakReference<Activity> mainActivityRef;
 
     public SubscriptionViewHolder(@NonNull View itemView, Activity mainActivity) {
@@ -37,6 +40,7 @@ public class SubscriptionViewHolder extends RecyclerView.ViewHolder {
         selectIcon = itemView.findViewById(R.id.selectedIcon);
         card = itemView.findViewById(R.id.outerContainer);
         errorIcon = itemView.findViewById(R.id.errorIcon);
+        categoryChips = itemView.findViewById(R.id.categoryChips);
         this.mainActivityRef = new WeakReference<>(mainActivity);
     }
 
@@ -56,6 +60,9 @@ public class SubscriptionViewHolder extends RecyclerView.ViewHolder {
                 && feed.getImageUrl().startsWith(Feed.PREFIX_GENERATIVE_COVER);
         coverLoader.withUri(feed.getImageUrl());
         errorIcon.setVisibility(feed.hasLastUpdateFailed() ? View.VISIBLE : View.GONE);
+        if (categoryChips != null) {
+            CategoryChips.fill(categoryChips, CategoryChips.categoriesOf(feed));
+        }
 
         if (UserPreferences.shouldShowSubscriptionTitle() || columnCount == 1) {
             // No need for fallback title when already showing title

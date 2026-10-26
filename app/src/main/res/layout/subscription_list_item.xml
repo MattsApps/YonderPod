@@ -54,19 +54,34 @@
 
     </androidx.cardview.widget.CardView>
 
-    <TextView
-        android:id="@+id/titleLabel"
+    <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="8dp"
         android:layout_gravity="center_vertical"
         android:layout_weight="1"
-        android:ellipsize="end"
-        android:gravity="start"
-        android:maxLines="2"
-        android:importantForAccessibility="no"
-        style="@style/AntennaPod.TextView.ListItemPrimaryTitle"
-        tools:text="@sample/episodes.json/data/title" />
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/titleLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="8dp"
+            android:ellipsize="end"
+            android:gravity="start"
+            android:maxLines="2"
+            android:importantForAccessibility="no"
+            style="@style/AntennaPod.TextView.ListItemPrimaryTitle"
+            tools:text="@sample/episodes.json/data/title" />
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/categoryChips"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:visibility="gone"
+            app:chipSpacingVertical="0dp" />
+
+    </LinearLayout>
 
     <TextView
         android:id="@+id/countViewPill"

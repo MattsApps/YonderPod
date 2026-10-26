@@ -205,6 +205,22 @@
             tools:visibility="visible"
             tools:text="Updates disabled" />
 
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/smartplayCategoryChips"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="16dp"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/smartplayIncludedIn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="4dp"
+            android:textColor="?android:attr/textColorSecondary"
+            android:visibility="gone" />
+
     </LinearLayout>
 
     <LinearLayout

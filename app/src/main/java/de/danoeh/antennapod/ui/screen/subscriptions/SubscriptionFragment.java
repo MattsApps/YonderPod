@@ -31,6 +31,7 @@ import de.danoeh.antennapod.model.feed.FeedItemFilter;
 import de.danoeh.antennapod.model.feed.FeedPreferences;
 import de.danoeh.antennapod.model.feed.SubscriptionsFilter;
 import de.danoeh.antennapod.net.download.serviceinterface.FeedUpdateManager;
+import de.danoeh.antennapod.smartplay.app.CategoryChips;
 import de.danoeh.antennapod.storage.database.DBReader;
 import de.danoeh.antennapod.storage.database.NavDrawerData;
 import de.danoeh.antennapod.storage.preferences.UserPreferences;
@@ -50,9 +51,14 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 
 /**
  * Fragment for displaying feed subscriptions
@@ -64,6 +70,9 @@ public class SubscriptionFragment extends Fragment
     private static final String PREFS = "SubscriptionFragment";
     private static final String PREF_NUM_COLUMNS = "columns";
     private static final String PREF_LAST_TAG = "last_tag";
+    private static final String PREF_GROUP_BY_CATEGORY = "group_by_category";
+    private static final String PREF_COLLAPSED_CATEGORIES = "collapsed_categories";
+    private static final String UNCATEGORISED_KEY = "#uncategorised";
     private static final String KEY_UP_ARROW = "up_arrow";
     private static final String ARGUMENT_STATE = "state";
 
@@ -154,6 +163,7 @@ public class SubscriptionFragment extends Fragment
         };
         setColumnNumber(prefs.getInt(PREF_NUM_COLUMNS, getDefaultNumOfColumns()));
         subscriptionAdapter.setOnSelectModeListener(this);
+        subscriptionAdapter.setOnCategoryHeaderClickListener(this::toggleCategory);
         subscriptionRecycler.setAdapter(subscriptionAdapter);
         setupEmptyView();
 
@@ -242,6 +252,77 @@ public class SubscriptionFragment extends Fragment
         toolbar.getMenu().findItem(R.id.pref_show_subscription_title).setVisible(columns > 1);
         toolbar.getMenu().findItem(R.id.pref_show_subscription_title)
                 .setChecked(UserPreferences.shouldShowSubscriptionTitle());
+        MenuItem groupItem = toolbar.getMenu().findItem(R.id.subscriptions_group_by_category);
+        if (groupItem != null) {
+            groupItem.setVisible(stateToShow == Feed.STATE_SUBSCRIBED);
+            groupItem.setChecked(prefs.getBoolean(PREF_GROUP_BY_CATEGORY, true));
+        }
+    }
+
+    private boolean isGroupedByCategory() {
+        return stateToShow == Feed.STATE_SUBSCRIBED
+                && prefs.getBoolean(PREF_GROUP_BY_CATEGORY, true)
+                && FeedPreferences.TAG_ROOT.equals(tagAdapter.getSelectedTag());
+    }
+
+    private void toggleCategory(SubscriptionsRecyclerAdapter.CategoryHeader header) {
+        Set<String> collapsed = new HashSet<>(prefs.getStringSet(PREF_COLLAPSED_CATEGORIES, new HashSet<>()));
+        if (!collapsed.remove(header.key)) {
+            collapsed.add(header.key);
+        }
+        prefs.edit().putStringSet(PREF_COLLAPSED_CATEGORIES, collapsed).apply();
+        loadSubscriptionsAndTags();
+    }
+
+    private List<Object> buildGroupedRows(List<Feed> allFeeds) {
+        Set<String> collapsed = prefs.getStringSet(PREF_COLLAPSED_CATEGORIES, new HashSet<>());
+        List<Feed> uncategorised = new ArrayList<>();
+        Map<String, List<Feed>> byCategory = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+        for (Feed feed : allFeeds) {
+            List<String> categories = CategoryChips.categoriesOf(feed);
+            if (categories.isEmpty()) {
+                uncategorised.add(feed);
+            }
+            for (String category : categories) {
+                if (!byCategory.containsKey(category)) {
+                    byCategory.put(category, new ArrayList<>());
+                }
+                byCategory.get(category).add(feed);
+            }
+        }
+        List<Object> rows = new ArrayList<>();
+        if (!uncategorised.isEmpty()) {
+            addGroup(rows, UNCATEGORISED_KEY, getString(R.string.smartplay_uncategorised), uncategorised, collapsed);
+        }
+        for (Map.Entry<String, List<Feed>> entry : byCategory.entrySet()) {
+            addGroup(rows, entry.getKey(), entry.getKey(), entry.getValue(), collapsed);
+        }
+        return rows;
+    }
+
+    private static void addGroup(List<Object> rows, String key, String title, List<Feed> feeds,
+                                 Set<String> collapsed) {
+        boolean isCollapsed = collapsed.contains(key);
+        rows.add(new SubscriptionsRecyclerAdapter.CategoryHeader(key, title, feeds.size(), isCollapsed));
+        if (!isCollapsed) {
+            rows.addAll(feeds);
+        }
+    }
+
+    private static List<Feed> allFeedsOf(NavDrawerData data) {
+        List<Feed> result = new ArrayList<>(data.feeds);
+        Set<Long> seen = new HashSet<>();
+        for (Feed feed : result) {
+            seen.add(feed.getId());
+        }
+        for (NavDrawerData.TagItem tag : data.tags) {
+            for (Feed feed : tag.getFeeds()) {
+                if (seen.add(feed.getId())) {
+                    result.add(feed);
+                }
+            }
+        }
+        return result;
     }
 
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
@@ -287,6 +368,11 @@ public class SubscriptionFragment extends Fragment
                 ((MainActivity) getActivity()).loadChildFragment(SearchFragment.newInstance());
             }
             return true;
+        } else if (itemId == R.id.subscriptions_group_by_category) {
+            prefs.edit().putBoolean(PREF_GROUP_BY_CATEGORY, !prefs.getBoolean(PREF_GROUP_BY_CATEGORY, true)).apply();
+            refreshToolbarState();
+            loadSubscriptionsAndTags();
+            return true;
         } else if (itemId == R.id.pref_show_subscription_title) {
             item.setChecked(!item.isChecked());
             UserPreferences.setShouldShowSubscriptionTitle(item.isChecked());
@@ -314,6 +400,13 @@ public class SubscriptionFragment extends Fragment
             itemDecoration = new SubscriptionsRecyclerAdapter.GridDividerItemDecorator();
             subscriptionRecycler.addItemDecoration(itemDecoration);
         }
+        final GridLayoutManager gridLayoutManager = (GridLayoutManager) layoutManager;
+        gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+            @Override
+            public int getSpanSize(int position) {
+                return subscriptionAdapter.isHeader(position) ? gridLayoutManager.getSpanCount() : 1;
+            }
+        });
         subscriptionAdapter.setColumnCount(columns);
         subscriptionRecycler.setLayoutManager(layoutManager);
         prefs.edit().putInt(PREF_NUM_COLUMNS, columns).apply();
@@ -420,7 +513,12 @@ public class SubscriptionFragment extends Fragment
                         }
                         feeds = openedFolderFeeds;
                         progressBar.setVisibility(View.GONE);
-                        subscriptionAdapter.setItems(feeds, result.first.feedCounters);
+                        if (isGroupedByCategory()) {
+                            subscriptionAdapter.setGroupedItems(buildGroupedRows(allFeedsOf(result.first)),
+                                    result.first.feedCounters);
+                        } else {
+                            subscriptionAdapter.setItems(feeds, result.first.feedCounters);
+                        }
                         if (firstLoaded) {
                             restoreScrollPosition(scrollPosition);
                         }

@@ -19,6 +19,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.google.android.material.appbar.MaterialToolbar;
 import de.danoeh.antennapod.R;
+import de.danoeh.antennapod.smartplay.app.CategoryPrompt;
 import de.danoeh.antennapod.activity.MainActivity;
 import de.danoeh.antennapod.databinding.FeedinfoBinding;
 import de.danoeh.antennapod.event.MessageEvent;
@@ -225,6 +226,7 @@ public class FeedInfoFragment extends Fragment implements MaterialToolbar.OnMenu
             viewBinding.supportUrl.setVisibility(View.GONE);
             viewBinding.header.butSubscribe.setVisibility(View.VISIBLE);
             viewBinding.header.butSubscribe.setOnClickListener(view -> {
+                CategoryPrompt.request(getContext(), feed.getId());
                 DBWriter.setFeedState(getContext(), feed, Feed.STATE_SUBSCRIBED);
                 MainActivityStarter mainActivityStarter = new MainActivityStarter(getContext());
                 mainActivityStarter.withOpenFeed(feed.getId());

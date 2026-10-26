@@ -2,6 +2,7 @@ package de.danoeh.antennapod.smartplay.app;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -27,13 +28,15 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
-import java.util.TreeSet;
+import java.util.Map;
+import java.util.TreeMap;
 
 import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.activity.MainActivity;
 import de.danoeh.antennapod.model.feed.Feed;
-import de.danoeh.antennapod.model.feed.FeedPreferences;
 import de.danoeh.antennapod.smartplay.EpisodeSource;
 import de.danoeh.antennapod.smartplay.SmartPlayDefinition;
 import de.danoeh.antennapod.smartplay.SmartPlayRule;
@@ -58,10 +61,12 @@ public class SmartPlayEditorFragment extends Fragment {
     private final List<PriorityDraft> priorities = new ArrayList<>();
     private final List<SourceOption> sourceOptions = new ArrayList<>();
     private final List<Feed> feeds = new ArrayList<>();
+    private final Map<Long, String> allFeedTitles = new HashMap<>();
     private final CompositeDisposable disposables = new CompositeDisposable();
 
     private long smartPlayId;
     private EditText nameView;
+    private TextView coverageWarning;
     private LinearLayout priorityContainer;
     private RulesAdapter rulesAdapter;
     private ItemTouchHelper touchHelper;
@@ -105,6 +110,7 @@ public class SmartPlayEditorFragment extends Fragment {
     private static final class LoadResult {
         SmartPlayStore.StoredSmartPlay stored;
         List<Feed> feeds;
+        Map<Long, String> allTitles;
     }
 
     public static SmartPlayEditorFragment newInstance(long smartPlayId) {
@@ -133,6 +139,7 @@ public class SmartPlayEditorFragment extends Fragment {
         });
 
         nameView = root.findViewById(R.id.smartplay_name);
+        coverageWarning = root.findViewById(R.id.smartplay_coverage_warning);
         priorityContainer = root.findViewById(R.id.smartplay_priority_container);
 
         RecyclerView rulesView = root.findViewById(R.id.smartplay_rules);
@@ -151,6 +158,7 @@ public class SmartPlayEditorFragment extends Fragment {
                 }
                 Collections.swap(rules, fromPosition, toPosition);
                 rulesAdapter.notifyItemMoved(fromPosition, toPosition);
+                updateCoverageWarning();
                 return true;
             }
 
@@ -170,6 +178,7 @@ public class SmartPlayEditorFragment extends Fragment {
         root.findViewById(R.id.smartplay_add_rule).setOnClickListener(v -> {
             rules.add(new RuleDraft());
             rulesAdapter.notifyItemInserted(rules.size() - 1);
+            updateCoverageWarning();
         });
         root.findViewById(R.id.smartplay_add_priority).setOnClickListener(v -> pickPriorityShow());
 
@@ -188,7 +197,9 @@ public class SmartPlayEditorFragment extends Fragment {
             LoadResult result = new LoadResult();
             result.stored = smartPlayId >= 0 ? SmartPlayStore.getInstance(requireContext()).get(smartPlayId) : null;
             List<Feed> subscribed = new ArrayList<>();
+            result.allTitles = new HashMap<>();
             for (Feed feed : DBReader.getFeedList()) {
+                result.allTitles.put(feed.getId(), title(feed));
                 if (feed.getState() == Feed.STATE_SUBSCRIBED) {
                     subscribed.add(feed);
                 }
@@ -206,22 +217,20 @@ public class SmartPlayEditorFragment extends Fragment {
     private void onLoaded(LoadResult result) {
         feeds.clear();
         feeds.addAll(result.feeds);
+        allFeedTitles.clear();
+        allFeedTitles.putAll(result.allTitles);
         sourceOptions.clear();
         sourceOptions.add(new SourceOption(getString(R.string.smartplay_source_all), EpisodeSource.allFeeds()));
-        TreeSet<String> categories = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+        Map<String, Integer> categoryCounts = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         for (Feed feed : feeds) {
-            FeedPreferences preferences = feed.getPreferences();
-            if (preferences != null) {
-                for (String tag : preferences.getTags()) {
-                    if (!FeedPreferences.TAG_ROOT.equals(tag)) {
-                        categories.add(tag);
-                    }
-                }
+            for (String category : CategoryChips.categoriesOf(feed)) {
+                Integer count = categoryCounts.get(category);
+                categoryCounts.put(category, count == null ? 1 : count + 1);
             }
         }
-        for (String category : categories) {
-            sourceOptions.add(new SourceOption(getString(R.string.smartplay_source_category, category),
-                    EpisodeSource.category(category)));
+        for (Map.Entry<String, Integer> entry : categoryCounts.entrySet()) {
+            sourceOptions.add(new SourceOption(getResources().getQuantityString(R.plurals.smartplay_category_option,
+                    entry.getValue(), entry.getKey(), entry.getValue()), EpisodeSource.category(entry.getKey())));
         }
         for (Feed feed : feeds) {
             sourceOptions.add(new SourceOption(title(feed), EpisodeSource.feed(feed.getId())));
@@ -253,6 +262,53 @@ public class SmartPlayEditorFragment extends Fragment {
         loaded = true;
         rulesAdapter.notifyDataSetChanged();
         showPriorities();
+        updateCoverageWarning();
+    }
+
+    private void updateCoverageWarning() {
+        if (!loaded || coverageWarning == null) {
+            return;
+        }
+        SmartPlayDefinition.Builder builder = SmartPlayDefinition.builder("check");
+        for (PriorityDraft draft : priorities) {
+            builder.priorityFeed(draft.feedId, draft.order);
+        }
+        boolean pointsAtUnsubscribed = false;
+        for (RuleDraft draft : rules) {
+            builder.rule(SmartPlayRule.of(draft.order, draft.count, draft.source));
+            if (draft.source.getType() == EpisodeSource.Type.FEED && !isSubscribed(draft.source.getFeedId())) {
+                pointsAtUnsubscribed = true;
+            }
+        }
+        SmartPlayDefinition definition = builder.build();
+        List<String> uncovered = new ArrayList<>();
+        for (Feed feed : feeds) {
+            if (!definition.coversFeed(feed.getId(), new HashSet<>(CategoryChips.categoriesOf(feed)))) {
+                uncovered.add(title(feed));
+            }
+        }
+        StringBuilder text = new StringBuilder();
+        if (!uncovered.isEmpty()) {
+            text.append(getResources().getQuantityString(R.plurals.smartplay_uncovered_shows,
+                    uncovered.size(), uncovered.size(), TextUtils.join(", ", uncovered)));
+        }
+        if (pointsAtUnsubscribed) {
+            if (text.length() > 0) {
+                text.append("\n");
+            }
+            text.append(getString(R.string.smartplay_rule_unsubscribed));
+        }
+        coverageWarning.setText(text.toString());
+        coverageWarning.setVisibility(text.length() > 0 ? View.VISIBLE : View.GONE);
+    }
+
+    private boolean isSubscribed(long feedId) {
+        for (Feed feed : feeds) {
+            if (feed.getId() == feedId) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void ensureSourceOption(EpisodeSource source) {
@@ -261,9 +317,15 @@ public class SmartPlayEditorFragment extends Fragment {
                 return;
             }
         }
-        String label = source.getType() == EpisodeSource.Type.CATEGORY
-                ? getString(R.string.smartplay_source_category, source.getCategory())
-                : getString(R.string.smartplay_unknown_show);
+        String label;
+        if (source.getType() == EpisodeSource.Type.CATEGORY) {
+            label = getResources().getQuantityString(R.plurals.smartplay_category_option, 0,
+                    source.getCategory(), 0);
+        } else if (allFeedTitles.containsKey(source.getFeedId())) {
+            label = getString(R.string.smartplay_unsubscribed_show, allFeedTitles.get(source.getFeedId()));
+        } else {
+            label = getString(R.string.smartplay_unknown_show);
+        }
         sourceOptions.add(new SourceOption(label, source));
     }
 
@@ -286,6 +348,9 @@ public class SmartPlayEditorFragment extends Fragment {
             if (feed.getId() == feedId) {
                 return title(feed);
             }
+        }
+        if (allFeedTitles.containsKey(feedId)) {
+            return getString(R.string.smartplay_unsubscribed_show, allFeedTitles.get(feedId));
         }
         return getString(R.string.smartplay_unknown_show);
     }
@@ -338,6 +403,7 @@ public class SmartPlayEditorFragment extends Fragment {
             row.findViewById(R.id.priority_remove).setOnClickListener(v -> {
                 priorities.remove(draft);
                 showPriorities();
+                updateCoverageWarning();
             });
             priorityContainer.addView(row);
         }
@@ -364,6 +430,7 @@ public class SmartPlayEditorFragment extends Fragment {
                     draft.feedId = feedId;
                     priorities.add(draft);
                     showPriorities();
+                    updateCoverageWarning();
                 })
                 .setNegativeButton(android.R.string.cancel, null)
                 .show();
@@ -430,7 +497,7 @@ public class SmartPlayEditorFragment extends Fragment {
         void onSelected(int position);
     }
 
-    private static final class SimpleSelectionListener implements AdapterView.OnItemSelectedListener {
+    private final class SimpleSelectionListener implements AdapterView.OnItemSelectedListener {
         private final PositionCallback callback;
 
         SimpleSelectionListener(PositionCallback callback) {
@@ -440,6 +507,7 @@ public class SmartPlayEditorFragment extends Fragment {
         @Override
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
             callback.onSelected(position);
+            updateCoverageWarning();
         }
 
         @Override
@@ -471,6 +539,7 @@ public class SmartPlayEditorFragment extends Fragment {
                 if (position >= 0) {
                     rules.remove(position);
                     rulesAdapter.notifyDataSetChanged();
+                    updateCoverageWarning();
                 }
             });
         }

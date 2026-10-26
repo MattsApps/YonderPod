@@ -68,6 +68,14 @@
                 android:text="@string/smartplay_add_rule" />
 
             <TextView
+                android:id="@+id/smartplay_coverage_warning"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:textColor="?attr/icon_red"
+                android:visibility="gone" />
+
+            <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"

@@ -1,5 +1,6 @@
 package de.danoeh.antennapod.ui.screen.feed;
 
+import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.LightingColorFilter;
 import android.os.Bundle;
@@ -21,6 +22,10 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.google.android.material.appbar.MaterialToolbar;
 import de.danoeh.antennapod.R;
+import de.danoeh.antennapod.smartplay.app.CategoryChips;
+import de.danoeh.antennapod.smartplay.app.CategoryPrompt;
+import de.danoeh.antennapod.ui.screen.feed.preferences.TagSettingsDialog;
+import de.danoeh.antennapod.smartplay.app.SmartPlayCoverage;
 import de.danoeh.antennapod.activity.MainActivity;
 import de.danoeh.antennapod.databinding.FeedItemListFragmentBinding;
 import de.danoeh.antennapod.event.EpisodeDownloadEvent;
@@ -506,6 +511,7 @@ public class FeedItemlistFragment extends Fragment implements AdapterView.OnItem
         }
         viewBinding.header.txtvTitle.setText(feed.getTitle());
         viewBinding.header.txtvAuthor.setText(feed.getAuthor());
+        refreshSmartPlayInfo();
         viewBinding.header.descriptionContainer.setVisibility(View.GONE);
         if (feed.getState() == Feed.STATE_NOT_SUBSCRIBED) {
             viewBinding.header.descriptionContainer.setVisibility(View.VISIBLE);
@@ -539,6 +545,30 @@ public class FeedItemlistFragment extends Fragment implements AdapterView.OnItem
         }
     }
 
+    private void refreshSmartPlayInfo() {
+        if (feed.getState() != Feed.STATE_SUBSCRIBED) {
+            viewBinding.header.smartplayCategoryChips.setVisibility(View.GONE);
+            viewBinding.header.smartplayIncludedIn.setVisibility(View.GONE);
+            return;
+        }
+        CategoryChips.fill(viewBinding.header.smartplayCategoryChips, CategoryChips.categoriesOf(feed));
+        if (CategoryPrompt.consume(requireContext(), feed.getId()) && isAdded() && !isStateSaved()) {
+            TagSettingsDialog.newInstanceForNewSubscription(Collections.singletonList(feed.getPreferences()))
+                    .show(getChildFragmentManager(), TagSettingsDialog.TAG);
+        }
+        final Feed shownFeed = feed;
+        final Context appContext = requireContext().getApplicationContext();
+        Observable.fromCallable(() -> SmartPlayCoverage.describe(appContext, shownFeed))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(text -> {
+                    if (viewBinding != null) {
+                        viewBinding.header.smartplayIncludedIn.setText(text);
+                        viewBinding.header.smartplayIncludedIn.setVisibility(View.VISIBLE);
+                    }
+                }, error -> Log.e(TAG, Log.getStackTraceString(error)));
+    }
+
     private void setupHeaderView() {
         // https://github.com/bumptech/glide/issues/529
         viewBinding.imgvBackground.setColorFilter(new LightingColorFilter(0xff666666, 0x000000));
@@ -549,6 +579,7 @@ public class FeedItemlistFragment extends Fragment implements AdapterView.OnItem
             if (feed == null) {
                 return;
             }
+            CategoryPrompt.request(getContext(), feed.getId());
             DBWriter.setFeedState(getContext(), feed, Feed.STATE_SUBSCRIBED);
             MainActivityStarter mainActivityStarter = new MainActivityStarter(getContext());
             mainActivityStarter.withOpenFeed(feed.getId());

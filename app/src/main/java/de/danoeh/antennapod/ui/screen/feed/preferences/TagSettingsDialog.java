@@ -37,9 +37,16 @@ import java.util.Set;
 public class TagSettingsDialog extends DialogFragment {
     public static final String TAG = "TagSettingsDialog";
     private static final String ARG_FEED_PREFERENCES = "feed_preferences";
+    private static final String ARG_NEW_SUBSCRIPTION = "new_subscription";
     private List<String> displayedTags;
     private EditTagsDialogBinding viewBinding;
     private SimpleChipAdapter adapter;
+
+    public static TagSettingsDialog newInstanceForNewSubscription(List<FeedPreferences> preferencesList) {
+        TagSettingsDialog fragment = newInstance(preferencesList);
+        fragment.getArguments().putBoolean(ARG_NEW_SUBSCRIPTION, true);
+        return fragment;
+    }
 
     public static TagSettingsDialog newInstance(List<FeedPreferences> preferencesList) {
         TagSettingsDialog fragment = new TagSettingsDialog();
@@ -102,12 +109,13 @@ public class TagSettingsDialog extends DialogFragment {
 
         MaterialAlertDialogBuilder dialog = new MaterialAlertDialogBuilder(getContext());
         dialog.setView(viewBinding.getRoot());
-        dialog.setTitle(R.string.feed_tags_label);
+        boolean newSubscription = getArguments().getBoolean(ARG_NEW_SUBSCRIPTION, false);
+        dialog.setTitle(newSubscription ? R.string.smartplay_choose_categories : R.string.feed_tags_label);
         dialog.setPositiveButton(android.R.string.ok, (d, input) -> {
             addTag(viewBinding.newTagEditText.getText().toString().trim());
             updatePreferencesTags(feedPreferencesList, commonTags);
         });
-        dialog.setNegativeButton(R.string.cancel_label, null);
+        dialog.setNegativeButton(newSubscription ? R.string.smartplay_skip : R.string.cancel_label, null);
         return dialog.create();
     }
 

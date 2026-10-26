@@ -24,6 +24,8 @@ import androidx.annotation.Nullable;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import androidx.core.app.ActivityCompat;
 import de.danoeh.antennapod.R;
+import de.danoeh.antennapod.smartplay.app.CategoryPrompt;
+import de.danoeh.antennapod.ui.appstartintent.MainActivityStarter;
 import de.danoeh.antennapod.net.download.serviceinterface.FeedUpdateManager;
 
 import de.danoeh.antennapod.storage.database.FeedDatabaseWriter;
@@ -53,6 +55,8 @@ import java.util.Locale;
  * Activity for Opml Import.
  * */
 public class OpmlImportActivity extends ToolbarActivity {
+    private volatile int importedCount = 0;
+    private volatile long lastImportedFeedId = -1;
     private static final String TAG = "OpmlImportBaseActivity";
     @Nullable private Uri uri;
     private OpmlSelectionBinding viewBinding;
@@ -111,6 +115,8 @@ public class OpmlImportActivity extends ToolbarActivity {
     }
 
     private void doImport() {
+        importedCount = 0;
+        lastImportedFeedId = -1;
         viewBinding.progressBar.setVisibility(View.VISIBLE);
         Completable.fromAction(() -> {
             SparseBooleanArray checked = viewBinding.feedlist.getCheckedItemPositions();
@@ -122,7 +128,14 @@ public class OpmlImportActivity extends ToolbarActivity {
                 Feed feed = new Feed(element.getXmlUrl(), null,
                         element.getText() != null ? element.getText() : "Unknown podcast");
                 feed.setItems(Collections.emptyList());
-                FeedDatabaseWriter.updateFeed(this, feed, false);
+                Feed saved = FeedDatabaseWriter.updateFeed(this, feed, false);
+                importedCount++;
+                if (saved != null) {
+                    lastImportedFeedId = saved.getId();
+                }
+            }
+            if (importedCount == 1 && lastImportedFeedId >= 0) {
+                CategoryPrompt.request(this, lastImportedFeedId);
             }
             FeedUpdateManager.getInstance().runOnce(this);
         })
@@ -132,6 +145,10 @@ public class OpmlImportActivity extends ToolbarActivity {
                         () -> {
                             viewBinding.progressBar.setVisibility(View.GONE);
                             Intent intent = new Intent(OpmlImportActivity.this, MainActivity.class);
+                            if (importedCount == 1 && lastImportedFeedId >= 0) {
+                                intent = new MainActivityStarter(OpmlImportActivity.this)
+                                        .withOpenFeed(lastImportedFeedId).getIntent();
+                            }
                             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                             startActivity(intent);
                             finish();

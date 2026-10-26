@@ -50,6 +50,7 @@ public class SmartPlayQueueManager {
     private static final String STATE_PREFS = "SmartPlayState";
     private static final String KEY_ACTIVE_ID = "activeId";
     private static final String KEY_PAUSED = "paused";
+    private static final String KEY_FEED_QUEUE_ACTION_CLEARED = "feedQueueActionCleared";
     private static final boolean FEEDS_MAY_STREAM = false;
 
     private static SmartPlayQueueManager instance;
@@ -86,7 +87,27 @@ public class SmartPlayQueueManager {
         disableConflictingQueueSettings();
         EventBus.getDefault().register(this);
         executor.execute(this::activeSmartPlay);
+        executor.execute(this::clearPerFeedQueueActionOnce);
         scheduleUpdate();
+    }
+
+    private void clearPerFeedQueueActionOnce() {
+        if (state.getBoolean(KEY_FEED_QUEUE_ACTION_CLEARED, false)) {
+            return;
+        }
+        try {
+            for (Feed feed : DBReader.getFeedList()) {
+                FeedPreferences preferences = feed.getPreferences();
+                if (preferences != null
+                        && preferences.getNewEpisodesAction() == FeedPreferences.NewEpisodesAction.ADD_TO_QUEUE) {
+                    preferences.setNewEpisodesAction(FeedPreferences.NewEpisodesAction.GLOBAL);
+                    DBWriter.setFeedPreferences(preferences).get();
+                }
+            }
+            state.edit().putBoolean(KEY_FEED_QUEUE_ACTION_CLEARED, true).apply();
+        } catch (Exception e) {
+            Log.e(TAG, "Could not switch off per-show add-to-queue", e);
+        }
     }
 
     private void disableConflictingQueueSettings() {
