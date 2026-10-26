@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000000"
+    android:orientation="vertical"
+    android:padding="12dp">
+
+    <Button
+        android:id="@+id/car_exit"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:backgroundTint="#333333"
+        android:text="@string/car_mode_exit"
+        android:textColor="#FFFFFF"
+        android:textSize="20sp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/car_artwork"
+            android:layout_width="96dp"
+            android:layout_height="96dp"
+            android:layout_marginEnd="12dp"
+            android:importantForAccessibility="no"
+            android:scaleType="centerCrop" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/car_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="2"
+                android:textColor="#FFFFFF"
+                android:textSize="28sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/car_show"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textColor="#E0E0E0"
+                android:textSize="22sp" />
+
+            <ProgressBar
+                android:id="@+id/car_progress"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="16dp"
+                android:layout_marginTop="12dp"
+                android:max="1000"
+                android:progressBackgroundTint="#555555"
+                android:progressTint="#FFD600" />
+
+            <TextView
+                android:id="@+id/car_time"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="#FFFFFF"
+                android:textSize="20sp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/car_buttons"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/car_back"
+                style="@style/CarModeButton"
+                android:contentDescription="@string/rewind_label"
+                android:src="@drawable/ic_fast_rewind" />
+
+            <ImageButton
+                android:id="@+id/car_play"
+                style="@style/CarModeButton.Primary"
+                android:contentDescription="@string/play_label"
+                android:src="@drawable/ic_play_48dp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/car_forward"
+                style="@style/CarModeButton"
+                android:contentDescription="@string/fast_forward_label"
+                android:src="@drawable/ic_fast_forward" />
+
+            <ImageButton
+                android:id="@+id/car_next"
+                style="@style/CarModeButton"
+                android:contentDescription="@string/skip_episode_label"
+                android:src="@drawable/ic_skip_48dp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

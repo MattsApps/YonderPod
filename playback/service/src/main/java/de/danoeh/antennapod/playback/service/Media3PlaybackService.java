@@ -126,7 +126,7 @@ public class Media3PlaybackService extends MediaLibraryService {
     public void onCreate() {
         super.onCreate();
         EventBus.getDefault().register(this);
-        buttonPressHandler = new ButtonPressHandler(this::performButtonAction);
+        buttonPressHandler = new ButtonPressHandler(this, this::performButtonAction);
         registerAudioDeviceCallback();
         DefaultMediaNotificationProvider notificationProvider = new DefaultMediaNotificationProvider(this,
                 session -> R.id.notification_playing,
@@ -177,12 +177,14 @@ public class Media3PlaybackService extends MediaLibraryService {
                 }
 
                 if (currentPlayable != null && !getPlayWhenReady()) {
-                    long savedPosition = getCurrentPosition();
-                    long lastPlayed = currentPlayable.getLastPlayedTimeStatistics();
-                    long rewind = lastPlayed > 0
-                            ? ControlsPreferences.rewindMillisAfter(System.currentTimeMillis() - lastPlayed) : 0;
-                    if (rewind > 0 && savedPosition > 0) {
-                        seekTo(Math.max(0, savedPosition - rewind));
+                    MediaItem item = getCurrentMediaItem();
+                    if (item != null && String.valueOf(currentPlayable.getId()).equals(item.mediaId)) {
+                        int savedPosition = (int) getCurrentPosition();
+                        int startPosition = ControlsPreferences.positionWithRewind(currentPlayable.getId(),
+                                savedPosition, currentPlayable.getLastPlayedTimeStatistics());
+                        if (startPosition != savedPosition) {
+                            seekTo(startPosition);
+                        }
                     }
                     applyAudioAttributes();
                     startFadeIn();
@@ -1137,7 +1139,7 @@ public class Media3PlaybackService extends MediaLibraryService {
         if (bluetooth) {
             ControlsPreferences.rememberDevice(name);
         }
-        ButtonPressHandler.log((bluetooth ? "Bluetooth connected: " : "Headphones connected: ") + name);
+        buttonPressHandler.onDeviceConnected(bluetooth, name);
         String mode = ControlsPreferences.getResumeOnReconnect();
         boolean allowed = ControlsPreferences.RESUME_ANY.equals(mode)
                 || (ControlsPreferences.RESUME_CAR.equals(mode) && bluetooth

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="CarModeButton">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_margin">6dp</item>
+        <item name="android:background">@drawable/car_mode_button_bg</item>
+        <item name="android:scaleType">fitCenter</item>
+        <item name="android:padding">24dp</item>
+        <item name="android:tint">#FFFFFF</item>
+    </style>
+
+    <style name="CarModeButton.Primary">
+        <item name="android:background">@drawable/car_mode_button_primary_bg</item>
+        <item name="android:tint">#000000</item>
+    </style>
+</resources>

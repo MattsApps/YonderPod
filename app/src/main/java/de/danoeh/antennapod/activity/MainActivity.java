@@ -54,6 +54,7 @@ import de.danoeh.antennapod.playback.service.PlaybackController;
 import de.danoeh.antennapod.storage.databasemaintenanceservice.DatabaseMaintenanceWorker;
 import de.danoeh.antennapod.storage.importexport.AutomaticDatabaseExportWorker;
 import de.danoeh.antennapod.storage.preferences.PlaybackPreferences;
+import de.danoeh.antennapod.smartplay.app.CarModeAutoOpener;
 import de.danoeh.antennapod.storage.preferences.ControlsPreferences;
 import de.danoeh.antennapod.storage.preferences.UserPreferences;
 import de.danoeh.antennapod.ui.appstartintent.MainActivityStarter;
@@ -97,6 +98,7 @@ import java.util.Objects;
  * The activity that is shown when the user launches the app.
  */
 public class MainActivity extends CastEnabledActivity implements NavigationToolbarActivity {
+    private final CarModeAutoOpener carModeAutoOpener = new CarModeAutoOpener(this);
 
     private static final String TAG = "MainActivity";
     public static final String MAIN_FRAGMENT_TAG = "main";
@@ -589,8 +591,15 @@ public class MainActivity extends CastEnabledActivity implements NavigationToolb
     }
 
     @Override
+    protected void onPause() {
+        super.onPause();
+        carModeAutoOpener.stop();
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
+        carModeAutoOpener.start();
         handleNavIntent();
 
         boolean hasBottomNavigation = bottomNavigation != null;

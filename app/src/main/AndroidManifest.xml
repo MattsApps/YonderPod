@@ -12,6 +12,7 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
     <uses-permission android:name="android.permission.VIBRATE" />
 
     <supports-screens
@@ -294,6 +295,11 @@
             tools:ignore="Deprecated"
             android:name="com.google.android.actions"
             android:resource="@xml/actions" />
+        <activity
+            android:name=".smartplay.app.CarModeActivity"
+            android:exported="false"
+            android:label="@string/car_mode_title" />
+
         <activity
             android:name=".smartplay.app.OpenAudioActivity"
             android:exported="true"

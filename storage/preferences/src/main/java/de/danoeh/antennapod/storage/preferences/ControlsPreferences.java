@@ -34,10 +34,13 @@ public final class ControlsPreferences {
     private static final String KEY_FADE_IN = "fadeIn";
     private static final String KEY_KEEP_SCREEN_ON = "keepScreenOn";
     private static final String KEY_SHOW_SPEED = "showSpeedButton";
+    private static final String KEY_CAR_MODE_AUTO = "carModeAuto";
+    private static final String KEY_CAR_MODE_DEVICES = "carModeDevices";
 
     private static SharedPreferences prefs;
     private static volatile boolean testing = false;
     private static final List<String> LOG = new ArrayList<>();
+    private static final RewindOnce REWIND_ONCE = new RewindOnce();
 
     private ControlsPreferences() {
     }
@@ -98,12 +101,9 @@ public final class ControlsPreferences {
         return rewind;
     }
 
-    public static int positionWithRewind(int position, long lastPlayedTimeStatistics) {
-        if (position <= 0 || lastPlayedTimeStatistics <= 0) {
-            return position;
-        }
-        long rewind = rewindMillisAfter(System.currentTimeMillis() - lastPlayedTimeStatistics);
-        return (int) Math.max(0, position - rewind);
+    public static int positionWithRewind(long mediaId, int position, long lastPlayedTimeStatistics) {
+        return REWIND_ONCE.resumePosition(mediaId, position, lastPlayedTimeStatistics,
+                System.currentTimeMillis(), ControlsPreferences::rewindMillisAfter);
     }
 
     public static int getInterruptionBackSeconds() {
@@ -176,12 +176,34 @@ public final class ControlsPreferences {
         prefs.edit().putBoolean(KEY_SHOW_SPEED, show).apply();
     }
 
+    public static boolean carModeAuto() {
+        return prefs != null && prefs.getBoolean(KEY_CAR_MODE_AUTO, false);
+    }
+
+    public static void setCarModeAuto(boolean auto) {
+        prefs.edit().putBoolean(KEY_CAR_MODE_AUTO, auto).apply();
+    }
+
+    public static Set<String> getCarModeDevices() {
+        return new HashSet<>(prefs.getStringSet(KEY_CAR_MODE_DEVICES, Collections.emptySet()));
+    }
+
+    public static void setCarModeDevices(Set<String> devices) {
+        prefs.edit().putStringSet(KEY_CAR_MODE_DEVICES, new HashSet<>(devices)).apply();
+    }
+
     public static boolean isTesting() {
         return testing;
     }
 
     public static void setTesting(boolean isTesting) {
         testing = isTesting;
+    }
+
+    public static final String LOG_SEPARATOR = "\u001F";
+
+    public static void log(String friendly, String raw) {
+        log(friendly + LOG_SEPARATOR + raw);
     }
 
     public static void log(String line) {

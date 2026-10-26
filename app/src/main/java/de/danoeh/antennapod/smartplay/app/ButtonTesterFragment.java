@@ -1,8 +1,11 @@
 package de.danoeh.antennapod.smartplay.app;
 
 import android.os.Bundle;
-import android.text.TextUtils;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
 import android.text.method.ScrollingMovementMethod;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.RelativeSizeSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +25,7 @@ import java.util.List;
 import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.event.playback.ButtonLogEvent;
 import de.danoeh.antennapod.storage.preferences.ControlsPreferences;
+import de.danoeh.antennapod.ui.common.ThemeUtils;
 
 public class ButtonTesterFragment extends Fragment {
     private TextView log;
@@ -66,6 +70,26 @@ public class ButtonTesterFragment extends Fragment {
 
     private void refresh() {
         List<String> lines = ControlsPreferences.getLog();
-        log.setText(lines.isEmpty() ? getString(R.string.button_tester_empty) : TextUtils.join("\n", lines));
+        if (lines.isEmpty()) {
+            log.setText(R.string.button_tester_empty);
+            return;
+        }
+        int grey = ThemeUtils.getColorFromAttr(requireContext(), android.R.attr.textColorSecondary);
+        SpannableStringBuilder text = new SpannableStringBuilder();
+        for (String line : lines) {
+            String[] parts = line.split(ControlsPreferences.LOG_SEPARATOR, 2);
+            if (text.length() > 0) {
+                text.append("\n\n");
+            }
+            text.append(parts[0]);
+            if (parts.length > 1) {
+                text.append("\n");
+                int start = text.length();
+                text.append(parts[1]);
+                text.setSpan(new RelativeSizeSpan(0.75f), start, text.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                text.setSpan(new ForegroundColorSpan(grey), start, text.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            }
+        }
+        log.setText(text);
     }
 }

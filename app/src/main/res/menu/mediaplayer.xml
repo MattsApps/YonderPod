@@ -16,6 +16,13 @@
     </item>
 
     <item
+        android:id="@+id/car_mode_item"
+        android:icon="@drawable/ic_car"
+        custom:showAsAction="always"
+        android:title="@string/car_mode_title">
+    </item>
+
+    <item
         android:id="@+id/disable_sleeptimer_item"
         android:icon="@drawable/ic_sleep_off"
         android:visible="false"

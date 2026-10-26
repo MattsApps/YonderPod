@@ -272,7 +272,7 @@ public class MediaLibrarySessionCallback implements MediaLibraryService.MediaLib
                     .subscribeOn(Schedulers.io())
                     .subscribe(media -> {
                         long startPosition = SkipUtils.skipIntroIfNecessary(context, media);
-                        startPosition = ControlsPreferences.positionWithRewind(
+                        startPosition = ControlsPreferences.positionWithRewind(media.getId(),
                                 (int) startPosition, media.getLastPlayedTimeStatistics());
                         future.set(new MediaSession.MediaItemsWithStartPosition(
                                 Collections.singletonList(MediaItemAdapter.fromPlayable(context, media, false)),
@@ -297,7 +297,7 @@ public class MediaLibrarySessionCallback implements MediaLibraryService.MediaLib
                 .subscribeOn(Schedulers.io())
                 .subscribe(result -> {
                     long startPosition = SkipUtils.skipIntroIfNecessary(context, result.second);
-                    startPosition = ControlsPreferences.positionWithRewind(
+                    startPosition = ControlsPreferences.positionWithRewind(result.second.getId(),
                             (int) startPosition, result.second.getLastPlayedTimeStatistics());
                     future.set(new MediaSession.MediaItemsWithStartPosition(result.first, index, startPosition));
                 }, error -> {
@@ -365,7 +365,7 @@ public class MediaLibrarySessionCallback implements MediaLibraryService.MediaLib
                 .subscribe(
                         media -> {
                             long startPosition = SkipUtils.skipIntroIfNecessary(context, media);
-                            startPosition = ControlsPreferences.positionWithRewind(
+                            startPosition = ControlsPreferences.positionWithRewind(media.getId(),
                                     (int) startPosition, media.getLastPlayedTimeStatistics());
                             Log.d(TAG, "onPlaybackResumption: resuming id=" + media.getId()
                                     + ", title=" + (media.getItem() != null ? media.getItem().getTitle() : "null")

@@ -80,6 +80,7 @@ public class Media3VideoPlayerActivity extends AppCompatActivity implements Tool
     private void setupControlsView() {
         Toolbar toolbar = viewBinding.controlsView.getToolbar();
         toolbar.inflateMenu(R.menu.mediaplayer);
+        toolbar.getMenu().findItem(R.id.car_mode_item).setVisible(false);
         toolbar.setOnMenuItemClickListener(this);
         toolbar.setNavigationOnClickListener(v -> {
             Intent intent = new Intent(Media3VideoPlayerActivity.this, MainActivity.class);

@@ -17,4 +17,6 @@ dependencies {
     annotationProcessor libs.androidx.annotation
     implementation libs.androidx.fragment
     implementation libs.androidx.preference
+
+    testImplementation libs.junit
 }

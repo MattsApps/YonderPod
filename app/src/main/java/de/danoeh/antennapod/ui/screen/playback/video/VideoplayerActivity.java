@@ -128,6 +128,7 @@ public class VideoplayerActivity extends CastEnabledActivity
 
         Toolbar toolbar = viewBinding.controlsView.getToolbar();
         toolbar.inflateMenu(R.menu.mediaplayer);
+        toolbar.getMenu().findItem(R.id.car_mode_item).setVisible(false);
         requestCastButton(toolbar.getMenu());
         toolbar.setOnMenuItemClickListener(this);
         toolbar.setNavigationOnClickListener(v -> {

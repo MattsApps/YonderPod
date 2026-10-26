@@ -1,6 +1,16 @@
 package de.danoeh.antennapod.smartplay.app;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothManager;
+import android.content.Context;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,11 +21,18 @@ import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import com.google.android.material.materialswitch.MaterialSwitch;
 
@@ -50,6 +67,7 @@ public class ControlsSettingsFragment extends Fragment {
                         .addToBackStack(getString(R.string.button_tester_title))
                         .commit());
         setupInterruptions();
+        setupCarMode();
         setupSwitch(R.id.controls_fade_in, ControlsPreferences.fadeIn(), ControlsPreferences::setFadeIn);
         setupSwitch(R.id.controls_keep_screen_on, ControlsPreferences.keepScreenOn(),
                 ControlsPreferences::setKeepScreenOn);
@@ -114,6 +132,80 @@ public class ControlsSettingsFragment extends Fragment {
             ControlsPreferences.setResumeOnReconnect(RESUME_MODES[position]);
             showCarDevices();
         }));
+    }
+
+    private final ActivityResultLauncher<String> bluetoothPermission =
+            registerForActivityResult(new ActivityResultContracts.RequestPermission(),
+                    granted -> chooseCarModeDevices());
+
+    private void setupCarMode() {
+        MaterialSwitch auto = root.findViewById(R.id.controls_car_mode_auto);
+        View details = root.findViewById(R.id.controls_car_mode_details);
+        auto.setChecked(ControlsPreferences.carModeAuto());
+        details.setVisibility(auto.isChecked() ? View.VISIBLE : View.GONE);
+        auto.setOnCheckedChangeListener((button, checked) -> {
+            ControlsPreferences.setCarModeAuto(checked);
+            details.setVisibility(checked ? View.VISIBLE : View.GONE);
+        });
+        showCarModeDevices();
+        root.findViewById(R.id.controls_car_mode_choose).setOnClickListener(v -> {
+            if (Build.VERSION.SDK_INT >= 31 && ContextCompat.checkSelfPermission(requireContext(),
+                    Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+                bluetoothPermission.launch(Manifest.permission.BLUETOOTH_CONNECT);
+            } else {
+                chooseCarModeDevices();
+            }
+        });
+    }
+
+    private void showCarModeDevices() {
+        Set<String> chosen = new TreeSet<>(ControlsPreferences.getCarModeDevices());
+        ((TextView) root.findViewById(R.id.controls_car_mode_devices)).setText(TextUtils.join(", ", chosen));
+    }
+
+    @SuppressLint("MissingPermission")
+    private void chooseCarModeDevices() {
+        Set<String> names = new TreeSet<>(ControlsPreferences.getKnownDevices());
+        try {
+            BluetoothManager manager = (BluetoothManager) requireContext()
+                    .getSystemService(Context.BLUETOOTH_SERVICE);
+            BluetoothAdapter adapter = manager != null ? manager.getAdapter() : null;
+            if (adapter != null) {
+                for (BluetoothDevice device : adapter.getBondedDevices()) {
+                    if (device.getName() != null) {
+                        names.add(device.getName());
+                    }
+                }
+            }
+        } catch (SecurityException e) {
+            Log.d("ControlsSettings", "No Bluetooth permission");
+        }
+        names.addAll(ControlsPreferences.getCarModeDevices());
+        if (names.isEmpty()) {
+            Toast.makeText(requireContext(), R.string.car_mode_no_devices, Toast.LENGTH_LONG).show();
+            return;
+        }
+        String[] items = names.toArray(new String[0]);
+        Set<String> chosen = ControlsPreferences.getCarModeDevices();
+        boolean[] checked = new boolean[items.length];
+        for (int i = 0; i < items.length; i++) {
+            checked[i] = chosen.contains(items[i]);
+        }
+        new MaterialAlertDialogBuilder(requireContext())
+                .setTitle(R.string.car_mode_choose_devices)
+                .setMultiChoiceItems(items, checked, (dialog, which, isChecked) -> checked[which] = isChecked)
+                .setPositiveButton(R.string.confirm_label, (dialog, which) -> {
+                    Set<String> selected = new TreeSet<>();
+                    for (int i = 0; i < items.length; i++) {
+                        if (checked[i]) {
+                            selected.add(items[i]);
+                        }
+                    }
+                    ControlsPreferences.setCarModeDevices(selected);
+                    showCarModeDevices();
+                })
+                .setNegativeButton(R.string.cancel_label, null)
+                .show();
     }
 
     private void showCarDevices() {
