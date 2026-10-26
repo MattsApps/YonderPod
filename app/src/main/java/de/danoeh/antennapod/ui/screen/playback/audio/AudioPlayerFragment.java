@@ -39,7 +39,7 @@ import de.danoeh.antennapod.ui.episodes.PlaybackSpeedUtils;
 import de.danoeh.antennapod.ui.episodes.TimeSpeedConverter;
 import de.danoeh.antennapod.ui.screen.playback.MediaPlayerErrorDialog;
 import de.danoeh.antennapod.ui.screen.playback.PlayButton;
-import de.danoeh.antennapod.ui.screen.playback.SleepTimerDialog;
+import de.danoeh.antennapod.smartplay.app.SleepTimerGridDialog;
 import de.danoeh.antennapod.ui.screen.playback.TranscriptDialogFragment;
 import de.danoeh.antennapod.ui.screen.playback.VariableSpeedDialog;
 import org.greenrobot.eventbus.EventBus;
@@ -533,7 +533,7 @@ public class AudioPlayerFragment extends Fragment implements
 
         final int itemId = item.getItemId();
         if (itemId == R.id.disable_sleeptimer_item || itemId == R.id.set_sleeptimer_item) {
-            new SleepTimerDialog().show(getChildFragmentManager(), "SleepTimerDialog");
+            new SleepTimerGridDialog().show(getChildFragmentManager(), "SleepTimerDialog");
             return true;
         } else if (itemId == R.id.transcript_item) {
             new TranscriptDialogFragment().show(

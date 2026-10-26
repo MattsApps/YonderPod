@@ -119,6 +119,12 @@ public class DBWriter {
         Log.i(TAG, String.format(Locale.US, "Requested to delete FeedMedia [id=%d, title=%s, downloaded=%s",
                 media.getId(), media.getEpisodeTitle(), media.isDownloaded()));
         boolean localDelete = false;
+        if (media.getItem() != null && media.getItem().getFeed() != null
+                && Feed.ADDED_FILES_DOWNLOAD_URL.equals(media.getItem().getFeed().getDownloadUrl())
+                && media.getLocalFileUrl() != null && media.getLocalFileUrl().startsWith("content://")) {
+            Log.d(TAG, "Not deleting the original of an added file");
+            return;
+        }
         if (media.getLocalFileUrl() != null && media.getLocalFileUrl().startsWith("content://")) {
             // Local feed
             DocumentFile documentFile = DocumentFile.fromSingleUri(context, Uri.parse(media.getLocalFileUrl()));

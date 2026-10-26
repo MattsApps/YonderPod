@@ -9,6 +9,7 @@ import androidx.collection.ArrayMap;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import de.danoeh.antennapod.R;
+import de.danoeh.antennapod.smartplay.app.SleepSettingsFragment;
 import de.danoeh.antennapod.storage.preferences.UserPreferences;
 import de.danoeh.antennapod.ui.preferences.screen.AnimatedPreferenceFragment;
 import de.danoeh.antennapod.ui.screen.feed.preferences.SkipPreferenceDialog;
@@ -27,6 +28,13 @@ public class PlaybackPreferencesFragment extends AnimatedPreferenceFragment {
 
         setupPlaybackScreen();
         buildSmartMarkAsPlayedPreference();
+        findPreference("prefYonderSleep").setOnPreferenceClickListener(preference -> {
+            getParentFragmentManager().beginTransaction()
+                    .replace(getId(), new SleepSettingsFragment())
+                    .addToBackStack(getString(R.string.sleep_settings_title))
+                    .commit();
+            return true;
+        });
         findPreference("prefEnqueueDownloaded").setVisible(false);
         findPreference("prefSkipKeepsEpisode").setVisible(false);
     }

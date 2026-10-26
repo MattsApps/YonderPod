@@ -34,7 +34,7 @@ import de.danoeh.antennapod.ui.appstartintent.MainActivityStarter;
 import de.danoeh.antennapod.ui.common.IntentUtils;
 import de.danoeh.antennapod.ui.episodeslist.FeedItemMenuHandler;
 import de.danoeh.antennapod.ui.screen.chapter.ChaptersFragment;
-import de.danoeh.antennapod.ui.screen.playback.SleepTimerDialog;
+import de.danoeh.antennapod.smartplay.app.SleepTimerGridDialog;
 import de.danoeh.antennapod.ui.screen.playback.TranscriptDialogFragment;
 import de.danoeh.antennapod.ui.screen.playback.VariableSpeedDialog;
 import de.danoeh.antennapod.ui.screen.playback.PlaybackControlsDialog;
@@ -283,7 +283,7 @@ public class Media3VideoPlayerActivity extends AppCompatActivity implements Tool
             return true;
         } else if (item.getItemId() == R.id.disable_sleeptimer_item
                 || item.getItemId() == R.id.set_sleeptimer_item) {
-            new SleepTimerDialog().show(getSupportFragmentManager(), "SleepTimerDialog");
+            new SleepTimerGridDialog().show(getSupportFragmentManager(), "SleepTimerDialog");
             return true;
         } else if (item.getItemId() == R.id.audio_controls) {
             PlaybackControlsDialog dialog = PlaybackControlsDialog.newInstance();

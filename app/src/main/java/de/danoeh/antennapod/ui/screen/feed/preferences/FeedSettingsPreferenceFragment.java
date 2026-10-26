@@ -152,6 +152,7 @@ public class FeedSettingsPreferenceFragment extends PreferenceFragmentCompat {
                             && !LocalFolders.isAddedFiles(feed));
                     if (feed.isLocalFeed()) {
                         findPreference(PREF_YONDER_DOWNLOADS).setVisible(false);
+                        findPreference(PREF_AUTO_DELETE).setVisible(false);
                         findPreference(PREF_AUTHENTICATION).setVisible(false);
                         findPreference(PREF_AUTODOWNLOAD).setVisible(false);
                         findPreference(PREF_EPISODE_FILTER).setVisible(false);

@@ -17,6 +17,8 @@ import java.util.Collections;
 import java.util.List;
 
 import de.danoeh.antennapod.R;
+import de.danoeh.antennapod.smartplay.app.AddedFiles;
+import de.danoeh.antennapod.smartplay.app.LocalFolders;
 import de.danoeh.antennapod.smartplay.app.SmartPlayQueueManager;
 import de.danoeh.antennapod.event.MessageEvent;
 import de.danoeh.antennapod.event.playback.PlaybackServiceEvent;
@@ -190,6 +192,8 @@ public class FeedItemMenuHandler {
         @NonNull Context context = fragment.requireContext();
         if (menuItemId == R.id.skip_episode_item) {
             context.sendBroadcast(MediaButtonStarter.createIntent(context, KeyEvent.KEYCODE_MEDIA_NEXT));
+        } else if (menuItemId == R.id.remove_item && LocalFolders.isAddedFiles(selectedItem.getFeed())) {
+            AddedFiles.confirmRemove(context, selectedItem);
         } else if (menuItemId == R.id.remove_item) {
             LocalDeleteModal.showLocalFeedDeleteWarningIfNecessary(context, Arrays.asList(selectedItem),
                     () -> DBWriter.deleteFeedMediaOfItem(context, selectedItem.getMedia()));

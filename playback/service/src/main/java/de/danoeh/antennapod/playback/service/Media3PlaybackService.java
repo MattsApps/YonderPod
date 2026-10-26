@@ -99,6 +99,7 @@ public class Media3PlaybackService extends MediaLibraryService {
     private int playbackStartPosition = -1;
     private int playedDurationCountedUntil = -1;
     private SleepTimer sleepTimer;
+    private long lastStopAtCheck = 0;
     @Nullable
     private LoudnessEnhancer loudnessEnhancer = null;
     private float volumeAdaptionFactor = 1.0f;
@@ -426,7 +427,12 @@ public class Media3PlaybackService extends MediaLibraryService {
                         SleepTimerPreferences.autoEnableFrom(),
                         SleepTimerPreferences.autoEnableTo(),
                         currentHour)) {
-                    startSleepTimer(SleepTimerPreferences.timerMillisOrEpisodes());
+                    int bedtime = SleepTimerPreferences.bedtimeMinutes();
+                    if (bedtime == SleepTimerPreferences.EPISODE_ENDS) {
+                        startSleepTimer(SleepTimerType.EPISODES, 1);
+                    } else {
+                        startSleepTimer(SleepTimerType.CLOCK, TimeUnit.MINUTES.toMillis(bedtime));
+                    }
                 }
             }
         }
@@ -514,6 +520,7 @@ public class Media3PlaybackService extends MediaLibraryService {
                             if (currentPlayable == null || player == null) {
                                 return;
                             }
+                            checkStopAt();
                             long position = player.getCurrentPosition();
                             long duration = player.getDuration();
                             float speed = player.getPlaybackParameters().speed;
@@ -914,8 +921,8 @@ public class Media3PlaybackService extends MediaLibraryService {
             sessionCallback.refreshNotification(mediaSession);
         } else if (!event.wasJustEnabled()) {
             long millisLeft = event.getMillisTimeLeft();
-            if (millisLeft < SleepTimer.NOTIFICATION_THRESHOLD && millisLeft > 0) {
-                float volume = (float) millisLeft / SleepTimer.NOTIFICATION_THRESHOLD;
+            if (millisLeft < SleepTimer.FADE_MILLIS && millisLeft > 0) {
+                float volume = (float) millisLeft / SleepTimer.FADE_MILLIS;
                 applyVolumeAdaption(Math.max(0.1f, volume));
             } else {
                 applyVolumeAdaption(1.0f);
@@ -925,16 +932,49 @@ public class Media3PlaybackService extends MediaLibraryService {
 
     @UnstableApi
     private void startSleepTimer(long timeOrEpisodes) {
+        startSleepTimer(SleepTimerPreferences.getSleepTimerType(), timeOrEpisodes);
+    }
+
+    @UnstableApi
+    private void startSleepTimer(SleepTimerType type, long timeOrEpisodes) {
         if (sleepTimer != null) {
             sleepTimer.stop();
         }
-        if (SleepTimerPreferences.getSleepTimerType() == SleepTimerType.EPISODES) {
+        if (type == SleepTimerType.EPISODES) {
             sleepTimer = new EpisodeSleepTimer(this);
+            SleepTimerPreferences.setGridChoice(timeOrEpisodes == 1
+                    ? SleepTimerPreferences.GRID_EPISODE_ENDS : SleepTimerPreferences.GRID_EPISODES);
         } else {
             sleepTimer = new ClockSleepTimer(this);
+            SleepTimerPreferences.setGridChoice((int) TimeUnit.MILLISECONDS.toMinutes(timeOrEpisodes));
         }
         sleepTimer.start(timeOrEpisodes);
         sessionCallback.refreshNotification(mediaSession);
+    }
+
+    @OptIn(markerClass = UnstableApi.class)
+    private void checkStopAt() {
+        long now = System.currentTimeMillis();
+        long previous = lastStopAtCheck;
+        lastStopAtCheck = now;
+        if (!SleepTimerPreferences.stopAtEnabled() || previous == 0 || now - previous > 15000
+                || player == null || !player.isPlaying()) {
+            return;
+        }
+        boolean finishEpisode = SleepTimerPreferences.stopAtFinishEpisode();
+        long trigger = SleepTimerPreferences.stopAtTrigger(now, finishEpisode ? 0 : SleepTimer.FADE_MILLIS);
+        if (trigger < 0 || trigger <= previous || trigger > now) {
+            return;
+        }
+        if (finishEpisode) {
+            long remaining = player.getDuration() - player.getCurrentPosition();
+            if (sleepTimer == null || !sleepTimer.isActive() || !sleepTimer.isEndingThisEpisode(remaining)) {
+                startSleepTimer(SleepTimerType.EPISODES, 1);
+            }
+        } else if (sleepTimer == null || !sleepTimer.isActive()
+                || sleepTimer.getTimeLeft().getMillisValue() > SleepTimer.FADE_MILLIS) {
+            startSleepTimer(SleepTimerType.CLOCK, SleepTimer.FADE_MILLIS);
+        }
     }
 
     private void disableSleepTimer() {

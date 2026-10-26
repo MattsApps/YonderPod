@@ -39,13 +39,20 @@ public class EpisodeSleepTimer extends ClockSleepTimer {
             EventBus.getDefault().post(SleepTimerUpdatedEvent.updated(new TimerValue(
                     current.getDisplayValue(), currentEpisodeTimeLeft)));
 
-            if (currentEpisodeTimeLeft < NOTIFICATION_THRESHOLD) {
+            if (currentEpisodeTimeLeft < FADE_MILLIS) {
                 notifyAboutExpiry();
             }
         } else {
             // if we have more than 1 episode left then just report the current values
             EventBus.getDefault().post(SleepTimerUpdatedEvent.updated(current));
         }
+    }
+
+    @Override
+    public void reset() {
+        EventBus.getDefault().post(SleepTimerUpdatedEvent.cancelled());
+        updateRemainingTime(getTimeLeft().getDisplayValue() + 1);
+        EventBus.getDefault().post(SleepTimerUpdatedEvent.justEnabled(getTimeLeft()));
     }
 
     @Override

@@ -18,6 +18,7 @@ import de.danoeh.antennapod.storage.preferences.SleepTimerPreferences;
 
 public class ClockSleepTimer implements SleepTimer {
     private static final String TAG = "ClockSleepTimer";
+    private static final long SHAKE_MINIMUM_MILLIS = 15 * 60 * 1000;
 
     private final Context context;
     private long initialWaitingTime;
@@ -45,7 +46,7 @@ public class ClockSleepTimer implements SleepTimer {
 
         final TimerValue left = getTimeLeft();
         EventBus.getDefault().postSticky(SleepTimerUpdatedEvent.updated(left));
-        if (timeLeft < NOTIFICATION_THRESHOLD) {
+        if (timeLeft < FADE_MILLIS) {
             notifyAboutExpiry();
         }
         if (timeLeft <= 0) {
@@ -137,7 +138,7 @@ public class ClockSleepTimer implements SleepTimer {
     @Override
     public void reset() {
         EventBus.getDefault().post(SleepTimerUpdatedEvent.cancelled());
-        updateRemainingTime(initialWaitingTime);
+        updateRemainingTime(Math.max(initialWaitingTime, SHAKE_MINIMUM_MILLIS));
         EventBus.getDefault().post(SleepTimerUpdatedEvent.justEnabled(getTimeLeft()));
     }
 

@@ -24,7 +24,7 @@ import de.danoeh.antennapod.storage.database.NaturalOrder;
 public final class LocalFolders {
     private static final String TAG = "LocalFolders";
     private static final long STEP_MS = 60 * 1000;
-    public static final String ADDED_FILES_URL = Feed.PREFIX_LOCAL_FOLDER + "yonderpod-added-files";
+    public static final String ADDED_FILES_URL = Feed.ADDED_FILES_DOWNLOAD_URL;
 
     public enum PlayOrder {
         FILE_NAME,

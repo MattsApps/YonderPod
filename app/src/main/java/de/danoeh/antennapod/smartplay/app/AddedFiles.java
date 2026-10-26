@@ -8,6 +8,7 @@ import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.provider.OpenableColumns;
 import android.text.TextUtils;
+import android.text.format.Formatter;
 import android.util.Log;
 
 import java.io.File;
@@ -16,6 +17,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.UUID;
 
@@ -29,6 +31,10 @@ import de.danoeh.antennapod.storage.database.DBReader;
 import de.danoeh.antennapod.storage.database.DBWriter;
 import de.danoeh.antennapod.storage.database.FeedDatabaseWriter;
 import de.danoeh.antennapod.storage.preferences.UserPreferences;
+import io.reactivex.rxjava3.core.Completable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 public final class AddedFiles {
     private static final String TAG = "AddedFiles";
@@ -109,6 +115,29 @@ public final class AddedFiles {
         FeedDatabaseWriter.updateFeed(context, feed, false);
         FeedItem saved = DBReader.getFeedItemByGuidOrEpisodeUrl(guid, downloadUrl);
         return new Result(saved != null ? saved : item, !persisted, size);
+    }
+
+    public static void confirmRemove(Context context, FeedItem item) {
+        FeedMedia media = item.getMedia();
+        boolean copy = media != null && media.getLocalFileUrl() != null
+                && !media.getLocalFileUrl().startsWith(ContentResolver.SCHEME_CONTENT);
+        String message = copy
+                ? context.getString(R.string.added_files_remove_copy,
+                        Formatter.formatShortFileSize(context, new File(media.getLocalFileUrl()).length()))
+                : context.getString(R.string.added_files_remove_link);
+        new MaterialAlertDialogBuilder(context)
+                .setTitle(R.string.added_files_remove)
+                .setMessage(message)
+                .setPositiveButton(R.string.added_files_remove, (dialog, which) -> Completable.fromAction(() -> {
+                    if (copy && !new File(media.getLocalFileUrl()).delete()) {
+                        Log.d(TAG, "Could not delete copy " + media.getLocalFileUrl());
+                    }
+                    DBWriter.deleteFeedItems(context, Collections.singletonList(item)).get();
+                })
+                        .subscribeOn(Schedulers.io())
+                        .subscribe(() -> { }, error -> Log.e(TAG, Log.getStackTraceString(error))))
+                .setNegativeButton(R.string.cancel_label, null)
+                .show();
     }
 
     private static Feed addedFilesFeed(Context context) {

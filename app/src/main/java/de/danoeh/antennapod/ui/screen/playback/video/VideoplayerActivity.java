@@ -48,7 +48,7 @@ import de.danoeh.antennapod.ui.episodeslist.FeedItemMenuHandler;
 import de.danoeh.antennapod.ui.screen.chapter.ChaptersFragment;
 import de.danoeh.antennapod.ui.screen.playback.MediaPlayerErrorDialog;
 import de.danoeh.antennapod.ui.screen.playback.PlaybackControlsDialog;
-import de.danoeh.antennapod.ui.screen.playback.SleepTimerDialog;
+import de.danoeh.antennapod.smartplay.app.SleepTimerGridDialog;
 import de.danoeh.antennapod.ui.screen.playback.TranscriptDialogFragment;
 import de.danoeh.antennapod.ui.screen.playback.VariableSpeedDialog;
 import de.danoeh.antennapod.ui.share.ShareDialog;
@@ -475,7 +475,7 @@ public class VideoplayerActivity extends CastEnabledActivity
             DBWriter.removeFavoriteItems(Collections.singletonList(feedItem));
         } else if (item.getItemId() == R.id.disable_sleeptimer_item
                 || item.getItemId() == R.id.set_sleeptimer_item) {
-            new SleepTimerDialog().show(getSupportFragmentManager(), "SleepTimerDialog");
+            new SleepTimerGridDialog().show(getSupportFragmentManager(), "SleepTimerDialog");
         } else if (item.getItemId() == R.id.audio_controls) {
             PlaybackControlsDialog dialog = PlaybackControlsDialog.newInstance();
             dialog.show(getSupportFragmentManager(), "playback_controls");

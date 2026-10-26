@@ -13,6 +13,7 @@ import com.bytehamster.lib.preferencesearch.SearchPreferenceResultListener;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 import de.danoeh.antennapod.R;
+import de.danoeh.antennapod.smartplay.app.SleepSettingsFragment;
 import de.danoeh.antennapod.event.MessageEvent;
 import de.danoeh.antennapod.ui.common.Keyboard;
 import de.danoeh.antennapod.ui.common.ToolbarActivity;
@@ -33,6 +34,7 @@ public class PreferenceActivity extends ToolbarActivity implements SearchPrefere
     private static final String FRAGMENT_TAG = "tag_preferences";
     public static final String OPEN_AUTO_DOWNLOAD_SETTINGS = "OpenAutoDownloadSettings";
     public static final String OPEN_PLAYBACK_SETTINGS = "OpenPlaybackSettings";
+    public static final String OPEN_SLEEP_SETTINGS = "OpenSleepSettings";
     private SettingsActivityBinding binding;
 
     @Override
@@ -58,6 +60,12 @@ public class PreferenceActivity extends ToolbarActivity implements SearchPrefere
         }
         if (intent.getBooleanExtra(OPEN_PLAYBACK_SETTINGS, false)) {
             openScreen(R.xml.preferences_playback);
+        }
+        if (intent.getBooleanExtra(OPEN_SLEEP_SETTINGS, false) && savedInstanceState == null) {
+            getSupportFragmentManager().beginTransaction()
+                    .replace(binding.settingsContainer.getId(), new SleepSettingsFragment())
+                    .addToBackStack(getString(R.string.sleep_settings_title))
+                    .commit();
         }
     }
 
