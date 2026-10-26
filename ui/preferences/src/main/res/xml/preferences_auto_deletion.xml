@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen
-        xmlns:android="http://schemas.android.com/apk/res/android">
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:search="http://schemas.android.com/apk/com.bytehamster.lib.preferencesearch">
 
     <SwitchPreferenceCompat
         android:defaultValue="false"
@@ -12,6 +13,7 @@
         android:defaultValue="false"
         android:enabled="true"
         android:key="prefAutoDeleteLocal"
+        search:ignore="true"
         android:summary="@string/pref_auto_local_delete_sum"
         android:title="@string/pref_auto_local_delete_title"/>
     <SwitchPreferenceCompat

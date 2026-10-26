@@ -268,11 +268,12 @@ public class SmartPlayQueueManager {
             Set<Long> streamFeeds = new HashSet<>();
             Map<Long, FeedItem> itemsById = loadCandidates(queue, streamFeeds);
             boolean streamingAllowed = NetworkUtils.isStreamingAllowed();
+            Map<Long, Long> playOrderDates = localPlayOrderDates(itemsById);
 
             List<SmartPlayEpisode> candidates = new ArrayList<>();
             for (FeedItem item : itemsById.values()) {
                 SmartPlayEpisode episode = SmartPlayEpisodeConverter.convert(item,
-                        streamFeeds.contains(item.getFeedId()), streamingAllowed);
+                        streamFeeds.contains(item.getFeedId()), streamingAllowed, playOrderDates.get(item.getId()));
                 if (episode != null) {
                     candidates.add(episode);
                 }
@@ -280,7 +281,7 @@ public class SmartPlayQueueManager {
             List<SmartPlayEpisode> current = new ArrayList<>();
             for (FeedItem item : queue) {
                 SmartPlayEpisode episode = SmartPlayEpisodeConverter.convert(item,
-                        streamFeeds.contains(item.getFeedId()), streamingAllowed);
+                        streamFeeds.contains(item.getFeedId()), streamingAllowed, playOrderDates.get(item.getId()));
                 if (episode != null) {
                     current.add(episode);
                 }
@@ -325,6 +326,26 @@ public class SmartPlayQueueManager {
                 new FeedItemFilter(FeedItemFilter.PAUSED, FeedItemFilter.UNPLAYED), SortOrder.DATE_NEW_OLD));
         addStreamable(itemsById, streamFeeds);
         return itemsById;
+    }
+
+    private Map<Long, Long> localPlayOrderDates(Map<Long, FeedItem> itemsById) {
+        Map<Long, Long> result = new HashMap<>();
+        Set<Long> localFeeds = new HashSet<>();
+        for (FeedItem item : itemsById.values()) {
+            if (item.getFeed() != null && item.getFeed().isLocalFeed()) {
+                localFeeds.add(item.getFeedId());
+            }
+        }
+        if (localFeeds.isEmpty()) {
+            return result;
+        }
+        for (Feed feed : DBReader.getFeedList()) {
+            if (localFeeds.contains(feed.getId())) {
+                LocalFolders.ensureDefaults(context, feed);
+                result.putAll(LocalFolders.playOrderDates(context, feed));
+            }
+        }
+        return result;
     }
 
     private void addStreamable(Map<Long, FeedItem> itemsById, Set<Long> streamFeeds) {

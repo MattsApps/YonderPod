@@ -37,6 +37,8 @@ import de.danoeh.antennapod.model.feed.FeedPreferences;
 import de.danoeh.antennapod.model.feed.VolumeAdaptionSetting;
 import de.danoeh.antennapod.net.download.serviceinterface.FeedUpdateManager;
 import de.danoeh.antennapod.smartplay.app.DownloadSettingsDialog;
+import de.danoeh.antennapod.smartplay.app.LocalFolderDialog;
+import de.danoeh.antennapod.smartplay.app.LocalFolders;
 import de.danoeh.antennapod.storage.database.DBReader;
 import de.danoeh.antennapod.storage.database.DBWriter;
 import de.danoeh.antennapod.storage.database.FeedDatabaseWriter;
@@ -73,6 +75,7 @@ public class FeedSettingsPreferenceFragment extends PreferenceFragmentCompat {
     private static final String PREF_EDIT_FEED_URL = "editFeedUrl";
     private static final String PREF_RECONNECT_LOCAL_FOLDER = "reconnectLocalFolder";
     private static final String PREF_YONDER_DOWNLOADS = "yonderDownloads";
+    private static final String PREF_YONDER_LOCAL_FILES = "yonderLocalFiles";
 
     private Feed feed;
     private Disposable disposable;
@@ -145,7 +148,8 @@ public class FeedSettingsPreferenceFragment extends PreferenceFragmentCompat {
                     updateNewEpisodesActionSummary();
 
                     setupYonderDownloads();
-                    findPreference(PREF_RECONNECT_LOCAL_FOLDER).setVisible(feed.isLocalFeed());
+                    findPreference(PREF_RECONNECT_LOCAL_FOLDER).setVisible(feed.isLocalFeed()
+                            && !LocalFolders.isAddedFiles(feed));
                     if (feed.isLocalFeed()) {
                         findPreference(PREF_YONDER_DOWNLOADS).setVisible(false);
                         findPreference(PREF_AUTHENTICATION).setVisible(false);
@@ -176,6 +180,17 @@ public class FeedSettingsPreferenceFragment extends PreferenceFragmentCompat {
             DownloadSettingsDialog.show(getContext(), feed.getId(), updateSummary);
             return true;
         });
+        Preference localFiles = findPreference(PREF_YONDER_LOCAL_FILES);
+        localFiles.setVisible(feed.isLocalFeed());
+        if (feed.isLocalFeed()) {
+            Runnable updateLocalSummary = () -> LocalFolderDialog.loadSummary(getContext(), feed.getId(),
+                    summary -> localFiles.setSummary(summary));
+            updateLocalSummary.run();
+            localFiles.setOnPreferenceClickListener(preference -> {
+                LocalFolderDialog.show(getContext(), feed.getId(), updateLocalSummary);
+                return true;
+            });
+        }
     }
 
     private void setupPreferences() {

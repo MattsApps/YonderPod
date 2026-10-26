@@ -249,7 +249,7 @@ public class AddFeedFragment extends Fragment {
         }
         Feed dirFeed = new Feed(Feed.PREFIX_LOCAL_FOLDER + uri.toString(), null, title);
         dirFeed.setItems(Collections.emptyList());
-        dirFeed.setSortOrder(SortOrder.EPISODE_TITLE_A_Z);
+        dirFeed.setSortOrder(SortOrder.EPISODE_FILENAME_A_Z);
         Feed fromDatabase = FeedDatabaseWriter.updateFeed(getContext(), dirFeed, false);
         FeedUpdateManager.getInstance().runOnce(requireContext(), fromDatabase);
         return fromDatabase;

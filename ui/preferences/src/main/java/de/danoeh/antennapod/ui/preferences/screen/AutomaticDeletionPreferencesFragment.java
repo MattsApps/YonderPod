@@ -17,6 +17,7 @@ public class AutomaticDeletionPreferencesFragment extends AnimatedPreferenceFrag
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         addPreferencesFromResource(R.xml.preferences_auto_deletion);
+        findPreference(PREF_AUTO_DELETE_LOCAL).setVisible(false);
         setupScreen();
         buildEpisodeCleanupPreference();
         checkItemVisibility(UserPreferences.isAutoDelete());

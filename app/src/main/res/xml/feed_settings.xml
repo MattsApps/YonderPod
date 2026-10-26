@@ -84,6 +84,12 @@
             android:title="@string/download_settings_title"
             android:widgetLayout="@layout/preference_widget_pencil" />
 
+        <Preference
+            android:icon="@drawable/ic_folder"
+            android:key="yonderLocalFiles"
+            android:title="@string/local_files_title"
+            android:widgetLayout="@layout/preference_widget_pencil" />
+
         <de.danoeh.antennapod.ui.preferences.preference.MaterialListPreference
             android:entries="@array/spnEnableAutoDownloadItems"
             android:entryValues="@array/spnEnableAutoDownloadValues"

@@ -85,6 +85,15 @@
 
             </androidx.cardview.widget.CardView>
 
+            <TextView
+                android:id="@+id/addLocalFolderButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/add_local_folder"
+                app:drawableStartCompat="@drawable/ic_folder"
+                app:drawableLeftCompat="@drawable/ic_folder"
+                style="@style/AddPodcastTextView" />
+
             <androidx.fragment.app.FragmentContainerView
                 android:id="@+id/quickFeedDiscovery"
                 android:layout_width="match_parent"
@@ -100,15 +109,6 @@
                 android:text="@string/add_podcast_by_url"
                 app:drawableStartCompat="@drawable/ic_feed"
                 app:drawableLeftCompat="@drawable/ic_feed"
-                style="@style/AddPodcastTextView" />
-
-            <TextView
-                android:id="@+id/addLocalFolderButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/add_local_folder"
-                app:drawableStartCompat="@drawable/ic_folder"
-                app:drawableLeftCompat="@drawable/ic_folder"
                 style="@style/AddPodcastTextView" />
 
             <TextView

@@ -132,9 +132,17 @@ public final class DBReader {
 
         PodDBAdapter adapter = PodDBAdapter.getInstance();
         adapter.open();
+        boolean natural = sortOrder == SortOrder.EPISODE_FILENAME_A_Z || sortOrder == SortOrder.EPISODE_FILENAME_Z_A;
         try (FeedItemCursor cursor = new FeedItemCursor(adapter.getItemsOfFeedCursor(
-                feed, filter, sortOrder, offset, limit))) {
+                feed, filter, sortOrder, natural ? 0 : offset, natural ? Integer.MAX_VALUE : limit))) {
             List<FeedItem> items = extractItemlistFromCursor(cursor);
+            if (natural) {
+                Comparator<FeedItem> byName = (a, b) -> NaturalOrder.INSTANCE.compare(a.getLink(), b.getLink());
+                items.sort(sortOrder == SortOrder.EPISODE_FILENAME_A_Z ? byName : byName.reversed());
+                int from = Math.min(offset, items.size());
+                int to = (int) Math.min((long) offset + limit, items.size());
+                items = new ArrayList<>(items.subList(from, to));
+            }
             feed.setItems(items);
             for (FeedItem item : items) {
                 item.setFeed(feed);

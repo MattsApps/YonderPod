@@ -22,7 +22,12 @@ import de.danoeh.antennapod.smartplay.schedule.UpdateSchedule;
 
 public class SmartPlayStore extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "smartplay.db";
-    private static final int DATABASE_VERSION = 3;
+    private static final int DATABASE_VERSION = 4;
+    private static final String TABLE_PLAY_ORDER = "show_play_order";
+    private static final String TABLE_TRACKS = "local_tracks";
+    private static final String KEY_PLAY_ORDER = "play_order";
+    private static final String KEY_SIZE = "size";
+    private static final String KEY_TRACK = "track";
     private static final String TABLE_SCHEDULES = "update_schedules";
     private static final String KEY_SCHEDULE_KEY = "schedule_key";
     private static final String KEY_SCHEDULE_MODE = "mode";
@@ -90,6 +95,7 @@ public class SmartPlayStore extends SQLiteOpenHelper {
         db.insert(TABLE, null, values(SmartPlayLists.stuff(), 0));
         createDownloadTables(db);
         createScheduleTable(db);
+        createLocalTables(db);
     }
 
     @Override
@@ -100,6 +106,55 @@ public class SmartPlayStore extends SQLiteOpenHelper {
         if (oldVersion < 3) {
             createScheduleTable(db);
         }
+        if (oldVersion < 4) {
+            createLocalTables(db);
+        }
+    }
+
+    private static void createLocalTables(SQLiteDatabase db) {
+        db.execSQL("CREATE TABLE " + TABLE_PLAY_ORDER + " ("
+                + KEY_FEED_ID + " INTEGER PRIMARY KEY, "
+                + KEY_PLAY_ORDER + " TEXT NOT NULL)");
+        db.execSQL("CREATE TABLE " + TABLE_TRACKS + " ("
+                + KEY_ITEM_ID + " INTEGER PRIMARY KEY, "
+                + KEY_SIZE + " INTEGER NOT NULL, "
+                + KEY_TRACK + " INTEGER NOT NULL)");
+    }
+
+    public synchronized Map<Long, String> getPlayOrders() {
+        Map<Long, String> result = new HashMap<>();
+        try (Cursor cursor = getReadableDatabase().query(TABLE_PLAY_ORDER, null, null, null, null, null, null)) {
+            while (cursor.moveToNext()) {
+                result.put(cursor.getLong(cursor.getColumnIndexOrThrow(KEY_FEED_ID)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(KEY_PLAY_ORDER)));
+            }
+        }
+        return result;
+    }
+
+    public synchronized void setPlayOrder(long feedId, String playOrder) {
+        ContentValues values = new ContentValues();
+        values.put(KEY_FEED_ID, feedId);
+        values.put(KEY_PLAY_ORDER, playOrder);
+        getWritableDatabase().insertWithOnConflict(TABLE_PLAY_ORDER, null, values, SQLiteDatabase.CONFLICT_REPLACE);
+    }
+
+    public synchronized Integer getTrack(long itemId, long size) {
+        try (Cursor cursor = getReadableDatabase().query(TABLE_TRACKS, null, KEY_ITEM_ID + " = ?",
+                new String[] {String.valueOf(itemId)}, null, null, null)) {
+            if (cursor.moveToFirst() && cursor.getLong(cursor.getColumnIndexOrThrow(KEY_SIZE)) == size) {
+                return cursor.getInt(cursor.getColumnIndexOrThrow(KEY_TRACK));
+            }
+        }
+        return null;
+    }
+
+    public synchronized void setTrack(long itemId, long size, int track) {
+        ContentValues values = new ContentValues();
+        values.put(KEY_ITEM_ID, itemId);
+        values.put(KEY_SIZE, size);
+        values.put(KEY_TRACK, track);
+        getWritableDatabase().insertWithOnConflict(TABLE_TRACKS, null, values, SQLiteDatabase.CONFLICT_REPLACE);
     }
 
     private static void createScheduleTable(SQLiteDatabase db) {

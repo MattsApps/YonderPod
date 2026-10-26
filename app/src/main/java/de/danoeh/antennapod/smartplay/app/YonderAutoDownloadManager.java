@@ -179,7 +179,7 @@ public class YonderAutoDownloadManager extends AutoDownloadManager {
         List<FeedItem> toDownload = new ArrayList<>();
         List<Feed> feeds = new ArrayList<>();
         for (Feed feed : DBReader.getFeedList()) {
-            if (feed.getState() == Feed.STATE_SUBSCRIBED && !feed.isLocalFeed()) {
+            if (feed.getState() == Feed.STATE_SUBSCRIBED) {
                 feeds.add(feed);
             }
         }
@@ -187,7 +187,7 @@ public class YonderAutoDownloadManager extends AutoDownloadManager {
         long now = System.currentTimeMillis();
         for (Feed feed : feeds) {
             ShowDownloadSettings show = all.get(feed.getId());
-            if (show == null) {
+            if (show == null || (feed.isLocalFeed() && !show.isAllowDeletions())) {
                 continue;
             }
             List<FeedItem> items = DBReader.getFeedItemList(feed, FeedItemFilter.unfiltered(),
@@ -228,7 +228,8 @@ public class YonderAutoDownloadManager extends AutoDownloadManager {
                     }
                 }
             }
-            boolean wantDownloads = downloadFeeds != null && downloadFeeds.contains(feed.getId());
+            boolean wantDownloads = downloadFeeds != null && downloadFeeds.contains(feed.getId())
+                    && !feed.isLocalFeed();
             if (wantDownloads && show.getMode() != DownloadMode.IGNORE) {
                 for (DownloadEpisode episode : plan.getToDownload()) {
                     FeedItem item = byId.get(episode.getId());

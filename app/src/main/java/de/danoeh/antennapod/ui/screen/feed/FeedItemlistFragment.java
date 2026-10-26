@@ -22,6 +22,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.google.android.material.appbar.MaterialToolbar;
 import de.danoeh.antennapod.R;
+import de.danoeh.antennapod.smartplay.app.LocalFolders;
 import de.danoeh.antennapod.smartplay.app.CategoryChips;
 import de.danoeh.antennapod.smartplay.app.CategoryPrompt;
 import de.danoeh.antennapod.ui.screen.feed.preferences.TagSettingsDialog;
@@ -99,6 +100,7 @@ public class FeedItemlistFragment extends Fragment implements AdapterView.OnItem
     private SwipeActions swipeActions;
     private MoreContentListFooterUtil nextPageLoader;
     private boolean displayUpArrow;
+    private boolean localFolderRefreshed = false;
     private long feedID;
     private Feed feed;
     private Disposable disposable;
@@ -693,6 +695,10 @@ public class FeedItemlistFragment extends Fragment implements AdapterView.OnItem
                         updateToolbar();
                         viewBinding.recyclerView.restoreScrollPosition(scrollPosition);
                         scrollPosition = null;
+                        if (!localFolderRefreshed && feed.isLocalFeed() && !LocalFolders.isAddedFiles(feed)) {
+                            localFolderRefreshed = true;
+                            FeedUpdateManager.getInstance().runOnce(getContext(), feed);
+                        }
                     }, error -> {
                         feed = null;
                         refreshHeaderView();

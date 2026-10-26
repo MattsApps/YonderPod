@@ -690,14 +690,15 @@ public class Media3PlaybackService extends MediaLibraryService {
             if (ended || almostEnded || (skipped && !UserPreferences.shouldSkipKeepEpisode())) {
                 DBWriter.removeQueueItem(this, ended, item);
                 FeedPreferences.AutoDeleteAction action = item.getFeed().getPreferences().getCurrentAutoDelete();
+                boolean deletionAllowed = AutoDownloadManager.getInstance() == null
+                        || AutoDownloadManager.getInstance().isDeletionAllowed(item.getFeedId());
                 boolean autoDeleteEnabledGlobally = UserPreferences.isAutoDelete()
-                        && (!item.getFeed().isLocalFeed() || UserPreferences.isAutoDeleteLocal());
+                        && (!item.getFeed().isLocalFeed() || UserPreferences.isAutoDeleteLocal() || deletionAllowed);
                 boolean shouldAutoDelete = action == FeedPreferences.AutoDeleteAction.ALWAYS
                         || (action == FeedPreferences.AutoDeleteAction.GLOBAL && autoDeleteEnabledGlobally);
                 if (shouldAutoDelete && (!item.isTagged(FeedItem.TAG_FAVORITE)
                         || !UserPreferences.shouldFavoriteKeepEpisode())
-                        && (AutoDownloadManager.getInstance() == null
-                        || AutoDownloadManager.getInstance().isDeletionAllowed(item.getFeedId()))) {
+                        && deletionAllowed) {
                     DBWriter.deleteFeedMediaOfItem(this, media);
                 }
             }

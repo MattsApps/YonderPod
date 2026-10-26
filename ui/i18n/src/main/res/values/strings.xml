@@ -800,6 +800,31 @@
     <string name="schedule_status_never">Not updated yet</string>
     <string name="schedule_status_next">Next: %s</string>
     <string name="schedule_status_none">No automatic updates</string>
+    <string name="local_files_title">Your files</string>
+    <string name="local_play_order_label">Play order</string>
+    <string name="local_order_file_name">File name</string>
+    <string name="local_order_track">Track number</string>
+    <string name="local_order_oldest">Oldest first</string>
+    <string name="local_order_newest">Newest first</string>
+    <string name="local_play_order_hint">Smart Play rules on this show follow this order, so Oldest means the next one in order.</string>
+    <string name="local_allow_delete">Allow deleting files</string>
+    <string name="local_allow_delete_off">Off: YonderPod never deletes these files, whatever the cleanup, keep or delete-after-playing settings say.</string>
+    <string name="local_allow_delete_warning_title">Delete files from your phone?</string>
+    <string name="local_allow_delete_warning">With this on, cleanup, keep limits, age limits and delete-after-playing will delete the actual files in this folder from your phone. Deleted files can\'t be recovered.</string>
+    <string name="local_allow_delete_confirm">Allow deleting</string>
+    <string name="local_summary_file_name">Plays in file name order</string>
+    <string name="local_summary_track">Plays in track number order</string>
+    <string name="local_summary_oldest">Plays oldest first</string>
+    <string name="local_summary_newest">Plays newest first</string>
+    <string name="local_summary_protected">%1$s · files are never deleted</string>
+    <string name="local_summary_deletable">%1$s · files can be deleted</string>
+    <string name="added_files_title">Added files</string>
+    <string name="open_file_play_now">Play now</string>
+    <string name="open_file_play_next">Play next</string>
+    <string name="open_file_add">Add to playlist</string>
+    <string name="open_file_copied">Copied into YonderPod (%1$s)</string>
+    <string name="open_file_linked">Added. YonderPod plays it from where it is.</string>
+    <string name="open_file_failed">Couldn\'t add this file</string>
     <plurals name="download_summary_episodes">
         <item quantity="one">%d episode</item>
         <item quantity="other">%d episodes</item>
@@ -1077,7 +1102,7 @@
     <string name="select_country">Select country</string>
 
     <!-- Local feeds -->
-    <string name="add_local_folder">Add local folder</string>
+    <string name="add_local_folder">Add your own audio (a folder on this phone)</string>
     <string name="local_folder">Local folder</string>
     <string name="reconnect_local_folder">Re-connect local folder</string>
     <string name="reconnect_local_folder_summary">Risky: only re-connect to the exact same folder. Otherwise, you will lose all your playback state.</string>

@@ -294,6 +294,26 @@
             tools:ignore="Deprecated"
             android:name="com.google.android.actions"
             android:resource="@xml/actions" />
+        <activity
+            android:name=".smartplay.app.OpenAudioActivity"
+            android:exported="true"
+            android:excludeFromRecents="true"
+            android:label="@string/app_name"
+            android:noHistory="true"
+            android:theme="@style/Theme.AntennaPod.Splash.Translucent">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:scheme="content" />
+                <data android:mimeType="audio/*" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="audio/*" />
+            </intent-filter>
+        </activity>
+
         <receiver
             android:name=".smartplay.app.ScheduleAlarmReceiver"
             android:exported="false" />

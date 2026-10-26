@@ -26,6 +26,7 @@ public class DownloadSettingsRepository {
     private static final String KEY_AGE = "age";
     private static final String KEY_ALLOW_DELETIONS = "allowDeletions";
     private static final String KEY_MIGRATED = "migrated";
+    private static final String KEY_LOCAL_PROTECTED = "localProtected";
 
     private static volatile DownloadSettingsRepository instance;
 
@@ -77,13 +78,17 @@ public class DownloadSettingsRepository {
         if (!prefs.getBoolean(KEY_MIGRATED, false)) {
             migrateExistingShows();
         }
+        if (!prefs.getBoolean(KEY_LOCAL_PROTECTED, false)) {
+            protectLocalFolders();
+        }
         return new HashMap<>(cache);
     }
 
     public synchronized ShowDownloadSettings get(long feedId) {
         ShowDownloadSettings settings = getAll().get(feedId);
         if (settings == null) {
-            settings = getDefaults();
+            Feed feed = DBReader.getFeed(feedId, false, 0, 0);
+            settings = feed != null && feed.isLocalFeed() ? localDefaults() : getDefaults();
             set(feedId, settings);
         }
         return settings;
@@ -93,7 +98,7 @@ public class DownloadSettingsRepository {
         Map<Long, ShowDownloadSettings> all = getAll();
         for (Feed feed : feeds) {
             if (!all.containsKey(feed.getId())) {
-                ShowDownloadSettings defaults = getDefaults();
+                ShowDownloadSettings defaults = feed.isLocalFeed() ? localDefaults() : getDefaults();
                 set(feed.getId(), defaults);
                 all.put(feed.getId(), defaults);
             }
@@ -117,7 +122,27 @@ public class DownloadSettingsRepository {
 
     public boolean isDeletionAllowed(long feedId) {
         ShowDownloadSettings settings = getAll().get(feedId);
-        return settings == null || settings.isAllowDeletions();
+        if (settings == null) {
+            Feed feed = DBReader.getFeed(feedId, false, 0, 0);
+            return feed == null || !feed.isLocalFeed();
+        }
+        return settings.isAllowDeletions();
+    }
+
+    public static ShowDownloadSettings localDefaults() {
+        return new ShowDownloadSettings(DownloadMode.MANUAL, 1, ShowDownloadSettings.NO_LIMIT,
+                ShowDownloadSettings.NO_LIMIT, false);
+    }
+
+    private void protectLocalFolders() {
+        for (Feed feed : DBReader.getFeedList()) {
+            if (feed.isLocalFeed()) {
+                ShowDownloadSettings settings = localDefaults();
+                store.setDownloadSettings(feed.getId(), settings);
+                cache.put(feed.getId(), settings);
+            }
+        }
+        prefs.edit().putBoolean(KEY_LOCAL_PROTECTED, true).apply();
     }
 
     public void markAllAsDownloaded(long feedId) {

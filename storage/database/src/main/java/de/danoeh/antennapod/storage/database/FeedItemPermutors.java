@@ -57,10 +57,10 @@ public class FeedItemPermutors {
                 comparator = (f1, f2) -> Integer.compare(duration(f2), duration(f1));
                 break;
             case EPISODE_FILENAME_A_Z:
-                comparator = (f1, f2) -> itemLink(f1).compareTo(itemLink(f2));
+                comparator = (f1, f2) -> NaturalOrder.INSTANCE.compare(itemLink(f1), itemLink(f2));
                 break;
             case EPISODE_FILENAME_Z_A:
-                comparator = (f1, f2) -> itemLink(f2).compareTo(itemLink(f1));
+                comparator = (f1, f2) -> NaturalOrder.INSTANCE.compare(itemLink(f2), itemLink(f1));
                 break;
             case FEED_TITLE_A_Z:
                 comparator = (f1, f2) -> feedTitle(f1).compareTo(feedTitle(f2));

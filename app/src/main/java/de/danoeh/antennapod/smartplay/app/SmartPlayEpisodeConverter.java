@@ -17,11 +17,17 @@ public final class SmartPlayEpisodeConverter {
 
     @Nullable
     public static SmartPlayEpisode convert(FeedItem item, boolean feedMayStream, boolean mobileStreamingAllowed) {
+        return convert(item, feedMayStream, mobileStreamingAllowed, null);
+    }
+
+    @Nullable
+    public static SmartPlayEpisode convert(FeedItem item, boolean feedMayStream, boolean mobileStreamingAllowed,
+                                           @Nullable Long playOrderDate) {
         FeedMedia media = item.getMedia();
         if (media == null) {
             return null;
         }
-        Date pubDate = item.getPubDate();
+        Date pubDate = playOrderDate != null ? new Date(playOrderDate) : item.getPubDate();
         Date lastPlayed = media.getLastPlayedTimeHistory();
         SmartPlayEpisode.Builder builder = SmartPlayEpisode.builder(item.getId(), item.getFeedId())
                 .pubDate(pubDate != null ? pubDate.getTime() : 0)
