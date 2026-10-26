@@ -10,6 +10,7 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.VIBRATE" />
 
@@ -293,6 +294,10 @@
             tools:ignore="Deprecated"
             android:name="com.google.android.actions"
             android:resource="@xml/actions" />
+        <receiver
+            android:name=".smartplay.app.ScheduleAlarmReceiver"
+            android:exported="false" />
+
     </application>
 
 </manifest>

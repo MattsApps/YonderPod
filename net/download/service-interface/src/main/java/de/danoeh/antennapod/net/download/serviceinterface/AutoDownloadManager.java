@@ -40,6 +40,11 @@ public abstract class AutoDownloadManager {
      */
     public abstract void performAutoCleanup(final Context context);
 
+    public Future<?> autodownloadAfterRefresh(Context context, long[] refreshedFeedIds, boolean scheduled,
+                                              boolean allFeeds, boolean allowMobile) {
+        return autodownloadUndownloadedItems(context);
+    }
+
     public static boolean mayAutoDelete(FeedItem item) {
         return instance != null ? instance.mayDelete(item) : isSafeToDelete(item);
     }

@@ -58,6 +58,17 @@
         android:background="?android:attr/listDivider"
         tools:background="@android:color/holo_red_dark" />
 
+    <TextView
+        android:id="@+id/nav_update_status"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:paddingStart="@dimen/listitem_icon_leftpadding"
+        android:paddingTop="12dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="4dp"
+        android:textAppearance="?attr/textAppearanceBodySmall" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/nav_list"
         android:layout_width="match_parent"
@@ -66,7 +77,7 @@
         android:choiceMode="singleChoice"
         android:clipToPadding="false"
         android:divider="@android:color/transparent"
-        android:layout_alignParentTop="true"
+        android:layout_below="@id/nav_update_status"
         android:dividerHeight="0dp"
         android:paddingBottom="@dimen/list_vertical_padding"
         android:paddingTop="8dp"

@@ -17,6 +17,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -56,6 +57,7 @@ import de.danoeh.antennapod.ui.screen.preferences.PreferenceActivity;
 import de.danoeh.antennapod.ui.MenuItemUtils;
 import de.danoeh.antennapod.storage.database.DBReader;
 import de.danoeh.antennapod.storage.database.NavDrawerData;
+import de.danoeh.antennapod.smartplay.app.ScheduleText;
 import de.danoeh.antennapod.ui.screen.feed.RemoveFeedDialog;
 import de.danoeh.antennapod.ui.screen.feed.RenameFeedDialog;
 import de.danoeh.antennapod.ui.screen.subscriptions.SubscriptionsFilterDialog;
@@ -68,6 +70,7 @@ import de.danoeh.antennapod.ui.appstartintent.MainActivityStarter;
 import de.danoeh.antennapod.ui.common.ThemeUtils;
 import de.danoeh.antennapod.ui.screen.home.HomeFragment;
 import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
@@ -260,6 +263,7 @@ public class NavDrawerFragment extends Fragment implements SharedPreferences.OnS
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onFeedListChanged(FeedListUpdateEvent event) {
         loadData();
+        updateScheduleStatus();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -278,6 +282,19 @@ public class NavDrawerFragment extends Fragment implements SharedPreferences.OnS
     public void onResume() {
         super.onResume();
         loadData();
+        updateScheduleStatus();
+    }
+
+    private void updateScheduleStatus() {
+        Context context = getContext().getApplicationContext();
+        Single.fromCallable(() -> ScheduleText.updated(context) + "\n" + ScheduleText.next(context))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(text -> {
+                    if (getView() != null) {
+                        ((TextView) getView().findViewById(R.id.nav_update_status)).setText(text);
+                    }
+                }, error -> Log.e(TAG, Log.getStackTraceString(error)));
     }
 
     private final NavListAdapter.ItemAccess itemAccess = new NavListAdapter.ItemAccess() {

@@ -27,12 +27,14 @@ import java.util.concurrent.TimeUnit;
 
 public class FeedUpdateManagerImpl extends FeedUpdateManager {
     public static final String WORK_TAG_FEED_UPDATE = "feedUpdate";
-    private static final String WORK_ID_FEED_UPDATE = "de.danoeh.antennapod.core.service.FeedUpdateWorker";
+    public static final String WORK_ID_FEED_UPDATE = "de.danoeh.antennapod.core.service.FeedUpdateWorker";
     private static final String WORK_ID_FEED_UPDATE_MANUAL = "feedUpdateManual";
     public static final String EXTRA_FEED_ID = "feed_id";
     public static final String EXTRA_NEXT_PAGE = "next_page";
     public static final String EXTRA_EVEN_ON_MOBILE = "even_on_mobile";
     public static final String EXTRA_MANUAL = "manual";
+    public static final String EXTRA_FEED_IDS = "feed_ids";
+    public static final String EXTRA_ALLOW_MOBILE = "allow_mobile";
     private static final String TAG = "AutoUpdateManager";
     private static long lastManualRefreshTime = 0;
     private static long lastManualRefreshFeedId = -1;

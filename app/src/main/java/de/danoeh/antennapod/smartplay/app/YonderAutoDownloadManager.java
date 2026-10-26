@@ -10,6 +10,7 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -58,7 +59,20 @@ public class YonderAutoDownloadManager extends AutoDownloadManager {
 
     @Override
     public Future<?> autodownloadUndownloadedItems(Context context) {
-        return executor.submit(this::run);
+        return executor.submit(() -> run(null, false, false));
+    }
+
+    @Override
+    public Future<?> autodownloadAfterRefresh(Context context, long[] refreshedFeedIds, boolean scheduled,
+                                              boolean allFeeds, boolean allowMobile) {
+        if (allFeeds) {
+            UpdateScheduler.recordUpdated(this.context, System.currentTimeMillis());
+        }
+        Set<Long> feeds = new HashSet<>();
+        for (long id : refreshedFeedIds) {
+            feeds.add(id);
+        }
+        return executor.submit(() -> run(feeds, scheduled, allowMobile));
     }
 
     @Override
@@ -103,17 +117,23 @@ public class YonderAutoDownloadManager extends AutoDownloadManager {
     }
 
     private void cleanup() {
-        planAll(false);
+        planAll(null);
     }
 
-    private void run() {
+    private void run(Set<Long> downloadFeeds, boolean scheduled, boolean allowMobile) {
         try {
-            List<FeedItem> planned = planAll(true);
-            boolean networkAllowed = NetworkUtils.isAutoDownloadAllowed();
-            boolean powerAllowed = AutomaticDownloadAlgorithm.deviceCharging(context)
-                    || UserPreferences.isEnableAutodownloadOnBattery();
-            if (!networkAllowed || !powerAllowed) {
-                return;
+            List<FeedItem> planned = planAll(downloadFeeds);
+            if (scheduled) {
+                if (!NetworkUtils.networkAvailable() || (!allowMobile && NetworkUtils.isNetworkRestricted())) {
+                    return;
+                }
+            } else {
+                boolean networkAllowed = NetworkUtils.isAutoDownloadAllowed();
+                boolean powerAllowed = AutomaticDownloadAlgorithm.deviceCharging(context)
+                        || UserPreferences.isEnableAutodownloadOnBattery();
+                if (!networkAllowed || !powerAllowed) {
+                    return;
+                }
             }
             List<FeedItem> toDownload = new ArrayList<>();
             if (UserPreferences.isEnableAutodownloadQueue()) {
@@ -144,14 +164,18 @@ public class YonderAutoDownloadManager extends AutoDownloadManager {
                 }
             }
             for (FeedItem item : toDownload) {
-                DownloadServiceInterface.get().download(context, item);
+                if (scheduled && allowMobile) {
+                    DownloadServiceInterface.get().downloadNow(context, item, true);
+                } else {
+                    DownloadServiceInterface.get().download(context, item);
+                }
             }
         } catch (Exception e) {
             Log.e(TAG, "Automatic download failed", e);
         }
     }
 
-    private List<FeedItem> planAll(boolean wantDownloads) {
+    private List<FeedItem> planAll(Set<Long> downloadFeeds) {
         List<FeedItem> toDownload = new ArrayList<>();
         List<Feed> feeds = new ArrayList<>();
         for (Feed feed : DBReader.getFeedList()) {
@@ -204,6 +228,7 @@ public class YonderAutoDownloadManager extends AutoDownloadManager {
                     }
                 }
             }
+            boolean wantDownloads = downloadFeeds != null && downloadFeeds.contains(feed.getId());
             if (wantDownloads && show.getMode() != DownloadMode.IGNORE) {
                 for (DownloadEpisode episode : plan.getToDownload()) {
                     FeedItem item = byId.get(episode.getId());

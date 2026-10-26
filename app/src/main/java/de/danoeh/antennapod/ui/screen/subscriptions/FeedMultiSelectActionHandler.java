@@ -14,6 +14,7 @@ import java.util.Locale;
 
 import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.event.MessageEvent;
+import de.danoeh.antennapod.smartplay.app.DownloadSettingsDialog;
 import de.danoeh.antennapod.storage.database.DBWriter;
 import de.danoeh.antennapod.databinding.PlaybackSpeedFeedSettingDialogBinding;
 import de.danoeh.antennapod.ui.common.ConfirmationDialog;
@@ -51,7 +52,11 @@ public class FeedMultiSelectActionHandler {
         } else if (id == R.id.keep_updated) {
             keepUpdatedPrefHandler();
         } else if (id == R.id.autodownload) {
-            autoDownloadPrefHandler();
+            List<Long> feedIds = new ArrayList<>();
+            for (Feed feed : selectedItems) {
+                feedIds.add(feed.getId());
+            }
+            DownloadSettingsDialog.showBulk(activity, feedIds);
         } else if (id == R.id.autoDeleteDownload) {
             autoDeleteEpisodesPrefHandler();
         } else if (id == R.id.playback_speed) {

@@ -3,7 +3,6 @@ package de.danoeh.antennapod;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import de.danoeh.antennapod.net.download.service.feed.FeedUpdateManagerImpl;
 import de.danoeh.antennapod.net.download.serviceinterface.AutoDownloadManager;
 import de.danoeh.antennapod.net.download.serviceinterface.FeedUpdateManager;
 import de.danoeh.antennapod.net.sync.service.SynchronizationQueueImpl;
@@ -21,7 +20,9 @@ import de.danoeh.antennapod.net.download.service.feed.DownloadServiceInterfaceIm
 import de.danoeh.antennapod.net.common.NetworkUtils;
 import de.danoeh.antennapod.net.ssl.SslProviderInstaller;
 import de.danoeh.antennapod.smartplay.app.SmartPlayQueueManager;
+import de.danoeh.antennapod.smartplay.app.UpdateScheduler;
 import de.danoeh.antennapod.smartplay.app.YonderAutoDownloadManager;
+import de.danoeh.antennapod.smartplay.app.YonderFeedUpdateManager;
 import de.danoeh.antennapod.storage.database.PodDBAdapter;
 
 import de.danoeh.antennapod.ui.notifications.NotificationUtils;
@@ -49,7 +50,7 @@ public class ClientConfigurator {
         SslProviderInstaller.install(context);
         NetworkUtils.init(context);
         DownloadServiceInterface.setImpl(new DownloadServiceInterfaceImpl());
-        FeedUpdateManager.setInstance(new FeedUpdateManagerImpl());
+        FeedUpdateManager.setInstance(new YonderFeedUpdateManager());
         AutoDownloadManager.setInstance(new YonderAutoDownloadManager(context));
         SynchronizationQueue.setInstance(new SynchronizationQueueImpl(context));
         AntennapodHttpClient.setCacheDirectory(new File(context.getCacheDir(), "okhttp"));
@@ -57,6 +58,7 @@ public class ClientConfigurator {
         SleepTimerPreferences.init(context);
         NotificationUtils.createChannels(context);
         SmartPlayQueueManager.init(context);
+        UpdateScheduler.init(context);
         initialized = true;
     }
 }

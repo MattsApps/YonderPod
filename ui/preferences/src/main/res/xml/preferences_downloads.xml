@@ -8,10 +8,15 @@
         android:key="prefChooseDataDir"/>
 
     <PreferenceCategory android:title="@string/automation">
+        <Preference
+            android:key="prefYonderSchedule"
+            android:title="@string/schedule_title"
+            search:ignore="true" />
         <de.danoeh.antennapod.ui.preferences.preference.MaterialListPreference
             android:entryValues="@array/feed_refresh_interval_values"
             android:entries="@array/feed_refresh_interval_entries"
             android:key="prefAutoUpdateIntervall"
+            search:ignore="true"
             android:title="@string/feed_refresh_title"
             android:summary="@string/feed_refresh_sum"
             android:defaultValue="720"/>

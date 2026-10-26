@@ -30,6 +30,7 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
 public final class DownloadSettingsDialog {
     private static final String TAG = "DownloadSettingsDialog";
     public static final long DEFAULTS = -1;
+    private static final long BULK = -2;
     private static final DownloadMode[] MODES = {
         DownloadMode.MANUAL, DownloadMode.LATEST, DownloadMode.STREAM_LATEST, DownloadMode.IN_ORDER,
         DownloadMode.STREAM_IN_ORDER, DownloadMode.BACKWARDS, DownloadMode.IGNORE
@@ -43,7 +44,16 @@ public final class DownloadSettingsDialog {
         Single.fromCallable(() -> feedId == DEFAULTS ? repository.getDefaults() : repository.get(feedId))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(settings -> showEditor(context, feedId, settings, onSaved),
+                .subscribe(settings -> showEditor(context, feedId, settings, onSaved, null),
+                        error -> Log.e(TAG, Log.getStackTraceString(error)));
+    }
+
+    public static void showBulk(Context context, List<Long> feedIds) {
+        DownloadSettingsRepository repository = DownloadSettingsRepository.getInstance(context);
+        Single.fromCallable(repository::getDefaults)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(settings -> showEditor(context, BULK, settings, null, feedIds),
                         error -> Log.e(TAG, Log.getStackTraceString(error)));
     }
 
@@ -100,7 +110,8 @@ public final class DownloadSettingsDialog {
         return text;
     }
 
-    private static void showEditor(Context context, long feedId, ShowDownloadSettings settings, Runnable onSaved) {
+    private static void showEditor(Context context, long feedId, ShowDownloadSettings settings, Runnable onSaved,
+                                   List<Long> bulkFeedIds) {
         View view = LayoutInflater.from(context).inflate(R.layout.download_settings_dialog, null);
         Spinner mode = view.findViewById(R.id.download_mode);
         TextView description = view.findViewById(R.id.download_mode_description);
@@ -147,15 +158,24 @@ public final class DownloadSettingsDialog {
 
         DownloadSettingsRepository repository = DownloadSettingsRepository.getInstance(context);
         View showActions = view.findViewById(R.id.download_show_actions);
-        showActions.setVisibility(feedId == DEFAULTS ? View.GONE : View.VISIBLE);
+        showActions.setVisibility(feedId == DEFAULTS || feedId == BULK ? View.GONE : View.VISIBLE);
+        if (feedId == BULK) {
+            allowDeletions.setVisibility(View.GONE);
+            view.findViewById(R.id.download_allow_deletions_summary).setVisibility(View.GONE);
+        }
 
         AlertDialog dialog = new MaterialAlertDialogBuilder(context)
-                .setTitle(feedId == DEFAULTS ? R.string.download_defaults_title : R.string.download_settings_title)
+                .setTitle(feedId == DEFAULTS ? R.string.download_defaults_title
+                        : feedId == BULK ? R.string.download_bulk_title : R.string.download_settings_title)
                 .setView(view)
                 .setPositiveButton(R.string.confirm_label, (d, which) -> {
                     ShowDownloadSettings updated = new ShowDownloadSettings(MODES[mode.getSelectedItemPosition()],
                             parse(count, 1), parse(keep, ShowDownloadSettings.NO_LIMIT),
                             parse(age, ShowDownloadSettings.NO_LIMIT), allowDeletions.isChecked());
+                    if (feedId == BULK) {
+                        confirmBulk(context, bulkFeedIds, updated);
+                        return;
+                    }
                     Completable.fromAction(() -> {
                         if (feedId == DEFAULTS) {
                             repository.setDefaults(updated);
@@ -182,6 +202,56 @@ public final class DownloadSettingsDialog {
         view.findViewById(R.id.download_defaults_link).setOnClickListener(v ->
                 show(context, DEFAULTS, null));
         dialog.show();
+    }
+
+    private static void confirmBulk(Context context, List<Long> feedIds, ShowDownloadSettings chosen) {
+        DownloadSettingsRepository repository = DownloadSettingsRepository.getInstance(context);
+        Single.fromCallable(() -> {
+            List<Long> changed = new ArrayList<>();
+            for (long feedId : feedIds) {
+                ShowDownloadSettings current = repository.get(feedId);
+                if (current.getMode() != chosen.getMode() || current.getEpisodeCount() != chosen.getEpisodeCount()
+                        || current.getKeepAtMost() != chosen.getKeepAtMost()
+                        || current.getDeleteOlderThanDays() != chosen.getDeleteOlderThanDays()) {
+                    changed.add(feedId);
+                }
+            }
+            return changed;
+        })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(changed -> {
+                    if (changed.isEmpty()) {
+                        Toast.makeText(context, R.string.download_bulk_none, Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    new MaterialAlertDialogBuilder(context)
+                            .setTitle(R.string.download_bulk_title)
+                            .setMessage(context.getString(R.string.download_bulk_confirm,
+                                    changed.size(), feedIds.size()))
+                            .setPositiveButton(R.string.confirm_label, (d, which) ->
+                                    applyBulk(context, changed, chosen))
+                            .setNegativeButton(R.string.cancel_label, null)
+                            .show();
+                }, error -> Log.e(TAG, Log.getStackTraceString(error)));
+    }
+
+    private static void applyBulk(Context context, List<Long> feedIds, ShowDownloadSettings chosen) {
+        DownloadSettingsRepository repository = DownloadSettingsRepository.getInstance(context);
+        Completable.fromAction(() -> {
+            for (long feedId : feedIds) {
+                ShowDownloadSettings current = repository.get(feedId);
+                repository.set(feedId, new ShowDownloadSettings(chosen.getMode(), chosen.getEpisodeCount(),
+                        chosen.getKeepAtMost(), chosen.getDeleteOlderThanDays(), current.isAllowDeletions()));
+            }
+        })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(() -> {
+                    String message = context.getResources().getQuantityString(
+                            R.plurals.download_bulk_done, feedIds.size(), feedIds.size());
+                    Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+                }, error -> Log.e(TAG, Log.getStackTraceString(error)));
     }
 
     private static void runAndToast(Context context, Runnable action, int message) {

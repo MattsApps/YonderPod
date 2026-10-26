@@ -49,6 +49,7 @@ import java.util.concurrent.Executors;
 public class FeedUpdateWorker extends Worker {
     private static final String TAG = "FeedUpdateWorker";
     private static final long JOB_SCHEDULE_TIME_VARIATION = TimeUnit.MINUTES.toMillis(15);
+    private static final long SCHEDULED_SKIP_RECENT = TimeUnit.MINUTES.toMillis(10);
 
     private final NewEpisodesNotification newEpisodesNotification;
     private final NotificationManagerCompat notificationManager;
@@ -70,7 +71,25 @@ public class FeedUpdateWorker extends Worker {
         boolean force = false;
         boolean isAutomaticRefresh = !getInputData().getBoolean(FeedUpdateManagerImpl.EXTRA_MANUAL, false);
         boolean isAutomaticRefreshEnabled = !UserPreferences.isAutoUpdateDisabled();
-        if (feedId == -1) { // Update all
+        long[] scheduledFeedIds = getInputData().getLongArray(FeedUpdateManagerImpl.EXTRA_FEED_IDS);
+        if (scheduledFeedIds != null) {
+            toUpdate = new ArrayList<>();
+            for (Feed feed : DBReader.getFeedList()) {
+                boolean inRun = false;
+                for (long id : scheduledFeedIds) {
+                    inRun |= id == feed.getId();
+                }
+                if (!inRun || !feed.getPreferences().getKeepUpdated() || feed.getState() != Feed.STATE_SUBSCRIBED
+                        || feed.getLastRefreshAttempt() > System.currentTimeMillis() - SCHEDULED_SKIP_RECENT) {
+                    continue;
+                }
+                toUpdate.add(feed);
+                if (!feed.isLocalFeed()) {
+                    allAreLocal = false;
+                }
+            }
+            Collections.shuffle(toUpdate);
+        } else if (feedId == -1) { // Update all
             toUpdate = DBReader.getFeedList();
             Iterator<Feed> itr = toUpdate.iterator();
             while (itr.hasNext()) {
@@ -113,7 +132,13 @@ public class FeedUpdateWorker extends Worker {
         refreshFeeds(toUpdate,  force);
 
         NonSubscribedFeedsCleaner.deleteOldNonSubscribedFeeds(getApplicationContext());
-        AutoDownloadManager.getInstance().autodownloadUndownloadedItems(getApplicationContext());
+        long[] refreshedFeedIds = new long[toUpdate.size()];
+        for (int i = 0; i < toUpdate.size(); i++) {
+            refreshedFeedIds[i] = toUpdate.get(i).getId();
+        }
+        AutoDownloadManager.getInstance().autodownloadAfterRefresh(getApplicationContext(), refreshedFeedIds,
+                scheduledFeedIds != null, feedId == -1,
+                getInputData().getBoolean(FeedUpdateManagerImpl.EXTRA_ALLOW_MOBILE, false));
         notificationManager.cancel(R.id.notification_updating_feeds);
         SynchronizationQueue.getInstance().syncImmediately();
         return Result.success();

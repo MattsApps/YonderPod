@@ -1,11 +1,18 @@
 package de.danoeh.antennapod.ui.screen.preferences;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import androidx.preference.PreferenceManager;
 import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.net.download.serviceinterface.FeedUpdateManager;
 import de.danoeh.antennapod.smartplay.app.DownloadSettingsDialog;
+import de.danoeh.antennapod.smartplay.app.ScheduleText;
+import de.danoeh.antennapod.smartplay.app.UpdateScheduleFragment;
+import de.danoeh.antennapod.smartplay.app.UpdateScheduler;
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.Single;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 import de.danoeh.antennapod.storage.preferences.UserPreferences;
 import de.danoeh.antennapod.ui.preferences.screen.AnimatedPreferenceFragment;
 import de.danoeh.antennapod.ui.preferences.screen.ProxyDialog;
@@ -21,6 +28,7 @@ public class DownloadsPreferencesFragment extends AnimatedPreferenceFragment
     private static final String PREF_PROXY = "prefProxy";
     private static final String PREF_CHOOSE_DATA_DIR = "prefChooseDataDir";
     private static final String PREF_YONDER_DEFAULTS = "prefYonderDownloadDefaults";
+    private static final String PREF_YONDER_SCHEDULE = "prefYonderSchedule";
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
@@ -45,11 +53,28 @@ public class DownloadsPreferencesFragment extends AnimatedPreferenceFragment
     public void onResume() {
         super.onResume();
         setDataFolderText();
+        Context context = getContext().getApplicationContext();
+        Single.fromCallable(() -> ScheduleText.summary(context, UpdateScheduler.getDefault(context).getSchedule()))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(summary -> {
+                    if (findPreference(PREF_YONDER_SCHEDULE) != null) {
+                        findPreference(PREF_YONDER_SCHEDULE).setSummary(summary);
+                    }
+                }, error -> { });
     }
 
     private void setupNetworkScreen() {
         findPreference(PREF_SCREEN_AUTODL).setOnPreferenceClickListener(preference -> {
             ((PreferenceActivity) getActivity()).openScreen(R.xml.preferences_autodownload);
+            return true;
+        });
+        findPreference(UserPreferences.PREF_UPDATE_INTERVAL_MINUTES).setVisible(false);
+        findPreference(PREF_YONDER_SCHEDULE).setOnPreferenceClickListener(preference -> {
+            getParentFragmentManager().beginTransaction()
+                    .replace(getId(), new UpdateScheduleFragment())
+                    .addToBackStack(getString(R.string.schedule_title))
+                    .commit();
             return true;
         });
         Runnable updateDefaultsSummary = () -> DownloadSettingsDialog.loadSummary(getContext(),

@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/schedule_time_label"
+            android:textAppearance="?attr/textAppearanceBodyLarge" />
+
+        <Button
+            android:id="@+id/editor_time"
+            style="?attr/materialButtonOutlinedStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/editor_window"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?attr/textAppearanceBodySmall" />
+
+    <TextView
+        android:id="@+id/editor_days_label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:text="@string/schedule_days_label"
+        android:textAppearance="?attr/textAppearanceBodyLarge" />
+
+    <com.google.android.material.chip.ChipGroup
+        android:id="@+id/editor_days"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <com.google.android.material.materialswitch.MaterialSwitch
+        android:id="@+id/editor_wifi_only"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/schedule_wifi_only"
+        android:textAppearance="?attr/textAppearanceBodyLarge" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/schedule_wifi_only_summary"
+        android:textAppearance="?attr/textAppearanceBodySmall" />
+
+    <com.google.android.material.materialswitch.MaterialSwitch
+        android:id="@+id/editor_charging"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/schedule_charging_only"
+        android:textAppearance="?attr/textAppearanceBodyLarge" />
+
+    <Button
+        android:id="@+id/editor_advanced_toggle"
+        style="?attr/borderlessButtonStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="@string/schedule_advanced" />
+
+    <LinearLayout
+        android:id="@+id/editor_advanced"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <com.google.android.material.materialswitch.MaterialSwitch
+            android:id="@+id/editor_every_n"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/schedule_every_n_switch" />
+
+        <TextView
+            android:id="@+id/editor_every_n_label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/schedule_every_n_label"
+            android:textAppearance="?attr/textAppearanceBodySmall" />
+
+        <EditText
+            android:id="@+id/editor_every_n_days"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:importantForAutofill="no"
+            android:inputType="number"
+            android:maxLength="2" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/schedule_catch_up_note"
+            android:textAppearance="?attr/textAppearanceBodySmall" />
+
+    </LinearLayout>
+
+</LinearLayout>

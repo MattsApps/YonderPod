@@ -17,10 +17,23 @@ import java.util.Set;
 import de.danoeh.antennapod.smartplay.SmartPlayDefinition;
 import de.danoeh.antennapod.smartplay.download.DownloadMode;
 import de.danoeh.antennapod.smartplay.download.ShowDownloadSettings;
+import de.danoeh.antennapod.smartplay.schedule.CategoryScheduleMode;
+import de.danoeh.antennapod.smartplay.schedule.UpdateSchedule;
 
 public class SmartPlayStore extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "smartplay.db";
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3;
+    private static final String TABLE_SCHEDULES = "update_schedules";
+    private static final String KEY_SCHEDULE_KEY = "schedule_key";
+    private static final String KEY_SCHEDULE_MODE = "mode";
+    private static final String KEY_MINUTE_OF_DAY = "minute_of_day";
+    private static final String KEY_WEEKDAYS = "weekdays";
+    private static final String KEY_EVERY_N_DAYS = "every_n_days";
+    private static final String KEY_ANCHOR_DAY = "anchor_day";
+    private static final String KEY_WIFI_ONLY = "wifi_only";
+    private static final String KEY_CHARGING_ONLY = "charging_only";
+    private static final String KEY_SINCE = "since";
+    private static final String KEY_LAST_TRIGGERED = "last_triggered";
     private static final String TABLE_DOWNLOAD_SETTINGS = "feed_download_settings";
     private static final String TABLE_DOWNLOAD_HISTORY = "download_history";
     private static final String KEY_FEED_ID = "feed_id";
@@ -76,12 +89,113 @@ public class SmartPlayStore extends SQLiteOpenHelper {
                 + KEY_DEFINITION + " TEXT NOT NULL)");
         db.insert(TABLE, null, values(SmartPlayLists.stuff(), 0));
         createDownloadTables(db);
+        createScheduleTable(db);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         if (oldVersion < 2) {
             createDownloadTables(db);
+        }
+        if (oldVersion < 3) {
+            createScheduleTable(db);
+        }
+    }
+
+    private static void createScheduleTable(SQLiteDatabase db) {
+        db.execSQL("CREATE TABLE " + TABLE_SCHEDULES + " ("
+                + KEY_SCHEDULE_KEY + " TEXT PRIMARY KEY, "
+                + KEY_SCHEDULE_MODE + " TEXT NOT NULL, "
+                + KEY_MINUTE_OF_DAY + " INTEGER NOT NULL, "
+                + KEY_WEEKDAYS + " INTEGER NOT NULL, "
+                + KEY_EVERY_N_DAYS + " INTEGER NOT NULL, "
+                + KEY_ANCHOR_DAY + " INTEGER NOT NULL, "
+                + KEY_WIFI_ONLY + " INTEGER NOT NULL, "
+                + KEY_CHARGING_ONLY + " INTEGER NOT NULL, "
+                + KEY_SINCE + " INTEGER NOT NULL, "
+                + KEY_LAST_TRIGGERED + " INTEGER NOT NULL)");
+    }
+
+    public synchronized Map<String, StoredSchedule> getAllSchedules() {
+        Map<String, StoredSchedule> result = new HashMap<>();
+        try (Cursor cursor = getReadableDatabase().query(TABLE_SCHEDULES, null, null, null, null, null, null)) {
+            while (cursor.moveToNext()) {
+                CategoryScheduleMode mode;
+                try {
+                    mode = CategoryScheduleMode.valueOf(
+                            cursor.getString(cursor.getColumnIndexOrThrow(KEY_SCHEDULE_MODE)));
+                } catch (IllegalArgumentException e) {
+                    mode = CategoryScheduleMode.DEFAULT;
+                }
+                UpdateSchedule schedule = new UpdateSchedule(
+                        cursor.getInt(cursor.getColumnIndexOrThrow(KEY_MINUTE_OF_DAY)),
+                        cursor.getInt(cursor.getColumnIndexOrThrow(KEY_WEEKDAYS)),
+                        cursor.getInt(cursor.getColumnIndexOrThrow(KEY_EVERY_N_DAYS)),
+                        cursor.getLong(cursor.getColumnIndexOrThrow(KEY_ANCHOR_DAY)),
+                        cursor.getInt(cursor.getColumnIndexOrThrow(KEY_WIFI_ONLY)) != 0,
+                        cursor.getInt(cursor.getColumnIndexOrThrow(KEY_CHARGING_ONLY)) != 0);
+                String key = cursor.getString(cursor.getColumnIndexOrThrow(KEY_SCHEDULE_KEY));
+                result.put(key, new StoredSchedule(key, mode, schedule,
+                        cursor.getLong(cursor.getColumnIndexOrThrow(KEY_SINCE)),
+                        cursor.getLong(cursor.getColumnIndexOrThrow(KEY_LAST_TRIGGERED))));
+            }
+        }
+        return result;
+    }
+
+    public synchronized void setSchedule(StoredSchedule stored) {
+        ContentValues values = new ContentValues();
+        values.put(KEY_SCHEDULE_KEY, stored.getKey());
+        values.put(KEY_SCHEDULE_MODE, stored.getMode().name());
+        values.put(KEY_MINUTE_OF_DAY, stored.getSchedule().getMinuteOfDay());
+        values.put(KEY_WEEKDAYS, stored.getSchedule().getWeekdays());
+        values.put(KEY_EVERY_N_DAYS, stored.getSchedule().getEveryNDays());
+        values.put(KEY_ANCHOR_DAY, stored.getSchedule().getAnchorDay());
+        values.put(KEY_WIFI_ONLY, stored.getSchedule().isWifiOnly() ? 1 : 0);
+        values.put(KEY_CHARGING_ONLY, stored.getSchedule().isChargingOnly() ? 1 : 0);
+        values.put(KEY_SINCE, stored.getSince());
+        values.put(KEY_LAST_TRIGGERED, stored.getLastTriggered());
+        getWritableDatabase().insertWithOnConflict(TABLE_SCHEDULES, null, values, SQLiteDatabase.CONFLICT_REPLACE);
+    }
+
+    public static final class StoredSchedule {
+        private final String key;
+        private final CategoryScheduleMode mode;
+        private final UpdateSchedule schedule;
+        private final long since;
+        private final long lastTriggered;
+
+        public StoredSchedule(String key, CategoryScheduleMode mode, UpdateSchedule schedule,
+                              long since, long lastTriggered) {
+            this.key = key;
+            this.mode = mode;
+            this.schedule = schedule;
+            this.since = since;
+            this.lastTriggered = lastTriggered;
+        }
+
+        public String getKey() {
+            return key;
+        }
+
+        public CategoryScheduleMode getMode() {
+            return mode;
+        }
+
+        public UpdateSchedule getSchedule() {
+            return schedule;
+        }
+
+        public long getSince() {
+            return since;
+        }
+
+        public long getLastTriggered() {
+            return lastTriggered;
+        }
+
+        public StoredSchedule withLastTriggered(long time) {
+            return new StoredSchedule(key, mode, schedule, since, time);
         }
     }
 
