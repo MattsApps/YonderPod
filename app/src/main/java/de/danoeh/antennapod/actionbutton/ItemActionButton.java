@@ -11,6 +11,7 @@ import de.danoeh.antennapod.playback.service.PlaybackStatus;
 import de.danoeh.antennapod.model.feed.FeedItem;
 import de.danoeh.antennapod.model.feed.FeedMedia;
 import de.danoeh.antennapod.net.download.serviceinterface.DownloadServiceInterface;
+import de.danoeh.antennapod.smartplay.app.DownloadSettingsRepository;
 import de.danoeh.antennapod.storage.preferences.UserPreferences;
 
 public abstract class ItemActionButton {
@@ -48,7 +49,8 @@ public abstract class ItemActionButton {
             return new PlayActionButton(item);
         } else if (isDownloadingMedia) {
             return new CancelDownloadActionButton(item);
-        } else if (UserPreferences.isStreamOverDownload()) {
+        } else if (UserPreferences.isStreamOverDownload()
+                || DownloadSettingsRepository.isStreamShow(item.getFeedId())) {
             return new StreamActionButton(item);
         } else {
             return new DownloadActionButton(item);

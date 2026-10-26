@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import de.danoeh.antennapod.model.feed.Feed;
 import de.danoeh.antennapod.model.feed.FeedItem;
@@ -26,11 +27,11 @@ public class DownloadSettingsRepository {
     private static final String KEY_ALLOW_DELETIONS = "allowDeletions";
     private static final String KEY_MIGRATED = "migrated";
 
-    private static DownloadSettingsRepository instance;
+    private static volatile DownloadSettingsRepository instance;
 
     private final SmartPlayStore store;
     private final SharedPreferences prefs;
-    private Map<Long, ShowDownloadSettings> cache;
+    private volatile Map<Long, ShowDownloadSettings> cache;
 
     private DownloadSettingsRepository(Context context) {
         this.store = SmartPlayStore.getInstance(context);
@@ -71,7 +72,7 @@ public class DownloadSettingsRepository {
 
     public synchronized Map<Long, ShowDownloadSettings> getAll() {
         if (cache == null) {
-            cache = store.getAllDownloadSettings();
+            cache = new ConcurrentHashMap<>(store.getAllDownloadSettings());
         }
         if (!prefs.getBoolean(KEY_MIGRATED, false)) {
             migrateExistingShows();
@@ -105,6 +106,13 @@ public class DownloadSettingsRepository {
         if (cache != null) {
             cache.put(feedId, settings);
         }
+    }
+
+    public static boolean isStreamShow(long feedId) {
+        DownloadSettingsRepository repository = instance;
+        Map<Long, ShowDownloadSettings> settings = repository != null ? repository.cache : null;
+        ShowDownloadSettings show = settings != null ? settings.get(feedId) : null;
+        return show != null && show.getMode().streams();
     }
 
     public boolean isDeletionAllowed(long feedId) {
