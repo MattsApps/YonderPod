@@ -118,6 +118,7 @@ public class SmartPlaysFragment extends Fragment {
         for (SmartPlayRule rule : original.getRules()) {
             builder.rule(rule);
         }
+        builder.neverInclude(original.getNeverInclude());
         SmartPlayDefinition copy = builder.build();
         disposables.add(Completable.fromAction(() -> SmartPlayStore.getInstance(requireContext()).insert(copy))
                 .subscribeOn(Schedulers.io())

@@ -701,6 +701,26 @@
     </plurals>
     <string name="smartplay_unsubscribed_show">⚠ %1$s (no longer subscribed)</string>
     <string name="smartplay_rule_unsubscribed">Some rules point at shows you\'re no longer subscribed to.</string>
+    <string name="smartplay_never_header">Never include</string>
+    <string name="smartplay_never_hint">Categories and shows chosen here never appear in this Smart Play, not even as priority shows.</string>
+    <string name="smartplay_never_none">Nothing excluded. Tap to choose.</string>
+    <string name="smartplay_category_label">Category: %1$s</string>
+    <string name="smartplay_except_title">Leave out</string>
+    <string name="smartplay_except_add">Except… · %1$s</string>
+    <string name="smartplay_except_summary">%1$s except %2$s · %3$s</string>
+    <plurals name="smartplay_show_count">
+        <item quantity="one">%d show</item>
+        <item quantity="other">%d shows</item>
+    </plurals>
+    <string name="smartplay_max_none">No limit per show</string>
+    <string name="smartplay_max_per_show">No more than %1$d per show</string>
+    <string name="smartplay_unsaved_title">Unsaved changes</string>
+    <string name="smartplay_unsaved_message">Save your changes to this Smart Play before leaving?</string>
+    <string name="smartplay_discard">Discard</string>
+    <string name="smartplay_keep_editing">Keep editing</string>
+    <string name="smartplay_draft_title">Restore draft?</string>
+    <string name="smartplay_draft_message">You have unsaved changes to this Smart Play from last time.</string>
+    <string name="smartplay_restore_draft">Restore draft</string>
     <string name="about_based_on_title">Based on AntennaPod</string>
     <string name="about_based_on_summary">YonderPod is based on AntennaPod, licensed under the GPL v3</string>
     <string name="contributors">Contributors</string>

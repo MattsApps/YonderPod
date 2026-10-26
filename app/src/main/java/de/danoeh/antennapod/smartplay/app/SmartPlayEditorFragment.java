@@ -1,6 +1,8 @@
 package de.danoeh.antennapod.smartplay.app;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -17,6 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.ItemTouchHelper;
@@ -38,6 +41,7 @@ import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.activity.MainActivity;
 import de.danoeh.antennapod.model.feed.Feed;
 import de.danoeh.antennapod.smartplay.EpisodeSource;
+import de.danoeh.antennapod.smartplay.Exclusions;
 import de.danoeh.antennapod.smartplay.SmartPlayDefinition;
 import de.danoeh.antennapod.smartplay.SmartPlayRule;
 import de.danoeh.antennapod.storage.database.DBReader;
@@ -50,6 +54,8 @@ public class SmartPlayEditorFragment extends Fragment {
     private static final String TAG = "SmartPlayEditor";
     private static final String ARG_ID = "smartPlayId";
     private static final int MAX_COUNT = 20;
+    private static final int MAX_PER_SHOW = 10;
+    private static final String DRAFT_PREFS = "SmartPlayDrafts";
     private static final SmartPlayRule.Order[] ORDERS = {
         SmartPlayRule.Order.LATEST, SmartPlayRule.Order.OLDEST, SmartPlayRule.Order.RANDOM
     };
@@ -62,11 +68,16 @@ public class SmartPlayEditorFragment extends Fragment {
     private final List<SourceOption> sourceOptions = new ArrayList<>();
     private final List<Feed> feeds = new ArrayList<>();
     private final Map<Long, String> allFeedTitles = new HashMap<>();
+    private final List<String> allCategories = new ArrayList<>();
     private final CompositeDisposable disposables = new CompositeDisposable();
 
     private long smartPlayId;
     private EditText nameView;
     private TextView coverageWarning;
+    private TextView neverSummary;
+    private Exclusions neverInclude = Exclusions.none();
+    private String savedSnapshot = "";
+    private OnBackPressedCallback backCallback;
     private LinearLayout priorityContainer;
     private RulesAdapter rulesAdapter;
     private ItemTouchHelper touchHelper;
@@ -76,6 +87,12 @@ public class SmartPlayEditorFragment extends Fragment {
         SmartPlayRule.Order order = SmartPlayRule.Order.LATEST;
         int count = 1;
         EpisodeSource source = EpisodeSource.allFeeds();
+        Exclusions exclusions = Exclusions.none();
+        int maxPerShow = 0;
+    }
+
+    private interface ExclusionsCallback {
+        void onChosen(Exclusions exclusions);
     }
 
     private static final class PriorityDraft {
@@ -129,6 +146,7 @@ public class SmartPlayEditorFragment extends Fragment {
         View root = inflater.inflate(R.layout.smartplay_editor_fragment, container, false);
         MaterialToolbar toolbar = root.findViewById(R.id.toolbar);
         ((MainActivity) getActivity()).setupToolbarToggle(toolbar, true);
+        toolbar.setNavigationOnClickListener(v -> handleExit());
         toolbar.inflateMenu(R.menu.smartplay_editor);
         toolbar.setOnMenuItemClickListener(item -> {
             if (item.getItemId() == R.id.smartplay_save) {
@@ -140,6 +158,13 @@ public class SmartPlayEditorFragment extends Fragment {
 
         nameView = root.findViewById(R.id.smartplay_name);
         coverageWarning = root.findViewById(R.id.smartplay_coverage_warning);
+        neverSummary = root.findViewById(R.id.smartplay_never_summary);
+        neverSummary.setOnClickListener(v -> pickExclusions(R.string.smartplay_never_header, neverInclude,
+                chosen -> {
+                    neverInclude = chosen;
+                    showNeverInclude();
+                    updateCoverageWarning();
+                }));
         priorityContainer = root.findViewById(R.id.smartplay_priority_container);
 
         RecyclerView rulesView = root.findViewById(R.id.smartplay_rules);
@@ -187,9 +212,92 @@ public class SmartPlayEditorFragment extends Fragment {
     }
 
     @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        backCallback = new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                handleExit();
+            }
+        };
+        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), backCallback);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (isDirty()) {
+            draftPrefs().edit()
+                    .putString(draftKey() + "_name", nameView.getText().toString())
+                    .putString(draftKey() + "_json", SmartPlayJson.toJson(buildDefinition("draft")))
+                    .apply();
+        }
+    }
+
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
         disposables.clear();
+    }
+
+    private SharedPreferences draftPrefs() {
+        return requireContext().getSharedPreferences(DRAFT_PREFS, Context.MODE_PRIVATE);
+    }
+
+    private String draftKey() {
+        return smartPlayId >= 0 ? "draft_" + smartPlayId : "draft_new";
+    }
+
+    private void clearDraft() {
+        draftPrefs().edit().remove(draftKey() + "_name").remove(draftKey() + "_json").apply();
+    }
+
+    private String snapshot() {
+        return nameView.getText().toString().trim() + "\n" + SmartPlayJson.toJson(buildDefinition("snapshot"));
+    }
+
+    private boolean isDirty() {
+        return loaded && nameView != null && !snapshot().equals(savedSnapshot);
+    }
+
+    private void handleExit() {
+        if (!isDirty()) {
+            clearDraft();
+            leave();
+            return;
+        }
+        new MaterialAlertDialogBuilder(requireContext())
+                .setTitle(R.string.smartplay_unsaved_title)
+                .setMessage(R.string.smartplay_unsaved_message)
+                .setPositiveButton(R.string.smartplay_save, (dialog, which) -> save())
+                .setNegativeButton(R.string.smartplay_discard, (dialog, which) -> {
+                    clearDraft();
+                    leave();
+                })
+                .setNeutralButton(R.string.smartplay_keep_editing, null)
+                .show();
+    }
+
+    private void leave() {
+        if (backCallback != null) {
+            backCallback.setEnabled(false);
+        }
+        if (isAdded()) {
+            getParentFragmentManager().popBackStack();
+        }
+    }
+
+    private SmartPlayDefinition buildDefinition(String name) {
+        SmartPlayDefinition.Builder builder = SmartPlayDefinition.builder(name);
+        builder.neverInclude(neverInclude);
+        for (PriorityDraft draft : priorities) {
+            builder.priorityFeed(draft.feedId, draft.order);
+        }
+        for (RuleDraft draft : rules) {
+            builder.rule(SmartPlayRule.builder().order(draft.order).count(draft.count).source(draft.source)
+                    .exclusions(draft.exclusions).maxPerShow(draft.maxPerShow).build());
+        }
+        return builder.build();
     }
 
     private void load() {
@@ -228,6 +336,8 @@ public class SmartPlayEditorFragment extends Fragment {
                 categoryCounts.put(category, count == null ? 1 : count + 1);
             }
         }
+        allCategories.clear();
+        allCategories.addAll(categoryCounts.keySet());
         for (Map.Entry<String, Integer> entry : categoryCounts.entrySet()) {
             sourceOptions.add(new SourceOption(getResources().getQuantityString(R.plurals.smartplay_category_option,
                     entry.getValue(), entry.getKey(), entry.getValue()), EpisodeSource.category(entry.getKey())));
@@ -236,51 +346,195 @@ public class SmartPlayEditorFragment extends Fragment {
             sourceOptions.add(new SourceOption(title(feed), EpisodeSource.feed(feed.getId())));
         }
 
-        rules.clear();
-        priorities.clear();
         if (result.stored != null) {
-            SmartPlayDefinition definition = result.stored.getDefinition();
-            nameView.setText(definition.getName());
-            for (SmartPlayRule rule : definition.getRules()) {
-                RuleDraft draft = new RuleDraft();
-                draft.order = rule.getOrder();
-                draft.count = rule.getCount();
-                draft.source = rule.getSource();
-                rules.add(draft);
-                ensureSourceOption(rule.getSource());
-            }
-            for (SmartPlayDefinition.PriorityFeed feed : definition.getPriorityFeeds()) {
-                PriorityDraft draft = new PriorityDraft();
-                draft.feedId = feed.getFeedId();
-                draft.order = feed.getOrder();
-                priorities.add(draft);
-            }
+            applyDefinition(result.stored.getDefinition().getName(), result.stored.getDefinition());
         } else {
+            rules.clear();
+            priorities.clear();
+            neverInclude = Exclusions.none();
             nameView.setText(R.string.smartplay_new_name);
             rules.add(new RuleDraft());
+            refreshAll();
         }
         loaded = true;
+        savedSnapshot = snapshot();
+        offerDraft();
+    }
+
+    private void applyDefinition(String name, SmartPlayDefinition definition) {
+        rules.clear();
+        priorities.clear();
+        nameView.setText(name);
+        neverInclude = definition.getNeverInclude();
+        for (SmartPlayRule rule : definition.getRules()) {
+            RuleDraft draft = new RuleDraft();
+            draft.order = rule.getOrder();
+            draft.count = rule.getCount();
+            draft.source = rule.getSource();
+            draft.exclusions = rule.getExclusions();
+            draft.maxPerShow = Math.min(rule.getMaxPerShow(), MAX_PER_SHOW);
+            rules.add(draft);
+            ensureSourceOption(rule.getSource());
+        }
+        for (SmartPlayDefinition.PriorityFeed feed : definition.getPriorityFeeds()) {
+            PriorityDraft draft = new PriorityDraft();
+            draft.feedId = feed.getFeedId();
+            draft.order = feed.getOrder();
+            priorities.add(draft);
+        }
+        refreshAll();
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    private void refreshAll() {
         rulesAdapter.notifyDataSetChanged();
         showPriorities();
+        showNeverInclude();
         updateCoverageWarning();
+    }
+
+    private void offerDraft() {
+        SharedPreferences prefs = draftPrefs();
+        String draftName = prefs.getString(draftKey() + "_name", null);
+        String draftJson = prefs.getString(draftKey() + "_json", null);
+        if (draftName == null || draftJson == null) {
+            return;
+        }
+        SmartPlayDefinition draft = SmartPlayJson.fromJson(draftName, draftJson);
+        String draftSnapshot = draftName.trim() + "\n" + SmartPlayJson.toJson(SmartPlayJson.fromJson("snapshot",
+                draftJson));
+        if (draftSnapshot.equals(snapshot())) {
+            clearDraft();
+            return;
+        }
+        new MaterialAlertDialogBuilder(requireContext())
+                .setTitle(R.string.smartplay_draft_title)
+                .setMessage(R.string.smartplay_draft_message)
+                .setPositiveButton(R.string.smartplay_restore_draft, (dialog, which) ->
+                        applyDefinition(draftName, draft))
+                .setNegativeButton(R.string.smartplay_discard, (dialog, which) -> clearDraft())
+                .setCancelable(false)
+                .show();
+    }
+
+    private void showNeverInclude() {
+        if (neverSummary == null) {
+            return;
+        }
+        if (neverInclude.isEmpty()) {
+            neverSummary.setText(R.string.smartplay_never_none);
+        } else {
+            neverSummary.setText(exclusionNames(neverInclude));
+        }
+    }
+
+    private String exclusionNames(Exclusions exclusions) {
+        List<String> names = new ArrayList<>();
+        for (String category : allCategories) {
+            if (exclusions.getCategories().contains(category)) {
+                names.add(category);
+            }
+        }
+        for (String category : exclusions.getCategories()) {
+            if (!names.contains(category)) {
+                names.add(category);
+            }
+        }
+        for (long feedId : exclusions.getFeedIds()) {
+            names.add(feedTitle(feedId));
+        }
+        return TextUtils.join(", ", names);
+    }
+
+    private String sourceShortName(EpisodeSource source) {
+        switch (source.getType()) {
+            case FEED:
+                return feedTitle(source.getFeedId());
+            case CATEGORY:
+                return source.getCategory();
+            default:
+                return getString(R.string.smartplay_source_all);
+        }
+    }
+
+    private String exceptLabel(RuleDraft draft) {
+        SmartPlayRule rule = SmartPlayRule.builder().source(draft.source).exclusions(draft.exclusions).build();
+        int shows = 0;
+        for (Feed feed : feeds) {
+            if (rule.coversFeed(feed.getId(), new HashSet<>(CategoryChips.categoriesOf(feed)))) {
+                shows++;
+            }
+        }
+        String showCount = getResources().getQuantityString(R.plurals.smartplay_show_count, shows, shows);
+        if (draft.exclusions.isEmpty()) {
+            return getString(R.string.smartplay_except_add, showCount);
+        }
+        return getString(R.string.smartplay_except_summary, sourceShortName(draft.source),
+                exclusionNames(draft.exclusions), showCount);
+    }
+
+    private void pickExclusions(int title, Exclusions current, ExclusionsCallback callback) {
+        if (!loaded) {
+            return;
+        }
+        List<String> labels = new ArrayList<>();
+        List<Boolean> checkedList = new ArrayList<>();
+        for (String category : allCategories) {
+            labels.add(getString(R.string.smartplay_category_label, category));
+            checkedList.add(current.getCategories().contains(category));
+        }
+        for (Feed feed : feeds) {
+            labels.add(title(feed));
+            checkedList.add(current.getFeedIds().contains(feed.getId()));
+        }
+        boolean[] checked = new boolean[checkedList.size()];
+        for (int i = 0; i < checked.length; i++) {
+            checked[i] = checkedList.get(i);
+        }
+        new MaterialAlertDialogBuilder(requireContext())
+                .setTitle(title)
+                .setMultiChoiceItems(labels.toArray(new String[0]), checked,
+                        (dialog, which, isChecked) -> checked[which] = isChecked)
+                .setPositiveButton(android.R.string.ok, (dialog, which) -> {
+                    List<String> categories = new ArrayList<>();
+                    List<Long> feedIds = new ArrayList<>();
+                    for (int i = 0; i < checked.length; i++) {
+                        if (!checked[i]) {
+                            continue;
+                        }
+                        if (i < allCategories.size()) {
+                            categories.add(allCategories.get(i));
+                        } else {
+                            feedIds.add(feeds.get(i - allCategories.size()).getId());
+                        }
+                    }
+                    for (String category : current.getCategories()) {
+                        if (!allCategories.contains(category)) {
+                            categories.add(category);
+                        }
+                    }
+                    for (long feedId : current.getFeedIds()) {
+                        if (!isSubscribed(feedId)) {
+                            feedIds.add(feedId);
+                        }
+                    }
+                    callback.onChosen(new Exclusions(categories, feedIds));
+                })
+                .setNegativeButton(android.R.string.cancel, null)
+                .show();
     }
 
     private void updateCoverageWarning() {
         if (!loaded || coverageWarning == null) {
             return;
         }
-        SmartPlayDefinition.Builder builder = SmartPlayDefinition.builder("check");
-        for (PriorityDraft draft : priorities) {
-            builder.priorityFeed(draft.feedId, draft.order);
-        }
         boolean pointsAtUnsubscribed = false;
         for (RuleDraft draft : rules) {
-            builder.rule(SmartPlayRule.of(draft.order, draft.count, draft.source));
             if (draft.source.getType() == EpisodeSource.Type.FEED && !isSubscribed(draft.source.getFeedId())) {
                 pointsAtUnsubscribed = true;
             }
         }
-        SmartPlayDefinition definition = builder.build();
+        SmartPlayDefinition definition = buildDefinition("check");
         List<String> uncovered = new ArrayList<>();
         for (Feed feed : feeds) {
             if (!definition.coversFeed(feed.getId(), new HashSet<>(CategoryChips.categoriesOf(feed)))) {
@@ -378,6 +632,15 @@ public class SmartPlayEditorFragment extends Fragment {
         return labels;
     }
 
+    private List<String> maxPerShowLabels() {
+        List<String> labels = new ArrayList<>();
+        labels.add(getString(R.string.smartplay_max_none));
+        for (int i = 1; i <= MAX_PER_SHOW; i++) {
+            labels.add(getString(R.string.smartplay_max_per_show, i));
+        }
+        return labels;
+    }
+
     private List<String> sourceLabels() {
         List<String> labels = new ArrayList<>();
         for (SourceOption option : sourceOptions) {
@@ -449,14 +712,7 @@ public class SmartPlayEditorFragment extends Fragment {
             Toast.makeText(requireContext(), R.string.smartplay_needs_rule, Toast.LENGTH_LONG).show();
             return;
         }
-        SmartPlayDefinition.Builder builder = SmartPlayDefinition.builder(name);
-        for (PriorityDraft draft : priorities) {
-            builder.priorityFeed(draft.feedId, draft.order);
-        }
-        for (RuleDraft draft : rules) {
-            builder.rule(SmartPlayRule.of(draft.order, draft.count, draft.source));
-        }
-        SmartPlayDefinition definition = builder.build();
+        SmartPlayDefinition definition = buildDefinition(name);
         boolean isActive = smartPlayId >= 0 && smartPlayId == SmartPlayQueueManager.getInstance().getActiveId();
         disposables.add(Observable.fromCallable(() -> {
             SmartPlayStore store = SmartPlayStore.getInstance(requireContext());
@@ -470,10 +726,12 @@ public class SmartPlayEditorFragment extends Fragment {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(id -> {
                     SmartPlayQueueManager.getInstance().onSmartPlaysChanged();
+                    clearDraft();
+                    savedSnapshot = snapshot();
                     if (isActive) {
                         askToRebuild();
                     } else {
-                        getParentFragmentManager().popBackStack();
+                        leave();
                     }
                 }, error -> Log.e(TAG, Log.getStackTraceString(error))));
     }
@@ -485,11 +743,7 @@ public class SmartPlayEditorFragment extends Fragment {
                 .setPositiveButton(R.string.smartplay_rebuild_now, (dialog, which) ->
                         SmartPlayQueueManager.getInstance().rebuildNow())
                 .setNegativeButton(R.string.smartplay_later, null)
-                .setOnDismissListener(dialog -> {
-                    if (isAdded()) {
-                        getParentFragmentManager().popBackStack();
-                    }
-                })
+                .setOnDismissListener(dialog -> leave())
                 .show();
     }
 
@@ -520,6 +774,8 @@ public class SmartPlayEditorFragment extends Fragment {
         final Spinner order;
         final Spinner count;
         final Spinner source;
+        final TextView except;
+        final Spinner maxPerShow;
 
         @SuppressLint("ClickableViewAccessibility")
         RuleHolder(View itemView) {
@@ -528,6 +784,8 @@ public class SmartPlayEditorFragment extends Fragment {
             order = itemView.findViewById(R.id.rule_order);
             count = itemView.findViewById(R.id.rule_count);
             source = itemView.findViewById(R.id.rule_source);
+            except = itemView.findViewById(R.id.rule_except);
+            maxPerShow = itemView.findViewById(R.id.rule_max_per_show);
             itemView.findViewById(R.id.rule_drag).setOnTouchListener((v, event) -> {
                 if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
                     touchHelper.startDrag(this);
@@ -574,8 +832,24 @@ public class SmartPlayEditorFragment extends Fragment {
             holder.source.setOnItemSelectedListener(null);
             holder.source.setAdapter(spinnerAdapter(sourceLabels()));
             holder.source.setSelection(sourceIndex(draft.source), false);
-            holder.source.setOnItemSelectedListener(new SimpleSelectionListener(selected ->
-                    draft.source = sourceOptions.get(selected).source));
+            holder.source.setOnItemSelectedListener(new SimpleSelectionListener(selected -> {
+                draft.source = sourceOptions.get(selected).source;
+                holder.except.setText(exceptLabel(draft));
+            }));
+
+            holder.except.setText(exceptLabel(draft));
+            holder.except.setOnClickListener(v -> pickExclusions(R.string.smartplay_except_title, draft.exclusions,
+                    chosen -> {
+                        draft.exclusions = chosen;
+                        holder.except.setText(exceptLabel(draft));
+                        updateCoverageWarning();
+                    }));
+
+            holder.maxPerShow.setOnItemSelectedListener(null);
+            holder.maxPerShow.setAdapter(spinnerAdapter(maxPerShowLabels()));
+            holder.maxPerShow.setSelection(draft.maxPerShow, false);
+            holder.maxPerShow.setOnItemSelectedListener(new SimpleSelectionListener(selected ->
+                    draft.maxPerShow = selected));
         }
 
         @Override

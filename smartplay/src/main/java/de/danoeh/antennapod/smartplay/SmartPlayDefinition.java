@@ -33,11 +33,13 @@ public final class SmartPlayDefinition {
     private final String name;
     private final List<PriorityFeed> priorityFeeds;
     private final List<SmartPlayRule> rules;
+    private final Exclusions neverInclude;
 
     private SmartPlayDefinition(Builder builder) {
         this.name = builder.name;
         this.priorityFeeds = Collections.unmodifiableList(new ArrayList<>(builder.priorityFeeds));
         this.rules = Collections.unmodifiableList(new ArrayList<>(builder.rules));
+        this.neverInclude = builder.neverInclude;
     }
 
     public String getName() {
@@ -52,29 +54,26 @@ public final class SmartPlayDefinition {
         return rules;
     }
 
+    public Exclusions getNeverInclude() {
+        return neverInclude;
+    }
+
+    public boolean isBlocked(SmartPlayEpisode episode) {
+        return neverInclude.matches(episode);
+    }
+
     public boolean coversFeed(long feedId, Set<String> categories) {
+        if (neverInclude.matchesFeed(feedId, categories)) {
+            return false;
+        }
         for (PriorityFeed priorityFeed : priorityFeeds) {
             if (priorityFeed.getFeedId() == feedId) {
                 return true;
             }
         }
         for (SmartPlayRule rule : rules) {
-            EpisodeSource source = rule.getSource();
-            switch (source.getType()) {
-                case ALL_FEEDS:
-                    return true;
-                case FEED:
-                    if (source.getFeedId() == feedId) {
-                        return true;
-                    }
-                    break;
-                case CATEGORY:
-                    if (categories.contains(source.getCategory())) {
-                        return true;
-                    }
-                    break;
-                default:
-                    break;
+            if (rule.coversFeed(feedId, categories)) {
+                return true;
             }
         }
         return false;
@@ -96,6 +95,7 @@ public final class SmartPlayDefinition {
         private final String name;
         private final List<PriorityFeed> priorityFeeds = new ArrayList<>();
         private final List<SmartPlayRule> rules = new ArrayList<>();
+        private Exclusions neverInclude = Exclusions.none();
 
         private Builder(String name) {
             this.name = name;
@@ -112,6 +112,11 @@ public final class SmartPlayDefinition {
 
         public Builder rule(SmartPlayRule rule) {
             rules.add(rule);
+            return this;
+        }
+
+        public Builder neverInclude(Exclusions neverInclude) {
+            this.neverInclude = neverInclude;
             return this;
         }
 

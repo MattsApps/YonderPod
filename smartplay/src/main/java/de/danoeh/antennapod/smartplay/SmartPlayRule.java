@@ -1,5 +1,7 @@
 package de.danoeh.antennapod.smartplay;
 
+import java.util.Set;
+
 public final class SmartPlayRule {
 
     public enum Order {
@@ -11,11 +13,31 @@ public final class SmartPlayRule {
     private final Order order;
     private final int count;
     private final EpisodeSource source;
+    private final Exclusions exclusions;
+    private final int maxPerShow;
 
     private SmartPlayRule(Builder builder) {
         this.order = builder.order;
         this.count = builder.count;
         this.source = builder.source;
+        this.exclusions = builder.exclusions;
+        this.maxPerShow = builder.maxPerShow;
+    }
+
+    public Exclusions getExclusions() {
+        return exclusions;
+    }
+
+    public int getMaxPerShow() {
+        return maxPerShow;
+    }
+
+    public boolean covers(SmartPlayEpisode episode) {
+        return source.covers(episode) && !exclusions.matches(episode);
+    }
+
+    public boolean coversFeed(long feedId, Set<String> categories) {
+        return source.coversFeed(feedId, categories) && !exclusions.matchesFeed(feedId, categories);
     }
 
     public Order getOrder() {
@@ -42,6 +64,8 @@ public final class SmartPlayRule {
         private Order order = Order.LATEST;
         private int count = 1;
         private EpisodeSource source = EpisodeSource.allFeeds();
+        private Exclusions exclusions = Exclusions.none();
+        private int maxPerShow = 0;
 
         private Builder() {
         }
@@ -61,6 +85,16 @@ public final class SmartPlayRule {
 
         public Builder source(EpisodeSource source) {
             this.source = source;
+            return this;
+        }
+
+        public Builder exclusions(Exclusions exclusions) {
+            this.exclusions = exclusions;
+            return this;
+        }
+
+        public Builder maxPerShow(int maxPerShow) {
+            this.maxPerShow = Math.max(0, maxPerShow);
             return this;
         }
 

@@ -52,7 +52,7 @@ public class SmartPlayEngine {
 
         List<SmartPlayEpisode> pool = new ArrayList<>();
         for (SmartPlayEpisode episode : candidates) {
-            if (!edits.isRemoved(episode.getId())) {
+            if (!edits.isRemoved(episode.getId()) && !definition.isBlocked(episode)) {
                 pool.add(episode);
             }
         }
@@ -99,7 +99,7 @@ public class SmartPlayEngine {
 
         List<SmartPlayEpisode> pool = new ArrayList<>();
         for (SmartPlayEpisode episode : candidates) {
-            if (!edits.isRemoved(episode.getId())) {
+            if (!edits.isRemoved(episode.getId()) && !definition.isBlocked(episode)) {
                 pool.add(episode);
             }
         }
@@ -151,15 +151,21 @@ public class SmartPlayEngine {
         Set<Long> used = new HashSet<>(alreadyUsed);
         List<SmartPlayEpisode> picked = new ArrayList<>();
         int target = definition.getTargetLength();
+        List<SmartPlayRule> rules = definition.getRules();
+        List<Map<Long, Integer>> perShowCounts = new ArrayList<>();
+        for (int i = 0; i < rules.size(); i++) {
+            perShowCounts.add(new HashMap<>());
+        }
         boolean progress = true;
         while (picked.size() < target && progress) {
             progress = false;
-            for (SmartPlayRule rule : definition.getRules()) {
+            for (int i = 0; i < rules.size(); i++) {
+                SmartPlayRule rule = rules.get(i);
                 int wanted = Math.min(rule.getCount(), target - picked.size());
                 if (wanted <= 0) {
                     break;
                 }
-                List<SmartPlayEpisode> chosen = pick(rule, candidates, used, wanted);
+                List<SmartPlayEpisode> chosen = pick(rule, candidates, used, wanted, perShowCounts.get(i));
                 for (SmartPlayEpisode episode : chosen) {
                     used.add(episode.getId());
                     picked.add(episode);
@@ -173,10 +179,10 @@ public class SmartPlayEngine {
     }
 
     private List<SmartPlayEpisode> pick(SmartPlayRule rule, List<SmartPlayEpisode> candidates,
-                                        Set<Long> used, int wanted) {
+                                        Set<Long> used, int wanted, Map<Long, Integer> perShowCount) {
         List<SmartPlayEpisode> eligible = new ArrayList<>();
         for (SmartPlayEpisode episode : candidates) {
-            if (episode.isAvailable() && !used.contains(episode.getId()) && rule.getSource().covers(episode)) {
+            if (episode.isAvailable() && !used.contains(episode.getId()) && rule.covers(episode)) {
                 eligible.add(episode);
             }
         }
@@ -193,7 +199,19 @@ public class SmartPlayEngine {
                 eligible.sort(LATEST_FIRST);
                 break;
         }
-        return new ArrayList<>(eligible.subList(0, Math.min(wanted, eligible.size())));
+        List<SmartPlayEpisode> chosen = new ArrayList<>();
+        for (SmartPlayEpisode episode : eligible) {
+            if (chosen.size() >= wanted) {
+                break;
+            }
+            int fromShow = perShowCount.containsKey(episode.getFeedId()) ? perShowCount.get(episode.getFeedId()) : 0;
+            if (rule.getMaxPerShow() > 0 && fromShow >= rule.getMaxPerShow()) {
+                continue;
+            }
+            perShowCount.put(episode.getFeedId(), fromShow + 1);
+            chosen.add(episode);
+        }
+        return chosen;
     }
 
     private static void addAll(List<SmartPlayEpisode> result, Set<Long> used, List<SmartPlayEpisode> episodes) {

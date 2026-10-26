@@ -1,5 +1,7 @@
 package de.danoeh.antennapod.smartplay;
 
+import java.util.Set;
+
 public abstract class EpisodeSource {
 
     public enum Type {
@@ -8,7 +10,11 @@ public abstract class EpisodeSource {
         CATEGORY
     }
 
-    public abstract boolean covers(SmartPlayEpisode episode);
+    public boolean covers(SmartPlayEpisode episode) {
+        return coversFeed(episode.getFeedId(), episode.getCategories());
+    }
+
+    public abstract boolean coversFeed(long feedId, Set<String> categories);
 
     public abstract Type getType();
 
@@ -34,7 +40,7 @@ public abstract class EpisodeSource {
 
     private static final class AllFeeds extends EpisodeSource {
         @Override
-        public boolean covers(SmartPlayEpisode episode) {
+        public boolean coversFeed(long feedId, Set<String> categories) {
             return true;
         }
 
@@ -57,8 +63,8 @@ public abstract class EpisodeSource {
         }
 
         @Override
-        public boolean covers(SmartPlayEpisode episode) {
-            return episode.getFeedId() == feedId;
+        public boolean coversFeed(long otherFeedId, Set<String> categories) {
+            return otherFeedId == feedId;
         }
 
         @Override
@@ -85,8 +91,8 @@ public abstract class EpisodeSource {
         }
 
         @Override
-        public boolean covers(SmartPlayEpisode episode) {
-            return episode.getCategories().contains(category);
+        public boolean coversFeed(long feedId, Set<String> categories) {
+            return categories.contains(category);
         }
 
         @Override
