@@ -36,6 +36,10 @@ import de.danoeh.antennapod.smartplay.ManualEdits;
 import de.danoeh.antennapod.smartplay.SmartPlayDefinition;
 import de.danoeh.antennapod.smartplay.SmartPlayEngine;
 import de.danoeh.antennapod.smartplay.SmartPlayEpisode;
+import de.danoeh.antennapod.smartplay.download.DownloadEpisode;
+import de.danoeh.antennapod.smartplay.download.DownloadPlanner;
+import de.danoeh.antennapod.smartplay.download.ShowDownloadSettings;
+import de.danoeh.antennapod.net.common.NetworkUtils;
 import de.danoeh.antennapod.playback.service.PlaybackServiceStarter;
 import de.danoeh.antennapod.storage.database.DBReader;
 import de.danoeh.antennapod.storage.database.DBWriter;
@@ -51,7 +55,6 @@ public class SmartPlayQueueManager {
     private static final String KEY_ACTIVE_ID = "activeId";
     private static final String KEY_PAUSED = "paused";
     private static final String KEY_FEED_QUEUE_ACTION_CLEARED = "feedQueueActionCleared";
-    private static final boolean FEEDS_MAY_STREAM = false;
 
     private static SmartPlayQueueManager instance;
 
@@ -262,19 +265,22 @@ public class SmartPlayQueueManager {
         try {
             SmartPlayDefinition definition = activeSmartPlay();
             List<FeedItem> queue = DBReader.getQueue();
-            Map<Long, FeedItem> itemsById = loadCandidates(queue);
-            boolean mobileStreaming = UserPreferences.isAllowMobileStreaming();
+            Set<Long> streamFeeds = new HashSet<>();
+            Map<Long, FeedItem> itemsById = loadCandidates(queue, streamFeeds);
+            boolean streamingAllowed = NetworkUtils.isStreamingAllowed();
 
             List<SmartPlayEpisode> candidates = new ArrayList<>();
             for (FeedItem item : itemsById.values()) {
-                SmartPlayEpisode episode = SmartPlayEpisodeConverter.convert(item, FEEDS_MAY_STREAM, mobileStreaming);
+                SmartPlayEpisode episode = SmartPlayEpisodeConverter.convert(item,
+                        streamFeeds.contains(item.getFeedId()), streamingAllowed);
                 if (episode != null) {
                     candidates.add(episode);
                 }
             }
             List<SmartPlayEpisode> current = new ArrayList<>();
             for (FeedItem item : queue) {
-                SmartPlayEpisode episode = SmartPlayEpisodeConverter.convert(item, FEEDS_MAY_STREAM, mobileStreaming);
+                SmartPlayEpisode episode = SmartPlayEpisodeConverter.convert(item,
+                        streamFeeds.contains(item.getFeedId()), streamingAllowed);
                 if (episode != null) {
                     current.add(episode);
                 }
@@ -308,7 +314,7 @@ public class SmartPlayQueueManager {
         }
     }
 
-    private Map<Long, FeedItem> loadCandidates(List<FeedItem> queue) {
+    private Map<Long, FeedItem> loadCandidates(List<FeedItem> queue, Set<Long> streamFeeds) {
         Map<Long, FeedItem> itemsById = new LinkedHashMap<>();
         for (FeedItem item : queue) {
             itemsById.put(item.getId(), item);
@@ -317,7 +323,36 @@ public class SmartPlayQueueManager {
                 new FeedItemFilter(FeedItemFilter.DOWNLOADED, FeedItemFilter.UNPLAYED), SortOrder.DATE_NEW_OLD));
         addSubscribed(itemsById, DBReader.getEpisodes(0, Integer.MAX_VALUE,
                 new FeedItemFilter(FeedItemFilter.PAUSED, FeedItemFilter.UNPLAYED), SortOrder.DATE_NEW_OLD));
+        addStreamable(itemsById, streamFeeds);
         return itemsById;
+    }
+
+    private void addStreamable(Map<Long, FeedItem> itemsById, Set<Long> streamFeeds) {
+        Map<Long, ShowDownloadSettings> settings = DownloadSettingsRepository.getInstance(context).getAll();
+        for (Feed feed : DBReader.getFeedList()) {
+            ShowDownloadSettings show = settings.get(feed.getId());
+            if (show == null || !show.getMode().streams() || feed.getState() != Feed.STATE_SUBSCRIBED) {
+                continue;
+            }
+            streamFeeds.add(feed.getId());
+            List<FeedItem> items = DBReader.getFeedItemList(feed, new FeedItemFilter(FeedItemFilter.UNPLAYED),
+                    SortOrder.DATE_NEW_OLD, 0, Integer.MAX_VALUE);
+            Map<Long, FeedItem> byId = new HashMap<>();
+            List<DownloadEpisode> episodes = new ArrayList<>();
+            for (FeedItem item : items) {
+                if (item.getMedia() != null) {
+                    byId.put(item.getId(), item);
+                    episodes.add(DownloadEpisode.builder(item.getId(),
+                            item.getPubDate() != null ? item.getPubDate().getTime() : 0)
+                            .played(item.isPlayed()).build());
+                }
+            }
+            for (DownloadEpisode episode : DownloadPlanner.streamable(show, episodes)) {
+                if (!itemsById.containsKey(episode.getId())) {
+                    itemsById.put(episode.getId(), byId.get(episode.getId()));
+                }
+            }
+        }
     }
 
     private static void addSubscribed(Map<Long, FeedItem> itemsById, List<FeedItem> items) {

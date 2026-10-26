@@ -5,6 +5,7 @@ import android.os.Bundle;
 import androidx.preference.PreferenceManager;
 import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.net.download.serviceinterface.FeedUpdateManager;
+import de.danoeh.antennapod.smartplay.app.DownloadSettingsDialog;
 import de.danoeh.antennapod.storage.preferences.UserPreferences;
 import de.danoeh.antennapod.ui.preferences.screen.AnimatedPreferenceFragment;
 import de.danoeh.antennapod.ui.preferences.screen.ProxyDialog;
@@ -19,6 +20,7 @@ public class DownloadsPreferencesFragment extends AnimatedPreferenceFragment
     private static final String PREF_SCREEN_AUTO_DELETE = "prefAutoDeleteScreen";
     private static final String PREF_PROXY = "prefProxy";
     private static final String PREF_CHOOSE_DATA_DIR = "prefChooseDataDir";
+    private static final String PREF_YONDER_DEFAULTS = "prefYonderDownloadDefaults";
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
@@ -48,6 +50,13 @@ public class DownloadsPreferencesFragment extends AnimatedPreferenceFragment
     private void setupNetworkScreen() {
         findPreference(PREF_SCREEN_AUTODL).setOnPreferenceClickListener(preference -> {
             ((PreferenceActivity) getActivity()).openScreen(R.xml.preferences_autodownload);
+            return true;
+        });
+        Runnable updateDefaultsSummary = () -> DownloadSettingsDialog.loadSummary(getContext(),
+                DownloadSettingsDialog.DEFAULTS, summary -> findPreference(PREF_YONDER_DEFAULTS).setSummary(summary));
+        updateDefaultsSummary.run();
+        findPreference(PREF_YONDER_DEFAULTS).setOnPreferenceClickListener(preference -> {
+            DownloadSettingsDialog.show(getContext(), DownloadSettingsDialog.DEFAULTS, updateDefaultsSummary);
             return true;
         });
         findPreference(PREF_SCREEN_AUTO_DELETE).setOnPreferenceClickListener(preference -> {

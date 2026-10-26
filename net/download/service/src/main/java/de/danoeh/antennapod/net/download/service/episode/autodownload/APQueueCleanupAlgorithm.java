@@ -12,6 +12,7 @@ import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 
 import de.danoeh.antennapod.model.feed.FeedItem;
+import de.danoeh.antennapod.net.download.serviceinterface.AutoDownloadManager;
 import de.danoeh.antennapod.model.feed.FeedItemFilter;
 import de.danoeh.antennapod.model.feed.SortOrder;
 import de.danoeh.antennapod.storage.database.DBReader;
@@ -86,7 +87,8 @@ public class APQueueCleanupAlgorithm extends EpisodeCleanupAlgorithm {
                     && item.getMedia().isDownloaded()
                     && (!item.getFeed().isLocalFeed() || UserPreferences.isAutoDeleteLocal())
                     && !item.isTagged(FeedItem.TAG_QUEUE)
-                    && !item.isTagged(FeedItem.TAG_FAVORITE)) {
+                    && !item.isTagged(FeedItem.TAG_FAVORITE)
+                    && AutoDownloadManager.mayAutoDelete(item)) {
                 candidates.add(item);
             }
         }

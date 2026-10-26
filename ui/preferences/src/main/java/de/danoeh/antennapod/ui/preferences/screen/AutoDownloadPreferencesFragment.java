@@ -9,6 +9,7 @@ public class AutoDownloadPreferencesFragment extends AnimatedPreferenceFragment 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         addPreferencesFromResource(R.xml.preferences_autodownload);
+        findPreference("prefEnableAutoDl").setVisible(false);
     }
 
     @Override

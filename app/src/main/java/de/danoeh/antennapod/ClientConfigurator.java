@@ -3,7 +3,6 @@ package de.danoeh.antennapod;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import de.danoeh.antennapod.net.download.service.episode.autodownload.AutoDownloadManagerImpl;
 import de.danoeh.antennapod.net.download.service.feed.FeedUpdateManagerImpl;
 import de.danoeh.antennapod.net.download.serviceinterface.AutoDownloadManager;
 import de.danoeh.antennapod.net.download.serviceinterface.FeedUpdateManager;
@@ -22,6 +21,7 @@ import de.danoeh.antennapod.net.download.service.feed.DownloadServiceInterfaceIm
 import de.danoeh.antennapod.net.common.NetworkUtils;
 import de.danoeh.antennapod.net.ssl.SslProviderInstaller;
 import de.danoeh.antennapod.smartplay.app.SmartPlayQueueManager;
+import de.danoeh.antennapod.smartplay.app.YonderAutoDownloadManager;
 import de.danoeh.antennapod.storage.database.PodDBAdapter;
 
 import de.danoeh.antennapod.ui.notifications.NotificationUtils;
@@ -50,7 +50,7 @@ public class ClientConfigurator {
         NetworkUtils.init(context);
         DownloadServiceInterface.setImpl(new DownloadServiceInterfaceImpl());
         FeedUpdateManager.setInstance(new FeedUpdateManagerImpl());
-        AutoDownloadManager.setInstance(new AutoDownloadManagerImpl());
+        AutoDownloadManager.setInstance(new YonderAutoDownloadManager(context));
         SynchronizationQueue.setInstance(new SynchronizationQueueImpl(context));
         AntennapodHttpClient.setCacheDirectory(new File(context.getCacheDir(), "okhttp"));
         AntennapodHttpClient.setProxyConfig(UserPreferences.getProxyConfig());

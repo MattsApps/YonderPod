@@ -4,6 +4,9 @@ import android.content.Context;
 
 import java.util.concurrent.Future;
 
+import de.danoeh.antennapod.model.feed.FeedItem;
+import de.danoeh.antennapod.model.feed.FeedMedia;
+
 public abstract class AutoDownloadManager {
     private static AutoDownloadManager instance;
 
@@ -36,4 +39,22 @@ public abstract class AutoDownloadManager {
      * @param context Used for accessing the DB.
      */
     public abstract void performAutoCleanup(final Context context);
+
+    public static boolean mayAutoDelete(FeedItem item) {
+        return instance != null ? instance.mayDelete(item) : isSafeToDelete(item);
+    }
+
+    public boolean mayDelete(FeedItem item) {
+        return isSafeToDelete(item);
+    }
+
+    public boolean isDeletionAllowed(long feedId) {
+        return true;
+    }
+
+    public static boolean isSafeToDelete(FeedItem item) {
+        FeedMedia media = item.getMedia();
+        boolean halfPlayed = media != null && media.getPosition() > 0 && !item.isPlayed();
+        return !halfPlayed && !item.isTagged(FeedItem.TAG_FAVORITE) && !item.isTagged(FeedItem.TAG_QUEUE);
+    }
 }

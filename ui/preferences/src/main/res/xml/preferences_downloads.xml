@@ -28,6 +28,10 @@
             android:title="@string/pref_automatic_download_title"
             search:ignore="true" />
         <Preference
+            android:key="prefYonderDownloadDefaults"
+            android:title="@string/download_defaults_title"
+            search:ignore="true" />
+        <Preference
             android:key="prefAutoDeleteScreen"
             android:summary="@string/pref_auto_delete_sum"
             android:title="@string/pref_auto_delete_title"/>

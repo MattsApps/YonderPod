@@ -7,13 +7,29 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import de.danoeh.antennapod.smartplay.SmartPlayDefinition;
+import de.danoeh.antennapod.smartplay.download.DownloadMode;
+import de.danoeh.antennapod.smartplay.download.ShowDownloadSettings;
 
 public class SmartPlayStore extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "smartplay.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
+    private static final String TABLE_DOWNLOAD_SETTINGS = "feed_download_settings";
+    private static final String TABLE_DOWNLOAD_HISTORY = "download_history";
+    private static final String KEY_FEED_ID = "feed_id";
+    private static final String KEY_ITEM_ID = "item_id";
+    private static final String KEY_MODE = "mode";
+    private static final String KEY_COUNT = "episode_count";
+    private static final String KEY_KEEP = "keep_at_most";
+    private static final String KEY_AGE_DAYS = "delete_older_than_days";
+    private static final String KEY_ALLOW_DELETIONS = "allow_deletions";
     private static final String TABLE = "smart_plays";
     private static final String KEY_ID = "id";
     private static final String KEY_NAME = "name";
@@ -59,10 +75,96 @@ public class SmartPlayStore extends SQLiteOpenHelper {
                 + KEY_POSITION + " INTEGER NOT NULL, "
                 + KEY_DEFINITION + " TEXT NOT NULL)");
         db.insert(TABLE, null, values(SmartPlayLists.stuff(), 0));
+        createDownloadTables(db);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        if (oldVersion < 2) {
+            createDownloadTables(db);
+        }
+    }
+
+    private static void createDownloadTables(SQLiteDatabase db) {
+        db.execSQL("CREATE TABLE " + TABLE_DOWNLOAD_SETTINGS + " ("
+                + KEY_FEED_ID + " INTEGER PRIMARY KEY, "
+                + KEY_MODE + " TEXT NOT NULL, "
+                + KEY_COUNT + " INTEGER NOT NULL, "
+                + KEY_KEEP + " INTEGER NOT NULL, "
+                + KEY_AGE_DAYS + " INTEGER NOT NULL, "
+                + KEY_ALLOW_DELETIONS + " INTEGER NOT NULL)");
+        db.execSQL("CREATE TABLE " + TABLE_DOWNLOAD_HISTORY + " ("
+                + KEY_ITEM_ID + " INTEGER PRIMARY KEY, "
+                + KEY_FEED_ID + " INTEGER NOT NULL)");
+        db.execSQL("CREATE INDEX download_history_feed ON " + TABLE_DOWNLOAD_HISTORY + " (" + KEY_FEED_ID + ")");
+    }
+
+    public synchronized Map<Long, ShowDownloadSettings> getAllDownloadSettings() {
+        Map<Long, ShowDownloadSettings> result = new HashMap<>();
+        try (Cursor cursor = getReadableDatabase().query(TABLE_DOWNLOAD_SETTINGS, null, null, null,
+                null, null, null)) {
+            while (cursor.moveToNext()) {
+                DownloadMode mode;
+                try {
+                    mode = DownloadMode.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(KEY_MODE)));
+                } catch (IllegalArgumentException e) {
+                    mode = DownloadMode.MANUAL;
+                }
+                result.put(cursor.getLong(cursor.getColumnIndexOrThrow(KEY_FEED_ID)), new ShowDownloadSettings(mode,
+                        cursor.getInt(cursor.getColumnIndexOrThrow(KEY_COUNT)),
+                        cursor.getInt(cursor.getColumnIndexOrThrow(KEY_KEEP)),
+                        cursor.getInt(cursor.getColumnIndexOrThrow(KEY_AGE_DAYS)),
+                        cursor.getInt(cursor.getColumnIndexOrThrow(KEY_ALLOW_DELETIONS)) != 0));
+            }
+        }
+        return result;
+    }
+
+    public synchronized void setDownloadSettings(long feedId, ShowDownloadSettings settings) {
+        ContentValues values = new ContentValues();
+        values.put(KEY_FEED_ID, feedId);
+        values.put(KEY_MODE, settings.getMode().name());
+        values.put(KEY_COUNT, settings.getEpisodeCount());
+        values.put(KEY_KEEP, settings.getKeepAtMost());
+        values.put(KEY_AGE_DAYS, settings.getDeleteOlderThanDays());
+        values.put(KEY_ALLOW_DELETIONS, settings.isAllowDeletions() ? 1 : 0);
+        getWritableDatabase().insertWithOnConflict(TABLE_DOWNLOAD_SETTINGS, null, values,
+                SQLiteDatabase.CONFLICT_REPLACE);
+    }
+
+    public synchronized Set<Long> getDownloadHistory(long feedId) {
+        Set<Long> result = new HashSet<>();
+        try (Cursor cursor = getReadableDatabase().query(TABLE_DOWNLOAD_HISTORY, new String[] {KEY_ITEM_ID},
+                KEY_FEED_ID + " = ?", new String[] {String.valueOf(feedId)}, null, null, null)) {
+            while (cursor.moveToNext()) {
+                result.add(cursor.getLong(0));
+            }
+        }
+        return result;
+    }
+
+    public synchronized void addDownloadHistory(long feedId, Collection<Long> itemIds) {
+        if (itemIds.isEmpty()) {
+            return;
+        }
+        SQLiteDatabase db = getWritableDatabase();
+        db.beginTransaction();
+        try {
+            for (long itemId : itemIds) {
+                ContentValues values = new ContentValues();
+                values.put(KEY_ITEM_ID, itemId);
+                values.put(KEY_FEED_ID, feedId);
+                db.insertWithOnConflict(TABLE_DOWNLOAD_HISTORY, null, values, SQLiteDatabase.CONFLICT_IGNORE);
+            }
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
+        }
+    }
+
+    public synchronized void clearDownloadHistory(long feedId) {
+        getWritableDatabase().delete(TABLE_DOWNLOAD_HISTORY, KEY_FEED_ID + " = ?",
+                new String[] {String.valueOf(feedId)});
     }
 
     public synchronized List<StoredSmartPlay> getAll() {

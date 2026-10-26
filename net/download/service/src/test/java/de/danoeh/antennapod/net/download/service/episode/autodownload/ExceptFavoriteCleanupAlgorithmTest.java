@@ -48,7 +48,7 @@ public class ExceptFavoriteCleanupAlgorithmTest extends DbCleanupTests {
     }
 
     @Test
-    public void testPerformAutoCleanupDeletesQueued() throws IOException {
+    public void testPerformAutoCleanupKeepsQueued() throws IOException {
         Feed feed = new Feed("url", null, "title");
         List<FeedItem> items = new ArrayList<>();
         feed.setItems(items);
@@ -57,11 +57,7 @@ public class ExceptFavoriteCleanupAlgorithmTest extends DbCleanupTests {
 
         AutoDownloadManager.getInstance().performAutoCleanup(context);
         for (int i = 0; i < files.size(); i++) {
-            if (i < EPISODE_CACHE_SIZE) {
-                assertTrue("Only enough items should be deleted", files.get(i).exists());
-            } else {
-                assertFalse("Queued episodes should be deleted", files.get(i).exists());
-            }
+            assertTrue("Queued episodes should not be deleted", files.get(i).exists());
         }
     }
 
@@ -77,15 +73,5 @@ public class ExceptFavoriteCleanupAlgorithmTest extends DbCleanupTests {
         for (int i = 0; i < files.size(); i++) {
             assertTrue("Favorite episodes should should not be deleted", files.get(i).exists());
         }
-    }
-
-    @Override
-    public void testPerformAutoCleanupShouldNotDeleteBecauseInQueue() throws IOException {
-        // Yes it should
-    }
-
-    @Override
-    public void testPerformAutoCleanupShouldNotDeleteBecauseInQueue_withFeedsWithNoMedia() throws IOException {
-        // Yes it should
     }
 }

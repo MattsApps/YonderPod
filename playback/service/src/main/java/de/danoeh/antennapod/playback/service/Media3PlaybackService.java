@@ -43,6 +43,7 @@ import de.danoeh.antennapod.model.feed.FeedMedia;
 import de.danoeh.antennapod.model.feed.FeedPreferences;
 import de.danoeh.antennapod.model.feed.VolumeAdaptionSetting;
 import de.danoeh.antennapod.net.common.NetworkUtils;
+import de.danoeh.antennapod.net.download.serviceinterface.AutoDownloadManager;
 import de.danoeh.antennapod.net.sync.serviceinterface.SynchronizationQueue;
 import de.danoeh.antennapod.playback.base.MediaItemAdapter;
 import de.danoeh.antennapod.playback.base.PlayerStatus;
@@ -694,7 +695,9 @@ public class Media3PlaybackService extends MediaLibraryService {
                 boolean shouldAutoDelete = action == FeedPreferences.AutoDeleteAction.ALWAYS
                         || (action == FeedPreferences.AutoDeleteAction.GLOBAL && autoDeleteEnabledGlobally);
                 if (shouldAutoDelete && (!item.isTagged(FeedItem.TAG_FAVORITE)
-                        || !UserPreferences.shouldFavoriteKeepEpisode())) {
+                        || !UserPreferences.shouldFavoriteKeepEpisode())
+                        && (AutoDownloadManager.getInstance() == null
+                        || AutoDownloadManager.getInstance().isDeletionAllowed(item.getFeedId()))) {
                     DBWriter.deleteFeedMediaOfItem(this, media);
                 }
             }

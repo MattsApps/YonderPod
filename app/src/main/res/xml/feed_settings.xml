@@ -78,6 +78,12 @@
             android:summary="@string/global_default"
             android:title="@string/pref_new_episodes_action_title" />
 
+        <Preference
+            android:icon="@drawable/ic_download"
+            android:key="yonderDownloads"
+            android:title="@string/download_settings_title"
+            android:widgetLayout="@layout/preference_widget_pencil" />
+
         <de.danoeh.antennapod.ui.preferences.preference.MaterialListPreference
             android:entries="@array/spnEnableAutoDownloadItems"
             android:entryValues="@array/spnEnableAutoDownloadValues"

@@ -721,6 +721,46 @@
     <string name="smartplay_draft_title">Restore draft?</string>
     <string name="smartplay_draft_message">You have unsaved changes to this Smart Play from last time.</string>
     <string name="smartplay_restore_draft">Restore draft</string>
+    <string name="download_settings_title">Downloads</string>
+    <string name="download_settings_edit">Edit download settings</string>
+    <string name="download_defaults_title">Defaults for new shows</string>
+    <string name="download_defaults_link">Change the defaults for new shows</string>
+    <string name="download_mode_label">Download mode</string>
+    <string name="download_mode_manual">Manually download</string>
+    <string name="download_mode_latest">Download latest</string>
+    <string name="download_mode_stream_latest">Stream latest</string>
+    <string name="download_mode_in_order">Download in-order</string>
+    <string name="download_mode_stream_in_order">Stream in-order</string>
+    <string name="download_mode_backwards">Work backwards</string>
+    <string name="download_mode_ignore">Ignore all episodes</string>
+    <string name="download_mode_in_order_description">Oldest unheard first, working forward</string>
+    <string name="download_mode_backwards_description">Newest first, then older ones in turn</string>
+    <string name="download_mode_stream_description">Not downloaded. Smart Play can stream these, following your mobile data streaming setting.</string>
+    <string name="download_count_label">Download how many episodes each update</string>
+    <string name="download_stream_count_label">Offer how many episodes for streaming</string>
+    <string name="download_keep_label">Keep at most this many episodes (blank = no limit)</string>
+    <string name="download_age_label">Delete episodes older than this many days (blank = never)</string>
+    <string name="download_allow_deletions">Allow episode deletions</string>
+    <string name="download_allow_deletions_summary">Off protects every episode of this show from automatic deletion</string>
+    <string name="download_safety_note">Half-played episodes, favourites and episodes in the current Smart Play list are never deleted automatically.</string>
+    <string name="download_mark_all">Mark all as downloaded</string>
+    <string name="download_mark_all_summary">Start from now: only episodes published after this are downloaded</string>
+    <string name="download_mark_all_done">All episodes marked as downloaded</string>
+    <string name="download_clear_history">Clear download history</string>
+    <string name="download_clear_history_summary">Start over: episodes downloaded before can be downloaded again</string>
+    <string name="download_clear_history_done">Download history cleared</string>
+    <string name="download_summary_latest">Download latest %1$s</string>
+    <string name="download_summary_in_order">Download %1$s at a time in order, oldest unheard first</string>
+    <string name="download_summary_backwards">Download %1$s at a time, newest first then older ones</string>
+    <string name="download_summary_stream_latest">Stream latest %1$s</string>
+    <string name="download_summary_stream_in_order">Stream %1$s in order, oldest unheard first</string>
+    <string name="download_summary_keep">%1$s and keep at most %2$d</string>
+    <string name="download_summary_age">%1$s, delete after %2$d days</string>
+    <string name="download_summary_no_deletions">%1$s, deletions off</string>
+    <plurals name="download_summary_episodes">
+        <item quantity="one">%d episode</item>
+        <item quantity="other">%d episodes</item>
+    </plurals>
     <string name="about_based_on_title">Based on AntennaPod</string>
     <string name="about_based_on_summary">YonderPod is based on AntennaPod, licensed under the GPL v3</string>
     <string name="contributors">Contributors</string>
