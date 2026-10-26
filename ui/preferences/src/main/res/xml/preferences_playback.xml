@@ -3,6 +3,12 @@
     xmlns:search="http://schemas.android.com/apk/com.bytehamster.lib.preferencesearch">
 
     <Preference
+        android:key="prefYonderControls"
+        android:summary="@string/controls_summary"
+        android:title="@string/controls_title"
+        search:ignore="true" />
+
+    <Preference
         android:key="prefYonderSleep"
         android:summary="@string/sleep_settings_summary"
         android:title="@string/sleep_settings_title"
@@ -48,12 +54,15 @@
                 android:title="@string/playback_speed"/>
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="@string/reassign_hardware_buttons">
+    <PreferenceCategory
+        android:key="prefHardwareButtonsCategory"
+        android:title="@string/reassign_hardware_buttons">
         <de.danoeh.antennapod.ui.preferences.preference.MaterialListPreference
                 android:defaultValue="@string/keycode_media_fast_forward"
                 android:entries="@array/button_action_options"
                 android:entryValues="@array/button_action_values"
                 android:key="prefHardwareForwardButton"
+                search:ignore="true"
                 android:title="@string/pref_hardware_forward_button_title"
                 android:summary="@string/pref_hardware_forward_button_summary"/>
         <de.danoeh.antennapod.ui.preferences.preference.MaterialListPreference
@@ -61,6 +70,7 @@
                 android:entries="@array/button_action_options"
                 android:entryValues="@array/button_action_values"
                 android:key="prefHardwarePreviousButton"
+                search:ignore="true"
                 android:title="@string/pref_hardware_previous_button_title"
                 android:summary="@string/pref_hardware_previous_button_summary"/>
     </PreferenceCategory>

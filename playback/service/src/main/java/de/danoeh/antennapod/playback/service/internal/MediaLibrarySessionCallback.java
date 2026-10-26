@@ -32,7 +32,7 @@ import de.danoeh.antennapod.model.feed.FeedItemFilter;
 import de.danoeh.antennapod.model.feed.FeedMedia;
 import de.danoeh.antennapod.model.feed.SortOrder;
 import de.danoeh.antennapod.playback.base.MediaItemAdapter;
-import de.danoeh.antennapod.playback.base.RewindAfterPauseUtils;
+import de.danoeh.antennapod.storage.preferences.ControlsPreferences;
 import de.danoeh.antennapod.ui.appstartintent.MediaButtonStarter;
 import de.danoeh.antennapod.playback.service.R;
 import de.danoeh.antennapod.storage.database.DBReader;
@@ -272,7 +272,7 @@ public class MediaLibrarySessionCallback implements MediaLibraryService.MediaLib
                     .subscribeOn(Schedulers.io())
                     .subscribe(media -> {
                         long startPosition = SkipUtils.skipIntroIfNecessary(context, media);
-                        startPosition = RewindAfterPauseUtils.calculatePositionWithRewind(
+                        startPosition = ControlsPreferences.positionWithRewind(
                                 (int) startPosition, media.getLastPlayedTimeStatistics());
                         future.set(new MediaSession.MediaItemsWithStartPosition(
                                 Collections.singletonList(MediaItemAdapter.fromPlayable(context, media, false)),
@@ -297,7 +297,7 @@ public class MediaLibrarySessionCallback implements MediaLibraryService.MediaLib
                 .subscribeOn(Schedulers.io())
                 .subscribe(result -> {
                     long startPosition = SkipUtils.skipIntroIfNecessary(context, result.second);
-                    startPosition = RewindAfterPauseUtils.calculatePositionWithRewind(
+                    startPosition = ControlsPreferences.positionWithRewind(
                             (int) startPosition, result.second.getLastPlayedTimeStatistics());
                     future.set(new MediaSession.MediaItemsWithStartPosition(result.first, index, startPosition));
                 }, error -> {
@@ -365,7 +365,7 @@ public class MediaLibrarySessionCallback implements MediaLibraryService.MediaLib
                 .subscribe(
                         media -> {
                             long startPosition = SkipUtils.skipIntroIfNecessary(context, media);
-                            startPosition = RewindAfterPauseUtils.calculatePositionWithRewind(
+                            startPosition = ControlsPreferences.positionWithRewind(
                                     (int) startPosition, media.getLastPlayedTimeStatistics());
                             Log.d(TAG, "onPlaybackResumption: resuming id=" + media.getId()
                                     + ", title=" + (media.getItem() != null ? media.getItem().getTitle() : "null")

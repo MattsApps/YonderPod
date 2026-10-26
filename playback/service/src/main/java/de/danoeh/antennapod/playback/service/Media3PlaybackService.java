@@ -2,6 +2,11 @@ package de.danoeh.antennapod.playback.service;
 
 import android.content.Intent;
 import android.media.audiofx.LoudnessEnhancer;
+import android.media.AudioDeviceCallback;
+import android.media.AudioDeviceInfo;
+import android.media.AudioManager;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -10,6 +15,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.OptIn;
 import androidx.core.util.Pair;
+import androidx.media3.common.AudioAttributes;
+import androidx.media3.common.C;
 import androidx.media3.common.DeviceInfo;
 import androidx.media3.common.ForwardingPlayer;
 import androidx.media3.common.MediaItem;
@@ -35,6 +42,7 @@ import de.danoeh.antennapod.event.PlayerStatusEvent;
 import de.danoeh.antennapod.event.playback.BufferUpdateEvent;
 import de.danoeh.antennapod.event.playback.PlaybackPositionEvent;
 import de.danoeh.antennapod.event.playback.PlaybackServiceEvent;
+import de.danoeh.antennapod.event.playback.RebuildSmartPlayEvent;
 import de.danoeh.antennapod.event.playback.SleepTimerUpdatedEvent;
 import de.danoeh.antennapod.event.playback.SpeedChangedEvent;
 import de.danoeh.antennapod.model.feed.Chapter;
@@ -47,18 +55,21 @@ import de.danoeh.antennapod.net.download.serviceinterface.AutoDownloadManager;
 import de.danoeh.antennapod.net.sync.serviceinterface.SynchronizationQueue;
 import de.danoeh.antennapod.playback.base.MediaItemAdapter;
 import de.danoeh.antennapod.playback.base.PlayerStatus;
-import de.danoeh.antennapod.playback.base.RewindAfterPauseUtils;
 import de.danoeh.antennapod.playback.cast.CastPlayerWrapper;
 import de.danoeh.antennapod.playback.service.internal.ExoPlayerUtils;
 import de.danoeh.antennapod.playback.service.internal.MediaLibrarySessionCallback;
 import de.danoeh.antennapod.playback.service.internal.PlayableUtils;
 import de.danoeh.antennapod.playback.service.internal.SkipUtils;
+import de.danoeh.antennapod.playback.service.internal.ButtonPressHandler;
 import de.danoeh.antennapod.playback.service.internal.SleepTimer;
 import de.danoeh.antennapod.playback.service.internal.ClockSleepTimer;
 import de.danoeh.antennapod.playback.service.internal.EpisodeSleepTimer;
 import de.danoeh.antennapod.storage.database.DBReader;
+import de.danoeh.antennapod.ui.appstartintent.MediaButtonStarter;
 import de.danoeh.antennapod.storage.database.DBWriter;
 import de.danoeh.antennapod.storage.preferences.PlaybackPreferences;
+import de.danoeh.antennapod.storage.preferences.ButtonPress;
+import de.danoeh.antennapod.storage.preferences.ControlsPreferences;
 import de.danoeh.antennapod.storage.preferences.SleepTimerPreferences;
 import de.danoeh.antennapod.storage.preferences.SleepTimerType;
 import de.danoeh.antennapod.storage.preferences.UserPreferences;
@@ -100,6 +111,12 @@ public class Media3PlaybackService extends MediaLibraryService {
     private int playedDurationCountedUntil = -1;
     private SleepTimer sleepTimer;
     private long lastStopAtCheck = 0;
+    private ButtonPressHandler buttonPressHandler;
+    private AudioDeviceCallback audioDeviceCallback;
+    private boolean pausedByDisconnect = false;
+    private long suppressionStartedAt = 0;
+    private final Handler fadeInHandler = new Handler(Looper.getMainLooper());
+    private float fadeInVolume = 1.0f;
     @Nullable
     private LoudnessEnhancer loudnessEnhancer = null;
     private float volumeAdaptionFactor = 1.0f;
@@ -109,6 +126,8 @@ public class Media3PlaybackService extends MediaLibraryService {
     public void onCreate() {
         super.onCreate();
         EventBus.getDefault().register(this);
+        buttonPressHandler = new ButtonPressHandler(this::performButtonAction);
+        registerAudioDeviceCallback();
         DefaultMediaNotificationProvider notificationProvider = new DefaultMediaNotificationProvider(this,
                 session -> R.id.notification_playing,
                 NotificationUtils.CHANNEL_ID_PLAYING, R.string.notification_channel_playing);
@@ -159,11 +178,14 @@ public class Media3PlaybackService extends MediaLibraryService {
 
                 if (currentPlayable != null && !getPlayWhenReady()) {
                     long savedPosition = getCurrentPosition();
-                    long startPosition = RewindAfterPauseUtils.calculatePositionWithRewind(
-                            (int) savedPosition, currentPlayable.getLastPlayedTimeStatistics());
-                    if (startPosition != savedPosition) {
-                        seekTo(startPosition);
+                    long lastPlayed = currentPlayable.getLastPlayedTimeStatistics();
+                    long rewind = lastPlayed > 0
+                            ? ControlsPreferences.rewindMillisAfter(System.currentTimeMillis() - lastPlayed) : 0;
+                    if (rewind > 0 && savedPosition > 0) {
+                        seekTo(Math.max(0, savedPosition - rewind));
                     }
+                    applyAudioAttributes();
+                    startFadeIn();
                 }
                 super.play();
             }
@@ -198,21 +220,21 @@ public class Media3PlaybackService extends MediaLibraryService {
                 if (isRequestOfOtherApp()) {
                     // Some controllers (e.g. Gadgetbridge) call this directly, bypassing
                     // onMediaButtonEvent, so the remap needs to apply here too.
-                    performHardwareButtonAction(UserPreferences.getHardwareForwardButton());
+                    buttonPressHandler.onCommand(ButtonPress.NEXT, controllerPackage());
                     return;
                 }
-                skipToNextInQueue();
+                skipToNextEpisode();
             }
 
             @Override
             public void seekToNext() {
-                performHardwareButtonAction(UserPreferences.getHardwareForwardButton());
+                buttonPressHandler.onCommand(ButtonPress.NEXT, controllerPackage());
             }
 
             @Override
             public void seekToPreviousMediaItem() {
                 if (isRequestOfOtherApp()) {
-                    performHardwareButtonAction(UserPreferences.getHardwarePreviousButton());
+                    buttonPressHandler.onCommand(ButtonPress.PREVIOUS, controllerPackage());
                     return;
                 }
                 super.seekToPreviousMediaItem();
@@ -220,32 +242,7 @@ public class Media3PlaybackService extends MediaLibraryService {
 
             @Override
             public void seekToPrevious() {
-                performHardwareButtonAction(UserPreferences.getHardwarePreviousButton());
-            }
-
-            private void performHardwareButtonAction(int action) {
-                switch (action) {
-                    case KeyEvent.KEYCODE_MEDIA_NEXT:
-                        skipToNextInQueue();
-                        break;
-                    case KeyEvent.KEYCODE_MEDIA_PREVIOUS:
-                        seekTo(0);
-                        break;
-                    case KeyEvent.KEYCODE_MEDIA_REWIND:
-                        seekBack();
-                        break;
-                    case KeyEvent.KEYCODE_MEDIA_FAST_FORWARD:
-                    default:
-                        seekForward();
-                        break;
-                }
-            }
-
-            private void skipToNextInQueue() {
-                if (currentPlayable != null) {
-                    saveCurrentPosition();
-                    startNextInQueue(currentPlayable, true, false);
-                }
+                buttonPressHandler.onCommand(ButtonPress.PREVIOUS, controllerPackage());
             }
 
             @Override
@@ -332,6 +329,23 @@ public class Media3PlaybackService extends MediaLibraryService {
             }
             return super.onCustomCommand(session, controller, customCommand, args);
         }
+
+        @Override
+        @UnstableApi
+        public boolean onMediaButtonEvent(@NonNull MediaSession session,
+                @NonNull MediaSession.ControllerInfo controllerInfo, @NonNull Intent intent) {
+            KeyEvent keyEvent = intent.getParcelableExtra(Intent.EXTRA_KEY_EVENT);
+            String source = intent.getStringExtra(MediaButtonStarter.EXTRA_MEDIA_BUTTON_SOURCE);
+            if (keyEvent != null && MediaButtonStarter.MEDIA_BUTTON_SOURCE_APP.equals(source)) {
+                if (keyEvent.getKeyCode() == KeyEvent.KEYCODE_MEDIA_NEXT) {
+                    skipToNextEpisode();
+                    return true;
+                }
+            } else if (keyEvent != null && source == null && buttonPressHandler.onKeyEvent(keyEvent)) {
+                return true;
+            }
+            return super.onMediaButtonEvent(session, controllerInfo, intent);
+        }
     };
 
     @UnstableApi
@@ -343,14 +357,16 @@ public class Media3PlaybackService extends MediaLibraryService {
             if (playbackSuppressionReason
                     == Player.PLAYBACK_SUPPRESSION_REASON_TRANSIENT_AUDIO_FOCUS_LOSS) {
                 wasTemporarilySuspended = true;
+                suppressionStartedAt = System.currentTimeMillis();
             } else if (playbackSuppressionReason == Player.PLAYBACK_SUPPRESSION_REASON_NONE
                     && wasTemporarilySuspended && currentPlayable != null) {
                 wasTemporarilySuspended = false;
                 long savedPosition = player.getCurrentPosition();
-                long startPosition = RewindAfterPauseUtils.calculatePositionWithRewind(
-                        (int) savedPosition, currentPlayable.getLastPlayedTimeStatistics());
-                if (startPosition != savedPosition) {
-                    player.seekTo(startPosition);
+                long away = System.currentTimeMillis() - suppressionStartedAt;
+                long back = Math.max(ControlsPreferences.getInterruptionBackSeconds() * 1000L,
+                        ControlsPreferences.rewindMillisAfter(away));
+                if (back > 0 && savedPosition > 0) {
+                    player.seekTo(Math.max(0, savedPosition - back));
                 }
             } else {
                 wasTemporarilySuspended = false;
@@ -390,6 +406,7 @@ public class Media3PlaybackService extends MediaLibraryService {
 
         @Override
         public void onPlayWhenReadyChanged(boolean playWhenReady, int reason) {
+            pausedByDisconnect = !playWhenReady && reason == Player.PLAY_WHEN_READY_CHANGE_REASON_AUDIO_BECOMING_NOISY;
             PlaybackService.isRunning = !Util.shouldShowPlayButton(player);
             updatePlaybackPreferences();
         }
@@ -479,6 +496,8 @@ public class Media3PlaybackService extends MediaLibraryService {
     public void onDestroy() {
         PlaybackService.isRunning = false;
         cancelPositionObserver();
+        unregisterAudioDeviceCallback();
+        fadeInHandler.removeCallbacksAndMessages(null);
         if (sleepTimer != null) {
             sleepTimer.stop();
             sleepTimer = null;
@@ -689,6 +708,7 @@ public class Media3PlaybackService extends MediaLibraryService {
         boolean almostEnded = media.getDuration() > 0
                 && media.getPosition() >= media.getDuration() - smartMarkAsPlayedSecs * 1000;
 
+        almostEnded = almostEnded && !skipped;
         SynchronizationQueue.getInstance().enqueueEpisodePlayed(media, startPosition, ended || almostEnded);
         if (item != null) {
             if (ended || almostEnded) {
@@ -974,6 +994,157 @@ public class Media3PlaybackService extends MediaLibraryService {
         } else if (sleepTimer == null || !sleepTimer.isActive()
                 || sleepTimer.getTimeLeft().getMillisValue() > SleepTimer.FADE_MILLIS) {
             startSleepTimer(SleepTimerType.CLOCK, SleepTimer.FADE_MILLIS);
+        }
+    }
+
+    @OptIn(markerClass = UnstableApi.class)
+    private void skipToNextEpisode() {
+        if (currentPlayable != null) {
+            saveCurrentPosition();
+            startNextInQueue(currentPlayable, true, false);
+        }
+    }
+
+    @OptIn(markerClass = UnstableApi.class)
+    private String controllerPackage() {
+        MediaSession.ControllerInfo controller = mediaSession.getControllerForCurrentRequest();
+        return controller != null ? controller.getPackageName() : "unknown";
+    }
+
+    @OptIn(markerClass = UnstableApi.class)
+    private void performButtonAction(ButtonPress press) {
+        if (player == null) {
+            return;
+        }
+        switch (ControlsPreferences.getButtonAction(press)) {
+            case SKIP_FORWARD:
+                player.seekForward();
+                break;
+            case SKIP_BACK:
+                player.seekBack();
+                break;
+            case NEXT_EPISODE:
+                skipToNextEpisode();
+                break;
+            case PREVIOUS_EPISODE:
+                playPreviousEpisode();
+                break;
+            case REBUILD_SMART_PLAY:
+                EventBus.getDefault().post(new RebuildSmartPlayEvent());
+                break;
+            case PLAY_PAUSE:
+            default:
+                if (player.getPlayWhenReady()) {
+                    player.pause();
+                } else {
+                    player.play();
+                }
+                break;
+        }
+    }
+
+    private void playPreviousEpisode() {
+        FeedMedia media = currentPlayable;
+        if (media == null) {
+            return;
+        }
+        Single.fromCallable(() -> {
+            List<FeedItem> queue = DBReader.getQueue();
+            for (int i = 0; i < queue.size(); i++) {
+                if (queue.get(i).getId() == media.getItemId() && i > 0 && queue.get(i - 1).getMedia() != null) {
+                    return queue.get(i - 1).getMedia();
+                }
+            }
+            return media;
+        })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(previous -> {
+                    if (previous.getId() == media.getId()) {
+                        player.seekTo(0);
+                    } else {
+                        saveCurrentPosition();
+                        new PlaybackServiceStarter(this, previous).callEvenIfRunning(true).start();
+                    }
+                }, error -> Log.e(TAG, "Previous episode failed", error));
+    }
+
+    @OptIn(markerClass = UnstableApi.class)
+    private void applyAudioAttributes() {
+        exoPlayer.setAudioAttributes(new AudioAttributes.Builder()
+                .setUsage(C.USAGE_MEDIA)
+                .setContentType(ControlsPreferences.duckNotifications()
+                        ? C.AUDIO_CONTENT_TYPE_MUSIC : C.AUDIO_CONTENT_TYPE_SPEECH)
+                .build(), true);
+    }
+
+    private void startFadeIn() {
+        fadeInHandler.removeCallbacksAndMessages(null);
+        if (!ControlsPreferences.fadeIn() || (sleepTimer != null && sleepTimer.isActive()
+                && sleepTimer.getTimeLeft().getMillisValue() < SleepTimer.FADE_MILLIS)) {
+            return;
+        }
+        fadeInVolume = 0.05f;
+        applyVolumeAdaption(fadeInVolume);
+        fadeInHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                fadeInVolume = Math.min(1.0f, fadeInVolume + 0.05f);
+                applyVolumeAdaption(fadeInVolume);
+                if (fadeInVolume < 1.0f) {
+                    fadeInHandler.postDelayed(this, 150);
+                }
+            }
+        }, 150);
+    }
+
+    private void registerAudioDeviceCallback() {
+        AudioManager audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
+        if (audioManager == null) {
+            return;
+        }
+        audioDeviceCallback = new AudioDeviceCallback() {
+            @Override
+            public void onAudioDevicesAdded(AudioDeviceInfo[] addedDevices) {
+                for (AudioDeviceInfo device : addedDevices) {
+                    onAudioDeviceConnected(device);
+                }
+            }
+        };
+        audioManager.registerAudioDeviceCallback(audioDeviceCallback, new Handler(Looper.getMainLooper()));
+    }
+
+    private void unregisterAudioDeviceCallback() {
+        AudioManager audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
+        if (audioManager != null && audioDeviceCallback != null) {
+            audioManager.unregisterAudioDeviceCallback(audioDeviceCallback);
+        }
+        audioDeviceCallback = null;
+    }
+
+    private void onAudioDeviceConnected(AudioDeviceInfo device) {
+        if (!device.isSink()) {
+            return;
+        }
+        int type = device.getType();
+        boolean bluetooth = type == AudioDeviceInfo.TYPE_BLUETOOTH_A2DP;
+        boolean wired = type == AudioDeviceInfo.TYPE_WIRED_HEADSET || type == AudioDeviceInfo.TYPE_WIRED_HEADPHONES
+                || type == AudioDeviceInfo.TYPE_USB_HEADSET;
+        if (!bluetooth && !wired) {
+            return;
+        }
+        String name = device.getProductName() != null ? device.getProductName().toString() : "";
+        if (bluetooth) {
+            ControlsPreferences.rememberDevice(name);
+        }
+        ButtonPressHandler.log((bluetooth ? "Bluetooth connected: " : "Headphones connected: ") + name);
+        String mode = ControlsPreferences.getResumeOnReconnect();
+        boolean allowed = ControlsPreferences.RESUME_ANY.equals(mode)
+                || (ControlsPreferences.RESUME_CAR.equals(mode) && bluetooth
+                    && ControlsPreferences.getCarDevices().contains(name));
+        if (allowed && pausedByDisconnect && player != null && !player.getPlayWhenReady() && currentPlayable != null) {
+            pausedByDisconnect = false;
+            player.play();
         }
     }
 

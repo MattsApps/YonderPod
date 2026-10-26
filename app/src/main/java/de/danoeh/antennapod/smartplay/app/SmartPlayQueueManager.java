@@ -26,6 +26,7 @@ import java.util.concurrent.TimeUnit;
 
 import de.danoeh.antennapod.event.FeedItemEvent;
 import de.danoeh.antennapod.event.QueueEvent;
+import de.danoeh.antennapod.event.playback.RebuildSmartPlayEvent;
 import de.danoeh.antennapod.model.feed.Feed;
 import de.danoeh.antennapod.model.feed.FeedItem;
 import de.danoeh.antennapod.model.feed.FeedMedia;
@@ -244,6 +245,11 @@ public class SmartPlayQueueManager {
             default:
                 break;
         }
+    }
+
+    @Subscribe(threadMode = ThreadMode.POSTING)
+    public void onRebuildSmartPlay(RebuildSmartPlayEvent event) {
+        rebuildNow();
     }
 
     @Subscribe(threadMode = ThreadMode.POSTING)

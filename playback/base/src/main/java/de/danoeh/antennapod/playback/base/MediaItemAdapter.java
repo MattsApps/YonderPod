@@ -64,6 +64,7 @@ public class MediaItemAdapter {
             mediaId = String.valueOf(feedMedia.getId());
             metadataBuilder.setSubtitle(feedMedia.getFeedTitle());
             metadataBuilder.setArtist(feedMedia.getFeedTitle());
+            metadataBuilder.setAlbumTitle(feedMedia.getFeedTitle());
         }
         if (!forBrowse) {
             int iconSize = (int) (128 * context.getResources().getDisplayMetrics().density);

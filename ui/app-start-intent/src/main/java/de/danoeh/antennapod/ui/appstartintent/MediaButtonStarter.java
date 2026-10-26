@@ -18,6 +18,7 @@ public abstract class MediaButtonStarter {
             "de.danoeh.antennapod.playback.service.Media3PlaybackService";
     public static final String EXTRA_MEDIA_BUTTON_SOURCE = "media_button_source";
     public static final String MEDIA_BUTTON_SOURCE_WIDGET = "widget";
+    public static final String MEDIA_BUTTON_SOURCE_APP = "app";
 
     public static Intent createIntent(Context context, int eventCode) {
         KeyEvent event = new KeyEvent(KeyEvent.ACTION_DOWN, eventCode);
@@ -25,6 +26,7 @@ public abstract class MediaButtonStarter {
                 ? Intent.ACTION_MEDIA_BUTTON : INTENT);
         startingIntent.setPackage(context.getPackageName());
         startingIntent.putExtra(Intent.EXTRA_KEY_EVENT, event);
+        startingIntent.putExtra(EXTRA_MEDIA_BUTTON_SOURCE, MEDIA_BUTTON_SOURCE_APP);
         return startingIntent;
     }
 

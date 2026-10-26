@@ -9,6 +9,7 @@ import androidx.collection.ArrayMap;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import de.danoeh.antennapod.R;
+import de.danoeh.antennapod.smartplay.app.ControlsSettingsFragment;
 import de.danoeh.antennapod.smartplay.app.SleepSettingsFragment;
 import de.danoeh.antennapod.storage.preferences.UserPreferences;
 import de.danoeh.antennapod.ui.preferences.screen.AnimatedPreferenceFragment;
@@ -35,6 +36,16 @@ public class PlaybackPreferencesFragment extends AnimatedPreferenceFragment {
                     .commit();
             return true;
         });
+        findPreference("prefYonderControls").setOnPreferenceClickListener(preference -> {
+            getParentFragmentManager().beginTransaction()
+                    .replace(getId(), new ControlsSettingsFragment())
+                    .addToBackStack(getString(R.string.controls_title))
+                    .commit();
+            return true;
+        });
+        findPreference("prefHardwareButtonsCategory").setVisible(false);
+        findPreference(UserPreferences.PREF_UNPAUSE_ON_HEADSET_RECONNECT).setVisible(false);
+        findPreference(UserPreferences.PREF_UNPAUSE_ON_BLUETOOTH_RECONNECT).setVisible(false);
         findPreference("prefEnqueueDownloaded").setVisible(false);
         findPreference("prefSkipKeepsEpisode").setVisible(false);
     }
