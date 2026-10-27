@@ -1367,4 +1367,49 @@
     <string name="wearos_play_on_phone" tools:ignore="UnusedResources">Play on phone</string>
     <string name="wearos_browse_phone" tools:ignore="UnusedResources">Browse phone</string>
     <string name="wearos_open_on_phone" tools:ignore="UnusedResources">Open on phone</string>
+    <!-- YonderPod audiobooks -->
+    <string name="search_audiobooks_label">Search audiobooks (LibriVox)</string>
+    <string name="librivox_title">Audiobooks from LibriVox</string>
+    <string name="librivox_hint">Title, author or genre</string>
+    <string name="librivox_about">Free public-domain audiobooks, read by LibriVox volunteers</string>
+    <string name="librivox_no_results">No audiobooks found for \"%1$s\"</string>
+    <string name="librivox_error">Couldn\'t reach LibriVox. Check your connection and try again.</string>
+    <string name="librivox_read_by">Read by %1$s</string>
+    <string name="librivox_read_by_many">Read by %1$s and others</string>
+    <string name="smartplay_order_next_chapter">Next chapter</string>
+    <plurals name="smartplay_chapter_count">
+        <item quantity="one">%d chapter</item>
+        <item quantity="other">%d chapters</item>
+    </plurals>
+    <plurals name="smartplay_book_category_option">
+        <item quantity="one">Category: %1$s · %2$d book</item>
+        <item quantity="other">Category: %1$s · %2$d books</item>
+    </plurals>
+    <string name="smartplay_books_not_in_all">Audiobooks aren\'t in All feeds. To add chapters, pick a book or Audiobooks.</string>
+    <string name="book_not_included">Not in any Smart Play. Books only play through rules that name them.</string>
+    <string name="book_progress">Chapter %1$d of %2$d · %3$s left</string>
+    <plurals name="book_progress_finished">
+        <item quantity="one">Finished · %d chapter</item>
+        <item quantity="other">Finished · %d chapters</item>
+    </plurals>
+    <string name="book_listen">Listen to this book</string>
+    <string name="book_continue">Continue listening</string>
+    <string name="book_bookmarks">Bookmarks</string>
+    <string name="book_speed">Speed: %1$s</string>
+    <string name="book_speed_usual">Speed: as usual</string>
+    <string name="book_mark">This is a book</string>
+    <string name="book_mark_finished">Mark book finished</string>
+    <string name="book_finished_question">Mark %1$s finished?</string>
+    <string name="book_finished_message">Every chapter will be marked as played.</string>
+    <string name="book_finished_confirm">Mark finished</string>
+    <string name="book_delete_smartplay_question">Delete the Smart Play \"%1$s\" too?</string>
+    <string name="book_delete_smartplay_message">Your other Smart Plays stay as they are.</string>
+    <string name="book_delete">Delete</string>
+    <string name="book_keep">Keep</string>
+    <string name="bookmark_add">Add bookmark</string>
+    <string name="bookmark_note_hint">Note (optional)</string>
+    <string name="bookmark_added">Bookmark added</string>
+    <string name="bookmarks_empty">No bookmarks yet. While listening, open the player\'s menu and choose Add bookmark.</string>
+    <string name="bookmark_entry">%1$s · %2$s</string>
+    <string name="bookmark_delete_question">Delete this bookmark?</string>
 </resources>

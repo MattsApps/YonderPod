@@ -22,7 +22,13 @@ import de.danoeh.antennapod.smartplay.schedule.UpdateSchedule;
 
 public class SmartPlayStore extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "smartplay.db";
-    private static final int DATABASE_VERSION = 4;
+    private static final int DATABASE_VERSION = 5;
+    private static final String TABLE_BOOKS = "books";
+    private static final String TABLE_BOOKMARKS = "bookmarks";
+    private static final String KEY_IS_BOOK = "is_book";
+    private static final String KEY_FINISHED = "finished";
+    private static final String KEY_NOTE = "note";
+    private static final String KEY_CREATED = "created";
     private static final String TABLE_PLAY_ORDER = "show_play_order";
     private static final String TABLE_TRACKS = "local_tracks";
     private static final String KEY_PLAY_ORDER = "play_order";
@@ -96,6 +102,7 @@ public class SmartPlayStore extends SQLiteOpenHelper {
         createDownloadTables(db);
         createScheduleTable(db);
         createLocalTables(db);
+        createBookTables(db);
     }
 
     @Override
@@ -109,6 +116,101 @@ public class SmartPlayStore extends SQLiteOpenHelper {
         if (oldVersion < 4) {
             createLocalTables(db);
         }
+        if (oldVersion < 5) {
+            createBookTables(db);
+        }
+    }
+
+    private static void createBookTables(SQLiteDatabase db) {
+        db.execSQL("CREATE TABLE " + TABLE_BOOKS + " ("
+                + KEY_FEED_ID + " INTEGER PRIMARY KEY, "
+                + KEY_IS_BOOK + " INTEGER NOT NULL, "
+                + KEY_FINISHED + " INTEGER NOT NULL)");
+        db.execSQL("CREATE TABLE " + TABLE_BOOKMARKS + " ("
+                + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                + KEY_FEED_ID + " INTEGER NOT NULL, "
+                + KEY_ITEM_ID + " INTEGER NOT NULL, "
+                + KEY_POSITION + " INTEGER NOT NULL, "
+                + KEY_NOTE + " TEXT NOT NULL, "
+                + KEY_CREATED + " INTEGER NOT NULL)");
+    }
+
+    public static final class BookState {
+        public final boolean isBook;
+        public final boolean finished;
+
+        BookState(boolean isBook, boolean finished) {
+            this.isBook = isBook;
+            this.finished = finished;
+        }
+    }
+
+    public synchronized Map<Long, BookState> getBookStates() {
+        Map<Long, BookState> result = new HashMap<>();
+        try (Cursor cursor = getReadableDatabase().query(TABLE_BOOKS, null, null, null, null, null, null)) {
+            while (cursor.moveToNext()) {
+                result.put(cursor.getLong(cursor.getColumnIndexOrThrow(KEY_FEED_ID)), new BookState(
+                        cursor.getInt(cursor.getColumnIndexOrThrow(KEY_IS_BOOK)) != 0,
+                        cursor.getInt(cursor.getColumnIndexOrThrow(KEY_FINISHED)) != 0));
+            }
+        }
+        return result;
+    }
+
+    public synchronized void setBookState(long feedId, boolean isBook, boolean finished) {
+        ContentValues values = new ContentValues();
+        values.put(KEY_FEED_ID, feedId);
+        values.put(KEY_IS_BOOK, isBook ? 1 : 0);
+        values.put(KEY_FINISHED, finished ? 1 : 0);
+        getWritableDatabase().insertWithOnConflict(TABLE_BOOKS, null, values, SQLiteDatabase.CONFLICT_REPLACE);
+    }
+
+    public static final class Bookmark {
+        public final long id;
+        public final long feedId;
+        public final long itemId;
+        public final int position;
+        public final String note;
+        public final long created;
+
+        Bookmark(long id, long feedId, long itemId, int position, String note, long created) {
+            this.id = id;
+            this.feedId = feedId;
+            this.itemId = itemId;
+            this.position = position;
+            this.note = note;
+            this.created = created;
+        }
+    }
+
+    public synchronized List<Bookmark> getBookmarks(long feedId) {
+        List<Bookmark> result = new ArrayList<>();
+        try (Cursor cursor = getReadableDatabase().query(TABLE_BOOKMARKS, null, KEY_FEED_ID + " = ?",
+                new String[] {String.valueOf(feedId)}, null, null, KEY_CREATED + " DESC")) {
+            while (cursor.moveToNext()) {
+                result.add(new Bookmark(cursor.getLong(cursor.getColumnIndexOrThrow(KEY_ID)),
+                        cursor.getLong(cursor.getColumnIndexOrThrow(KEY_FEED_ID)),
+                        cursor.getLong(cursor.getColumnIndexOrThrow(KEY_ITEM_ID)),
+                        cursor.getInt(cursor.getColumnIndexOrThrow(KEY_POSITION)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(KEY_NOTE)),
+                        cursor.getLong(cursor.getColumnIndexOrThrow(KEY_CREATED))));
+            }
+        }
+        return result;
+    }
+
+    public synchronized void addBookmark(long feedId, long itemId, int position, String note) {
+        ContentValues values = new ContentValues();
+        values.put(KEY_FEED_ID, feedId);
+        values.put(KEY_ITEM_ID, itemId);
+        values.put(KEY_POSITION, position);
+        values.put(KEY_NOTE, note);
+        values.put(KEY_CREATED, System.currentTimeMillis());
+        getWritableDatabase().insert(TABLE_BOOKMARKS, null, values);
+    }
+
+    public synchronized void deleteBookmark(long id) {
+        getWritableDatabase().delete(TABLE_BOOKMARKS, KEY_ID + " = ?", new String[] {String.valueOf(id)});
     }
 
     private static void createLocalTables(SQLiteDatabase db) {

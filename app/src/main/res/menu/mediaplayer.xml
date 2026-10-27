@@ -16,6 +16,13 @@
     </item>
 
     <item
+        android:id="@+id/add_bookmark_item"
+        android:title="@string/bookmark_add"
+        android:visible="false"
+        custom:showAsAction="never">
+    </item>
+
+    <item
         android:id="@+id/car_mode_item"
         android:icon="@drawable/ic_car"
         custom:showAsAction="always"

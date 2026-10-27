@@ -63,6 +63,14 @@ public final class SmartPlayDefinition {
     }
 
     public boolean coversFeed(long feedId, Set<String> categories) {
+        return coversFeed(feedId, categories, false);
+    }
+
+    public boolean covers(SmartPlayEpisode episode) {
+        return !isBlocked(episode) && coversFeed(episode.getFeedId(), episode.getCategories(), episode.isBook());
+    }
+
+    public boolean coversFeed(long feedId, Set<String> categories, boolean book) {
         if (neverInclude.matchesFeed(feedId, categories)) {
             return false;
         }
@@ -72,11 +80,23 @@ public final class SmartPlayDefinition {
             }
         }
         for (SmartPlayRule rule : rules) {
-            if (rule.coversFeed(feedId, categories)) {
+            if (rule.coversFeed(feedId, categories, book)) {
                 return true;
             }
         }
         return false;
+    }
+
+    public boolean isBookList() {
+        if (rules.isEmpty() || !priorityFeeds.isEmpty()) {
+            return false;
+        }
+        for (SmartPlayRule rule : rules) {
+            if (rule.getOrder() != SmartPlayRule.Order.NEXT_CHAPTER) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public int getTargetLength() {

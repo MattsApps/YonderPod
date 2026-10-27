@@ -45,6 +45,7 @@ import de.danoeh.antennapod.net.discovery.ItunesPodcastSearcher;
 import de.danoeh.antennapod.net.discovery.PodcastIndexPodcastSearcher;
 import de.danoeh.antennapod.ui.appstartintent.OnlineFeedviewActivityStarter;
 import de.danoeh.antennapod.ui.common.Keyboard;
+import de.danoeh.antennapod.smartplay.app.LibriVoxSearchFragment;
 import de.danoeh.antennapod.ui.discovery.OnlineSearchFragment;
 import de.danoeh.antennapod.ui.screen.feed.FeedItemlistFragment;
 import de.danoeh.antennapod.ui.common.LiftOnScrollListener;
@@ -98,6 +99,8 @@ public class AddFeedFragment extends Fragment {
                 -> activity.loadChildFragment(OnlineSearchFragment.newInstance(FyydPodcastSearcher.class)));
         viewBinding.searchPodcastIndexButton.setOnClickListener(v
                 -> activity.loadChildFragment(OnlineSearchFragment.newInstance(PodcastIndexPodcastSearcher.class)));
+        viewBinding.searchLibriVoxButton.setOnClickListener(v -> activity.loadChildFragment(
+                LibriVoxSearchFragment.newInstance(viewBinding.combinedFeedSearchEditText.getText().toString())));
 
         viewBinding.combinedFeedSearchEditText.setOnEditorActionListener((v, actionId, event) -> {
             performSearch();

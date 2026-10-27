@@ -19,13 +19,14 @@ public final class SmartPlayCoverage {
     public static String describe(Context context, Feed feed) {
         Set<String> categories = new HashSet<>(CategoryChips.categoriesOf(feed));
         List<String> names = new ArrayList<>();
+        boolean book = Books.isBook(context, feed.getId());
         for (SmartPlayStore.StoredSmartPlay stored : SmartPlayStore.getInstance(context).getAll()) {
-            if (stored.getDefinition().coversFeed(feed.getId(), categories)) {
+            if (stored.getDefinition().coversFeed(feed.getId(), categories, book)) {
                 names.add(stored.getDefinition().getName());
             }
         }
         if (names.isEmpty()) {
-            return context.getString(R.string.smartplay_not_included);
+            return context.getString(book ? R.string.book_not_included : R.string.smartplay_not_included);
         }
         return context.getString(R.string.smartplay_included_in, TextUtils.join(", ", names));
     }

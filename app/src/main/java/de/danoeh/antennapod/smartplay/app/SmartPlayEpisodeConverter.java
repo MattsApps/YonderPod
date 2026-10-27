@@ -23,6 +23,12 @@ public final class SmartPlayEpisodeConverter {
     @Nullable
     public static SmartPlayEpisode convert(FeedItem item, boolean feedMayStream, boolean mobileStreamingAllowed,
                                            @Nullable Long playOrderDate) {
+        return convert(item, feedMayStream, mobileStreamingAllowed, playOrderDate, false, 0);
+    }
+
+    @Nullable
+    public static SmartPlayEpisode convert(FeedItem item, boolean feedMayStream, boolean mobileStreamingAllowed,
+                                           @Nullable Long playOrderDate, boolean book, long showLastPlayed) {
         FeedMedia media = item.getMedia();
         if (media == null) {
             return null;
@@ -35,7 +41,9 @@ public final class SmartPlayEpisodeConverter {
                 .streamableOnMobile(feedMayStream && mobileStreamingAllowed)
                 .played(item.isPlayed())
                 .position(media.getPosition())
-                .lastPlayedTime(lastPlayed != null ? lastPlayed.getTime() : media.getLastPlayedTimeStatistics());
+                .lastPlayedTime(lastPlayed != null ? lastPlayed.getTime() : media.getLastPlayedTimeStatistics())
+                .book(book)
+                .showLastPlayed(showLastPlayed);
         Feed feed = item.getFeed();
         FeedPreferences preferences = feed != null ? feed.getPreferences() : null;
         if (preferences != null) {

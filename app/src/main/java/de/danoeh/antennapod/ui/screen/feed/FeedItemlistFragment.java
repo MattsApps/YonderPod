@@ -22,6 +22,8 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.google.android.material.appbar.MaterialToolbar;
 import de.danoeh.antennapod.R;
+import de.danoeh.antennapod.smartplay.app.BookDialogs;
+import de.danoeh.antennapod.smartplay.app.BookPanel;
 import de.danoeh.antennapod.smartplay.app.LocalFolders;
 import de.danoeh.antennapod.smartplay.app.CategoryChips;
 import de.danoeh.antennapod.smartplay.app.CategoryPrompt;
@@ -101,6 +103,7 @@ public class FeedItemlistFragment extends Fragment implements AdapterView.OnItem
     private MoreContentListFooterUtil nextPageLoader;
     private boolean displayUpArrow;
     private boolean localFolderRefreshed = false;
+    private boolean isBook = false;
     private long feedID;
     private Feed feed;
     private Disposable disposable;
@@ -289,6 +292,9 @@ public class FeedItemlistFragment extends Fragment implements AdapterView.OnItem
             viewBinding.toolbar.getMenu().findItem(R.id.sort_items).setVisible(false);
         }
         FeedMenuHandler.onPrepareMenu(viewBinding.toolbar.getMenu(), Collections.singletonList(feed));
+        boolean subscribed = feed.getState() == Feed.STATE_SUBSCRIBED && !LocalFolders.isAddedFiles(feed);
+        viewBinding.toolbar.getMenu().findItem(R.id.book_mark).setVisible(subscribed).setChecked(isBook);
+        viewBinding.toolbar.getMenu().findItem(R.id.book_mark_finished).setVisible(subscribed && isBook);
     }
 
     @Override
@@ -329,6 +335,12 @@ public class FeedItemlistFragment extends Fragment implements AdapterView.OnItem
             return true;
         } else if (item.getItemId() == R.id.remove_archive_feed || item.getItemId() == R.id.remove_restore_feed) {
             new RemoveFeedDialogClose(Collections.singletonList(feed)).show(getParentFragmentManager(), null);
+            return true;
+        } else if (item.getItemId() == R.id.book_mark) {
+            BookPanel.setBook(getContext(), feed, !isBook, this::updateUi);
+            return true;
+        } else if (item.getItemId() == R.id.book_mark_finished) {
+            BookDialogs.confirmFinished(getContext(), feed, this::updateUi);
             return true;
         } else if (item.getItemId() == R.id.action_search) {
             ((MainActivity) getActivity()).loadChildFragment(SearchFragment.newInstance(feed.getId(), feed.getTitle()));
@@ -551,8 +563,16 @@ public class FeedItemlistFragment extends Fragment implements AdapterView.OnItem
         if (feed.getState() != Feed.STATE_SUBSCRIBED) {
             viewBinding.header.smartplayCategoryChips.setVisibility(View.GONE);
             viewBinding.header.smartplayIncludedIn.setVisibility(View.GONE);
+            viewBinding.header.bookPanel.setVisibility(View.GONE);
+            isBook = false;
             return;
         }
+        BookPanel.bind(requireContext(), viewBinding.header, feed, book -> {
+            isBook = book;
+            if (viewBinding != null) {
+                updateToolbar();
+            }
+        });
         CategoryChips.fill(viewBinding.header.smartplayCategoryChips, CategoryChips.categoriesOf(feed));
         if (CategoryPrompt.consume(requireContext(), feed.getId()) && isAdded() && !isStateSaved()) {
             TagSettingsDialog.newInstanceForNewSubscription(Collections.singletonList(feed.getPreferences()))

@@ -35,6 +35,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 import de.danoeh.antennapod.R;
@@ -69,6 +70,7 @@ public class SmartPlayEditorFragment extends Fragment {
     private final List<Feed> feeds = new ArrayList<>();
     private final Map<Long, String> allFeedTitles = new HashMap<>();
     private final List<String> allCategories = new ArrayList<>();
+    private final Set<Long> bookIds = new HashSet<>();
     private final CompositeDisposable disposables = new CompositeDisposable();
 
     private long smartPlayId;
@@ -128,6 +130,7 @@ public class SmartPlayEditorFragment extends Fragment {
         SmartPlayStore.StoredSmartPlay stored;
         List<Feed> feeds;
         Map<Long, String> allTitles;
+        Set<Long> books;
     }
 
     public static SmartPlayEditorFragment newInstance(long smartPlayId) {
@@ -314,6 +317,7 @@ public class SmartPlayEditorFragment extends Fragment {
             }
             Collections.sort(subscribed, (a, b) -> title(a).compareToIgnoreCase(title(b)));
             result.feeds = subscribed;
+            result.books = Books.bookIds(requireContext());
             return result;
         })
                 .subscribeOn(Schedulers.io())
@@ -327,6 +331,8 @@ public class SmartPlayEditorFragment extends Fragment {
         feeds.addAll(result.feeds);
         allFeedTitles.clear();
         allFeedTitles.putAll(result.allTitles);
+        bookIds.clear();
+        bookIds.addAll(result.books);
         sourceOptions.clear();
         sourceOptions.add(new SourceOption(getString(R.string.smartplay_source_all), EpisodeSource.allFeeds()));
         Map<String, Integer> categoryCounts = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
@@ -339,8 +345,11 @@ public class SmartPlayEditorFragment extends Fragment {
         allCategories.clear();
         allCategories.addAll(categoryCounts.keySet());
         for (Map.Entry<String, Integer> entry : categoryCounts.entrySet()) {
-            sourceOptions.add(new SourceOption(getResources().getQuantityString(R.plurals.smartplay_category_option,
-                    entry.getValue(), entry.getKey(), entry.getValue()), EpisodeSource.category(entry.getKey())));
+            EpisodeSource category = EpisodeSource.category(entry.getKey());
+            int plural = isBookSource(category) ? R.plurals.smartplay_book_category_option
+                    : R.plurals.smartplay_category_option;
+            sourceOptions.add(new SourceOption(getResources().getQuantityString(plural,
+                    entry.getValue(), entry.getKey(), entry.getValue()), category));
         }
         for (Feed feed : feeds) {
             sourceOptions.add(new SourceOption(title(feed), EpisodeSource.feed(feed.getId())));
@@ -373,6 +382,11 @@ public class SmartPlayEditorFragment extends Fragment {
             draft.source = rule.getSource();
             draft.exclusions = rule.getExclusions();
             draft.maxPerShow = Math.min(rule.getMaxPerShow(), MAX_PER_SHOW);
+            if (isBookSource(draft.source)) {
+                draft.order = SmartPlayRule.Order.NEXT_CHAPTER;
+            } else if (draft.order == SmartPlayRule.Order.NEXT_CHAPTER) {
+                draft.order = SmartPlayRule.Order.LATEST;
+            }
             rules.add(draft);
             ensureSourceOption(rule.getSource());
         }
@@ -461,7 +475,8 @@ public class SmartPlayEditorFragment extends Fragment {
         SmartPlayRule rule = SmartPlayRule.builder().source(draft.source).exclusions(draft.exclusions).build();
         int shows = 0;
         for (Feed feed : feeds) {
-            if (rule.coversFeed(feed.getId(), new HashSet<>(CategoryChips.categoriesOf(feed)))) {
+            if (rule.coversFeed(feed.getId(), new HashSet<>(CategoryChips.categoriesOf(feed)),
+                    bookIds.contains(feed.getId()))) {
                 shows++;
             }
         }
@@ -537,6 +552,9 @@ public class SmartPlayEditorFragment extends Fragment {
         SmartPlayDefinition definition = buildDefinition("check");
         List<String> uncovered = new ArrayList<>();
         for (Feed feed : feeds) {
+            if (bookIds.contains(feed.getId())) {
+                continue;
+            }
             if (!definition.coversFeed(feed.getId(), new HashSet<>(CategoryChips.categoriesOf(feed)))) {
                 uncovered.add(title(feed));
             }
@@ -616,18 +634,68 @@ public class SmartPlayEditorFragment extends Fragment {
         return adapter;
     }
 
-    private List<String> orderLabels() {
+    private List<String> orderLabels(boolean book) {
         List<String> labels = new ArrayList<>();
+        if (book) {
+            labels.add(getString(R.string.smartplay_order_next_chapter));
+            return labels;
+        }
         labels.add(getString(R.string.smartplay_order_latest));
         labels.add(getString(R.string.smartplay_order_oldest));
         labels.add(getString(R.string.smartplay_order_random));
         return labels;
     }
 
-    private List<String> countLabels() {
+    private boolean isBookSource(EpisodeSource source) {
+        switch (source.getType()) {
+            case FEED:
+                return bookIds.contains(source.getFeedId());
+            case CATEGORY:
+                if (Books.CATEGORY.equals(source.getCategory())) {
+                    return true;
+                }
+                boolean any = false;
+                for (Feed feed : feeds) {
+                    if (CategoryChips.categoriesOf(feed).contains(source.getCategory())) {
+                        if (!bookIds.contains(feed.getId())) {
+                            return false;
+                        }
+                        any = true;
+                    }
+                }
+                return any;
+            default:
+                return false;
+        }
+    }
+
+    private void bindOrderAndCount(RuleHolder holder, RuleDraft draft) {
+        boolean book = isBookSource(draft.source);
+        if (book) {
+            draft.order = SmartPlayRule.Order.NEXT_CHAPTER;
+        } else if (draft.order == SmartPlayRule.Order.NEXT_CHAPTER) {
+            draft.order = SmartPlayRule.Order.LATEST;
+        }
+        holder.order.setOnItemSelectedListener(null);
+        holder.order.setAdapter(spinnerAdapter(orderLabels(book)));
+        holder.order.setSelection(book ? 0 : draft.order.ordinal(), false);
+        holder.order.setOnItemSelectedListener(new SimpleSelectionListener(selected ->
+                draft.order = isBookSource(draft.source) ? SmartPlayRule.Order.NEXT_CHAPTER : ORDERS[selected]));
+
+        holder.count.setOnItemSelectedListener(null);
+        holder.count.setAdapter(spinnerAdapter(countLabels(book)));
+        holder.count.setSelection(Math.min(draft.count, MAX_COUNT) - 1, false);
+        holder.count.setOnItemSelectedListener(new SimpleSelectionListener(selected ->
+                draft.count = selected + 1));
+
+        boolean allFeeds = draft.source.getType() == EpisodeSource.Type.ALL_FEEDS;
+        holder.note.setVisibility(allFeeds && !bookIds.isEmpty() ? View.VISIBLE : View.GONE);
+    }
+
+    private List<String> countLabels(boolean book) {
         List<String> labels = new ArrayList<>();
         for (int i = 1; i <= MAX_COUNT; i++) {
-            labels.add(getResources().getQuantityString(R.plurals.smartplay_episode_count, i, i));
+            labels.add(getResources().getQuantityString(book ? R.plurals.smartplay_chapter_count : R.plurals.smartplay_episode_count, i, i));
         }
         return labels;
     }
@@ -776,6 +844,7 @@ public class SmartPlayEditorFragment extends Fragment {
         final Spinner source;
         final TextView except;
         final Spinner maxPerShow;
+        final TextView note;
 
         @SuppressLint("ClickableViewAccessibility")
         RuleHolder(View itemView) {
@@ -786,6 +855,7 @@ public class SmartPlayEditorFragment extends Fragment {
             source = itemView.findViewById(R.id.rule_source);
             except = itemView.findViewById(R.id.rule_except);
             maxPerShow = itemView.findViewById(R.id.rule_max_per_show);
+            note = itemView.findViewById(R.id.rule_books_note);
             itemView.findViewById(R.id.rule_drag).setOnTouchListener((v, event) -> {
                 if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
                     touchHelper.startDrag(this);
@@ -817,17 +887,7 @@ public class SmartPlayEditorFragment extends Fragment {
             holder.title.setText(getString(position == 0 ? R.string.smartplay_rule_start
                     : R.string.smartplay_rule_then, position + 1));
 
-            holder.order.setOnItemSelectedListener(null);
-            holder.order.setAdapter(spinnerAdapter(orderLabels()));
-            holder.order.setSelection(draft.order.ordinal(), false);
-            holder.order.setOnItemSelectedListener(new SimpleSelectionListener(selected ->
-                    draft.order = ORDERS[selected]));
-
-            holder.count.setOnItemSelectedListener(null);
-            holder.count.setAdapter(spinnerAdapter(countLabels()));
-            holder.count.setSelection(Math.min(draft.count, MAX_COUNT) - 1, false);
-            holder.count.setOnItemSelectedListener(new SimpleSelectionListener(selected ->
-                    draft.count = selected + 1));
+            bindOrderAndCount(holder, draft);
 
             holder.source.setOnItemSelectedListener(null);
             holder.source.setAdapter(spinnerAdapter(sourceLabels()));
@@ -835,6 +895,7 @@ public class SmartPlayEditorFragment extends Fragment {
             holder.source.setOnItemSelectedListener(new SimpleSelectionListener(selected -> {
                 draft.source = sourceOptions.get(selected).source;
                 holder.except.setText(exceptLabel(draft));
+                bindOrderAndCount(holder, draft);
             }));
 
             holder.except.setText(exceptLabel(draft));

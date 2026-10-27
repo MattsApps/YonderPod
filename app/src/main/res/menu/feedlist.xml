@@ -37,6 +37,21 @@
     </item>
 
     <item
+        android:id="@+id/book_mark"
+        android:checkable="true"
+        android:menuCategory="container"
+        android:title="@string/book_mark"
+        android:visible="false"
+        custom:showAsAction="never" />
+
+    <item
+        android:id="@+id/book_mark_finished"
+        android:menuCategory="container"
+        android:title="@string/book_mark_finished"
+        android:visible="false"
+        custom:showAsAction="never" />
+
+    <item
         android:id="@+id/share_feed"
         android:menuCategory="container"
         custom:showAsAction="never"

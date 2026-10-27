@@ -7,7 +7,8 @@ public final class SmartPlayRule {
     public enum Order {
         LATEST,
         OLDEST,
-        RANDOM
+        RANDOM,
+        NEXT_CHAPTER
     }
 
     private final Order order;
@@ -38,6 +39,10 @@ public final class SmartPlayRule {
 
     public boolean coversFeed(long feedId, Set<String> categories) {
         return source.coversFeed(feedId, categories) && !exclusions.matchesFeed(feedId, categories);
+    }
+
+    public boolean coversFeed(long feedId, Set<String> categories, boolean book) {
+        return source.coversFeed(feedId, categories, book) && !exclusions.matchesFeed(feedId, categories);
     }
 
     public Order getOrder() {

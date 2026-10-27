@@ -11,10 +11,14 @@ public abstract class EpisodeSource {
     }
 
     public boolean covers(SmartPlayEpisode episode) {
-        return coversFeed(episode.getFeedId(), episode.getCategories());
+        return coversFeed(episode.getFeedId(), episode.getCategories(), episode.isBook());
     }
 
     public abstract boolean coversFeed(long feedId, Set<String> categories);
+
+    public boolean coversFeed(long feedId, Set<String> categories, boolean book) {
+        return coversFeed(feedId, categories);
+    }
 
     public abstract Type getType();
 
@@ -42,6 +46,11 @@ public abstract class EpisodeSource {
         @Override
         public boolean coversFeed(long feedId, Set<String> categories) {
             return true;
+        }
+
+        @Override
+        public boolean coversFeed(long feedId, Set<String> categories, boolean book) {
+            return !book;
         }
 
         @Override

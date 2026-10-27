@@ -65,6 +65,16 @@
         android:layout_height="wrap_content" />
 
     <TextView
+        android:id="@+id/rule_books_note"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="8dp"
+        android:paddingTop="4dp"
+        android:text="@string/smartplay_books_not_in_all"
+        android:textColor="?android:attr/textColorSecondary"
+        android:visibility="gone" />
+
+    <TextView
         android:id="@+id/rule_except"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

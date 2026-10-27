@@ -17,6 +17,10 @@ public class SmartPlayEngine {
     private static final Comparator<SmartPlayEpisode> OLDEST_FIRST =
             Comparator.comparingLong(SmartPlayEpisode::getPubDate)
                     .thenComparingLong(SmartPlayEpisode::getId);
+    private static final Comparator<SmartPlayEpisode> BOOK_ORDER =
+            Comparator.comparingLong(SmartPlayEpisode::getShowLastPlayed).reversed()
+                    .thenComparingLong(SmartPlayEpisode::getFeedId)
+                    .thenComparing(OLDEST_FIRST);
     private static final Comparator<SmartPlayEpisode> MOST_RECENTLY_PLAYED_FIRST =
             Comparator.comparingLong(SmartPlayEpisode::getLastPlayedTime).reversed()
                     .thenComparing(LATEST_FIRST);
@@ -60,7 +64,8 @@ public class SmartPlayEngine {
         List<SmartPlayEpisode> result = new ArrayList<>();
         List<SmartPlayEpisode> halfPlayed = new ArrayList<>();
         for (SmartPlayEpisode episode : pool) {
-            if (episode.isHalfPlayed()) {
+            boolean mayJump = !episode.isBook() && !definition.isBookList();
+            if (episode.isHalfPlayed() && (mayJump || definition.covers(episode))) {
                 halfPlayed.add(episode);
             }
         }
@@ -193,6 +198,9 @@ public class SmartPlayEngine {
             case RANDOM:
                 eligible.sort(Comparator.comparingLong(SmartPlayEpisode::getId));
                 Collections.shuffle(eligible, random);
+                break;
+            case NEXT_CHAPTER:
+                eligible.sort(BOOK_ORDER);
                 break;
             case LATEST:
             default:

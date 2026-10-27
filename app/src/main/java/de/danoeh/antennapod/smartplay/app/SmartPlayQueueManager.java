@@ -144,12 +144,16 @@ public class SmartPlayQueueManager {
     }
 
     public void activate(long smartPlayId) {
+        activate(smartPlayId, null);
+    }
+
+    public void activate(long smartPlayId, FeedMedia fallback) {
         executor.execute(() -> {
             state.edit().putLong(KEY_ACTIVE_ID, smartPlayId).apply();
             update(true);
             List<FeedItem> queue = DBReader.getQueue();
-            if (!queue.isEmpty() && queue.get(0).getMedia() != null) {
-                FeedMedia media = queue.get(0).getMedia();
+            FeedMedia media = !queue.isEmpty() ? queue.get(0).getMedia() : fallback;
+            if (media != null) {
                 new Handler(Looper.getMainLooper()).post(() -> new PlaybackServiceStarter(context, media)
                         .callEvenIfRunning(true)
                         .start());
@@ -275,11 +279,15 @@ public class SmartPlayQueueManager {
             Map<Long, FeedItem> itemsById = loadCandidates(queue, streamFeeds);
             boolean streamingAllowed = NetworkUtils.isStreamingAllowed();
             Map<Long, Long> playOrderDates = localPlayOrderDates(itemsById);
+            Books.detectNewBooks(context, DBReader.getFeedList());
+            Set<Long> books = Books.bookIds(context);
+            Map<Long, Long> bookLastPlayed = Books.lastPlayedPerBook(context, books);
 
             List<SmartPlayEpisode> candidates = new ArrayList<>();
             for (FeedItem item : itemsById.values()) {
                 SmartPlayEpisode episode = SmartPlayEpisodeConverter.convert(item,
-                        streamFeeds.contains(item.getFeedId()), streamingAllowed, playOrderDates.get(item.getId()));
+                        streamFeeds.contains(item.getFeedId()), streamingAllowed, playOrderDates.get(item.getId()),
+                        books.contains(item.getFeedId()), lastPlayed(bookLastPlayed, item.getFeedId()));
                 if (episode != null) {
                     candidates.add(episode);
                 }
@@ -287,7 +295,8 @@ public class SmartPlayQueueManager {
             List<SmartPlayEpisode> current = new ArrayList<>();
             for (FeedItem item : queue) {
                 SmartPlayEpisode episode = SmartPlayEpisodeConverter.convert(item,
-                        streamFeeds.contains(item.getFeedId()), streamingAllowed, playOrderDates.get(item.getId()));
+                        streamFeeds.contains(item.getFeedId()), streamingAllowed, playOrderDates.get(item.getId()),
+                        books.contains(item.getFeedId()), lastPlayed(bookLastPlayed, item.getFeedId()));
                 if (episode != null) {
                     current.add(episode);
                 }
@@ -319,6 +328,11 @@ public class SmartPlayQueueManager {
         } catch (Exception e) {
             Log.e(TAG, "Smart Play update failed", e);
         }
+    }
+
+    private static long lastPlayed(Map<Long, Long> bookLastPlayed, long feedId) {
+        Long value = bookLastPlayed.get(feedId);
+        return value != null ? value : 0;
     }
 
     private Map<Long, FeedItem> loadCandidates(List<FeedItem> queue, Set<Long> streamFeeds) {

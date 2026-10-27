@@ -14,6 +14,8 @@ public final class SmartPlayEpisode {
     private final boolean played;
     private final int position;
     private final long lastPlayedTime;
+    private final boolean book;
+    private final long showLastPlayed;
 
     private SmartPlayEpisode(Builder builder) {
         this.id = builder.id;
@@ -25,6 +27,8 @@ public final class SmartPlayEpisode {
         this.played = builder.played;
         this.position = builder.position;
         this.lastPlayedTime = builder.lastPlayedTime;
+        this.book = builder.book;
+        this.showLastPlayed = builder.showLastPlayed;
     }
 
     public long getId() {
@@ -63,6 +67,14 @@ public final class SmartPlayEpisode {
         return lastPlayedTime;
     }
 
+    public boolean isBook() {
+        return book;
+    }
+
+    public long getShowLastPlayed() {
+        return showLastPlayed;
+    }
+
     public boolean isHalfPlayed() {
         return !played && position > 0;
     }
@@ -90,6 +102,8 @@ public final class SmartPlayEpisode {
         private boolean played;
         private int position;
         private long lastPlayedTime;
+        private boolean book;
+        private long showLastPlayed;
 
         private Builder(long id, long feedId) {
             this.id = id;
@@ -128,6 +142,16 @@ public final class SmartPlayEpisode {
 
         public Builder lastPlayedTime(long lastPlayedTime) {
             this.lastPlayedTime = lastPlayedTime;
+            return this;
+        }
+
+        public Builder book(boolean book) {
+            this.book = book;
+            return this;
+        }
+
+        public Builder showLastPlayed(long showLastPlayed) {
+            this.showLastPlayed = showLastPlayed;
             return this;
         }
 

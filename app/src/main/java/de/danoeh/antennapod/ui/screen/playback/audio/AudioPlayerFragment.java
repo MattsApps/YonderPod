@@ -1,5 +1,6 @@
 package de.danoeh.antennapod.ui.screen.playback.audio;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -40,6 +41,8 @@ import de.danoeh.antennapod.ui.episodes.PlaybackSpeedUtils;
 import de.danoeh.antennapod.ui.episodes.TimeSpeedConverter;
 import de.danoeh.antennapod.ui.screen.playback.MediaPlayerErrorDialog;
 import de.danoeh.antennapod.ui.screen.playback.PlayButton;
+import de.danoeh.antennapod.smartplay.app.BookDialogs;
+import de.danoeh.antennapod.smartplay.app.Books;
 import de.danoeh.antennapod.smartplay.app.CarModeActivity;
 import de.danoeh.antennapod.smartplay.app.SleepTimerGridDialog;
 import de.danoeh.antennapod.ui.screen.playback.TranscriptDialogFragment;
@@ -75,6 +78,7 @@ import de.danoeh.antennapod.playback.cast.CastEnabledActivity;
 import de.danoeh.antennapod.storage.preferences.ControlsPreferences;
 import de.danoeh.antennapod.storage.preferences.UserPreferences;
 import io.reactivex.rxjava3.core.Maybe;
+import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
@@ -524,6 +528,13 @@ public class AudioPlayerFragment extends Fragment implements
         FeedItemMenuHandler.onPrepareMenu(toolbar.getMenu(),
                 Collections.singletonList(currentMedia.getItem()));
         ((CastEnabledActivity) getActivity()).requestCastButton(toolbar.getMenu());
+        final long feedId = currentMedia.getItem() != null ? currentMedia.getItem().getFeedId() : -1;
+        final Context appContext = requireContext().getApplicationContext();
+        Single.fromCallable(() -> Books.isBook(appContext, feedId))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(book -> toolbar.getMenu().findItem(R.id.add_bookmark_item).setVisible(book),
+                        error -> Log.e(TAG, Log.getStackTraceString(error)));
     }
 
     @Override
@@ -538,7 +549,17 @@ public class AudioPlayerFragment extends Fragment implements
         }
 
         final int itemId = item.getItemId();
-        if (itemId == R.id.car_mode_item) {
+        if (itemId == R.id.add_bookmark_item) {
+            final FeedMedia media = currentMedia;
+            PlaybackController.bindToMedia3Service(requireContext(), controller -> {
+                int position = controller.getMediaItemCount() > 0
+                        ? (int) controller.getCurrentPosition() : media.getPosition();
+                if (isAdded()) {
+                    BookDialogs.addBookmark(requireContext(), media, position);
+                }
+            });
+            return true;
+        } else if (itemId == R.id.car_mode_item) {
             startActivity(new Intent(getContext(), CarModeActivity.class));
             return true;
         } else if (itemId == R.id.disable_sleeptimer_item || itemId == R.id.set_sleeptimer_item) {
