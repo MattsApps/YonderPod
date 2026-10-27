@@ -20,6 +20,7 @@ import de.danoeh.antennapod.net.download.serviceinterface.DownloadServiceInterfa
 import de.danoeh.antennapod.net.download.service.feed.DownloadServiceInterfaceImpl;
 import de.danoeh.antennapod.net.common.NetworkUtils;
 import de.danoeh.antennapod.net.ssl.SslProviderInstaller;
+import de.danoeh.antennapod.smartplay.app.BookTopUpWorker;
 import de.danoeh.antennapod.smartplay.app.SmartPlayQueueManager;
 import de.danoeh.antennapod.smartplay.app.UpdateScheduler;
 import de.danoeh.antennapod.smartplay.app.YonderAutoDownloadManager;
@@ -60,6 +61,7 @@ public class ClientConfigurator {
         ControlsPreferences.init(context);
         NotificationUtils.createChannels(context);
         SmartPlayQueueManager.init(context);
+        BookTopUpWorker.init(context);
         UpdateScheduler.init(context);
         initialized = true;
     }

@@ -32,6 +32,8 @@ import de.danoeh.antennapod.event.settings.SkipIntroEndingChangedEvent;
 import de.danoeh.antennapod.event.settings.SpeedPresetChangedEvent;
 import de.danoeh.antennapod.event.settings.VolumeAdaptionChangedEvent;
 import de.danoeh.antennapod.model.feed.Feed;
+import de.danoeh.antennapod.smartplay.app.Books;
+import de.danoeh.antennapod.smartplay.download.BookTopUp;
 import de.danoeh.antennapod.model.feed.FeedFilter;
 import de.danoeh.antennapod.model.feed.FeedPreferences;
 import de.danoeh.antennapod.model.feed.VolumeAdaptionSetting;
@@ -46,6 +48,7 @@ import de.danoeh.antennapod.storage.preferences.UserPreferences;
 import de.danoeh.antennapod.ui.preferences.screen.synchronization.AuthenticationDialog;
 import de.danoeh.antennapod.ui.screen.feed.RenameFeedDialog;
 import io.reactivex.rxjava3.core.Completable;
+import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.core.Maybe;
 import io.reactivex.rxjava3.core.MaybeOnSubscribe;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
@@ -76,6 +79,7 @@ public class FeedSettingsPreferenceFragment extends PreferenceFragmentCompat {
     private static final String PREF_RECONNECT_LOCAL_FOLDER = "reconnectLocalFolder";
     private static final String PREF_YONDER_DOWNLOADS = "yonderDownloads";
     private static final String PREF_YONDER_LOCAL_FILES = "yonderLocalFiles";
+    private static final String PREF_BOOK_KEEP_AHEAD = "bookKeepAhead";
 
     private Feed feed;
     private Disposable disposable;
@@ -181,6 +185,7 @@ public class FeedSettingsPreferenceFragment extends PreferenceFragmentCompat {
             DownloadSettingsDialog.show(getContext(), feed.getId(), updateSummary);
             return true;
         });
+        setupBookKeepAhead(downloads);
         Preference localFiles = findPreference(PREF_YONDER_LOCAL_FILES);
         localFiles.setVisible(feed.isLocalFeed());
         if (feed.isLocalFeed()) {
@@ -192,6 +197,54 @@ public class FeedSettingsPreferenceFragment extends PreferenceFragmentCompat {
                 return true;
             });
         }
+    }
+
+    private void setupBookKeepAhead(Preference downloads) {
+        Preference keepAhead = findPreference(PREF_BOOK_KEEP_AHEAD);
+        keepAhead.setVisible(false);
+        if (feed.isLocalFeed()) {
+            return;
+        }
+        final Context appContext = requireContext().getApplicationContext();
+        final Feed shownFeed = feed;
+        Single.fromCallable(() -> Books.isBook(appContext, shownFeed.getId())
+                        ? Books.keepAhead(appContext, shownFeed.getId()) : 0)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(count -> {
+                    if (count == 0 || !isAdded()) {
+                        return;
+                    }
+                    downloads.setVisible(false);
+                    keepAhead.setVisible(true);
+                    showKeepAhead(keepAhead, count);
+                }, error -> Log.e(TAG, Log.getStackTraceString(error)));
+    }
+
+    private void showKeepAhead(Preference keepAhead, int count) {
+        keepAhead.setSummary(getResources().getQuantityString(R.plurals.book_keep_ahead_summary, count, count));
+        keepAhead.setOnPreferenceClickListener(preference -> {
+            String[] labels = new String[BookTopUp.MAX_KEEP_AHEAD];
+            for (int i = 0; i < labels.length; i++) {
+                labels[i] = getResources().getQuantityString(R.plurals.smartplay_chapter_count, i + 1, i + 1);
+            }
+            final Context appContext = requireContext().getApplicationContext();
+            final Feed shownFeed = feed;
+            new MaterialAlertDialogBuilder(requireContext())
+                    .setTitle(R.string.book_keep_ahead_title)
+                    .setSingleChoiceItems(labels, count - 1, (dialog, which) -> {
+                        dialog.dismiss();
+                        int chosen = which + 1;
+                        Completable.fromAction(() -> Books.setKeepAhead(appContext, shownFeed, chosen))
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(() -> showKeepAhead(keepAhead, chosen),
+                                        error -> Log.e(TAG, Log.getStackTraceString(error)));
+                    })
+                    .setNegativeButton(R.string.cancel_label, null)
+                    .show();
+            return true;
+        });
     }
 
     private void setupPreferences() {

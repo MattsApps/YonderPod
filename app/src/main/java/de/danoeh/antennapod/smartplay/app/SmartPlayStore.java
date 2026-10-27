@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.Set;
 
 import de.danoeh.antennapod.smartplay.SmartPlayDefinition;
+import de.danoeh.antennapod.smartplay.download.BookTopUp;
 import de.danoeh.antennapod.smartplay.download.DownloadMode;
 import de.danoeh.antennapod.smartplay.download.ShowDownloadSettings;
 import de.danoeh.antennapod.smartplay.schedule.CategoryScheduleMode;
@@ -22,11 +23,12 @@ import de.danoeh.antennapod.smartplay.schedule.UpdateSchedule;
 
 public class SmartPlayStore extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "smartplay.db";
-    private static final int DATABASE_VERSION = 5;
+    private static final int DATABASE_VERSION = 6;
     private static final String TABLE_BOOKS = "books";
     private static final String TABLE_BOOKMARKS = "bookmarks";
     private static final String KEY_IS_BOOK = "is_book";
     private static final String KEY_FINISHED = "finished";
+    private static final String KEY_KEEP_AHEAD = "keep_ahead";
     private static final String KEY_NOTE = "note";
     private static final String KEY_CREATED = "created";
     private static final String TABLE_PLAY_ORDER = "show_play_order";
@@ -103,6 +105,7 @@ public class SmartPlayStore extends SQLiteOpenHelper {
         createScheduleTable(db);
         createLocalTables(db);
         createBookTables(db);
+        addKeepAhead(db);
     }
 
     @Override
@@ -118,6 +121,9 @@ public class SmartPlayStore extends SQLiteOpenHelper {
         }
         if (oldVersion < 5) {
             createBookTables(db);
+        }
+        if (oldVersion < 6) {
+            addKeepAhead(db);
         }
     }
 
@@ -135,13 +141,20 @@ public class SmartPlayStore extends SQLiteOpenHelper {
                 + KEY_CREATED + " INTEGER NOT NULL)");
     }
 
+    private static void addKeepAhead(SQLiteDatabase db) {
+        db.execSQL("ALTER TABLE " + TABLE_BOOKS + " ADD COLUMN " + KEY_KEEP_AHEAD + " INTEGER NOT NULL DEFAULT "
+                + BookTopUp.DEFAULT_KEEP_AHEAD);
+    }
+
     public static final class BookState {
         public final boolean isBook;
         public final boolean finished;
+        public final int keepAhead;
 
-        BookState(boolean isBook, boolean finished) {
+        BookState(boolean isBook, boolean finished, int keepAhead) {
             this.isBook = isBook;
             this.finished = finished;
+            this.keepAhead = keepAhead;
         }
     }
 
@@ -151,17 +164,24 @@ public class SmartPlayStore extends SQLiteOpenHelper {
             while (cursor.moveToNext()) {
                 result.put(cursor.getLong(cursor.getColumnIndexOrThrow(KEY_FEED_ID)), new BookState(
                         cursor.getInt(cursor.getColumnIndexOrThrow(KEY_IS_BOOK)) != 0,
-                        cursor.getInt(cursor.getColumnIndexOrThrow(KEY_FINISHED)) != 0));
+                        cursor.getInt(cursor.getColumnIndexOrThrow(KEY_FINISHED)) != 0,
+                        BookTopUp.clampKeepAhead(cursor.getInt(cursor.getColumnIndexOrThrow(KEY_KEEP_AHEAD)))));
             }
         }
         return result;
     }
 
     public synchronized void setBookState(long feedId, boolean isBook, boolean finished) {
+        BookState old = getBookStates().get(feedId);
+        setBookState(feedId, isBook, finished, old != null ? old.keepAhead : BookTopUp.DEFAULT_KEEP_AHEAD);
+    }
+
+    public synchronized void setBookState(long feedId, boolean isBook, boolean finished, int keepAhead) {
         ContentValues values = new ContentValues();
         values.put(KEY_FEED_ID, feedId);
         values.put(KEY_IS_BOOK, isBook ? 1 : 0);
         values.put(KEY_FINISHED, finished ? 1 : 0);
+        values.put(KEY_KEEP_AHEAD, BookTopUp.clampKeepAhead(keepAhead));
         getWritableDatabase().insertWithOnConflict(TABLE_BOOKS, null, values, SQLiteDatabase.CONFLICT_REPLACE);
     }
 

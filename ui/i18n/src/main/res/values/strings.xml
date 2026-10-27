@@ -1412,4 +1412,9 @@
     <string name="bookmarks_empty">No bookmarks yet. While listening, open the player\'s menu and choose Add bookmark.</string>
     <string name="bookmark_entry">%1$s · %2$s</string>
     <string name="bookmark_delete_question">Delete this bookmark?</string>
+    <string name="book_keep_ahead_title">Chapters to keep ahead</string>
+    <plurals name="book_keep_ahead_summary">
+        <item quantity="one">%d chapter downloaded ahead of where you are, topped up as you listen</item>
+        <item quantity="other">%d chapters downloaded ahead of where you are, topped up as you listen</item>
+    </plurals>
 </resources>

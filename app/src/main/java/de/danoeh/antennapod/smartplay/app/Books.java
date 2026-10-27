@@ -21,6 +21,8 @@ import de.danoeh.antennapod.net.download.serviceinterface.DownloadServiceInterfa
 import de.danoeh.antennapod.smartplay.EpisodeSource;
 import de.danoeh.antennapod.smartplay.SmartPlayDefinition;
 import de.danoeh.antennapod.smartplay.SmartPlayRule;
+import de.danoeh.antennapod.smartplay.download.BookTopUp;
+import de.danoeh.antennapod.smartplay.download.DownloadEpisode;
 import de.danoeh.antennapod.smartplay.download.DownloadMode;
 import de.danoeh.antennapod.smartplay.download.ShowDownloadSettings;
 import de.danoeh.antennapod.storage.database.DBReader;
@@ -30,7 +32,6 @@ public final class Books {
     private static final String TAG = "Books";
     public static final String CATEGORY = "Audiobooks";
     public static final int CHAPTERS_IN_LIST = 3;
-    private static final int CHAPTERS_DOWNLOADED = 3;
 
     public static final class Progress {
         public final int chapter;
@@ -115,12 +116,75 @@ public final class Books {
             }
             if (book && !feed.isLocalFeed()) {
                 DBWriter.setFeedItemSortOrder(feed.getId(), SortOrder.DATE_OLD_NEW).get();
-                DownloadSettingsRepository.getInstance(context).set(feed.getId(), new ShowDownloadSettings(
-                        DownloadMode.IN_ORDER, CHAPTERS_DOWNLOADED, CHAPTERS_DOWNLOADED,
-                        ShowDownloadSettings.NO_LIMIT, true));
+                applyDownloadSettings(context, feed.getId(), keepAhead(context, feed.getId()));
+                BookTopUpWorker.request(context, feed.getId());
             }
         } catch (Exception e) {
             Log.e(TAG, "Could not mark book", e);
+        }
+    }
+
+    public static int keepAhead(Context context, long feedId) {
+        SmartPlayStore.BookState state = SmartPlayStore.getInstance(context).getBookStates().get(feedId);
+        return state != null ? state.keepAhead : BookTopUp.DEFAULT_KEEP_AHEAD;
+    }
+
+    public static void setKeepAhead(Context context, Feed feed, int keepAhead) {
+        SmartPlayStore.BookState state = SmartPlayStore.getInstance(context).getBookStates().get(feed.getId());
+        SmartPlayStore.getInstance(context).setBookState(feed.getId(), true,
+                state != null && state.finished, keepAhead);
+        if (!feed.isLocalFeed()) {
+            applyDownloadSettings(context, feed.getId(), BookTopUp.clampKeepAhead(keepAhead));
+            BookTopUpWorker.request(context, feed.getId());
+        }
+    }
+
+    private static void applyDownloadSettings(Context context, long feedId, int keepAhead) {
+        DownloadSettingsRepository.getInstance(context).set(feedId, new ShowDownloadSettings(
+                DownloadMode.IN_ORDER, keepAhead, keepAhead, ShowDownloadSettings.NO_LIMIT, true));
+    }
+
+    public static boolean mayUseMobileData(Context context, Feed feed) {
+        List<BookTopUp.CategorySchedule> categories = new ArrayList<>();
+        if (feed.getPreferences() != null) {
+            for (String tag : feed.getPreferences().getTags()) {
+                if (FeedPreferences.TAG_ROOT.equals(tag)) {
+                    continue;
+                }
+                SmartPlayStore.StoredSchedule stored = UpdateScheduler.getCategory(context, tag);
+                categories.add(new BookTopUp.CategorySchedule(stored.getMode(), stored.getSchedule().isWifiOnly()));
+            }
+        }
+        return BookTopUp.mayUseMobileData(UpdateScheduler.getDefault(context).getSchedule().isWifiOnly(),
+                categories);
+    }
+
+    public static void topUp(Context context, long feedId) {
+        Feed feed = DBReader.getFeed(feedId, false, 0, 0);
+        if (feed == null || feed.isLocalFeed() || feed.getState() != Feed.STATE_SUBSCRIBED
+                || !isBook(context, feedId)) {
+            return;
+        }
+        Map<Long, FeedItem> byId = new HashMap<>();
+        List<DownloadEpisode> chapters = new ArrayList<>();
+        long order = 0;
+        for (FeedItem item : chaptersInOrder(context, feed)) {
+            FeedMedia media = item.getMedia();
+            if (media == null) {
+                continue;
+            }
+            byId.put(item.getId(), item);
+            chapters.add(DownloadEpisode.builder(item.getId(), order++)
+                    .downloaded(media.isDownloaded())
+                    .played(item.isPlayed())
+                    .downloadable(!DownloadServiceInterface.get().isDownloadingEpisode(media.getDownloadUrl()))
+                    .build());
+        }
+        for (DownloadEpisode chapter : BookTopUp.chaptersToDownload(chapters, keepAhead(context, feedId))) {
+            FeedItem item = byId.get(chapter.getId());
+            if (item != null) {
+                DownloadServiceInterface.get().downloadNow(context, item, true);
+            }
         }
     }
 
@@ -197,29 +261,9 @@ public final class Books {
             id = SmartPlayStore.getInstance(context).insert(bookSmartPlay(feed));
         }
         Progress progress = progress(context, feed);
-        downloadNextChapters(context, feed);
+        BookTopUpWorker.request(context, feed.getId());
         SmartPlayQueueManager.getInstance().activate(id,
                 progress.next != null ? progress.next.getMedia() : null);
-    }
-
-    public static void downloadNextChapters(Context context, Feed feed) {
-        if (feed.isLocalFeed()) {
-            return;
-        }
-        int wanted = CHAPTERS_DOWNLOADED;
-        for (FeedItem item : chaptersInOrder(context, feed)) {
-            if (wanted <= 0) {
-                break;
-            }
-            FeedMedia media = item.getMedia();
-            if (item.isPlayed() || media == null) {
-                continue;
-            }
-            wanted--;
-            if (!media.isDownloaded()) {
-                DownloadServiceInterface.get().download(context, item);
-            }
-        }
     }
 
     public static void markFinished(Context context, Feed feed) {

@@ -85,6 +85,12 @@
             android:widgetLayout="@layout/preference_widget_pencil" />
 
         <Preference
+            android:icon="@drawable/ic_download"
+            android:key="bookKeepAhead"
+            android:title="@string/book_keep_ahead_title"
+            android:widgetLayout="@layout/preference_widget_pencil" />
+
+        <Preference
             android:icon="@drawable/ic_folder"
             android:key="yonderLocalFiles"
             android:title="@string/local_files_title"
