@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.Set;
 
 import de.danoeh.antennapod.net.common.AntennapodHttpClient;
+import de.danoeh.antennapod.smartplay.BookGenres;
 import okhttp3.Request;
 import okhttp3.Response;
 
@@ -60,7 +61,9 @@ public final class LibriVox {
         if (words.length > 1) {
             searches.add(new String[] {"author", words[words.length - 1]});
         }
-        searches.add(new String[] {"genre", trimmed});
+        for (String genre : BookGenres.genreQueries(trimmed)) {
+            searches.add(new String[] {"genre", genre});
+        }
         int succeeded = 0;
         for (String[] search : searches) {
             try {
