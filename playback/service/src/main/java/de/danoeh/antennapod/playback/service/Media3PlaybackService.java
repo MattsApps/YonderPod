@@ -343,7 +343,9 @@ public class Media3PlaybackService extends MediaLibraryService {
                     skipToNextEpisode();
                     return true;
                 }
-            } else if (keyEvent != null && source == null && buttonPressHandler.onKeyEvent(keyEvent)) {
+            } else if (keyEvent != null && source == null
+                    && (keyEvent.getDownTime() > 0 || keyEvent.getEventTime() > 0)
+                    && buttonPressHandler.onKeyEvent(keyEvent)) {
                 return true;
             }
             return super.onMediaButtonEvent(session, controllerInfo, intent);
