@@ -10,12 +10,10 @@ import android.util.Log;
 
 import androidx.work.Constraints;
 import androidx.work.Data;
-import androidx.work.ExistingPeriodicWorkPolicy;
 import androidx.work.ExistingWorkPolicy;
 import androidx.work.NetworkType;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.OutOfQuotaPolicy;
-import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
 
 import java.util.ArrayList;
@@ -35,6 +33,7 @@ import de.danoeh.antennapod.model.feed.FeedPreferences;
 import de.danoeh.antennapod.net.download.service.feed.FeedUpdateManagerImpl;
 import de.danoeh.antennapod.net.download.service.feed.FeedUpdateWorker;
 import de.danoeh.antennapod.smartplay.schedule.CategoryScheduleMode;
+import de.danoeh.antennapod.smartplay.schedule.ScheduleJobs;
 import de.danoeh.antennapod.smartplay.schedule.ScheduleRunPlanner;
 import de.danoeh.antennapod.smartplay.schedule.ScheduleTimes;
 import de.danoeh.antennapod.smartplay.schedule.UpdateSchedule;
@@ -48,6 +47,8 @@ public final class UpdateScheduler {
     private static final String KEY_BATTERY_PROMPT_SHOWN = "batteryPromptShown";
     private static final String WORK_TICK = "yonderScheduleTick";
     private static final String WORK_RUN_PREFIX = "yonderScheduledUpdate-";
+    private static final String WORK_JOB_PREFIX = "yonderScheduleJob-";
+    static final String KEY_SCHEDULE_KEY = "scheduleKey";
     private static final ExecutorService EXECUTOR = Executors.newSingleThreadExecutor();
 
     private UpdateScheduler() {
@@ -55,20 +56,82 @@ public final class UpdateScheduler {
 
     public static void init(Context context) {
         Context app = context.getApplicationContext();
-        EXECUTOR.execute(() -> {
-            reschedule(app);
-            checkDue(app);
-        });
+        EXECUTOR.execute(() -> reschedule(app));
     }
 
-    public static void reschedule(Context context) {
-        Context app = context.getApplicationContext();
-        WorkManager workManager = WorkManager.getInstance(app);
-        workManager.cancelUniqueWork(FeedUpdateManagerImpl.WORK_ID_FEED_UPDATE);
-        PeriodicWorkRequest tick = new PeriodicWorkRequest.Builder(ScheduleTickWorker.class, 1, TimeUnit.HOURS)
+    public static synchronized void reschedule(Context context) {
+        try {
+            Context app = context.getApplicationContext();
+            WorkManager workManager = WorkManager.getInstance(app);
+            workManager.cancelUniqueWork(FeedUpdateManagerImpl.WORK_ID_FEED_UPDATE);
+            workManager.cancelUniqueWork(WORK_TICK);
+            cancelAlarm(app);
+            getDefault(app);
+            for (SmartPlayStore.StoredSchedule stored : SmartPlayStore.getInstance(app).getAllSchedules().values()) {
+                if (ScheduleJobs.isActive(DEFAULT_KEY.equals(stored.getKey()), stored.getMode())) {
+                    enqueueJob(app, stored, ExistingWorkPolicy.REPLACE);
+                } else {
+                    workManager.cancelUniqueWork(WORK_JOB_PREFIX + stored.getKey());
+                }
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Scheduling updates failed", e);
+        }
+    }
+
+    private static void enqueueJob(Context context, SmartPlayStore.StoredSchedule stored,
+                                   ExistingWorkPolicy policy) {
+        ScheduleJobs.Job job = ScheduleJobs.nextJob(stored.getSchedule(), stored.getLastTriggered(),
+                stored.getSince(), System.currentTimeMillis(), TimeZone.getDefault());
+        if (job == null) {
+            WorkManager.getInstance(context).cancelUniqueWork(WORK_JOB_PREFIX + stored.getKey());
+            return;
+        }
+        Constraints constraints = new Constraints.Builder()
+                .setRequiredNetworkType(job.isUnmeteredOnly() ? NetworkType.UNMETERED : NetworkType.CONNECTED)
+                .setRequiresCharging(job.requiresCharging())
                 .build();
-        workManager.enqueueUniquePeriodicWork(WORK_TICK, ExistingPeriodicWorkPolicy.KEEP, tick);
-        armAlarm(app);
+        OneTimeWorkRequest request = new OneTimeWorkRequest.Builder(ScheduledRunWorker.class)
+                .setInputData(new Data.Builder().putString(KEY_SCHEDULE_KEY, stored.getKey()).build())
+                .setInitialDelay(job.getDelayMillis(), TimeUnit.MILLISECONDS)
+                .setConstraints(constraints)
+                .build();
+        WorkManager.getInstance(context).enqueueUniqueWork(WORK_JOB_PREFIX + stored.getKey(), policy, request);
+    }
+
+    static synchronized void runIfDue(Context context, String key) {
+        Context app = context.getApplicationContext();
+        long now = System.currentTimeMillis();
+        TimeZone timeZone = TimeZone.getDefault();
+        SmartPlayStore store = SmartPlayStore.getInstance(app);
+        getDefault(app);
+        SmartPlayStore.StoredSchedule stored = store.getAllSchedules().get(key);
+        boolean isDefault = DEFAULT_KEY.equals(key);
+        if (stored == null || !ScheduleJobs.isActive(isDefault, stored.getMode())) {
+            return;
+        }
+        if (ScheduleJobs.shouldRunNow(stored.getSchedule(), stored.getLastTriggered(), stored.getSince(),
+                now, timeZone)) {
+            stored = stored.withLastTriggered(ScheduleJobs.markRun(stored.getSchedule(), now, timeZone));
+            store.setSchedule(stored);
+            Map<Long, Set<String>> feeds = feedCategories();
+            List<Long> feedIds = isDefault ? ScheduleRunPlanner.feedsForDefault(feeds, categoryModes(store))
+                    : ScheduleRunPlanner.feedsForCategory(key, feeds);
+            if (!feedIds.isEmpty()) {
+                enqueueRun(app, key, stored.getSchedule(), feedIds);
+            }
+        }
+        enqueueJob(app, stored, ExistingWorkPolicy.APPEND_OR_REPLACE);
+    }
+
+    private static Map<String, CategoryScheduleMode> categoryModes(SmartPlayStore store) {
+        Map<String, CategoryScheduleMode> modes = new HashMap<>();
+        for (SmartPlayStore.StoredSchedule stored : store.getAllSchedules().values()) {
+            if (!DEFAULT_KEY.equals(stored.getKey())) {
+                modes.put(stored.getKey(), stored.getMode());
+            }
+        }
+        return modes;
     }
 
     public static synchronized SmartPlayStore.StoredSchedule getDefault(Context context) {
@@ -97,7 +160,7 @@ public final class UpdateScheduler {
         long lastTriggered = old != null ? old.getLastTriggered() : 0;
         store.setSchedule(new SmartPlayStore.StoredSchedule(key, mode, schedule,
                 System.currentTimeMillis(), lastTriggered));
-        armAlarm(context.getApplicationContext());
+        reschedule(context);
     }
 
     public static List<String> getCategories() {
@@ -116,42 +179,8 @@ public final class UpdateScheduler {
         return ScheduleRunPlanner.feedsForCategory(category, feedCategories());
     }
 
-    public static synchronized void checkDue(Context context) {
-        try {
-            Context app = context.getApplicationContext();
-            long now = System.currentTimeMillis();
-            TimeZone timeZone = TimeZone.getDefault();
-            SmartPlayStore store = SmartPlayStore.getInstance(app);
-            getDefault(app);
-            Map<String, SmartPlayStore.StoredSchedule> all = store.getAllSchedules();
-            Map<Long, Set<String>> feeds = feedCategories();
-            Map<String, CategoryScheduleMode> modes = new HashMap<>();
-            for (SmartPlayStore.StoredSchedule stored : all.values()) {
-                if (!DEFAULT_KEY.equals(stored.getKey())) {
-                    modes.put(stored.getKey(), stored.getMode());
-                }
-            }
-            for (SmartPlayStore.StoredSchedule stored : all.values()) {
-                boolean isDefault = DEFAULT_KEY.equals(stored.getKey());
-                if (!isDefault && stored.getMode() != CategoryScheduleMode.OWN) {
-                    continue;
-                }
-                if (!ScheduleTimes.isDue(stored.getSchedule(), stored.getLastTriggered(), stored.getSince(),
-                        now, timeZone)) {
-                    continue;
-                }
-                long previous = ScheduleTimes.previousStart(stored.getSchedule(), now, timeZone);
-                store.setSchedule(stored.withLastTriggered(previous));
-                List<Long> feedIds = isDefault ? ScheduleRunPlanner.feedsForDefault(feeds, modes)
-                        : ScheduleRunPlanner.feedsForCategory(stored.getKey(), feeds);
-                if (!feedIds.isEmpty()) {
-                    enqueueRun(app, stored.getKey(), stored.getSchedule(), feedIds);
-                }
-            }
-            armAlarm(app);
-        } catch (Exception e) {
-            Log.e(TAG, "Checking schedules failed", e);
-        }
+    public static void checkDue(Context context) {
+        reschedule(context);
     }
 
     public static long nextRun(Context context) {
@@ -237,7 +266,7 @@ public final class UpdateScheduler {
                 ExistingWorkPolicy.KEEP, request.build());
     }
 
-    private static void armAlarm(Context context) {
+    private static void cancelAlarm(Context context) {
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         if (alarmManager == null) {
             return;
@@ -245,11 +274,6 @@ public final class UpdateScheduler {
         Intent intent = new Intent(context, ScheduleAlarmReceiver.class);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent,
                 PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
-        long next = nextRun(context);
-        if (next == ScheduleTimes.NONE) {
-            alarmManager.cancel(pendingIntent);
-            return;
-        }
-        alarmManager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, next, pendingIntent);
+        alarmManager.cancel(pendingIntent);
     }
 }

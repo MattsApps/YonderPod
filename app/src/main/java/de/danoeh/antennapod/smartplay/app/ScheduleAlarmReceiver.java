@@ -11,7 +11,7 @@ public class ScheduleAlarmReceiver extends BroadcastReceiver {
         Context app = context.getApplicationContext();
         new Thread(() -> {
             try {
-                UpdateScheduler.checkDue(app);
+                UpdateScheduler.reschedule(app);
             } finally {
                 result.finish();
             }

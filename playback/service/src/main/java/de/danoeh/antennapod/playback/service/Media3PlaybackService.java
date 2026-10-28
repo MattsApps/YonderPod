@@ -1,6 +1,9 @@
 package de.danoeh.antennapod.playback.service;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.media.audiofx.LoudnessEnhancer;
 import android.media.AudioDeviceCallback;
 import android.media.AudioDeviceInfo;
@@ -8,12 +11,14 @@ import android.media.AudioManager;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Bundle;
+import android.os.PowerManager;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.webkit.URLUtil;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.OptIn;
+import androidx.core.content.ContextCompat;
 import androidx.core.util.Pair;
 import androidx.media3.common.AudioAttributes;
 import androidx.media3.common.C;
@@ -128,6 +133,8 @@ public class Media3PlaybackService extends MediaLibraryService {
         EventBus.getDefault().register(this);
         buttonPressHandler = new ButtonPressHandler(this, this::performButtonAction);
         registerAudioDeviceCallback();
+        ContextCompat.registerReceiver(this, screenOnReceiver, new IntentFilter(Intent.ACTION_SCREEN_ON),
+                ContextCompat.RECEIVER_NOT_EXPORTED);
         DefaultMediaNotificationProvider notificationProvider = new DefaultMediaNotificationProvider(this,
                 session -> R.id.notification_playing,
                 NotificationUtils.CHANNEL_ID_PLAYING, R.string.notification_channel_playing);
@@ -501,6 +508,7 @@ public class Media3PlaybackService extends MediaLibraryService {
         PlaybackService.isRunning = false;
         cancelPositionObserver();
         unregisterAudioDeviceCallback();
+        unregisterReceiver(screenOnReceiver);
         fadeInHandler.removeCallbacksAndMessages(null);
         if (sleepTimer != null) {
             sleepTimer.stop();
@@ -550,11 +558,9 @@ public class Media3PlaybackService extends MediaLibraryService {
                             if (duration > 0) {
                                 EventBus.getDefault().post(
                                         new PlaybackPositionEvent((int) position, (int) duration));
-                                WidgetUpdater.WidgetState widgetState = new WidgetUpdater.WidgetState(currentPlayable,
-                                        Util.shouldShowPlayButton(player) ? PlayerStatus.PAUSED : PlayerStatus.PLAYING,
-                                        (int) position, (int) duration, speed);
-                                Schedulers.io().scheduleDirect(() ->
-                                        WidgetUpdater.updateWidget(this, widgetState));
+                                if (isScreenOn()) {
+                                    updateWidgetNow();
+                                }
                                 long currentTime = System.currentTimeMillis();
                                 if (currentTime - lastPositionSaveTime >= POSITION_SAVE_INTERVAL_MS) {
                                     saveCurrentPosition();
@@ -565,6 +571,29 @@ public class Media3PlaybackService extends MediaLibraryService {
                                 }
                             }
                         }, error -> Log.e(TAG, "Position observer error", error));
+    }
+
+    private final BroadcastReceiver screenOnReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            updateWidgetNow();
+        }
+    };
+
+    private boolean isScreenOn() {
+        PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
+        return powerManager == null || powerManager.isInteractive();
+    }
+
+    private void updateWidgetNow() {
+        if (currentPlayable == null || player == null) {
+            return;
+        }
+        WidgetUpdater.WidgetState widgetState = new WidgetUpdater.WidgetState(currentPlayable,
+                Util.shouldShowPlayButton(player) ? PlayerStatus.PAUSED : PlayerStatus.PLAYING,
+                (int) player.getCurrentPosition(), (int) player.getDuration(),
+                player.getPlaybackParameters().speed);
+        Schedulers.io().scheduleDirect(() -> WidgetUpdater.updateWidget(this, widgetState));
     }
 
     private void cancelPositionObserver() {
