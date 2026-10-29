@@ -3,6 +3,8 @@ package de.danoeh.antennapod.smartplay.app;
 import android.content.Context;
 import android.util.Log;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -94,20 +96,39 @@ public final class Radio {
         FeedItem saved = DBReader.getFeedItemByGuidOrEpisodeUrl(guid, streamUrl);
         if (saved != null) {
             RadioPreferences.set(saved.getId(), details);
-            return saved;
         }
-        return item;
+        EventBus.getDefault().post(new ChangedEvent());
+        return saved != null ? saved : item;
     }
 
-    public static void update(FeedItem station, String name, String logoUrl, RadioPreferences.Quality quality) {
+    public static final class ChangedEvent {
+    }
+
+    public static void update(FeedItem station, String name, String logoUrl, RadioPreferences.Quality quality,
+                              String streamUrl) {
         try {
             station.setTitle(name);
             station.setImageUrl(logoUrl == null || logoUrl.isEmpty() ? null : logoUrl);
             DBWriter.setFeedItem(station, false).get();
+            FeedMedia media = station.getMedia();
+            if (media != null && streamUrl != null && streamUrl.startsWith("http")
+                    && !streamUrl.equals(media.getDownloadUrl())) {
+                String mimeType = media.getMimeType();
+                try {
+                    StreamCheck.Result check = StreamCheck.check(streamUrl);
+                    streamUrl = check.streamUrl;
+                    mimeType = check.mimeType;
+                } catch (Exception e) {
+                    Log.d(TAG, "Could not check " + streamUrl);
+                }
+                media.setStreamUrl(streamUrl, mimeType);
+                DBWriter.setFeedMedia(media).get();
+            }
             RadioPreferences.set(station.getId(), RadioPreferences.get(station.getId()).withQuality(quality));
         } catch (Exception e) {
             Log.e(TAG, "Could not save station", e);
         }
+        EventBus.getDefault().post(new ChangedEvent());
     }
 
     public static boolean delete(Context context, FeedItem station) {
@@ -120,6 +141,7 @@ public final class Radio {
         } catch (Exception e) {
             Log.e(TAG, "Could not delete station", e);
         }
+        EventBus.getDefault().post(new ChangedEvent());
         return true;
     }
 

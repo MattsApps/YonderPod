@@ -28,6 +28,7 @@ public class Feed implements Serializable {
     public static final String PREFIX_GENERATIVE_COVER = "antennapod_generative_cover:";
     public static final String RADIO_DOWNLOAD_URL = "yonderpod-radio:stations";
     public static final String RADIO_GUID_PREFIX = "yonderpod-radio:";
+    public static final String RECORDINGS_URL_PREFIX = PREFIX_LOCAL_FOLDER + "yonderpod-recordings/";
 
     private long id;
     private String localFileUrl;
@@ -475,6 +476,11 @@ public class Feed implements Serializable {
 
     public void setLastUpdateFailed(boolean lastUpdateFailed) {
         this.lastUpdateFailed = lastUpdateFailed;
+    }
+
+    public boolean isAppManaged() {
+        return downloadUrl != null && (downloadUrl.equals(ADDED_FILES_DOWNLOAD_URL)
+                || downloadUrl.equals(RADIO_DOWNLOAD_URL) || downloadUrl.startsWith(RECORDINGS_URL_PREFIX));
     }
 
     public boolean isLocalFeed() {

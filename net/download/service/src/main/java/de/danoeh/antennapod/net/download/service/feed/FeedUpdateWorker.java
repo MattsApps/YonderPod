@@ -194,7 +194,9 @@ public class FeedUpdateWorker extends Worker {
                 }
                 try {
                     Feed savedFeed;
-                    if (feed.isLocalFeed()) {
+                    if (feed.isAppManaged()) {
+                        savedFeed = null;
+                    } else if (feed.isLocalFeed()) {
                         savedFeed = LocalFeedUpdater.updateFeed(feed, getApplicationContext(), null);
                     } else {
                         savedFeed = refreshFeed(feed, force);

@@ -98,6 +98,19 @@ public class RadioFragment extends Fragment {
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onStationsChanged(Radio.ChangedEvent event) {
+        load();
+    }
+
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        if (!hidden) {
+            load();
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
     public void onPlayerStatusChanged(PlayerStatusEvent event) {
         if (adapter != null) {
             adapter.notifyDataSetChanged();
@@ -180,10 +193,13 @@ public class RadioFragment extends Fragment {
     private void showStationMenu(View anchor, FeedItem station) {
         PopupMenu menu = new PopupMenu(requireContext(), anchor);
         menu.getMenu().add(0, 1, 0, R.string.radio_edit);
-        menu.getMenu().add(0, 2, 1, R.string.radio_delete);
+        menu.getMenu().add(0, 3, 1, R.string.record_a_show);
+        menu.getMenu().add(0, 2, 2, R.string.radio_delete);
         menu.setOnMenuItemClickListener(item -> {
             if (item.getItemId() == 1) {
                 RadioStationDialog.show(requireContext(), station, this::load);
+            } else if (item.getItemId() == 3) {
+                RecordShowDialog.create(requireContext(), station);
             } else {
                 confirmDelete(station);
             }

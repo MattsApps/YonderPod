@@ -236,6 +236,11 @@ public class FeedMedia implements Playable {
         return item;
     }
 
+    public void setStreamUrl(String streamUrl, String newMimeType) {
+        this.downloadUrl = streamUrl;
+        this.mimeType = newMimeType;
+    }
+
     public boolean isLiveRadio() {
         return item != null && item.getItemIdentifier() != null
                 && item.getItemIdentifier().startsWith(Feed.RADIO_GUID_PREFIX);

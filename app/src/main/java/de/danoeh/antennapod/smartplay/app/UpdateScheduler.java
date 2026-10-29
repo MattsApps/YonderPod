@@ -56,7 +56,14 @@ public final class UpdateScheduler {
 
     public static void init(Context context) {
         Context app = context.getApplicationContext();
-        EXECUTOR.execute(() -> reschedule(app));
+        EXECUTOR.execute(() -> {
+            reschedule(app);
+            try {
+                Recordings.rescheduleAll(app);
+            } catch (Exception e) {
+                Log.e(TAG, "Scheduling recordings failed", e);
+            }
+        });
     }
 
     public static synchronized void reschedule(Context context) {

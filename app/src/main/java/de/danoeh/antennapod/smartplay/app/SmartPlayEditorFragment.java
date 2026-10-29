@@ -311,7 +311,7 @@ public class SmartPlayEditorFragment extends Fragment {
             result.allTitles = new HashMap<>();
             for (Feed feed : DBReader.getFeedList()) {
                 result.allTitles.put(feed.getId(), title(feed));
-                if (feed.getState() == Feed.STATE_SUBSCRIBED) {
+                if (feed.getState() == Feed.STATE_SUBSCRIBED && !Recordings.isRecordingsFeed(feed)) {
                     subscribed.add(feed);
                 }
             }

@@ -1,6 +1,7 @@
 package de.danoeh.antennapod.ui.screen.feed;
 
 import android.content.Context;
+import android.widget.Toast;
 import android.content.res.Configuration;
 import android.graphics.LightingColorFilter;
 import android.os.Bundle;
@@ -25,6 +26,9 @@ import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.smartplay.app.BookDialogs;
 import de.danoeh.antennapod.smartplay.app.BookPanel;
 import de.danoeh.antennapod.smartplay.app.LocalFolders;
+import de.danoeh.antennapod.smartplay.app.RecordShowDialog;
+import de.danoeh.antennapod.smartplay.app.RecordingStore;
+import de.danoeh.antennapod.smartplay.app.Recordings;
 import de.danoeh.antennapod.smartplay.app.CategoryChips;
 import de.danoeh.antennapod.smartplay.app.CategoryPrompt;
 import de.danoeh.antennapod.ui.screen.feed.preferences.TagSettingsDialog;
@@ -72,6 +76,7 @@ import de.danoeh.antennapod.ui.swipeactions.SwipeActions;
 import io.reactivex.rxjava3.core.Completable;
 import io.reactivex.rxjava3.core.Maybe;
 import io.reactivex.rxjava3.core.Observable;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
@@ -292,7 +297,11 @@ public class FeedItemlistFragment extends Fragment implements AdapterView.OnItem
             viewBinding.toolbar.getMenu().findItem(R.id.sort_items).setVisible(false);
         }
         FeedMenuHandler.onPrepareMenu(viewBinding.toolbar.getMenu(), Collections.singletonList(feed));
-        boolean subscribed = feed.getState() == Feed.STATE_SUBSCRIBED && !LocalFolders.isAddedFiles(feed);
+        boolean recordings = Recordings.isRecordingsFeed(feed);
+        boolean subscribed = feed.getState() == Feed.STATE_SUBSCRIBED && !LocalFolders.isAddedFiles(feed)
+                && !recordings;
+        viewBinding.toolbar.getMenu().findItem(R.id.record_edit).setVisible(recordings);
+        viewBinding.toolbar.getMenu().findItem(R.id.record_stop).setVisible(recordings);
         viewBinding.toolbar.getMenu().findItem(R.id.book_mark).setVisible(subscribed).setChecked(isBook);
         viewBinding.toolbar.getMenu().findItem(R.id.book_mark_finished).setVisible(subscribed && isBook);
     }
@@ -336,6 +345,9 @@ public class FeedItemlistFragment extends Fragment implements AdapterView.OnItem
         } else if (item.getItemId() == R.id.remove_archive_feed || item.getItemId() == R.id.remove_restore_feed) {
             new RemoveFeedDialogClose(Collections.singletonList(feed)).show(getParentFragmentManager(), null);
             return true;
+        } else if (item.getItemId() == R.id.record_edit || item.getItemId() == R.id.record_stop) {
+            handleRecordingMenu(item.getItemId());
+            return true;
         } else if (item.getItemId() == R.id.book_mark) {
             BookPanel.setBook(getContext(), feed, !isBook, this::updateUi);
             return true;
@@ -348,6 +360,36 @@ public class FeedItemlistFragment extends Fragment implements AdapterView.OnItem
         }
 
         return FeedMenuHandler.onMenuItemClicked(this, item.getItemId(), feed);
+    }
+
+    private void handleRecordingMenu(int itemId) {
+        final Context appContext = requireContext().getApplicationContext();
+        final long shownFeedId = feed.getId();
+        Observable.fromCallable(() -> {
+            RecordingStore.Show show = RecordingStore.getInstance(appContext).showForFeed(shownFeedId);
+            return show != null ? show : new RecordingStore.Show();
+        })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(show -> {
+                    if (show.id == 0 || !isAdded()) {
+                        Toast.makeText(appContext, R.string.recording_stopped, Toast.LENGTH_LONG).show();
+                    } else if (itemId == R.id.record_edit) {
+                        RecordShowDialog.edit(requireContext(), show);
+                    } else {
+                        new MaterialAlertDialogBuilder(requireContext())
+                                .setTitle(getString(R.string.record_stop_question, show.name))
+                                .setMessage(R.string.record_stop_message)
+                                .setPositiveButton(R.string.record_stop, (dialog, which) ->
+                                        Observable.fromCallable(() -> {
+                                            Recordings.stop(appContext, show);
+                                            return true;
+                                        }).subscribeOn(Schedulers.io()).subscribe(done -> { }, error ->
+                                                Log.e(TAG, Log.getStackTraceString(error))))
+                                .setNegativeButton(R.string.cancel_label, null)
+                                .show();
+                    }
+                }, error -> Log.e(TAG, Log.getStackTraceString(error)));
     }
 
     public static class RemoveFeedDialogClose extends RemoveFeedDialog {

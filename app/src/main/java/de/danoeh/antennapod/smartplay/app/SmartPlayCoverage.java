@@ -17,6 +17,10 @@ public final class SmartPlayCoverage {
     }
 
     public static String describe(Context context, Feed feed) {
+        if (Recordings.isRecordingsFeed(feed)) {
+            RecordingStore.Show show = RecordingStore.getInstance(context).showForFeed(feed.getId());
+            return show != null ? Recordings.summary(context, show) : context.getString(R.string.recording_stopped);
+        }
         Set<String> categories = new HashSet<>(CategoryChips.categoriesOf(feed));
         List<String> names = new ArrayList<>();
         boolean book = Books.isBook(context, feed.getId());

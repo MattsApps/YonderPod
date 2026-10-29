@@ -20,6 +20,15 @@
             android:inputType="textCapWords" />
 
         <EditText
+            android:id="@+id/station_stream"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/radio_stream_hint"
+            android:importantForAutofill="no"
+            android:inputType="textUri"
+            android:textIsSelectable="true" />
+
+        <EditText
             android:id="@+id/station_logo"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

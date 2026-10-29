@@ -37,6 +37,20 @@
     </item>
 
     <item
+        android:id="@+id/record_edit"
+        android:menuCategory="container"
+        android:title="@string/record_edit"
+        android:visible="false"
+        custom:showAsAction="never" />
+
+    <item
+        android:id="@+id/record_stop"
+        android:menuCategory="container"
+        android:title="@string/record_stop"
+        android:visible="false"
+        custom:showAsAction="never" />
+
+    <item
         android:id="@+id/book_mark"
         android:checkable="true"
         android:menuCategory="container"

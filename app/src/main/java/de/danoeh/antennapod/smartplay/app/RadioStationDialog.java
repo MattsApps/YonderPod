@@ -10,8 +10,11 @@ import android.widget.TextView;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
+import java.util.List;
+
 import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.model.feed.FeedItem;
+import de.danoeh.antennapod.smartplay.radio.RecordingRules;
 import de.danoeh.antennapod.smartplay.radio.RewindWindow;
 import de.danoeh.antennapod.storage.preferences.RadioPreferences;
 import de.danoeh.antennapod.ui.common.Converter;
@@ -31,6 +34,7 @@ public final class RadioStationDialog {
         View view = LayoutInflater.from(context).inflate(R.layout.radio_station_dialog, null);
         EditText name = view.findViewById(R.id.station_name);
         EditText logo = view.findViewById(R.id.station_logo);
+        EditText stream = view.findViewById(R.id.station_stream);
         RadioGroup quality = view.findViewById(R.id.station_quality);
         TextView details = view.findViewById(R.id.station_details);
         TextView rewind = view.findViewById(R.id.station_rewind);
@@ -54,11 +58,11 @@ public final class RadioStationDialog {
         details.setVisibility(detailText.isEmpty() ? View.GONE : View.VISIBLE);
         rewind.setText(R.string.radio_rewind_checking);
         String streamUrl = station.getMedia() != null ? station.getMedia().getDownloadUrl() : null;
-        Disposable check = streamUrl == null ? null : Single.fromCallable(() -> StreamCheck.check(streamUrl))
+        stream.setText(streamUrl);
+        Disposable check = streamUrl == null ? null : Single.fromCallable(() -> rewindReport(context, streamUrl))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(result -> rewind.setText(rewindText(context, result.rewind)),
-                        error -> rewind.setText(R.string.radio_rewind_unknown));
+                .subscribe(rewind::setText, error -> rewind.setText(R.string.radio_rewind_unknown));
         Context app = context.getApplicationContext();
         new MaterialAlertDialogBuilder(context)
                 .setTitle(R.string.radio_edit)
@@ -66,6 +70,7 @@ public final class RadioStationDialog {
                 .setPositiveButton(R.string.confirm_label, (dialog, which) -> {
                     String newName = name.getText().toString().trim();
                     String newLogo = logo.getText().toString().trim();
+                    String newStream = stream.getText().toString().trim();
                     RadioPreferences.Quality chosen;
                     int checked = quality.getCheckedRadioButtonId();
                     if (checked == R.id.station_quality_low) {
@@ -76,7 +81,7 @@ public final class RadioStationDialog {
                         chosen = RadioPreferences.Quality.STANDARD;
                     }
                     Completable.fromAction(() -> Radio.update(station,
-                                    newName.isEmpty() ? station.getTitle() : newName, newLogo, chosen))
+                                    newName.isEmpty() ? station.getTitle() : newName, newLogo, chosen, newStream))
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(onSaved::run, error -> Log.e(TAG, Log.getStackTraceString(error)));
@@ -88,6 +93,42 @@ public final class RadioStationDialog {
                     }
                 })
                 .show();
+    }
+
+    static String rewindReport(Context context, String url) {
+        RewindWindow own = checkQuietly(url);
+        List<String> versions = RecordingRules.rewindableVersions(url);
+        if (versions.isEmpty()) {
+            return own != null ? rewindText(context, own) : context.getString(R.string.radio_rewind_unknown);
+        }
+        return context.getString(R.string.radio_rewind_both, rewindShort(context, own),
+                rewindShort(context, checkQuietly(versions.get(0))));
+    }
+
+    private static RewindWindow checkQuietly(String url) {
+        try {
+            return StreamCheck.check(url).rewind;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    static String rewindShort(Context context, RewindWindow window) {
+        if (window == null) {
+            return context.getString(R.string.radio_rewind_short_unknown);
+        }
+        switch (window.getKind()) {
+            case REWIND:
+                return context.getString(R.string.radio_rewind_short_window, Converter.getDurationStringLocalized(
+                        context.getResources(), window.getSeconds() * 1000, false));
+            case LIVE_ONLY:
+                return context.getString(R.string.radio_rewind_short_none);
+            case NOT_LIVE:
+                return context.getString(R.string.radio_rewind_short_not_live);
+            case UNKNOWN:
+            default:
+                return context.getString(R.string.radio_rewind_short_unknown);
+        }
     }
 
     static String rewindText(Context context, RewindWindow window) {

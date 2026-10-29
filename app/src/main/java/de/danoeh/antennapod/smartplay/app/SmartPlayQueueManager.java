@@ -372,7 +372,8 @@ public class SmartPlayQueueManager {
         Map<Long, ShowDownloadSettings> settings = DownloadSettingsRepository.getInstance(context).getAll();
         for (Feed feed : DBReader.getFeedList()) {
             ShowDownloadSettings show = settings.get(feed.getId());
-            if (show == null || !show.getMode().streams() || feed.getState() != Feed.STATE_SUBSCRIBED) {
+            if (show == null || !show.getMode().streams() || feed.getState() != Feed.STATE_SUBSCRIBED
+                    || Recordings.isRecordingsFeed(feed)) {
                 continue;
             }
             streamFeeds.add(feed.getId());
@@ -399,7 +400,7 @@ public class SmartPlayQueueManager {
     private static void addSubscribed(Map<Long, FeedItem> itemsById, List<FeedItem> items) {
         for (FeedItem item : items) {
             Feed feed = item.getFeed();
-            if (feed != null && feed.getState() == Feed.STATE_SUBSCRIBED) {
+            if (feed != null && feed.getState() == Feed.STATE_SUBSCRIBED && !Recordings.isRecordingsFeed(feed)) {
                 itemsById.put(item.getId(), item);
             }
         }

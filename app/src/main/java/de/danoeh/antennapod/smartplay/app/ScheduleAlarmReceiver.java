@@ -12,6 +12,7 @@ public class ScheduleAlarmReceiver extends BroadcastReceiver {
         new Thread(() -> {
             try {
                 UpdateScheduler.reschedule(app);
+                Recordings.rescheduleAll(app);
             } finally {
                 result.finish();
             }

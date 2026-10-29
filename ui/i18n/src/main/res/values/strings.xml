@@ -1453,4 +1453,44 @@
     <string name="radio_no_results">No stations found for \"%1$s\"</string>
     <string name="radio_search_error">Couldn\'t reach Radio Browser. Check your connection and try again.</string>
     <string name="radio_adding">Adding %1$s…</string>
+    <!-- YonderPod radio recordings -->
+    <string name="radio_stream_hint">Stream link</string>
+    <string name="radio_rewind_both">This link: %1$s · Rewindable version: %2$s</string>
+    <string name="radio_rewind_short_window">about %1$s</string>
+    <string name="radio_rewind_short_none">live only</string>
+    <string name="radio_rewind_short_not_live">not a live stream</string>
+    <string name="radio_rewind_short_unknown">couldn\'t tell</string>
+    <string name="recording_title">%1$s · %2$s</string>
+    <string name="recording_method_quick">Saved quickly after each show</string>
+    <string name="recording_method_live">Recorded live</string>
+    <string name="recording_stopped">This show isn\'t being recorded any more.</string>
+    <string name="recording_missed_window">Missed %1$s: couldn\'t save it before the stream moved on</string>
+    <string name="recording_missed_unsupported">Missed %1$s: this stream can\'t be recorded</string>
+    <string name="recording_missed_connection">Missed %1$s: no connection</string>
+    <string name="recording_missed_wifi">Missed %1$s: not on Wi-Fi</string>
+    <string name="recording_saving">Saving %1$s</string>
+    <string name="recording_live_notification">Recording %1$s</string>
+    <string name="recording_station_missing">That station has been deleted.</string>
+    <string name="record_a_show">Record a show</string>
+    <string name="record_title">Record a show on %1$s</string>
+    <string name="record_edit">Edit recording</string>
+    <string name="record_stop">Stop recording</string>
+    <string name="record_stop_question">Stop recording %1$s?</string>
+    <string name="record_stop_message">Recordings you already have stay.</string>
+    <string name="record_name_hint">Show name</string>
+    <string name="record_zone_title">Times as the station lists them, in</string>
+    <string name="record_starts">Starts %1$s</string>
+    <string name="record_ends">Ends %1$s</string>
+    <string name="record_available_same_time">Available at %1$s here</string>
+    <string name="record_available_saved">Available as soon as it\'s saved</string>
+    <string name="record_mobile">Use mobile data to save</string>
+    <plurals name="record_keep">
+        <item quantity="one">Keep %d recording</item>
+        <item quantity="other">Keep %d recordings</item>
+    </plurals>
+    <string name="record_needs_times">Pick at least one day, and a start and end time.</string>
+    <string name="record_alarm_title">Allow exact start times?</string>
+    <string name="record_alarm_message">This station can only be recorded live, so YonderPod needs to start on time. Android asks for permission to use Alarms &amp; reminders for this. Without it, recordings may start a few minutes late.</string>
+    <string name="record_alarm_allow">Allow</string>
+    <string name="record_alarm_later">Not now</string>
 </resources>
