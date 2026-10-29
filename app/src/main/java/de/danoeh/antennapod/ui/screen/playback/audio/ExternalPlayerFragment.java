@@ -20,6 +20,7 @@ import de.danoeh.antennapod.activity.MainActivity;
 import de.danoeh.antennapod.event.PlayerStatusEvent;
 import de.danoeh.antennapod.event.playback.PlaybackPositionEvent;
 import de.danoeh.antennapod.event.playback.PlaybackServiceEvent;
+import de.danoeh.antennapod.model.feed.FeedMedia;
 import de.danoeh.antennapod.model.playback.MediaType;
 import de.danoeh.antennapod.model.playback.Playable;
 import de.danoeh.antennapod.playback.service.PlaybackController;
@@ -116,7 +117,8 @@ public class ExternalPlayerFragment extends Fragment {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onPositionObserverUpdate(PlaybackPositionEvent event) {
-        if (event.getPosition() == Playable.INVALID_TIME || event.getDuration() == Playable.INVALID_TIME) {
+        if (event.getPosition() == Playable.INVALID_TIME || event.getDuration() == Playable.INVALID_TIME
+                || isLiveRadio(currentMedia)) {
             return;
         }
         progressBar.setProgress((int) ((double) event.getPosition() / event.getDuration() * 100));
@@ -153,6 +155,10 @@ public class ExternalPlayerFragment extends Fragment {
                         () -> ((MainActivity) getActivity()).setPlayerVisible(false));
     }
 
+    private static boolean isLiveRadio(Playable media) {
+        return media instanceof FeedMedia && ((FeedMedia) media).isLiveRadio();
+    }
+
     private void updateUi(Playable media) {
         if (media == null) {
             return;
@@ -160,7 +166,8 @@ public class ExternalPlayerFragment extends Fragment {
         currentMedia = media;
         ((MainActivity) getActivity()).setPlayerVisible(true);
         txtvTitle.setText(media.getEpisodeTitle());
-        feedName.setText(media.getFeedTitle());
+        feedName.setText(isLiveRadio(media) ? getString(R.string.radio_live) : media.getFeedTitle());
+        progressBar.setVisibility(isLiveRadio(media) ? View.INVISIBLE : View.VISIBLE);
         onPositionObserverUpdate(new PlaybackPositionEvent(media.getPosition(), media.getDuration()));
         boolean isPlaying = PlaybackService.isRunning
                 && PlaybackPreferences.getCurrentPlayerStatus() == PlaybackPreferences.PLAYER_STATUS_PLAYING;

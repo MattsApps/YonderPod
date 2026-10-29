@@ -26,6 +26,8 @@ public class Feed implements Serializable {
     public static final String PREFIX_LOCAL_FOLDER = "antennapod_local:";
     public static final String ADDED_FILES_DOWNLOAD_URL = PREFIX_LOCAL_FOLDER + "yonderpod-added-files";
     public static final String PREFIX_GENERATIVE_COVER = "antennapod_generative_cover:";
+    public static final String RADIO_DOWNLOAD_URL = "yonderpod-radio:stations";
+    public static final String RADIO_GUID_PREFIX = "yonderpod-radio:";
 
     private long id;
     private String localFileUrl;

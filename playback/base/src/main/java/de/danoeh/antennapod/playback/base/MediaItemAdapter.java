@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RawRes;
 import androidx.media3.common.MediaItem;
 import androidx.media3.common.MediaMetadata;
+import androidx.media3.common.MimeTypes;
 import com.bumptech.glide.Glide;
 import com.google.common.collect.ImmutableList;
 import de.danoeh.antennapod.model.feed.Feed;
@@ -32,6 +33,9 @@ public class MediaItemAdapter {
     public static final String MEDIA_ID_CONFIRM_STREAMING = "confirm_streaming";
     public static final String KEY_STREAM_URL = "stream_url";
     public static final String KEY_AUTHORIZATION_HEADER = "authorization_header";
+    public static final String KEY_LIVE = "live_radio";
+    public static final String MIME_HLS = "application/x-mpegURL";
+    public static final String MIME_DASH = "application/dash+xml";
 
     /**
      * Create a basic media item without attached metadata.
@@ -101,8 +105,20 @@ public class MediaItemAdapter {
                 }
             }
         }
+        String mimeType = null;
+        if (playable instanceof FeedMedia && ((FeedMedia) playable).isLiveRadio()) {
+            requestExtras.putBoolean(KEY_LIVE, true);
+            metadataBuilder.setMediaType(MediaMetadata.MEDIA_TYPE_RADIO_STATION);
+            String stationMime = ((FeedMedia) playable).getMimeType();
+            if (MIME_HLS.equalsIgnoreCase(stationMime)) {
+                mimeType = MimeTypes.APPLICATION_M3U8;
+            } else if (MIME_DASH.equalsIgnoreCase(stationMime)) {
+                mimeType = MimeTypes.APPLICATION_MPD;
+            }
+        }
         return new MediaItem.Builder()
                 .setUri(localPlaybackUri != null ? Uri.parse(localPlaybackUri) : null)
+                .setMimeType(mimeType)
                 .setMediaId(mediaId)
                 .setMediaMetadata(metadataBuilder.build())
                 .setRequestMetadata(new MediaItem.RequestMetadata.Builder()

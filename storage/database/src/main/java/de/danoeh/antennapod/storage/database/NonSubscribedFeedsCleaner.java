@@ -37,7 +37,7 @@ public class NonSubscribedFeedsCleaner {
     }
 
     public static boolean shouldDelete(Feed feed) {
-        if (feed.getState() != Feed.STATE_NOT_SUBSCRIBED) {
+        if (feed.getState() != Feed.STATE_NOT_SUBSCRIBED || Feed.RADIO_DOWNLOAD_URL.equals(feed.getDownloadUrl())) {
             return false;
         } else if (feed.getItems() == null) {
             return false;

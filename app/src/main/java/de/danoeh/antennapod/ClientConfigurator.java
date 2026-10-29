@@ -11,6 +11,7 @@ import de.danoeh.antennapod.storage.preferences.SynchronizationSettings;
 import de.danoeh.antennapod.storage.preferences.SynchronizationCredentials;
 import de.danoeh.antennapod.storage.preferences.PlaybackPreferences;
 import de.danoeh.antennapod.storage.preferences.ControlsPreferences;
+import de.danoeh.antennapod.storage.preferences.RadioPreferences;
 import de.danoeh.antennapod.storage.preferences.SleepTimerPreferences;
 import de.danoeh.antennapod.storage.preferences.UsageStatistics;
 import de.danoeh.antennapod.net.common.UserAgentInterceptor;
@@ -59,6 +60,7 @@ public class ClientConfigurator {
         AntennapodHttpClient.setProxyConfig(UserPreferences.getProxyConfig());
         SleepTimerPreferences.init(context);
         ControlsPreferences.init(context);
+        RadioPreferences.init(context);
         NotificationUtils.createChannels(context);
         SmartPlayQueueManager.init(context);
         BookTopUpWorker.init(context);

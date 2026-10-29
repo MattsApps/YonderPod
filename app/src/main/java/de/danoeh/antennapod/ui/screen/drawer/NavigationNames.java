@@ -3,6 +3,7 @@ package de.danoeh.antennapod.ui.screen.drawer;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.StringRes;
 import de.danoeh.antennapod.R;
+import de.danoeh.antennapod.smartplay.app.RadioFragment;
 import de.danoeh.antennapod.ui.screen.FavoritesFragment;
 import de.danoeh.antennapod.ui.screen.AddFeedFragment;
 import de.danoeh.antennapod.ui.screen.AllEpisodesFragment;
@@ -37,6 +38,8 @@ public abstract class NavigationNames {
                 return R.drawable.ic_add;
             case FavoritesFragment.TAG:
                 return R.drawable.ic_star;
+            case RadioFragment.TAG:
+                return R.drawable.ic_radio;
             default:
                 return 0;
         }
@@ -64,6 +67,8 @@ public abstract class NavigationNames {
                 return R.string.add_feed_label;
             case FavoritesFragment.TAG:
                 return R.string.favorite_episodes_label;
+            case RadioFragment.TAG:
+                return R.string.radio_title;
             case NavListAdapter.SUBSCRIPTION_LIST_TAG:
                 return R.string.subscriptions_list_label;
             default:
@@ -93,6 +98,8 @@ public abstract class NavigationNames {
                 return R.string.add_feed_label_short;
             case FavoritesFragment.TAG:
                 return R.string.favorite_episodes_label_short;
+            case RadioFragment.TAG:
+                return R.string.radio_title;
             case NavListAdapter.SUBSCRIPTION_LIST_TAG:
                 return R.string.subscriptions_list_label;
             default:
@@ -120,6 +127,8 @@ public abstract class NavigationNames {
                 return R.id.bottom_navigation_subscriptions;
             case StatisticsFragment.TAG:
                 return R.id.bottom_navigation_statistics;
+            case RadioFragment.TAG:
+                return R.id.bottom_navigation_radio;
             case HomeFragment.TAG: // fall-through
             default:
                 return R.id.bottom_navigation_home;
@@ -145,6 +154,8 @@ public abstract class NavigationNames {
             return SubscriptionFragment.TAG;
         } else if (id == R.id.bottom_navigation_statistics) {
             return StatisticsFragment.TAG;
+        } else if (id == R.id.bottom_navigation_radio) {
+            return RadioFragment.TAG;
         } else if (id == R.id.bottom_navigation_home) {
             return HomeFragment.TAG;
         }

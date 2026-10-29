@@ -23,6 +23,7 @@ import de.danoeh.antennapod.storage.preferences.UserPreferences;
 
 import java.util.concurrent.TimeUnit;
 
+import de.danoeh.antennapod.model.feed.FeedMedia;
 import de.danoeh.antennapod.model.playback.MediaType;
 import de.danoeh.antennapod.model.playback.Playable;
 import de.danoeh.antennapod.playback.base.PlayerStatus;
@@ -90,8 +91,9 @@ public abstract class WidgetUpdater {
             views.setViewVisibility(R.id.txtvTitle, View.VISIBLE);
             views.setViewVisibility(R.id.txtNoPlaying, View.GONE);
 
-            String progressString = getProgressString(widgetState.position,
-                    widgetState.duration, widgetState.playbackSpeed);
+            boolean live = widgetState.media instanceof FeedMedia && ((FeedMedia) widgetState.media).isLiveRadio();
+            String progressString = live ? context.getString(R.string.radio_live)
+                    : getProgressString(widgetState.position, widgetState.duration, widgetState.playbackSpeed);
             if (progressString != null) {
                 views.setViewVisibility(R.id.txtvProgress, View.VISIBLE);
                 views.setTextViewText(R.id.txtvProgress, progressString);

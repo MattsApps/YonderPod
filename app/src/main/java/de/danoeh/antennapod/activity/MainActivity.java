@@ -54,6 +54,7 @@ import de.danoeh.antennapod.playback.service.PlaybackController;
 import de.danoeh.antennapod.storage.databasemaintenanceservice.DatabaseMaintenanceWorker;
 import de.danoeh.antennapod.storage.importexport.AutomaticDatabaseExportWorker;
 import de.danoeh.antennapod.storage.preferences.PlaybackPreferences;
+import de.danoeh.antennapod.smartplay.app.RadioFragment;
 import de.danoeh.antennapod.smartplay.app.CarModeAutoOpener;
 import de.danoeh.antennapod.storage.preferences.ControlsPreferences;
 import de.danoeh.antennapod.storage.preferences.UserPreferences;
@@ -458,6 +459,9 @@ public class MainActivity extends CastEnabledActivity implements NavigationToolb
                 break;
             case StatisticsFragment.TAG:
                 fragment = new StatisticsFragment();
+                break;
+            case RadioFragment.TAG:
+                fragment = new RadioFragment();
                 break;
             case DiscoveryFragment.TAG:
                 fragment = new DiscoveryFragment();

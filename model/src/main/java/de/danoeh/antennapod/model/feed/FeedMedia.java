@@ -236,6 +236,11 @@ public class FeedMedia implements Playable {
         return item;
     }
 
+    public boolean isLiveRadio() {
+        return item != null && item.getItemIdentifier() != null
+                && item.getItemIdentifier().startsWith(Feed.RADIO_GUID_PREFIX);
+    }
+
     /**
      * Sets the item object of this FeedMedia. If the given
      * FeedItem object is not null, it's 'media'-attribute value

@@ -73,6 +73,7 @@ import de.danoeh.antennapod.storage.database.DBReader;
 import de.danoeh.antennapod.ui.appstartintent.MediaButtonStarter;
 import de.danoeh.antennapod.storage.database.DBWriter;
 import de.danoeh.antennapod.storage.preferences.PlaybackPreferences;
+import de.danoeh.antennapod.storage.preferences.RadioPreferences;
 import de.danoeh.antennapod.storage.preferences.ButtonPress;
 import de.danoeh.antennapod.storage.preferences.ControlsPreferences;
 import de.danoeh.antennapod.storage.preferences.SleepTimerPreferences;
@@ -183,6 +184,16 @@ public class Media3PlaybackService extends MediaLibraryService {
                     return;
                 }
 
+                if (currentPlayable != null && currentPlayable.isLiveRadio()) {
+                    if (getPlaybackState() == Player.STATE_IDLE) {
+                        prepare();
+                    } else if (!getPlayWhenReady()) {
+                        seekToDefaultPosition();
+                    }
+                    applyAudioAttributes();
+                    super.play();
+                    return;
+                }
                 if (currentPlayable != null && !getPlayWhenReady()) {
                     MediaItem item = getCurrentMediaItem();
                     if (item != null && String.valueOf(currentPlayable.getId()).equals(item.mediaId)) {
@@ -215,6 +226,12 @@ public class Media3PlaybackService extends MediaLibraryService {
             public void seekForward() {
                 long duration = getDuration();
                 long target = getCurrentPosition() + UserPreferences.getFastForwardSecs() * 1000L;
+                if (currentPlayable != null && currentPlayable.isLiveRadio()) {
+                    if (isCurrentMediaItemSeekable() && duration > 0) {
+                        seekTo(Math.min(target, duration));
+                    }
+                    return;
+                }
 
                 if (duration > 0 && target >= duration) {
                     handlePlaybackEnded();
@@ -666,12 +683,17 @@ public class Media3PlaybackService extends MediaLibraryService {
         playbackStartPosition = Math.max(currentPlayable.getPosition(), 0);
         playedDurationCountedUntil = playbackStartPosition;
 
-        float speed = PlaybackSpeedUtils.getCurrentPlaybackSpeed(currentPlayable);
+        boolean radio = currentPlayable.isLiveRadio();
+        float speed = radio ? 1.0f : PlaybackSpeedUtils.getCurrentPlaybackSpeed(currentPlayable);
         player.setPlaybackSpeed(speed);
-        boolean enabled = PlaybackSpeedUtils.getCurrentSkipSilencePreference(currentPlayable)
+        boolean enabled = !radio && PlaybackSpeedUtils.getCurrentSkipSilencePreference(currentPlayable)
                 == FeedPreferences.SkipSilence.AGGRESSIVE;
         PlaybackPreferences.setCurrentlyPlayingTemporarySkipSilence(enabled);
         exoPlayer.setSkipSilenceEnabled(enabled);
+        int maxAudioBitrate = radio && currentPlayable.getItem() != null
+                ? RadioPreferences.maxBitrate(currentPlayable.getItem().getId()) : Integer.MAX_VALUE;
+        exoPlayer.setTrackSelectionParameters(exoPlayer.getTrackSelectionParameters().buildUpon()
+                .setMaxAudioBitrate(maxAudioBitrate).build());
         if (currentPlayable.getItem() != null && currentPlayable.getItem().getFeed() != null) {
             volumeAdaptionFactor = currentPlayable.getItem().getFeed()
                     .getPreferences().getVolumeAdaptionSetting().getAdaptionFactor();
@@ -699,7 +721,7 @@ public class Media3PlaybackService extends MediaLibraryService {
     }
 
     private void saveCurrentPosition() {
-        if (currentPlayable == null || player == null) {
+        if (currentPlayable == null || player == null || currentPlayable.isLiveRadio()) {
             return;
         }
         try {
@@ -732,7 +754,7 @@ public class Media3PlaybackService extends MediaLibraryService {
 
     private void updateDatabaseAfterPlayback(FeedMedia media, int startPosition,
                                              boolean ended, boolean skipped, boolean playingNext) {
-        if (media == null) {
+        if (media == null || media.isLiveRadio()) {
             return;
         }
 
@@ -866,6 +888,11 @@ public class Media3PlaybackService extends MediaLibraryService {
 
     @UnstableApi
     private void handlePlaybackEnded() {
+        if (currentPlayable != null && currentPlayable.isLiveRadio()) {
+            player.stop();
+            EventBus.getDefault().post(new PlayerStatusEvent());
+            return;
+        }
         FeedMedia media = currentPlayable;
         currentPlayable = null; // To avoid position updater saving position after we already reset it
         if (sleepTimer != null && sleepTimer.isActive()) {

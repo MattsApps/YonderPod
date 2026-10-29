@@ -2,6 +2,7 @@ package de.danoeh.antennapod.smartplay.app;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -119,7 +120,14 @@ public class CarModeActivity extends AppCompatActivity {
     private void showMedia(FeedMedia loaded) {
         media = loaded;
         title.setText(loaded.getEpisodeTitle());
-        show.setText(loaded.getFeedTitle());
+        boolean live = loaded.isLiveRadio();
+        show.setText(live ? getString(R.string.radio_title) : loaded.getFeedTitle());
+        progress.setVisibility(live ? View.INVISIBLE : View.VISIBLE);
+        for (int id : new int[] {R.id.car_back, R.id.car_forward}) {
+            View button = findViewById(id);
+            button.setEnabled(!live);
+            button.setAlpha(live ? 0.3f : 1f);
+        }
         showPosition(loaded.getPosition(), loaded.getDuration());
         Glide.with(this)
                 .load(loaded.getImageLocation())
@@ -129,6 +137,10 @@ public class CarModeActivity extends AppCompatActivity {
     }
 
     private void showPosition(int position, int duration) {
+        if (media != null && media.isLiveRadio()) {
+            time.setText(R.string.radio_live);
+            return;
+        }
         progress.setProgress(duration > 0 ? (int) (1000L * position / duration) : 0);
         time.setText(Converter.getDurationStringLong(position) + " / " + Converter.getDurationStringLong(duration));
     }

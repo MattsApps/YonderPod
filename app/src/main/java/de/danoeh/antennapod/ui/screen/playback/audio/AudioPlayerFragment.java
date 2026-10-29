@@ -335,6 +335,7 @@ public class AudioPlayerFragment extends Fragment implements
         if (currentMedia == null) {
             return;
         }
+        applyLiveMode(currentMedia.isLiveRadio());
         updatePosition(new PlaybackPositionEvent(currentMedia.getPosition(), currentMedia.getDuration()));
         updatePlaybackSpeedButton(new SpeedChangedEvent(PlaybackSpeedUtils.getCurrentPlaybackSpeed(currentMedia)));
         setChapterDividers();
@@ -396,9 +397,30 @@ public class AudioPlayerFragment extends Fragment implements
         }
     }
 
+    private void applyLiveMode(boolean live) {
+        sbPosition.setVisibility(live ? View.INVISIBLE : View.VISIBLE);
+        float alpha = live ? 0.3f : 1f;
+        for (View view : new View[] {butRev, txtvRev, butFF, txtvFF}) {
+            view.setEnabled(!live);
+            view.setAlpha(alpha);
+        }
+        int speedVisibility = !live && ControlsPreferences.showSpeedButton() ? View.VISIBLE : View.INVISIBLE;
+        getView().findViewById(R.id.butPlaybackSpeed).setVisibility(speedVisibility);
+        txtvPlaybackSpeed.setVisibility(speedVisibility);
+        if (live) {
+            txtvPosition.setText(R.string.radio_live);
+            txtvPosition.setContentDescription(getString(R.string.radio_live));
+            txtvLength.setText("");
+            txtvLength.setContentDescription(null);
+        }
+    }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void updatePosition(PlaybackPositionEvent event) {
         if (txtvPosition == null || txtvLength == null || sbPosition == null) {
+            return;
+        }
+        if (currentMedia != null && currentMedia.isLiveRadio()) {
             return;
         }
 
@@ -528,6 +550,16 @@ public class AudioPlayerFragment extends Fragment implements
         FeedItemMenuHandler.onPrepareMenu(toolbar.getMenu(),
                 Collections.singletonList(currentMedia.getItem()));
         ((CastEnabledActivity) getActivity()).requestCastButton(toolbar.getMenu());
+        if (currentMedia.isLiveRadio()) {
+            for (int id : new int[] {R.id.add_to_favorites_item, R.id.remove_from_favorites_item,
+                    R.id.open_feed_item, R.id.playback_speed, R.id.player_show_chapters, R.id.transcript_item,
+                    R.id.open_social_interact_url, R.id.share_item}) {
+                MenuItem menuItem = toolbar.getMenu().findItem(id);
+                if (menuItem != null) {
+                    menuItem.setVisible(false);
+                }
+            }
+        }
         final long feedId = currentMedia.getItem() != null ? currentMedia.getItem().getFeedId() : -1;
         final Context appContext = requireContext().getApplicationContext();
         Single.fromCallable(() -> Books.isBook(appContext, feedId))

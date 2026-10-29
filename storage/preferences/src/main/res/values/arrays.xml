@@ -5,6 +5,7 @@
         <item>QueueFragment</item>
         <item>NewEpisodesFragment</item>
         <item>SubscriptionFragment</item>
+        <item>RadioFragment</item>
         <item>EpisodesFragment</item>
         <item>DownloadsFragment</item>
         <item>PlaybackHistoryFragment</item>

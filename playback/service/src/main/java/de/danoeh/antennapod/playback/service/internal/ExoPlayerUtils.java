@@ -162,6 +162,10 @@ public class ExoPlayerUtils {
                         Collections.singletonMap("Authorization", authHeader));
             }
             DataSource.Factory dataSourceFactory = new DefaultDataSource.Factory(context, httpDataSourceFactory);
+            if (mediaItem.requestMetadata.extras != null
+                    && mediaItem.requestMetadata.extras.getBoolean(MediaItemAdapter.KEY_LIVE, false)) {
+                return dataSourceFactory;
+            }
             DataSource.Factory resolvingFactory = new ResolvingDataSource.Factory(dataSourceFactory, dataSpec -> {
                 String originalUrl = dataSpec.uri.toString();
                 if (!originalUrl.startsWith("http")) {

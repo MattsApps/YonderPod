@@ -1417,4 +1417,40 @@
         <item quantity="one">%d chapter downloaded ahead of where you are, topped up as you listen</item>
         <item quantity="other">%d chapters downloaded ahead of where you are, topped up as you listen</item>
     </plurals>
+    <!-- YonderPod radio -->
+    <string name="radio_title">Radio</string>
+    <string name="radio_empty">No stations yet. Tap + to search for a station or paste a stream link.</string>
+    <string name="radio_add">Add station</string>
+    <string name="radio_add_search">Search stations</string>
+    <string name="radio_add_link">Paste a stream link</string>
+    <string name="radio_add_button">Add</string>
+    <string name="radio_link_hint">Stream link (Icecast, Shoutcast, HLS or DASH)</string>
+    <string name="radio_name_optional_hint">Name (optional)</string>
+    <string name="radio_name_hint">Name</string>
+    <string name="radio_logo_hint">Logo link (optional)</string>
+    <string name="radio_link_invalid">That doesn\'t look like a web link. It should start with http:// or https://</string>
+    <string name="radio_checking">Checking the stream…</string>
+    <string name="radio_link_failed">Couldn\'t reach that stream. Check the link and your connection.</string>
+    <string name="radio_edit">Edit station</string>
+    <string name="radio_delete">Delete station</string>
+    <string name="radio_delete_question">Delete %1$s?</string>
+    <string name="radio_delete_playing">Stop this station before deleting it.</string>
+    <string name="radio_bitrate">%1$d kbps %2$s</string>
+    <string name="radio_playing">Playing</string>
+    <string name="radio_quality_title">Quality, when the station offers a choice</string>
+    <string name="radio_quality_low">Low (about 64 kbps)</string>
+    <string name="radio_quality_standard">Standard (about 128 kbps)</string>
+    <string name="radio_quality_high">High (best available)</string>
+    <string name="radio_rewind_checking">Checking how far back this stream can be rewound…</string>
+    <string name="radio_rewind_window">Can be rewound about %1$s</string>
+    <string name="radio_rewind_none">Live only: this stream can\'t be rewound</string>
+    <string name="radio_rewind_not_live">This link isn\'t a live stream</string>
+    <string name="radio_rewind_unknown">Couldn\'t tell how far back this stream can be rewound</string>
+    <string name="radio_live">LIVE</string>
+    <string name="radio_search_title">Search stations</string>
+    <string name="radio_search_hint">Station name, place or style</string>
+    <string name="radio_search_about">From Radio Browser, a free, open directory of stations worldwide</string>
+    <string name="radio_no_results">No stations found for \"%1$s\"</string>
+    <string name="radio_search_error">Couldn\'t reach Radio Browser. Check your connection and try again.</string>
+    <string name="radio_adding">Adding %1$s…</string>
 </resources>
