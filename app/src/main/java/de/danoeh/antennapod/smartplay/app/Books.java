@@ -262,8 +262,11 @@ public final class Books {
         }
         Progress progress = progress(context, feed);
         BookTopUpWorker.request(context, feed.getId());
-        SmartPlayQueueManager.getInstance().activate(id,
-                progress.next != null ? progress.next.getMedia() : null);
+        if (progress.next != null && progress.next.getMedia() != null) {
+            SmartPlayQueueManager.getInstance().activateAndPlay(id, progress.next);
+        } else {
+            SmartPlayQueueManager.getInstance().activate(id);
+        }
     }
 
     public static void markFinished(Context context, Feed feed) {

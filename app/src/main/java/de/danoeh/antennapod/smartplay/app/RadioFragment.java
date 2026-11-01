@@ -228,7 +228,7 @@ public class RadioFragment extends Fragment {
     static String details(Context context, RadioPreferences.Station details) {
         List<String> parts = new ArrayList<>();
         if (!details.country.isEmpty()) {
-            parts.add(details.country);
+            parts.add(RadioBrowser.countryName(details.country, details.countryCode));
         }
         String quality = quality(context, details.codec, details.bitrate);
         if (!quality.isEmpty()) {

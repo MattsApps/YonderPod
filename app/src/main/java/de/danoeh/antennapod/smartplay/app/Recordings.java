@@ -95,6 +95,7 @@ public final class Recordings {
         show.feedId = saved.getId();
         checkMethod(context, show);
         RecordingStore.getInstance(context).insert(show);
+        EventBus.getDefault().post(new Radio.ChangedEvent());
         schedule(context, show);
         tryNow(context, show);
         EventBus.getDefault().post(new Radio.ChangedEvent());

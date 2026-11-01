@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import de.danoeh.antennapod.net.common.AntennapodHttpClient;
@@ -111,7 +112,7 @@ public final class RadioBrowser {
                     String code = country.optString("iso_3166_1", "");
                     String name = country.optString("name", "");
                     if (!code.isEmpty() && !name.isEmpty()) {
-                        result.add(new Country(name, code, country.optInt("stationcount", 0)));
+                        result.add(new Country(countryName(name, code), code, country.optInt("stationcount", 0)));
                     }
                 }
                 return result;
@@ -181,9 +182,18 @@ public final class RadioBrowser {
             }
             result.add(new Station(station.optString("stationuuid", stream), name, stream,
                     station.optString("homepage", ""), station.optString("favicon", ""),
-                    station.optString("country", ""), station.optString("countrycode", ""),
+                    countryName(station.optString("country", ""), station.optString("countrycode", "")),
+                    station.optString("countrycode", ""),
                     station.optString("codec", ""), station.optInt("bitrate", 0), station.optInt("hls", 0) == 1));
         }
         return result;
+    }
+
+    static String countryName(String country, String countryCode) {
+        if (countryCode == null || countryCode.length() != 2) {
+            return country;
+        }
+        String name = new Locale("", countryCode).getDisplayCountry();
+        return name.isEmpty() || name.equalsIgnoreCase(countryCode) ? country : name;
     }
 }

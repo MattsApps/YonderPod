@@ -5,6 +5,7 @@
         android:supportsRtl="true">
         <receiver
             android:name=".PlayerWidget"
+            android:label="@string/widget_wide_label"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
@@ -18,6 +19,7 @@
 
         <receiver
             android:name=".PlayerWidgetSlim"
+            android:label="@string/widget_slim_label"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>

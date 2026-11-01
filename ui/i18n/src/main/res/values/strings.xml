@@ -1283,6 +1283,10 @@
     <string name="widget_settings">Widget settings</string>
     <string name="widget_create_button">Create widget</string>
     <string name="widget_opacity">Opacity</string>
+    <string name="widget_wide_label">YonderPod player</string>
+    <string name="widget_wide_description">Big player with cover and controls</string>
+    <string name="widget_slim_label">YonderPod slim player</string>
+    <string name="widget_slim_description">One row player</string>
     <string name="cover_as_background">Cover as background</string>
 
     <!-- On-Demand configuration -->

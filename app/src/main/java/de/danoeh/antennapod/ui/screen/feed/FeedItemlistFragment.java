@@ -411,7 +411,11 @@ public class FeedItemlistFragment extends Fragment implements AdapterView.OnItem
         @Override
         protected void onRemoveButtonPressed() {
             // Make sure fragment is hidden before actually starting to delete
-            ((MainActivity) getActivity()).loadFragment(UserPreferences.getDefaultPage(), null);
+            if (getActivity().getSupportFragmentManager().getBackStackEntryCount() > 0) {
+                getActivity().getSupportFragmentManager().popBackStack();
+            } else {
+                ((MainActivity) getActivity()).loadFragment(UserPreferences.getDefaultPage(), null);
+            }
             getActivity().getSupportFragmentManager().executePendingTransactions();
             super.onRemoveButtonPressed();
         }

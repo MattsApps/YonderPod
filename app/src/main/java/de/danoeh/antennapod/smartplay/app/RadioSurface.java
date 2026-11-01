@@ -63,7 +63,8 @@ public class RadioSurface extends WorldSurface {
             State state = new State();
             state.station = Radio.lastStation(app);
             if (state.station != null) {
-                state.country = RadioPreferences.get(state.station.getId()).country;
+                RadioPreferences.Station details = RadioPreferences.get(state.station.getId());
+                state.country = RadioBrowser.countryName(details.country, details.countryCode);
                 state.shortName = Radio.shortName(app, state.station);
             }
             for (RecordingStore.Show show : RecordingStore.getInstance(app).getShows()) {

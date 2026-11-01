@@ -168,6 +168,28 @@ public class SmartPlayQueueManager {
         });
     }
 
+    public void activateAndPlay(long smartPlayId, FeedItem chapter) {
+        executor.execute(() -> {
+            state.edit().putLong(KEY_ACTIVE_ID, smartPlayId).apply();
+            update(true);
+            try {
+                List<FeedItem> newQueue = new ArrayList<>();
+                newQueue.add(chapter);
+                for (FeedItem item : DBReader.getQueue()) {
+                    if (item.getId() != chapter.getId()) {
+                        newQueue.add(item);
+                    }
+                }
+                DBWriter.setQueue(newQueue).get();
+            } catch (Exception e) {
+                Log.e(TAG, "Could not put book first", e);
+            }
+            new Handler(Looper.getMainLooper()).post(() -> new PlaybackServiceStarter(context, chapter.getMedia())
+                    .callEvenIfRunning(true)
+                    .start());
+        });
+    }
+
     public void switchByHours(long smartPlayId) {
         executor.execute(() -> {
             if (smartPlayId == state.getLong(KEY_ACTIVE_ID, -1)) {

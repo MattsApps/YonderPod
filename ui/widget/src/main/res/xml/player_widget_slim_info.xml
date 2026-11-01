@@ -5,6 +5,8 @@
     android:resizeMode="horizontal"
     android:initialLayout="@layout/player_widget_slim"
     android:updatePeriodMillis="86400000"
+    android:description="@string/widget_slim_description"
+    android:widgetCategory="home_screen"
     android:previewImage="@drawable/widget_preview_slim"
     android:minHeight="40dp"
     android:minWidth="250dp"
