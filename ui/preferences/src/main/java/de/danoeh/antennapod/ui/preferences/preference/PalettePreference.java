@@ -37,7 +37,14 @@ public class PalettePreference extends Preference {
     @Override
     public void onBindViewHolder(PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
-        LinearLayout container = (LinearLayout) holder.itemView.findViewById(R.id.paletteContainer);
+        View found = holder.itemView.findViewById(R.id.paletteContainer);
+        if (!(found instanceof LinearLayout) && holder.itemView instanceof LinearLayout) {
+            found = holder.itemView;
+        }
+        if (!(found instanceof LinearLayout)) {
+            return;
+        }
+        LinearLayout container = (LinearLayout) found;
         container.removeAllViews();
         WildInkPalette active = WildInkPalette.current();
         WildInkPalette[] palettes = WildInkPalette.values();
