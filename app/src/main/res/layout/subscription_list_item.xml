@@ -73,6 +73,18 @@
             style="@style/AntennaPod.TextView.ListItemPrimaryTitle"
             tools:text="@sample/episodes.json/data/title" />
 
+        <TextView
+            android:id="@+id/subtitleLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="8dp"
+            android:paddingHorizontal="16dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="?android:attr/textColorSecondary"
+            android:textSize="13sp"
+            android:visibility="gone" />
+
         <com.google.android.material.chip.ChipGroup
             android:id="@+id/categoryChips"
             android:layout_width="match_parent"

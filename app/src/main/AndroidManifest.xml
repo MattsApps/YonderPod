@@ -336,6 +336,10 @@
             android:name=".smartplay.app.RecordingAlarmReceiver"
             android:exported="false" />
 
+        <receiver
+            android:name=".smartplay.app.SmartPlayHoursReceiver"
+            android:exported="false" />
+
         <service
             android:name=".smartplay.app.RecordingService"
             android:exported="false"

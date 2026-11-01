@@ -11,6 +11,7 @@ import com.google.android.material.chip.ChipGroup;
 import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.model.feed.Feed;
 import de.danoeh.antennapod.smartplay.app.CategoryChips;
+import de.danoeh.antennapod.smartplay.app.Recordings;
 import de.danoeh.antennapod.storage.preferences.UserPreferences;
 import de.danoeh.antennapod.ui.CoverLoader;
 import de.danoeh.antennapod.ui.common.ThemeUtils;
@@ -28,6 +29,7 @@ public class SubscriptionViewHolder extends RecyclerView.ViewHolder {
     public final CardView card;
     public final View errorIcon;
     public final ChipGroup categoryChips;
+    public final TextView subtitle;
     public final WeakReference<Activity> mainActivityRef;
 
     public SubscriptionViewHolder(@NonNull View itemView, Activity mainActivity) {
@@ -41,6 +43,7 @@ public class SubscriptionViewHolder extends RecyclerView.ViewHolder {
         card = itemView.findViewById(R.id.outerContainer);
         errorIcon = itemView.findViewById(R.id.errorIcon);
         categoryChips = itemView.findViewById(R.id.categoryChips);
+        subtitle = itemView.findViewById(R.id.subtitleLabel);
         this.mainActivityRef = new WeakReference<>(mainActivity);
     }
 
@@ -62,6 +65,11 @@ public class SubscriptionViewHolder extends RecyclerView.ViewHolder {
         errorIcon.setVisibility(feed.hasLastUpdateFailed() ? View.VISIBLE : View.GONE);
         if (categoryChips != null) {
             CategoryChips.fill(categoryChips, CategoryChips.categoriesOf(feed));
+        }
+        if (subtitle != null) {
+            boolean recordings = Recordings.isRecordingsFeed(feed) && feed.getAuthor() != null;
+            subtitle.setText(recordings ? feed.getAuthor() : "");
+            subtitle.setVisibility(recordings ? View.VISIBLE : View.GONE);
         }
 
         if (UserPreferences.shouldShowSubscriptionTitle() || columnCount == 1) {

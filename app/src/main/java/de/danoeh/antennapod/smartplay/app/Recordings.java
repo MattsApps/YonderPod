@@ -4,9 +4,11 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.Build;
+import android.text.TextUtils;
 import android.text.format.DateFormat;
 import android.util.Log;
 
@@ -18,9 +20,13 @@ import androidx.work.NetworkType;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.io.File;
+import java.text.DateFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -30,6 +36,7 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import de.danoeh.antennapod.R;
+import de.danoeh.antennapod.event.FeedItemEvent;
 import de.danoeh.antennapod.model.feed.Feed;
 import de.danoeh.antennapod.model.feed.FeedItem;
 import de.danoeh.antennapod.model.feed.FeedMedia;
@@ -38,6 +45,7 @@ import de.danoeh.antennapod.model.feed.SortOrder;
 import de.danoeh.antennapod.smartplay.radio.RecordingRules;
 import de.danoeh.antennapod.smartplay.radio.RewindWindow;
 import de.danoeh.antennapod.smartplay.radio.ShowTimes;
+import de.danoeh.antennapod.smartplay.schedule.DayRanges;
 import de.danoeh.antennapod.storage.database.DBReader;
 import de.danoeh.antennapod.storage.database.DBWriter;
 import de.danoeh.antennapod.storage.database.FeedDatabaseWriter;
@@ -54,6 +62,8 @@ public final class Recordings {
     private static final String WORK_FIRST = "recordingFirst-";
     private static final String WORK_PUBLISH = "recordingPublish-";
     private static final String GUID_PREFIX = "yonderpod-recording:";
+    private static final String PREFS = "YonderRecordings";
+    private static final String KEY_NAMES_UPDATED = "namesUpdated";
 
     private Recordings() {
     }
@@ -65,6 +75,7 @@ public final class Recordings {
 
     public static RecordingStore.Show create(Context context, FeedItem station, RecordingStore.Show show) {
         Feed feed = new Feed(Feed.RECORDINGS_URL_PREFIX + UUID.randomUUID(), null, show.name);
+        feed.setAuthor(timesLine(context, show));
         feed.setItems(new ArrayList<>());
         feed.setImageUrl(station.getImageUrl());
         feed.setSortOrder(SortOrder.DATE_NEW_OLD);
@@ -86,6 +97,7 @@ public final class Recordings {
         RecordingStore.getInstance(context).insert(show);
         schedule(context, show);
         tryNow(context, show);
+        EventBus.getDefault().post(new Radio.ChangedEvent());
         return show;
     }
 
@@ -95,14 +107,17 @@ public final class Recordings {
             feed.setCustomTitle(show.name);
             DBWriter.setFeedCustomTitle(feed);
         }
+        updateTimesLine(context, show);
         checkMethod(context, show);
         RecordingStore.getInstance(context).update(show);
         schedule(context, show);
+        EventBus.getDefault().post(new Radio.ChangedEvent());
     }
 
     public static void stop(Context context, RecordingStore.Show show) {
         cancel(context, show);
         RecordingStore.getInstance(context).delete(show.id);
+        EventBus.getDefault().post(new Radio.ChangedEvent());
     }
 
     static void checkMethod(Context context, RecordingStore.Show show) {
@@ -123,13 +138,27 @@ public final class Recordings {
 
     public static void rescheduleAll(Context context) {
         RecordingStore store = RecordingStore.getInstance(context);
+        SharedPreferences prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
+        boolean renameDefaults = !prefs.getBoolean(KEY_NAMES_UPDATED, false);
         for (RecordingStore.Show show : store.getShows()) {
             if (DBReader.getFeed(show.feedId, false, 0, 0) == null) {
                 stop(context, show);
                 continue;
             }
+            if (renameDefaults) {
+                FeedItem station = DBReader.getFeedItem(show.stationItemId);
+                if (station != null && show.name.equals(station.getTitle())) {
+                    show.name = defaultName(context, station.getTitle(), show);
+                    Feed feed = DBReader.getFeed(show.feedId, false, 0, 0);
+                    feed.setCustomTitle(show.name);
+                    DBWriter.setFeedCustomTitle(feed);
+                    store.update(show);
+                }
+            }
+            updateTimesLine(context, show);
             schedule(context, show);
         }
+        prefs.edit().putBoolean(KEY_NAMES_UPDATED, true).apply();
         for (RecordingStore.Pending pending : store.getPending()) {
             enqueuePublish(context, pending);
         }
@@ -266,6 +295,7 @@ public final class Recordings {
     static void missed(Context context, RecordingStore.Show show, ShowTimes.Airing airing, int reason,
                        boolean fallBackToLive) {
         show.status = context.getString(reason, dayLabel(context, show, airing));
+        show.lastMissedAiring = Math.max(show.lastMissedAiring, airing.getStart());
         show.preferLiveNext = fallBackToLive;
         RecordingStore.getInstance(context).update(show);
     }
@@ -334,6 +364,10 @@ public final class Recordings {
         feed.getItems().add(item);
         FeedDatabaseWriter.updateFeed(context, feed, false);
         applyKeep(context, show);
+        FeedItem added = DBReader.getFeedItemByGuidOrEpisodeUrl(guid, Uri.fromFile(file).toString());
+        if (added != null) {
+            EventBus.getDefault().post(new FeedItemEvent(Collections.singletonList(added), false));
+        }
     }
 
     static void applyKeep(Context context, RecordingStore.Show show) {
@@ -392,11 +426,95 @@ public final class Recordings {
     }
 
     public static String summary(Context context, RecordingStore.Show show) {
-        String line = context.getString(usesLive(show) ? R.string.recording_method_live
-                : R.string.recording_method_quick);
-        if (show.status != null && !show.status.isEmpty()) {
-            line = line + " · " + show.status;
+        long now = System.currentTimeMillis();
+        List<String> parts = new ArrayList<>();
+        RecordingStore.Pending held = null;
+        for (RecordingStore.Pending pending : RecordingStore.getInstance(context).getPending()) {
+            if (pending.showId == show.id && (held == null || pending.airingStart > held.airingStart)) {
+                held = pending;
+            }
         }
-        return line;
+        ShowTimes.Airing latest = ShowTimes.latestEnded(show.spec(), now);
+        if (held != null) {
+            ShowTimes.Airing airing = new ShowTimes.Airing(held.airingStart, held.airingEnd);
+            parts.add(context.getString(R.string.recording_status_held, dayTime(context, held.airingStart),
+                    dayTime(context, ShowTimes.availableAt(show.spec(), airing, TimeZone.getDefault(),
+                            show.sameLocalTime))));
+        } else if (!usesLive(show) && latest != null && latest.getStart() > show.lastSavedAiring
+                && latest.getStart() > show.lastMissedAiring
+                && RecordingRules.stillInWindow(latest, show.rewindSeconds, now)) {
+            parts.add(context.getString(show.allowMobile ? R.string.recording_status_saving_soon
+                    : R.string.recording_status_waiting_wifi, dayTime(context, latest.getStart())));
+        } else if (show.lastMissedAiring > show.lastSavedAiring && show.status != null && !show.status.isEmpty()) {
+            parts.add(show.status);
+        } else if (show.lastSavedAiring > 0) {
+            parts.add(context.getString(R.string.recording_status_last_saved, dayTime(context, show.lastSavedAiring)));
+        } else {
+            parts.add(context.getString(R.string.recording_status_nothing_yet));
+        }
+        ShowTimes.Airing next = ShowTimes.nextEnd(show.spec(), now);
+        if (next != null && next.getStart() <= now) {
+            parts.add(context.getString(R.string.recording_status_on_now, ScheduleText.time(context, next.getEnd())));
+        } else if (next != null) {
+            parts.add(context.getString(R.string.recording_status_next, dayTime(context, next.getStart())));
+        }
+        return TextUtils.join(" · ", parts);
+    }
+
+    static String dayTime(Context context, long millis) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(millis);
+        return ScheduleText.shortDay(calendar.get(Calendar.DAY_OF_WEEK)) + " " + ScheduleText.time(context, millis);
+    }
+
+    public static String days(Context context, int weekdays) {
+        if ((weekdays & ShowTimes.ALL_DAYS) == ShowTimes.ALL_DAYS) {
+            return context.getString(R.string.schedule_every_day);
+        }
+        return DayRanges.text(weekdays, DateFormatSymbols.getInstance().getShortWeekdays());
+    }
+
+    public static String defaultName(Context context, String stationTitle, RecordingStore.Show show) {
+        return context.getString(R.string.recording_default_name, stationTitle, days(context, show.weekdays),
+                ScheduleText.time(context, show.startMinute / 60, show.startMinute % 60));
+    }
+
+    public static String timesLine(Context context, RecordingStore.Show show) {
+        String zone = show.zoneId.substring(show.zoneId.lastIndexOf('/') + 1).replace('_', ' ');
+        return context.getString(R.string.recording_times_line, days(context, show.weekdays),
+                ScheduleText.time(context, show.startMinute / 60, show.startMinute % 60),
+                ScheduleText.time(context, show.endMinute / 60, show.endMinute % 60), zone);
+    }
+
+    private static void updateTimesLine(Context context, RecordingStore.Show show) {
+        Feed feed = DBReader.getFeed(show.feedId, false, 0, 0);
+        String line = timesLine(context, show);
+        if (feed == null || line.equals(feed.getAuthor())) {
+            return;
+        }
+        feed.setAuthor(line);
+        feed.setItems(new ArrayList<>());
+        FeedDatabaseWriter.updateFeed(context, feed, false);
+    }
+
+    public static List<RecordingStore.Show> showsFor(Context context, long stationItemId) {
+        List<RecordingStore.Show> result = new ArrayList<>();
+        for (RecordingStore.Show show : RecordingStore.getInstance(context).getShows()) {
+            if (show.stationItemId == stationItemId) {
+                result.add(show);
+            }
+        }
+        return result;
+    }
+
+    public static ShowTimes.Airing airingNow(Context context, long stationItemId) {
+        long now = System.currentTimeMillis();
+        for (RecordingStore.Show show : showsFor(context, stationItemId)) {
+            ShowTimes.Airing airing = ShowTimes.nextEnd(show.spec(), now);
+            if (airing != null && airing.getStart() <= now) {
+                return airing;
+            }
+        }
+        return null;
     }
 }

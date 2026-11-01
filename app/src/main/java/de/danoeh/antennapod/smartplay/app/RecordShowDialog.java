@@ -49,7 +49,6 @@ public final class RecordShowDialog {
 
     public static void create(Context context, FeedItem station) {
         RecordingStore.Show show = new RecordingStore.Show();
-        show.name = station.getTitle();
         List<String> zones = zonesFor(RadioPreferences.get(station.getId()).countryCode);
         show.zoneId = zones.contains(TimeZone.getDefault().getID()) || zones.isEmpty()
                 ? TimeZone.getDefault().getID() : zones.get(0);
@@ -58,6 +57,7 @@ public final class RecordShowDialog {
         }
         show.startMinute = 18 * 60;
         show.endMinute = 21 * 60;
+        show.name = Recordings.defaultName(context, station.getTitle(), show);
         show(context, station, show, zones, true);
     }
 
@@ -94,6 +94,14 @@ public final class RecordShowDialog {
         Spinner keep = view.findViewById(R.id.record_keep);
 
         name.setText(show.name);
+        String[] autoName = {Recordings.defaultName(context, station.getTitle(), show)};
+        Runnable updateName = () -> {
+            String fresh = Recordings.defaultName(context, station.getTitle(), show);
+            if (name.getText().toString().trim().equals(autoName[0])) {
+                name.setText(fresh);
+            }
+            autoName[0] = fresh;
+        };
         List<String> zoneLabels = new ArrayList<>();
         for (String id : zones) {
             zoneLabels.add(zoneLabel(id));
@@ -110,8 +118,10 @@ public final class RecordShowDialog {
             chip.setText(ScheduleText.shortDay(day));
             int bit = ShowTimes.dayBit(day);
             chip.setChecked((show.weekdays & bit) != 0);
-            chip.setOnCheckedChangeListener((button, checked) ->
-                    show.weekdays = checked ? show.weekdays | bit : show.weekdays & ~bit);
+            chip.setOnCheckedChangeListener((button, checked) -> {
+                show.weekdays = checked ? show.weekdays | bit : show.weekdays & ~bit;
+                updateName.run();
+            });
             days.addView(chip);
         }
 
@@ -120,6 +130,7 @@ public final class RecordShowDialog {
                     ScheduleText.time(context, show.startMinute / 60, show.startMinute % 60)));
             end.setText(context.getString(R.string.record_ends,
                     ScheduleText.time(context, show.endMinute / 60, show.endMinute % 60)));
+            updateName.run();
         };
         updateTimes.run();
         start.setOnClickListener(v -> new TimePickerDialog(context, (picker, hour, minute) -> {
@@ -170,7 +181,8 @@ public final class RecordShowDialog {
                 .setView(view)
                 .setPositiveButton(R.string.confirm_label, (dialog, which) -> {
                     String newName = name.getText().toString().trim();
-                    show.name = newName.isEmpty() ? station.getTitle() : newName;
+                    show.name = newName.isEmpty() ? Recordings.defaultName(context, station.getTitle(), show)
+                            : newName;
                     show.zoneId = zones.get(Math.max(0, zone.getSelectedItemPosition()));
                     show.sameLocalTime = available.getCheckedRadioButtonId() == R.id.record_available_same_time;
                     show.allowMobile = mobile.isChecked();
@@ -191,15 +203,17 @@ public final class RecordShowDialog {
                     })
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(saved -> afterSave(context, saved),
+                            .subscribe(saved -> afterSave(context, saved, isNew),
                                     error -> Log.e(TAG, Log.getStackTraceString(error)));
                 })
                 .setNegativeButton(R.string.cancel_label, null)
                 .show();
     }
 
-    private static void afterSave(Context context, RecordingStore.Show show) {
-        Toast.makeText(context, Recordings.summary(context, show), Toast.LENGTH_LONG).show();
+    private static void afterSave(Context context, RecordingStore.Show show, boolean isNew) {
+        if (isNew) {
+            PlayInDialog.show(context, show.feedId, show.name);
+        }
         if (Recordings.usesLive(show) && !Recordings.canScheduleExact(context) && Build.VERSION.SDK_INT >= 31) {
             new MaterialAlertDialogBuilder(context)
                     .setTitle(R.string.record_alarm_title)

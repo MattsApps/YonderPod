@@ -26,6 +26,7 @@ import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.smartplay.app.BookDialogs;
 import de.danoeh.antennapod.smartplay.app.BookPanel;
 import de.danoeh.antennapod.smartplay.app.LocalFolders;
+import de.danoeh.antennapod.smartplay.app.PlayInDialog;
 import de.danoeh.antennapod.smartplay.app.RecordShowDialog;
 import de.danoeh.antennapod.smartplay.app.RecordingStore;
 import de.danoeh.antennapod.smartplay.app.Recordings;
@@ -302,6 +303,7 @@ public class FeedItemlistFragment extends Fragment implements AdapterView.OnItem
                 && !recordings;
         viewBinding.toolbar.getMenu().findItem(R.id.record_edit).setVisible(recordings);
         viewBinding.toolbar.getMenu().findItem(R.id.record_stop).setVisible(recordings);
+        viewBinding.toolbar.getMenu().findItem(R.id.record_play_in).setVisible(recordings);
         viewBinding.toolbar.getMenu().findItem(R.id.book_mark).setVisible(subscribed).setChecked(isBook);
         viewBinding.toolbar.getMenu().findItem(R.id.book_mark_finished).setVisible(subscribed && isBook);
     }
@@ -345,7 +347,8 @@ public class FeedItemlistFragment extends Fragment implements AdapterView.OnItem
         } else if (item.getItemId() == R.id.remove_archive_feed || item.getItemId() == R.id.remove_restore_feed) {
             new RemoveFeedDialogClose(Collections.singletonList(feed)).show(getParentFragmentManager(), null);
             return true;
-        } else if (item.getItemId() == R.id.record_edit || item.getItemId() == R.id.record_stop) {
+        } else if (item.getItemId() == R.id.record_edit || item.getItemId() == R.id.record_stop
+                || item.getItemId() == R.id.record_play_in) {
             handleRecordingMenu(item.getItemId());
             return true;
         } else if (item.getItemId() == R.id.book_mark) {
@@ -376,6 +379,8 @@ public class FeedItemlistFragment extends Fragment implements AdapterView.OnItem
                         Toast.makeText(appContext, R.string.recording_stopped, Toast.LENGTH_LONG).show();
                     } else if (itemId == R.id.record_edit) {
                         RecordShowDialog.edit(requireContext(), show);
+                    } else if (itemId == R.id.record_play_in) {
+                        PlayInDialog.show(requireContext(), show.feedId, show.name);
                     } else {
                         new MaterialAlertDialogBuilder(requireContext())
                                 .setTitle(getString(R.string.record_stop_question, show.name))

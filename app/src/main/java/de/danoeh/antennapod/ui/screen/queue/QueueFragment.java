@@ -43,6 +43,7 @@ import java.util.Collections;
 import java.util.List;
 
 import de.danoeh.antennapod.R;
+import de.danoeh.antennapod.smartplay.app.SmartPlayHours;
 import de.danoeh.antennapod.smartplay.app.SmartPlayQueueManager;
 import de.danoeh.antennapod.smartplay.app.SmartPlayStore;
 import de.danoeh.antennapod.smartplay.app.SmartPlaysFragment;
@@ -545,7 +546,7 @@ public class QueueFragment extends Fragment implements MaterialToolbar.OnMenuIte
                     int checked = -1;
                     long activeId = SmartPlayQueueManager.getInstance().getActiveId();
                     for (int i = 0; i < smartPlays.size(); i++) {
-                        names[i] = smartPlays.get(i).getDefinition().getName();
+                        names[i] = SmartPlayHours.nameWithHours(requireContext(), smartPlays.get(i));
                         if (smartPlays.get(i).getId() == activeId) {
                             checked = i;
                         }

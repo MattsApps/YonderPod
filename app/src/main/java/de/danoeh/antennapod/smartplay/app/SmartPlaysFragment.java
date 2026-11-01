@@ -25,6 +25,7 @@ import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.activity.MainActivity;
 import de.danoeh.antennapod.smartplay.SmartPlayDefinition;
 import de.danoeh.antennapod.smartplay.SmartPlayRule;
+import de.danoeh.antennapod.smartplay.schedule.ActiveHours;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Completable;
 import io.reactivex.rxjava3.core.Observable;
@@ -139,8 +140,11 @@ public class SmartPlaysFragment extends Fragment {
     }
 
     private void delete(SmartPlayStore.StoredSmartPlay smartPlay) {
-        disposables.add(Completable.fromAction(() -> SmartPlayStore.getInstance(requireContext())
-                        .delete(smartPlay.getId()))
+        disposables.add(Completable.fromAction(() -> {
+            SmartPlayStore.getInstance(requireContext()).delete(smartPlay.getId());
+            SmartPlayHours.set(requireContext(), smartPlay.getId(), null);
+            SmartPlayHours.reschedule(requireContext());
+        })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(() -> {
@@ -179,6 +183,10 @@ public class SmartPlaysFragment extends Fragment {
             } else {
                 nameView.setText(name);
             }
+            ActiveHours.Window hours = SmartPlayHours.get(parent.getContext(), smartPlay.getId());
+            TextView hoursView = view.findViewById(R.id.smartplay_item_hours);
+            hoursView.setText(hours != null ? SmartPlayHours.text(parent.getContext(), hours) : "");
+            hoursView.setVisibility(hours != null ? View.VISIBLE : View.GONE);
             View menu = view.findViewById(R.id.smartplay_item_menu);
             menu.setOnClickListener(v -> showMenu(v, smartPlay));
             return view;

@@ -70,7 +70,8 @@ public class RadioFragment extends Fragment {
         ListView list = root.findViewById(R.id.radio_list);
         adapter = new StationAdapter();
         list.setAdapter(adapter);
-        list.setOnItemClickListener((parent, view, position, id) -> play(requireContext(), stations.get(position)));
+        list.setOnItemClickListener((parent, view, position, id) -> ((MainActivity) getActivity())
+                .loadChildFragment(RadioStationFragment.newInstance(stations.get(position).getId())));
         list.setOnItemLongClickListener((parent, view, position, id) -> {
             showStationMenu(view, stations.get(position));
             return true;

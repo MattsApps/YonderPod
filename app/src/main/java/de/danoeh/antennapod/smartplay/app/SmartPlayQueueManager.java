@@ -28,6 +28,7 @@ import de.danoeh.antennapod.event.FeedItemEvent;
 import de.danoeh.antennapod.event.QueueEvent;
 import de.danoeh.antennapod.event.playback.RebuildSmartPlayEvent;
 import de.danoeh.antennapod.model.feed.Feed;
+import de.danoeh.antennapod.model.feed.FeedCounter;
 import de.danoeh.antennapod.model.feed.FeedItem;
 import de.danoeh.antennapod.model.feed.FeedMedia;
 import de.danoeh.antennapod.model.feed.FeedItemFilter;
@@ -56,6 +57,7 @@ public class SmartPlayQueueManager {
     private static final String KEY_ACTIVE_ID = "activeId";
     private static final String KEY_PAUSED = "paused";
     private static final String KEY_FEED_QUEUE_ACTION_CLEARED = "feedQueueActionCleared";
+    private static final String KEY_COUNTER_SET = "subscriptionCounterSet";
 
     private static SmartPlayQueueManager instance;
 
@@ -116,6 +118,10 @@ public class SmartPlayQueueManager {
 
     private void disableConflictingQueueSettings() {
         UserPreferences.setQueueKeepSorted(false);
+        if (!state.getBoolean(KEY_COUNTER_SET, false)) {
+            UserPreferences.setFeedCounterSetting(FeedCounter.SHOW_DOWNLOADED);
+            state.edit().putBoolean(KEY_COUNTER_SET, true).apply();
+        }
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor editor = prefs.edit()
                 .putBoolean(PREF_ENQUEUE_DOWNLOADED, false)
@@ -159,6 +165,43 @@ public class SmartPlayQueueManager {
                         .start());
             }
         });
+    }
+
+    public void switchByHours(long smartPlayId) {
+        executor.execute(() -> {
+            if (smartPlayId == state.getLong(KEY_ACTIVE_ID, -1)) {
+                return;
+            }
+            state.edit().putLong(KEY_ACTIVE_ID, smartPlayId).apply();
+            update(true);
+            keepPlayingOnTop();
+        });
+    }
+
+    private void keepPlayingOnTop() {
+        try {
+            if (PlaybackPreferences.getCurrentPlayerStatus() != PlaybackPreferences.PLAYER_STATUS_PLAYING) {
+                return;
+            }
+            FeedMedia playing = DBReader.getFeedMedia(PlaybackPreferences.getCurrentlyPlayingFeedMediaId());
+            if (playing == null || playing.isLiveRadio() || playing.getItem() == null) {
+                return;
+            }
+            List<FeedItem> queue = DBReader.getQueue();
+            if (!queue.isEmpty() && queue.get(0).getId() == playing.getItemId()) {
+                return;
+            }
+            List<FeedItem> newQueue = new ArrayList<>();
+            newQueue.add(playing.getItem());
+            for (FeedItem item : queue) {
+                if (item.getId() != playing.getItemId()) {
+                    newQueue.add(item);
+                }
+            }
+            DBWriter.setQueue(newQueue).get();
+        } catch (Exception e) {
+            Log.e(TAG, "Could not keep the playing episode on top", e);
+        }
     }
 
     public void onSmartPlaysChanged() {
@@ -282,12 +325,18 @@ public class SmartPlayQueueManager {
             Books.detectNewBooks(context, DBReader.getFeedList());
             Set<Long> books = Books.bookIds(context);
             Map<Long, Long> bookLastPlayed = Books.lastPlayedPerBook(context, books);
+            Set<Long> notInAllFeeds = new HashSet<>(books);
+            for (FeedItem item : itemsById.values()) {
+                if (Recordings.isRecordingsFeed(item.getFeed())) {
+                    notInAllFeeds.add(item.getFeedId());
+                }
+            }
 
             List<SmartPlayEpisode> candidates = new ArrayList<>();
             for (FeedItem item : itemsById.values()) {
                 SmartPlayEpisode episode = SmartPlayEpisodeConverter.convert(item,
                         streamFeeds.contains(item.getFeedId()), streamingAllowed, playOrderDates.get(item.getId()),
-                        books.contains(item.getFeedId()), lastPlayed(bookLastPlayed, item.getFeedId()));
+                        notInAllFeeds.contains(item.getFeedId()), lastPlayed(bookLastPlayed, item.getFeedId()));
                 if (episode != null) {
                     candidates.add(episode);
                 }
@@ -296,7 +345,7 @@ public class SmartPlayQueueManager {
             for (FeedItem item : queue) {
                 SmartPlayEpisode episode = SmartPlayEpisodeConverter.convert(item,
                         streamFeeds.contains(item.getFeedId()), streamingAllowed, playOrderDates.get(item.getId()),
-                        books.contains(item.getFeedId()), lastPlayed(bookLastPlayed, item.getFeedId()));
+                        notInAllFeeds.contains(item.getFeedId()), lastPlayed(bookLastPlayed, item.getFeedId()));
                 if (episode != null) {
                     current.add(episode);
                 }
@@ -400,7 +449,7 @@ public class SmartPlayQueueManager {
     private static void addSubscribed(Map<Long, FeedItem> itemsById, List<FeedItem> items) {
         for (FeedItem item : items) {
             Feed feed = item.getFeed();
-            if (feed != null && feed.getState() == Feed.STATE_SUBSCRIBED && !Recordings.isRecordingsFeed(feed)) {
+            if (feed != null && feed.getState() == Feed.STATE_SUBSCRIBED) {
                 itemsById.put(item.getId(), item);
             }
         }

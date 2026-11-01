@@ -44,6 +44,13 @@
         custom:showAsAction="never" />
 
     <item
+        android:id="@+id/record_play_in"
+        android:menuCategory="container"
+        android:title="@string/record_play_in"
+        android:visible="false"
+        custom:showAsAction="never" />
+
+    <item
         android:id="@+id/record_stop"
         android:menuCategory="container"
         android:title="@string/record_stop"

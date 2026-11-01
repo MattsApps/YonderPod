@@ -13,6 +13,7 @@ public class ScheduleAlarmReceiver extends BroadcastReceiver {
             try {
                 UpdateScheduler.reschedule(app);
                 Recordings.rescheduleAll(app);
+                SmartPlayHours.reschedule(app);
             } finally {
                 result.finish();
             }

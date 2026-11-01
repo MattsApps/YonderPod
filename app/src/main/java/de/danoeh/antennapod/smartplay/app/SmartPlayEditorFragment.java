@@ -1,10 +1,12 @@
 package de.danoeh.antennapod.smartplay.app;
 
 import android.annotation.SuppressLint;
+import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -12,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
@@ -27,9 +30,13 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.chip.Chip;
+import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.materialswitch.MaterialSwitch;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -45,6 +52,7 @@ import de.danoeh.antennapod.smartplay.EpisodeSource;
 import de.danoeh.antennapod.smartplay.Exclusions;
 import de.danoeh.antennapod.smartplay.SmartPlayDefinition;
 import de.danoeh.antennapod.smartplay.SmartPlayRule;
+import de.danoeh.antennapod.smartplay.schedule.ActiveHours;
 import de.danoeh.antennapod.storage.database.DBReader;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Observable;
@@ -71,6 +79,9 @@ public class SmartPlayEditorFragment extends Fragment {
     private final Map<Long, String> allFeedTitles = new HashMap<>();
     private final List<String> allCategories = new ArrayList<>();
     private final Set<Long> bookIds = new HashSet<>();
+    private final Set<Long> notInAllIds = new HashSet<>();
+    private final List<String> otherNames = new ArrayList<>();
+    private final List<ActiveHours.Window> otherWindows = new ArrayList<>();
     private final CompositeDisposable disposables = new CompositeDisposable();
 
     private long smartPlayId;
@@ -84,6 +95,15 @@ public class SmartPlayEditorFragment extends Fragment {
     private RulesAdapter rulesAdapter;
     private ItemTouchHelper touchHelper;
     private boolean loaded = false;
+    private MaterialSwitch hoursSwitch;
+    private View hoursDetails;
+    private ChipGroup hoursDays;
+    private Button hoursFrom;
+    private Button hoursTo;
+    private TextView hoursOverlap;
+    private int hoursDayBits;
+    private int hoursFromMinute = 6 * 60;
+    private int hoursToMinute = 12 * 60;
 
     private static final class RuleDraft {
         SmartPlayRule.Order order = SmartPlayRule.Order.LATEST;
@@ -131,6 +151,10 @@ public class SmartPlayEditorFragment extends Fragment {
         List<Feed> feeds;
         Map<Long, String> allTitles;
         Set<Long> books;
+        Set<Long> recordings;
+        ActiveHours.Window hours;
+        List<String> otherNames;
+        List<ActiveHours.Window> otherWindows;
     }
 
     public static SmartPlayEditorFragment newInstance(long smartPlayId) {
@@ -209,6 +233,7 @@ public class SmartPlayEditorFragment extends Fragment {
             updateCoverageWarning();
         });
         root.findViewById(R.id.smartplay_add_priority).setOnClickListener(v -> pickPriorityShow());
+        setupHours(root);
 
         load();
         return root;
@@ -256,7 +281,8 @@ public class SmartPlayEditorFragment extends Fragment {
     }
 
     private String snapshot() {
-        return nameView.getText().toString().trim() + "\n" + SmartPlayJson.toJson(buildDefinition("snapshot"));
+        return nameView.getText().toString().trim() + "\n" + SmartPlayJson.toJson(buildDefinition("snapshot"))
+                + "\n" + hoursKey();
     }
 
     private boolean isDirty() {
@@ -279,6 +305,85 @@ public class SmartPlayEditorFragment extends Fragment {
                 })
                 .setNeutralButton(R.string.smartplay_keep_editing, null)
                 .show();
+    }
+
+    private void setupHours(View root) {
+        hoursSwitch = root.findViewById(R.id.smartplay_hours_switch);
+        hoursDetails = root.findViewById(R.id.smartplay_hours_details);
+        hoursDays = root.findViewById(R.id.smartplay_hours_days);
+        hoursFrom = root.findViewById(R.id.smartplay_hours_from);
+        hoursTo = root.findViewById(R.id.smartplay_hours_to);
+        hoursOverlap = root.findViewById(R.id.smartplay_hours_overlap);
+        for (int day = Calendar.MONDAY; day <= Calendar.FRIDAY; day++) {
+            hoursDayBits |= ActiveHours.dayBit(day);
+        }
+        for (int day : ScheduleText.DAYS_FROM_MONDAY) {
+            Chip chip = new Chip(requireContext());
+            chip.setCheckable(true);
+            chip.setText(ScheduleText.shortDay(day));
+            chip.setTag(day);
+            int bit = ActiveHours.dayBit(day);
+            chip.setOnCheckedChangeListener((button, checked) -> {
+                hoursDayBits = checked ? hoursDayBits | bit : hoursDayBits & ~bit;
+                showHours();
+            });
+            hoursDays.addView(chip);
+        }
+        hoursSwitch.setOnCheckedChangeListener((button, checked) -> showHours());
+        hoursFrom.setOnClickListener(v -> new TimePickerDialog(requireContext(), (picker, hour, minute) -> {
+            hoursFromMinute = hour * 60 + minute;
+            showHours();
+        }, hoursFromMinute / 60, hoursFromMinute % 60, DateFormat.is24HourFormat(requireContext())).show());
+        hoursTo.setOnClickListener(v -> new TimePickerDialog(requireContext(), (picker, hour, minute) -> {
+            hoursToMinute = hour * 60 + minute;
+            showHours();
+        }, hoursToMinute / 60, hoursToMinute % 60, DateFormat.is24HourFormat(requireContext())).show());
+    }
+
+    private void applyHours(ActiveHours.Window window) {
+        if (window != null) {
+            hoursDayBits = window.getDays();
+            hoursFromMinute = window.getFromMinute();
+            hoursToMinute = window.getToMinute();
+        }
+        int bits = hoursDayBits;
+        for (int i = 0; i < hoursDays.getChildCount(); i++) {
+            Chip chip = (Chip) hoursDays.getChildAt(i);
+            chip.setChecked((bits & ActiveHours.dayBit((Integer) chip.getTag())) != 0);
+        }
+        hoursDayBits = bits;
+        hoursSwitch.setChecked(window != null);
+        showHours();
+    }
+
+    private ActiveHours.Window hoursWindow() {
+        return hoursSwitch != null && hoursSwitch.isChecked()
+                ? new ActiveHours.Window(hoursDayBits, hoursFromMinute, hoursToMinute) : null;
+    }
+
+    private String hoursKey() {
+        ActiveHours.Window window = hoursWindow();
+        return window == null ? "off" : window.getDays() + "," + window.getFromMinute() + "," + window.getToMinute();
+    }
+
+    private void showHours() {
+        if (hoursSwitch == null) {
+            return;
+        }
+        hoursDetails.setVisibility(hoursSwitch.isChecked() ? View.VISIBLE : View.GONE);
+        hoursFrom.setText(getString(R.string.smartplay_hours_from,
+                ScheduleText.time(requireContext(), hoursFromMinute / 60, hoursFromMinute % 60)));
+        hoursTo.setText(getString(R.string.smartplay_hours_to,
+                ScheduleText.time(requireContext(), hoursToMinute / 60, hoursToMinute % 60)));
+        ActiveHours.Window window = hoursWindow();
+        List<String> overlapping = new ArrayList<>();
+        for (int i = 0; i < otherWindows.size(); i++) {
+            if (ActiveHours.overlap(window, otherWindows.get(i))) {
+                overlapping.add(otherNames.get(i));
+            }
+        }
+        hoursOverlap.setText(getString(R.string.smartplay_hours_overlap, TextUtils.join(", ", overlapping)));
+        hoursOverlap.setVisibility(overlapping.isEmpty() ? View.GONE : View.VISIBLE);
     }
 
     private void leave() {
@@ -311,8 +416,24 @@ public class SmartPlayEditorFragment extends Fragment {
             result.allTitles = new HashMap<>();
             for (Feed feed : DBReader.getFeedList()) {
                 result.allTitles.put(feed.getId(), title(feed));
-                if (feed.getState() == Feed.STATE_SUBSCRIBED && !Recordings.isRecordingsFeed(feed)) {
+                if (feed.getState() == Feed.STATE_SUBSCRIBED) {
                     subscribed.add(feed);
+                }
+            }
+            result.recordings = new HashSet<>();
+            for (Feed feed : subscribed) {
+                if (Recordings.isRecordingsFeed(feed)) {
+                    result.recordings.add(feed.getId());
+                }
+            }
+            result.hours = smartPlayId >= 0 ? SmartPlayHours.get(requireContext(), smartPlayId) : null;
+            result.otherNames = new ArrayList<>();
+            result.otherWindows = new ArrayList<>();
+            for (SmartPlayStore.StoredSmartPlay other : SmartPlayStore.getInstance(requireContext()).getAll()) {
+                ActiveHours.Window window = SmartPlayHours.get(requireContext(), other.getId());
+                if (other.getId() != smartPlayId && window != null) {
+                    result.otherNames.add(other.getDefinition().getName());
+                    result.otherWindows.add(window);
                 }
             }
             Collections.sort(subscribed, (a, b) -> title(a).compareToIgnoreCase(title(b)));
@@ -333,6 +454,14 @@ public class SmartPlayEditorFragment extends Fragment {
         allFeedTitles.putAll(result.allTitles);
         bookIds.clear();
         bookIds.addAll(result.books);
+        notInAllIds.clear();
+        notInAllIds.addAll(result.books);
+        notInAllIds.addAll(result.recordings);
+        otherNames.clear();
+        otherNames.addAll(result.otherNames);
+        otherWindows.clear();
+        otherWindows.addAll(result.otherWindows);
+        applyHours(result.hours);
         sourceOptions.clear();
         sourceOptions.add(new SourceOption(getString(R.string.smartplay_source_all), EpisodeSource.allFeeds()));
         Map<String, Integer> categoryCounts = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
@@ -476,7 +605,7 @@ public class SmartPlayEditorFragment extends Fragment {
         int shows = 0;
         for (Feed feed : feeds) {
             if (rule.coversFeed(feed.getId(), new HashSet<>(CategoryChips.categoriesOf(feed)),
-                    bookIds.contains(feed.getId()))) {
+                    notInAllIds.contains(feed.getId()))) {
                 shows++;
             }
         }
@@ -552,7 +681,7 @@ public class SmartPlayEditorFragment extends Fragment {
         SmartPlayDefinition definition = buildDefinition("check");
         List<String> uncovered = new ArrayList<>();
         for (Feed feed : feeds) {
-            if (bookIds.contains(feed.getId())) {
+            if (notInAllIds.contains(feed.getId())) {
                 continue;
             }
             if (!definition.coversFeed(feed.getId(), new HashSet<>(CategoryChips.categoriesOf(feed)))) {
@@ -689,7 +818,7 @@ public class SmartPlayEditorFragment extends Fragment {
                 draft.count = selected + 1));
 
         boolean allFeeds = draft.source.getType() == EpisodeSource.Type.ALL_FEEDS;
-        holder.note.setVisibility(allFeeds && !bookIds.isEmpty() ? View.VISIBLE : View.GONE);
+        holder.note.setVisibility(allFeeds && !notInAllIds.isEmpty() ? View.VISIBLE : View.GONE);
     }
 
     private List<String> countLabels(boolean book) {
@@ -780,15 +909,24 @@ public class SmartPlayEditorFragment extends Fragment {
             Toast.makeText(requireContext(), R.string.smartplay_needs_rule, Toast.LENGTH_LONG).show();
             return;
         }
+        ActiveHours.Window hours = hoursWindow();
+        if (hours != null && (hours.getDays() == 0 || hours.getFromMinute() == hours.getToMinute())) {
+            Toast.makeText(requireContext(), R.string.record_needs_times, Toast.LENGTH_LONG).show();
+            return;
+        }
         SmartPlayDefinition definition = buildDefinition(name);
         boolean isActive = smartPlayId >= 0 && smartPlayId == SmartPlayQueueManager.getInstance().getActiveId();
         disposables.add(Observable.fromCallable(() -> {
             SmartPlayStore store = SmartPlayStore.getInstance(requireContext());
+            long id = smartPlayId;
             if (smartPlayId >= 0) {
                 store.update(smartPlayId, definition);
-                return smartPlayId;
+            } else {
+                id = store.insert(definition);
             }
-            return store.insert(definition);
+            SmartPlayHours.set(requireContext(), id, hours);
+            SmartPlayHours.reschedule(requireContext());
+            return id;
         })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

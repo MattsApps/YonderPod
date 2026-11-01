@@ -63,6 +63,11 @@ public final class UpdateScheduler {
             } catch (Exception e) {
                 Log.e(TAG, "Scheduling recordings failed", e);
             }
+            try {
+                SmartPlayHours.reschedule(app);
+            } catch (Exception e) {
+                Log.e(TAG, "Scheduling active hours failed", e);
+            }
         });
     }
 

@@ -1385,7 +1385,7 @@
         <item quantity="one">Category: %1$s · %2$d book</item>
         <item quantity="other">Category: %1$s · %2$d books</item>
     </plurals>
-    <string name="smartplay_books_not_in_all">Audiobooks aren\'t in All feeds. To add chapters, pick a book or Audiobooks.</string>
+    <string name="smartplay_books_not_in_all">Audiobooks and recorded radio shows aren\'t in All feeds. To add them, pick the book or show, or its category.</string>
     <string name="book_not_included">Not in any Smart Play. Books only play through rules that name them.</string>
     <string name="book_progress">Chapter %1$d of %2$d · %3$s left</string>
     <plurals name="book_progress_finished">
@@ -1464,10 +1464,10 @@
     <string name="recording_method_quick">Saved quickly after each show</string>
     <string name="recording_method_live">Recorded live</string>
     <string name="recording_stopped">This show isn\'t being recorded any more.</string>
-    <string name="recording_missed_window">Missed %1$s: couldn\'t save it before the stream moved on</string>
-    <string name="recording_missed_unsupported">Missed %1$s: this stream can\'t be recorded</string>
-    <string name="recording_missed_connection">Missed %1$s: no connection</string>
-    <string name="recording_missed_wifi">Missed %1$s: not on Wi-Fi</string>
+    <string name="recording_missed_window">Missed %1$s – couldn\'t save it before the stream moved on</string>
+    <string name="recording_missed_unsupported">Missed %1$s – this stream can\'t be recorded</string>
+    <string name="recording_missed_connection">Missed %1$s – no connection</string>
+    <string name="recording_missed_wifi">Missed %1$s – not on Wi-Fi</string>
     <string name="recording_saving">Saving %1$s</string>
     <string name="recording_live_notification">Recording %1$s</string>
     <string name="recording_station_missing">That station has been deleted.</string>
@@ -1493,4 +1493,29 @@
     <string name="record_alarm_message">This station can only be recorded live, so YonderPod needs to start on time. Android asks for permission to use Alarms &amp; reminders for this. Without it, recordings may start a few minutes late.</string>
     <string name="record_alarm_allow">Allow</string>
     <string name="record_alarm_later">Not now</string>
+    <string name="recording_status_held">Saved %1$s · Ready %2$s</string>
+    <string name="recording_status_saving_soon">%1$s not saved yet, saving soon</string>
+    <string name="recording_status_waiting_wifi">%1$s not saved yet, waiting for Wi-Fi</string>
+    <string name="recording_status_last_saved">Last saved %1$s</string>
+    <string name="recording_status_nothing_yet">Nothing saved yet</string>
+    <string name="recording_status_on_now">On now until %1$s</string>
+    <string name="recording_status_next">Next: %1$s</string>
+    <string name="recording_default_name">%1$s · %2$s %3$s</string>
+    <string name="recording_times_line">%1$s %2$s–%3$s, %4$s time</string>
+    <string name="station_listen_live">Listen live</string>
+    <string name="station_recorded_shows">Recorded shows</string>
+    <string name="station_no_shows">No recorded shows yet.</string>
+    <string name="station_no_recordings">No recordings yet</string>
+    <string name="record_play_in">Play in…</string>
+    <string name="play_in_title">Play %1$s in</string>
+    <string name="play_in_new">New Smart Play named after this show</string>
+    <string name="smartplay_hours_header">Active hours</string>
+    <string name="smartplay_hours_hint">Switch to this Smart Play by itself at these times, in the phone\'s time zone. What\'s playing finishes first.</string>
+    <string name="smartplay_hours_switch">Switch automatically</string>
+    <string name="smartplay_hours_from">From %1$s</string>
+    <string name="smartplay_hours_to">Until %1$s</string>
+    <string name="smartplay_hours_text">%1$s %2$s–%3$s</string>
+    <string name="smartplay_hours_overlap">Overlaps %1$s. Where hours overlap, the one higher in your Smart Plays list wins.</string>
+    <string name="smartplay_with_hours">%1$s · %2$s</string>
+    <string name="sleep_grid_show">This show ends</string>
 </resources>

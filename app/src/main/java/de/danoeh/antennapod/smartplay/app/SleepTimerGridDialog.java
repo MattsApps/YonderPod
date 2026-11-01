@@ -1,7 +1,9 @@
 package de.danoeh.antennapod.smartplay.app;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,13 +24,21 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.event.playback.SleepTimerUpdatedEvent;
+import de.danoeh.antennapod.model.feed.FeedMedia;
 import de.danoeh.antennapod.playback.service.PlaybackController;
 import de.danoeh.antennapod.playback.service.PlaybackService;
 import de.danoeh.antennapod.playback.service.internal.MediaLibrarySessionCallback;
+import de.danoeh.antennapod.smartplay.radio.ShowTimes;
+import de.danoeh.antennapod.storage.database.DBReader;
+import de.danoeh.antennapod.storage.preferences.PlaybackPreferences;
 import de.danoeh.antennapod.storage.preferences.SleepTimerPreferences;
 import de.danoeh.antennapod.storage.preferences.SleepTimerType;
 import de.danoeh.antennapod.ui.common.Converter;
 import de.danoeh.antennapod.ui.screen.preferences.PreferenceActivity;
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.Single;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class SleepTimerGridDialog extends BottomSheetDialogFragment {
     private static final int[] MINUTES = {15, 30, 45, 60, 75};
@@ -36,6 +46,7 @@ public class SleepTimerGridDialog extends BottomSheetDialogFragment {
         R.id.sleep_75};
 
     private View root;
+    private Disposable liveCheck;
 
     @Nullable
     @Override
@@ -80,12 +91,44 @@ public class SleepTimerGridDialog extends BottomSheetDialogFragment {
         EventBus.getDefault().register(this);
         SleepTimerUpdatedEvent sticky = EventBus.getDefault().getStickyEvent(SleepTimerUpdatedEvent.class);
         show(sticky);
+        checkLive();
+    }
+
+    private void checkLive() {
+        long mediaId = PlaybackPreferences.getCurrentlyPlayingFeedMediaId();
+        Context app = requireContext().getApplicationContext();
+        liveCheck = Single.fromCallable(() -> {
+            FeedMedia media = DBReader.getFeedMedia(mediaId);
+            if (media == null || !media.isLiveRadio()) {
+                return 0L;
+            }
+            ShowTimes.Airing airing = Recordings.airingNow(app, media.getItemId());
+            return airing == null ? -1L : airing.getEnd();
+        })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(showEnd -> {
+                    if (root == null || showEnd == 0) {
+                        return;
+                    }
+                    MaterialButton button = root.findViewById(R.id.sleep_episode);
+                    if (showEnd < 0) {
+                        button.setVisibility(View.GONE);
+                        return;
+                    }
+                    button.setText(R.string.sleep_grid_show);
+                    button.setOnClickListener(v -> start(SleepTimerType.CLOCK,
+                            (int) Math.max(1, (showEnd - System.currentTimeMillis() + 59_999) / 60_000)));
+                }, error -> Log.e("SleepTimerGridDialog", Log.getStackTraceString(error)));
     }
 
     @Override
     public void onStop() {
         super.onStop();
         EventBus.getDefault().unregister(this);
+        if (liveCheck != null) {
+            liveCheck.dispose();
+        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

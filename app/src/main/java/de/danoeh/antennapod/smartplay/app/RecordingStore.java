@@ -14,7 +14,7 @@ import de.danoeh.antennapod.smartplay.radio.ShowTimes;
 
 public class RecordingStore extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "recordings.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
     private static final String SHOWS = "shows";
     private static final String PENDING = "pending";
 
@@ -38,6 +38,7 @@ public class RecordingStore extends SQLiteOpenHelper {
         public String status = "";
         public boolean preferLiveNext;
         public long lastSavedAiring;
+        public long lastMissedAiring;
 
         public ShowTimes.Spec spec() {
             return new ShowTimes.Spec(zoneId, weekdays, startMinute, endMinute);
@@ -87,13 +88,18 @@ public class RecordingStore extends SQLiteOpenHelper {
                 + "name TEXT NOT NULL, zone TEXT NOT NULL, weekdays INTEGER NOT NULL, start_minute INTEGER NOT NULL, "
                 + "end_minute INTEGER NOT NULL, same_local INTEGER NOT NULL, mobile INTEGER NOT NULL, keep INTEGER NOT NULL, "
                 + "feed INTEGER NOT NULL, source TEXT NOT NULL, method TEXT NOT NULL, rewind INTEGER NOT NULL, "
-                + "status TEXT NOT NULL, prefer_live INTEGER NOT NULL, last_saved INTEGER NOT NULL)");
+                + "status TEXT NOT NULL, prefer_live INTEGER NOT NULL, last_saved INTEGER NOT NULL, "
+                + "last_missed INTEGER NOT NULL DEFAULT 0)");
         db.execSQL("CREATE TABLE " + PENDING + " (id INTEGER PRIMARY KEY AUTOINCREMENT, show INTEGER NOT NULL, "
                 + "file TEXT NOT NULL, mime TEXT, airing_start INTEGER NOT NULL, airing_end INTEGER NOT NULL)");
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        if (oldVersion < 2) {
+            db.execSQL("ALTER TABLE " + SHOWS + " ADD COLUMN last_missed INTEGER NOT NULL DEFAULT 0");
+            db.execSQL("UPDATE " + SHOWS + " SET last_missed = last_saved + 1 WHERE status != ''");
+        }
     }
 
     public synchronized List<Show> getShows() {
@@ -181,6 +187,7 @@ public class RecordingStore extends SQLiteOpenHelper {
         values.put("status", show.status);
         values.put("prefer_live", show.preferLiveNext ? 1 : 0);
         values.put("last_saved", show.lastSavedAiring);
+        values.put("last_missed", show.lastMissedAiring);
         return values;
     }
 
@@ -203,6 +210,7 @@ public class RecordingStore extends SQLiteOpenHelper {
         show.status = cursor.getString(cursor.getColumnIndexOrThrow("status"));
         show.preferLiveNext = cursor.getInt(cursor.getColumnIndexOrThrow("prefer_live")) != 0;
         show.lastSavedAiring = cursor.getLong(cursor.getColumnIndexOrThrow("last_saved"));
+        show.lastMissedAiring = cursor.getLong(cursor.getColumnIndexOrThrow("last_missed"));
         return show;
     }
 }
