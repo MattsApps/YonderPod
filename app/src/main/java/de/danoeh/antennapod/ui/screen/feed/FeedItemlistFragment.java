@@ -27,6 +27,7 @@ import de.danoeh.antennapod.smartplay.app.BookDialogs;
 import de.danoeh.antennapod.smartplay.app.BookPanel;
 import de.danoeh.antennapod.smartplay.app.LocalFolders;
 import de.danoeh.antennapod.smartplay.app.PlayInDialog;
+import de.danoeh.antennapod.smartplay.app.RadioSurface;
 import de.danoeh.antennapod.smartplay.app.RecordShowDialog;
 import de.danoeh.antennapod.smartplay.app.RecordingStore;
 import de.danoeh.antennapod.smartplay.app.Recordings;
@@ -86,6 +87,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -634,6 +636,24 @@ public class FeedItemlistFragment extends Fragment implements AdapterView.OnItem
                     if (viewBinding != null) {
                         viewBinding.header.smartplayIncludedIn.setText(text);
                         viewBinding.header.smartplayIncludedIn.setVisibility(View.VISIBLE);
+                    }
+                }, error -> Log.e(TAG, Log.getStackTraceString(error)));
+        Observable.fromCallable(() -> {
+            RecordingStore.Show show = Recordings.isRecordingsFeed(shownFeed)
+                    ? RecordingStore.getInstance(appContext).showForFeed(shownFeed.getId()) : null;
+            List<RecordingStore.Pending> waiting = show != null
+                    ? Recordings.pendingFor(appContext, show.id) : new ArrayList<>();
+            return waiting.isEmpty() ? -1L : waiting.get(0).id;
+        })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(pendingId -> {
+                    if (viewBinding != null) {
+                        viewBinding.header.recordingListenNow.setVisibility(pendingId >= 0 ? View.VISIBLE : View.GONE);
+                        viewBinding.header.recordingListenNow.setOnClickListener(v -> {
+                            v.setVisibility(View.GONE);
+                            RadioSurface.listenNow(appContext, pendingId);
+                        });
                     }
                 }, error -> Log.e(TAG, Log.getStackTraceString(error)));
     }

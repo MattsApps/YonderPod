@@ -70,6 +70,60 @@ public final class RadioBrowser {
         return new ArrayList<>(found.values());
     }
 
+    public static final class Country {
+        public final String name;
+        public final String code;
+        public final int stations;
+
+        Country(String name, String code, int stations) {
+            this.name = name;
+            this.code = code;
+            this.stations = stations;
+        }
+    }
+
+    public static List<Station> byTag(String tag) throws IOException {
+        return fetch("tag", tag.trim());
+    }
+
+    public static List<Station> byCountry(String countryCode) throws IOException {
+        return fetch("countrycode", countryCode.trim());
+    }
+
+    public static List<Country> countries() throws IOException {
+        IOException failure = null;
+        for (String server : SERVERS) {
+            String url = Uri.parse(server + "/json/countries").buildUpon()
+                    .appendQueryParameter("order", "stationcount")
+                    .appendQueryParameter("reverse", "true")
+                    .appendQueryParameter("hidebroken", "true")
+                    .build().toString();
+            Request request = new Request.Builder().url(url).build();
+            try (Response response = AntennapodHttpClient.getHttpClient().newCall(request).execute()) {
+                if (!response.isSuccessful() || response.body() == null) {
+                    failure = new IOException("Radio Browser answered " + response.code());
+                    continue;
+                }
+                List<Country> result = new ArrayList<>();
+                JSONArray array = new JSONArray(response.body().string());
+                for (int i = 0; i < array.length() && result.size() < LIMIT * 2; i++) {
+                    JSONObject country = array.getJSONObject(i);
+                    String code = country.optString("iso_3166_1", "");
+                    String name = country.optString("name", "");
+                    if (!code.isEmpty() && !name.isEmpty()) {
+                        result.add(new Country(name, code, country.optInt("stationcount", 0)));
+                    }
+                }
+                return result;
+            } catch (IOException e) {
+                failure = e;
+            } catch (JSONException e) {
+                failure = new IOException(e);
+            }
+        }
+        throw failure != null ? failure : new IOException("No Radio Browser server");
+    }
+
     public static void countClick(String stationId) {
         if (stationId == null || stationId.isEmpty()) {
             return;

@@ -622,6 +622,32 @@
         <item name="android:background">?android:attr/textColorPrimary</item>
     </style>
 
+    <style name="Widget.WildInk.Block" parent="">
+        <item name="android:background">@drawable/wildink_block</item>
+        <item name="android:minHeight">48dp</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:paddingStart">18dp</item>
+        <item name="android:paddingEnd">18dp</item>
+        <item name="android:fontFamily">@font/bricolage_extrabold</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:letterSpacing">-0.02</item>
+        <item name="android:textColor">?android:attr/textColorPrimary</item>
+    </style>
+
+    <style name="Widget.WildInk.Block.Accent" parent="Widget.WildInk.Block">
+        <item name="android:background">@drawable/wildink_block_accent</item>
+        <item name="android:textColor">?attr/colorOnPrimary</item>
+    </style>
+
+    <style name="Widget.WildInk.Link" parent="">
+        <item name="android:minHeight">48dp</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:fontFamily">@font/bricolage_semibold</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">?android:attr/textColorPrimary</item>
+        <item name="android:background">?android:attr/selectableItemBackground</item>
+    </style>
+
     <style name="Widget.WildInk.Handle" parent="">
         <item name="android:layout_width">44dp</item>
         <item name="android:layout_height">5dp</item>

@@ -20,11 +20,21 @@
             android:inputType="textCapWords" />
 
         <EditText
+            android:id="@+id/station_short_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:hint="@string/radio_short_name_hint"
+            android:importantForAutofill="no"
+            android:inputType="textCapWords" />
+
+        <EditText
             android:id="@+id/station_stream"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/radio_stream_hint"
             android:importantForAutofill="no"
+            android:layout_marginTop="8dp"
             android:inputType="textUri"
             android:textIsSelectable="true" />
 

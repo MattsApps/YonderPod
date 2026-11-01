@@ -1,77 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<androidx.core.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:background="?android:attr/colorBackground"
+    android:fitsSystemWindows="true">
 
-    <com.google.android.material.appbar.AppBarLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:fitsSystemWindows="true">
+        android:orientation="vertical"
+        android:paddingHorizontal="24dp"
+        android:paddingTop="24dp"
+        android:paddingBottom="24dp">
 
-        <com.google.android.material.appbar.MaterialToolbar
-            android:id="@+id/toolbar"
+        <TextView
+            android:id="@+id/station_info"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:minHeight="?attr/actionBarSize"
-            app:navigationContentDescription="@string/toolbar_back_button_content_description"
-            app:navigationIcon="?homeAsUpIndicator" />
+            android:textAppearance="@style/TextAppearance.WildInk.DetailStrong" />
 
-    </com.google.android.material.appbar.AppBarLayout>
+        <TextView
+            android:id="@+id/station_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:lineSpacingMultiplier="0.95"
+            android:textAppearance="@style/TextAppearance.WildInk.Hero" />
 
-    <androidx.core.widget.NestedScrollView
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1">
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/station_listen"
+            android:layout_width="match_parent"
+            android:layout_height="72dp"
+            android:layout_marginTop="24dp"
+            android:text="@string/station_listen_live"
+            android:textSize="20sp"
+            app:icon="@drawable/wildink_play"
+            app:iconGravity="textStart"
+            app:iconSize="28dp" />
+
+        <View
+            style="@style/Widget.WildInk.Bar"
+            android:layout_marginTop="28dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="@string/station_recorded_shows"
+            android:textAppearance="@style/TextAppearance.WildInk.Label" />
 
         <LinearLayout
+            android:id="@+id/station_shows"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="16dp">
+            android:orientation="vertical" />
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/station_listen"
-                android:layout_width="match_parent"
-                android:layout_height="72dp"
-                android:text="@string/station_listen_live"
-                android:textSize="20sp"
-                app:icon="@drawable/ic_play_24dp"
-                app:iconGravity="textStart" />
+        <TextView
+            android:id="@+id/station_record"
+            style="@style/Widget.WildInk.Block"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="@string/record_a_show" />
 
-            <TextView
-                android:id="@+id/station_info"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:textColor="?android:attr/textColorSecondary" />
+    </LinearLayout>
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:text="@string/station_recorded_shows"
-                android:textSize="18sp"
-                android:textStyle="bold" />
-
-            <LinearLayout
-                android:id="@+id/station_shows"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical" />
-
-            <Button
-                android:id="@+id/station_record"
-                style="@style/Widget.Material3.Button.OutlinedButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="@string/record_a_show" />
-
-        </LinearLayout>
-
-    </androidx.core.widget.NestedScrollView>
-
-</LinearLayout>
+</androidx.core.widget.NestedScrollView>

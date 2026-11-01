@@ -33,6 +33,7 @@ public final class RadioStationDialog {
     public static void show(Context context, FeedItem station, Runnable onSaved) {
         View view = LayoutInflater.from(context).inflate(R.layout.radio_station_dialog, null);
         EditText name = view.findViewById(R.id.station_name);
+        EditText shortName = view.findViewById(R.id.station_short_name);
         EditText logo = view.findViewById(R.id.station_logo);
         EditText stream = view.findViewById(R.id.station_stream);
         RadioGroup quality = view.findViewById(R.id.station_quality);
@@ -40,6 +41,8 @@ public final class RadioStationDialog {
         TextView rewind = view.findViewById(R.id.station_rewind);
         RadioPreferences.Station saved = RadioPreferences.get(station.getId());
         name.setText(station.getTitle());
+        String currentShort = Radio.shortName(context, station);
+        shortName.setText(currentShort.equals(station.getTitle()) ? "" : currentShort);
         logo.setText(station.getImageUrl());
         switch (saved.quality) {
             case LOW:
@@ -71,6 +74,7 @@ public final class RadioStationDialog {
                     String newName = name.getText().toString().trim();
                     String newLogo = logo.getText().toString().trim();
                     String newStream = stream.getText().toString().trim();
+                    Radio.setShortName(app, station.getId(), shortName.getText().toString());
                     RadioPreferences.Quality chosen;
                     int checked = quality.getCheckedRadioButtonId();
                     if (checked == R.id.station_quality_low) {

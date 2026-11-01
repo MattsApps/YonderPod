@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?android:attr/selectableItemBackground"
+    android:gravity="center_vertical"
+    android:minHeight="72dp"
+    android:orientation="horizontal"
+    android:paddingVertical="8dp">
+
+    <FrameLayout
+        android:id="@+id/resultArtBox"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:background="?attr/colorSurfaceContainerHigh">
+
+        <TextView
+            android:id="@+id/resultInitials"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fontFamily="@font/bricolage_extrabold"
+            android:gravity="center"
+            android:importantForAccessibility="no"
+            android:textColor="?android:attr/textColorSecondary"
+            android:textSize="16sp" />
+
+        <ImageView
+            android:id="@+id/resultArt"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:importantForAccessibility="no"
+            android:scaleType="centerCrop" />
+
+    </FrameLayout>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="14dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/resultTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:fontFamily="@font/bricolage_extrabold"
+            android:letterSpacing="-0.02"
+            android:lineSpacingMultiplier="0.95"
+            android:maxLines="2"
+            android:textColor="?android:attr/textColorPrimary"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/resultMeta"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:textAppearance="@style/TextAppearance.WildInk.Detail"
+            android:textSize="14sp" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/resultAction"
+        style="@style/Widget.WildInk.Block.Accent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:minHeight="44dp"
+        android:paddingHorizontal="14dp"
+        android:textSize="15sp" />
+
+    <TextView
+        android:id="@+id/resultDone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:fontFamily="@font/bricolage_semibold"
+        android:textColor="?android:attr/textColorSecondary"
+        android:textSize="14sp"
+        android:visibility="gone" />
+
+</LinearLayout>

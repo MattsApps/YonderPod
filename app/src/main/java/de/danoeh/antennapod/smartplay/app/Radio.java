@@ -147,6 +147,7 @@ public final class Radio {
 
     private static final String STATE_PREFS = "YonderRadioState";
     private static final String KEY_LAST_STATION = "lastStation";
+    private static final String KEY_SHORT_NAME = "shortName-";
 
     public static void setLastStation(Context context, long stationItemId) {
         context.getSharedPreferences(STATE_PREFS, Context.MODE_PRIVATE).edit()
@@ -166,6 +167,17 @@ public final class Radio {
             }
         }
         return stations.isEmpty() ? null : stations.get(0);
+    }
+
+    public static String shortName(Context context, FeedItem station) {
+        String name = context.getSharedPreferences(STATE_PREFS, Context.MODE_PRIVATE)
+                .getString(KEY_SHORT_NAME + station.getId(), "");
+        return name.isEmpty() ? (station.getTitle() != null ? station.getTitle() : "") : name;
+    }
+
+    public static void setShortName(Context context, long stationItemId, String name) {
+        context.getSharedPreferences(STATE_PREFS, Context.MODE_PRIVATE).edit()
+                .putString(KEY_SHORT_NAME + stationItemId, name == null ? "" : name.trim()).apply();
     }
 
     public static boolean isPlaying(FeedItem station) {

@@ -25,6 +25,7 @@ import de.danoeh.antennapod.storage.database.DBReader;
 import de.danoeh.antennapod.storage.preferences.RadioPreferences;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Single;
+import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class RadioSurface extends WorldSurface {
@@ -34,7 +35,15 @@ public class RadioSurface extends WorldSurface {
     private static final class State {
         FeedItem station;
         String country = "";
+        String shortName = "";
         final List<FeedItem> ready = new ArrayList<>();
+        final List<Waiting> waiting = new ArrayList<>();
+    }
+
+    private static final class Waiting {
+        long pendingId;
+        String name;
+        String note;
     }
 
     @Override
@@ -55,8 +64,16 @@ public class RadioSurface extends WorldSurface {
             state.station = Radio.lastStation(app);
             if (state.station != null) {
                 state.country = RadioPreferences.get(state.station.getId()).country;
+                state.shortName = Radio.shortName(app, state.station);
             }
             for (RecordingStore.Show show : RecordingStore.getInstance(app).getShows()) {
+                for (RecordingStore.Pending pending : Recordings.pendingFor(app, show.id)) {
+                    Waiting waiting = new Waiting();
+                    waiting.pendingId = pending.id;
+                    waiting.name = show.name;
+                    waiting.note = Recordings.playsAtText(app, Recordings.playsAt(app, pending));
+                    state.waiting.add(waiting);
+                }
                 Feed feed = DBReader.getFeed(show.feedId, false, 0, 0);
                 if (feed != null) {
                     state.ready.addAll(DBReader.getFeedItemList(feed, new FeedItemFilter(FeedItemFilter.UNPLAYED),
@@ -101,8 +118,8 @@ public class RadioSurface extends WorldSurface {
             subtitle.setText(state.country.isEmpty() ? name : name + " · " + state.country);
             subtitle.setVisibility(View.VISIBLE);
             live.setVisibility(View.VISIBLE);
-            title.setText(name.toLowerCase(Locale.getDefault()));
-            title.setTextSize(TypedValue.COMPLEX_UNIT_SP, name.length() > 12 ? 40 : 56);
+            title.setText(state.shortName.toLowerCase(Locale.getDefault()));
+            title.setTextSize(TypedValue.COMPLEX_UNIT_SP, state.shortName.length() > 12 ? 40 : 56);
             hint.setVisibility(View.GONE);
             FeedMedia media = station.getMedia();
             showPlaying(isPlaying(media));
@@ -123,8 +140,21 @@ public class RadioSurface extends WorldSurface {
         }
         LinearLayout list = root.findViewById(R.id.worldReadyList);
         list.removeAllViews();
-        root.findViewById(R.id.worldReady).setVisibility(state.ready.isEmpty() ? View.GONE : View.VISIBLE);
+        root.findViewById(R.id.worldReady).setVisibility(state.ready.isEmpty() && state.waiting.isEmpty()
+                ? View.GONE : View.VISIBLE);
         LayoutInflater inflater = LayoutInflater.from(requireContext());
+        Context app = requireContext().getApplicationContext();
+        for (Waiting waiting : state.waiting) {
+            View row = inflater.inflate(R.layout.world_ready_row, list, false);
+            ((TextView) row.findViewById(R.id.readyTitle)).setText(waiting.name);
+            TextView note = row.findViewById(R.id.readyNote);
+            note.setText(waiting.note);
+            note.setVisibility(View.VISIBLE);
+            TextView when = row.findViewById(R.id.readyWhen);
+            when.setText(R.string.recording_listen_now);
+            row.setOnClickListener(v -> listenNow(app, waiting.pendingId));
+            list.addView(row);
+        }
         for (FeedItem item : state.ready) {
             View row = inflater.inflate(R.layout.world_ready_row, list, false);
             ((TextView) row.findViewById(R.id.readyTitle))
@@ -137,6 +167,20 @@ public class RadioSurface extends WorldSurface {
             });
             list.addView(row);
         }
+    }
+
+    public static void listenNow(Context app, long pendingId) {
+        Disposable ignored = Single.fromCallable(() -> {
+            FeedItem item = Recordings.releaseNow(app, pendingId);
+            if (item == null || item.getMedia() == null) {
+                throw new IllegalStateException("Recording missing");
+            }
+            return item;
+        })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(item -> new PlaybackServiceStarter(app, item.getMedia()).callEvenIfRunning(true).start(),
+                        error -> Log.e(TAG, Log.getStackTraceString(error)));
     }
 
     private String when(long millis) {

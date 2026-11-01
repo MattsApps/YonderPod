@@ -83,6 +83,11 @@ public final class LibriVox {
         return new ArrayList<>(found.values());
     }
 
+    public static List<Book> latest() throws IOException {
+        long since = System.currentTimeMillis() / 1000 - 60L * 24 * 60 * 60;
+        return fetch("since", String.valueOf(since));
+    }
+
     private static List<Book> fetch(String field, String value) throws IOException {
         String url = Uri.parse(API).buildUpon()
                 .appendQueryParameter(field, value)

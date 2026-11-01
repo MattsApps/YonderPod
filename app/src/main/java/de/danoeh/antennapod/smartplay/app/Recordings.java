@@ -437,9 +437,8 @@ public final class Recordings {
         ShowTimes.Airing latest = ShowTimes.latestEnded(show.spec(), now);
         if (held != null) {
             ShowTimes.Airing airing = new ShowTimes.Airing(held.airingStart, held.airingEnd);
-            parts.add(context.getString(R.string.recording_status_held, dayTime(context, held.airingStart),
-                    dayTime(context, ShowTimes.availableAt(show.spec(), airing, TimeZone.getDefault(),
-                            show.sameLocalTime))));
+            parts.add(playsAtText(context, ShowTimes.availableAt(show.spec(), airing, TimeZone.getDefault(),
+                    show.sameLocalTime)));
         } else if (!usesLive(show) && latest != null && latest.getStart() > show.lastSavedAiring
                 && latest.getStart() > show.lastMissedAiring
                 && RecordingRules.stillInWindow(latest, show.rewindSeconds, now)) {
@@ -459,6 +458,58 @@ public final class Recordings {
             parts.add(context.getString(R.string.recording_status_next, dayTime(context, next.getStart())));
         }
         return TextUtils.join(" · ", parts);
+    }
+
+    public static String playsAtText(Context context, long millis) {
+        Calendar then = Calendar.getInstance();
+        then.setTimeInMillis(millis);
+        Calendar today = Calendar.getInstance();
+        boolean sameDay = then.get(Calendar.YEAR) == today.get(Calendar.YEAR)
+                && then.get(Calendar.DAY_OF_YEAR) == today.get(Calendar.DAY_OF_YEAR);
+        return context.getString(R.string.recording_plays_at,
+                sameDay ? ScheduleText.time(context, millis) : dayTime(context, millis));
+    }
+
+    public static List<RecordingStore.Pending> pendingFor(Context context, long showId) {
+        List<RecordingStore.Pending> result = new ArrayList<>();
+        for (RecordingStore.Pending pending : RecordingStore.getInstance(context).getPending()) {
+            if (pending.showId == showId) {
+                result.add(pending);
+            }
+        }
+        return result;
+    }
+
+    public static long playsAt(Context context, RecordingStore.Pending pending) {
+        RecordingStore.Show show = RecordingStore.getInstance(context).getShow(pending.showId);
+        if (show == null) {
+            return pending.airingEnd;
+        }
+        return ShowTimes.availableAt(show.spec(), new ShowTimes.Airing(pending.airingStart, pending.airingEnd),
+                TimeZone.getDefault(), show.sameLocalTime);
+    }
+
+    public static FeedItem releaseNow(Context context, long pendingId) {
+        RecordingStore store = RecordingStore.getInstance(context);
+        for (RecordingStore.Pending pending : store.getPending()) {
+            if (pending.id != pendingId) {
+                continue;
+            }
+            RecordingStore.Show show = store.getShow(pending.showId);
+            File file = new File(pending.file);
+            if (show == null || !file.exists()) {
+                store.deletePending(pending.id);
+                return null;
+            }
+            ShowTimes.Airing airing = new ShowTimes.Airing(pending.airingStart, pending.airingEnd);
+            addRecording(context, show, file, pending.mimeType, airing);
+            store.deletePending(pending.id);
+            WorkManager.getInstance(context).cancelUniqueWork(WORK_PUBLISH + pending.id);
+            EventBus.getDefault().post(new Radio.ChangedEvent());
+            return DBReader.getFeedItemByGuidOrEpisodeUrl(GUID_PREFIX + show.id + ":" + airing.getStart(),
+                    Uri.fromFile(file).toString());
+        }
+        return null;
     }
 
     static String dayTime(Context context, long millis) {

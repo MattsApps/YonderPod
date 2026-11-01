@@ -49,8 +49,8 @@
             android:layout_marginBottom="@dimen/listitem_threeline_verticalpadding"
             android:layout_marginTop="@dimen/listitem_threeline_verticalpadding"
             android:layout_marginEnd="@dimen/listitem_threeline_textleftpadding"
-            app:cardBackgroundColor="@color/non_square_icon_background"
-            app:cardCornerRadius="8dp"
+            app:cardBackgroundColor="?attr/colorSurfaceContainerHigh"
+            app:cardCornerRadius="0dp"
             app:cardPreventCornerOverlap="false"
             app:cardElevation="0dp">
 
@@ -64,7 +64,7 @@
                     android:layout_height="@dimen/thumbnail_length_queue_item"
                     android:layout_centerVertical="true"
                     android:gravity="center"
-                    android:background="@color/light_gray"
+                    android:background="?attr/colorSurfaceContainerHigh"
                     android:maxLines="3"
                     android:padding="2dp"
                     android:ellipsize="end" />

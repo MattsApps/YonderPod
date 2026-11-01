@@ -55,6 +55,8 @@ import de.danoeh.antennapod.playback.service.PlaybackController;
 import de.danoeh.antennapod.storage.databasemaintenanceservice.DatabaseMaintenanceWorker;
 import de.danoeh.antennapod.storage.importexport.AutomaticDatabaseExportWorker;
 import de.danoeh.antennapod.storage.preferences.PlaybackPreferences;
+import de.danoeh.antennapod.smartplay.app.BooksTendFragment;
+import de.danoeh.antennapod.smartplay.app.PodcastsTendFragment;
 import de.danoeh.antennapod.smartplay.app.RadioFragment;
 import de.danoeh.antennapod.smartplay.app.WorldSurface;
 import de.danoeh.antennapod.smartplay.app.WorldsFragment;
@@ -674,7 +676,11 @@ public class MainActivity extends CastEnabledActivity implements NavigationToolb
     }
 
     public void openWorld(int world) {
-        loadFragment(world == WorldSurface.RADIO ? RadioFragment.TAG : SubscriptionFragment.TAG, null);
+        if (world == WorldSurface.RADIO) {
+            loadFragment(RadioFragment.TAG, null);
+        } else {
+            loadFragment(world == WorldSurface.BOOKS ? new BooksTendFragment() : new PodcastsTendFragment());
+        }
         hideWorlds();
     }
 

@@ -4,23 +4,21 @@ import android.content.Context;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.ListView;
+import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.widget.TextViewCompat;
 import androidx.fragment.app.Fragment;
 
-import com.bumptech.glide.Glide;
-import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import org.greenrobot.eventbus.EventBus;
@@ -31,7 +29,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.danoeh.antennapod.R;
-import de.danoeh.antennapod.activity.MainActivity;
 import de.danoeh.antennapod.event.PlayerStatusEvent;
 import de.danoeh.antennapod.model.feed.FeedItem;
 import de.danoeh.antennapod.playback.service.PlaybackServiceStarter;
@@ -40,6 +37,7 @@ import de.danoeh.antennapod.storage.preferences.RadioPreferences;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
+import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class RadioFragment extends Fragment {
@@ -47,35 +45,25 @@ public class RadioFragment extends Fragment {
 
     private final List<FeedItem> stations = new ArrayList<>();
     private final CompositeDisposable disposables = new CompositeDisposable();
-    private StationAdapter adapter;
-    private TextView empty;
+    private View root;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.radio_fragment, container, false);
-        MaterialToolbar toolbar = root.findViewById(R.id.toolbar);
-        ((MainActivity) getActivity()).setupToolbarToggle(toolbar,
-                getParentFragmentManager().getBackStackEntryCount() != 0);
-        toolbar.inflateMenu(R.menu.radio);
-        toolbar.setOnMenuItemClickListener(item -> {
-            if (item.getItemId() == R.id.radio_add) {
-                chooseHowToAdd();
-                return true;
-            }
-            return false;
-        });
-        empty = root.findViewById(R.id.radio_empty);
-        ListView list = root.findViewById(R.id.radio_list);
-        adapter = new StationAdapter();
-        list.setAdapter(adapter);
-        list.setOnItemClickListener((parent, view, position, id) -> ((MainActivity) getActivity())
-                .loadChildFragment(RadioStationFragment.newInstance(stations.get(position).getId())));
-        list.setOnItemLongClickListener((parent, view, position, id) -> {
-            showStationMenu(view, stations.get(position));
-            return true;
-        });
+        root = inflater.inflate(R.layout.tend_fragment, container, false);
+        TendRows.setUp(this, root, R.string.world_radio, R.string.tend_find_station,
+                () -> TendRows.open(this, new RadioSearchFragment()));
+        ((TextView) root.findViewById(R.id.tendListLabel)).setText(R.string.tend_stations);
+        LinearLayout extra = root.findViewById(R.id.tendExtra);
+        TextView paste = new TextView(requireContext());
+        TextViewCompat.setTextAppearance(paste, R.style.Widget_WildInk_Link);
+        paste.setText(R.string.find_paste_stream);
+        paste.setMinHeight((int) (48 * getResources().getDisplayMetrics().density));
+        paste.setGravity(Gravity.CENTER_VERTICAL);
+        paste.setTextColor(paste.getTextColors().withAlpha(200));
+        paste.setOnClickListener(v -> showAddLink(requireContext(), this::load));
+        extra.addView(paste);
         return root;
     }
 
@@ -113,8 +101,35 @@ public class RadioFragment extends Fragment {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onPlayerStatusChanged(PlayerStatusEvent event) {
-        if (adapter != null) {
-            adapter.notifyDataSetChanged();
+        showStations();
+    }
+
+    private void showStations() {
+        if (root == null) {
+            return;
+        }
+        LinearLayout list = root.findViewById(R.id.tendList);
+        list.removeAllViews();
+        for (FeedItem station : stations) {
+            String meta = details(requireContext(), RadioPreferences.get(station.getId()));
+            if (Radio.isPlaying(station)) {
+                meta = meta.isEmpty() ? getString(R.string.radio_playing)
+                        : getString(R.string.radio_playing) + " · " + meta;
+            }
+            View row = TendRows.row(this, list, station.getTitle(), meta, station.getImageUrl(), "", "",
+                    v -> TendRows.open(this, RadioStationFragment.newInstance(station.getId())));
+            row.setOnLongClickListener(v -> {
+                showStationMenu(v, station);
+                return true;
+            });
+            list.addView(row);
+        }
+        if (stations.isEmpty()) {
+            TextView empty = new TextView(requireContext());
+            TextViewCompat.setTextAppearance(empty, R.style.TextAppearance_WildInk_Detail);
+            empty.setText(R.string.radio_empty);
+            empty.setPadding(0, (int) (12 * getResources().getDisplayMetrics().density), 0, 0);
+            list.addView(empty);
         }
     }
 
@@ -133,47 +148,31 @@ public class RadioFragment extends Fragment {
                 .subscribe(loaded -> {
                     stations.clear();
                     stations.addAll(loaded);
-                    adapter.notifyDataSetChanged();
-                    empty.setVisibility(stations.isEmpty() ? View.VISIBLE : View.GONE);
+                    showStations();
                 }, error -> Log.e(TAG, Log.getStackTraceString(error))));
     }
 
-    private void chooseHowToAdd() {
-        String[] choices = {getString(R.string.radio_add_search), getString(R.string.radio_add_link)};
-        new MaterialAlertDialogBuilder(requireContext())
-                .setTitle(R.string.radio_add)
-                .setItems(choices, (dialog, which) -> {
-                    if (which == 0) {
-                        ((MainActivity) getActivity()).loadChildFragment(new RadioSearchFragment());
-                    } else {
-                        showAddLink();
-                    }
-                })
-                .setNegativeButton(R.string.cancel_label, null)
-                .show();
-    }
-
-    private void showAddLink() {
-        View view = LayoutInflater.from(requireContext()).inflate(R.layout.radio_add_link_dialog, null);
+    static void showAddLink(Context context, Runnable onAdded) {
+        View view = LayoutInflater.from(context).inflate(R.layout.radio_add_link_dialog, null);
         EditText url = view.findViewById(R.id.link_url);
         EditText name = view.findViewById(R.id.link_name);
-        new MaterialAlertDialogBuilder(requireContext())
+        new MaterialAlertDialogBuilder(context)
                 .setTitle(R.string.radio_add_link)
                 .setView(view)
                 .setPositiveButton(R.string.radio_add_button, (dialog, which) ->
-                        addLink(url.getText().toString().trim(), name.getText().toString().trim()))
+                        addLink(context, url.getText().toString().trim(), name.getText().toString().trim(), onAdded))
                 .setNegativeButton(R.string.cancel_label, null)
                 .show();
     }
 
-    private void addLink(String link, String name) {
+    private static void addLink(Context context, String link, String name, Runnable onAdded) {
         if (!link.startsWith("http://") && !link.startsWith("https://")) {
-            Toast.makeText(getContext(), R.string.radio_link_invalid, Toast.LENGTH_LONG).show();
+            Toast.makeText(context, R.string.radio_link_invalid, Toast.LENGTH_LONG).show();
             return;
         }
-        Context app = requireContext().getApplicationContext();
-        Toast.makeText(getContext(), R.string.radio_checking, Toast.LENGTH_SHORT).show();
-        disposables.add(Single.fromCallable(() -> {
+        Context app = context.getApplicationContext();
+        Toast.makeText(context, R.string.radio_checking, Toast.LENGTH_SHORT).show();
+        Disposable ignored = Single.fromCallable(() -> {
             StreamCheck.Result check = StreamCheck.check(link);
             String title = TextUtils.isEmpty(name) ? StreamLinks.nameFromUrl(check.streamUrl) : name;
             return Radio.add(app, title, check.streamUrl, check.mimeType, "", "",
@@ -182,14 +181,12 @@ public class RadioFragment extends Fragment {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(station -> {
-                    load();
-                    if (isAdded()) {
-                        RadioStationDialog.show(requireContext(), station, this::load);
-                    }
+                    onAdded.run();
+                    RadioStationDialog.show(context, station, onAdded);
                 }, error -> {
                     Log.e(TAG, Log.getStackTraceString(error));
                     Toast.makeText(app, R.string.radio_link_failed, Toast.LENGTH_LONG).show();
-                }));
+                });
     }
 
     private void showStationMenu(View anchor, FeedItem station) {
@@ -245,39 +242,5 @@ public class RadioFragment extends Fragment {
             return context.getString(R.string.radio_bitrate, bitrate, codec).trim();
         }
         return codec;
-    }
-
-    private final class StationAdapter extends BaseAdapter {
-        @Override
-        public int getCount() {
-            return stations.size();
-        }
-
-        @Override
-        public FeedItem getItem(int position) {
-            return stations.get(position);
-        }
-
-        @Override
-        public long getItemId(int position) {
-            return stations.get(position).getId();
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            View view = convertView != null ? convertView
-                    : LayoutInflater.from(parent.getContext()).inflate(R.layout.librivox_result_item, parent, false);
-            FeedItem station = getItem(position);
-            ((TextView) view.findViewById(R.id.librivox_book_title)).setText(station.getTitle());
-            TextView playing = view.findViewById(R.id.librivox_book_author);
-            playing.setText(R.string.radio_playing);
-            playing.setVisibility(Radio.isPlaying(station) ? View.VISIBLE : View.GONE);
-            ((TextView) view.findViewById(R.id.librivox_book_details))
-                    .setText(details(parent.getContext(), RadioPreferences.get(station.getId())));
-            ImageView logo = view.findViewById(R.id.librivox_cover);
-            Glide.with(RadioFragment.this).load(station.getImageUrl()).placeholder(R.drawable.ic_radio)
-                    .error(R.drawable.ic_radio).into(logo);
-            return view;
-        }
     }
 }

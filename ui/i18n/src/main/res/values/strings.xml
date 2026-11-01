@@ -1419,7 +1419,7 @@
     </plurals>
     <!-- YonderPod radio -->
     <string name="radio_title">Radio</string>
-    <string name="radio_empty">No stations yet. Tap + to search for a station or paste a stream link.</string>
+    <string name="radio_empty">No stations yet. Find one above, or paste a stream link below.</string>
     <string name="radio_add">Add station</string>
     <string name="radio_add_search">Search stations</string>
     <string name="radio_add_link">Paste a stream link</string>
@@ -1547,4 +1547,106 @@
     <string name="world_books_empty_hint">Swipe up to find one on LibriVox.</string>
     <string name="world_radio_empty">no station yet</string>
     <string name="world_radio_empty_hint">Swipe up to add one.</string>
+    <string name="tend_title">tend</string>
+    <string name="tend_back">Back to the surface</string>
+    <string name="tend_find_podcast">find a podcast</string>
+    <string name="tend_find_book">find a book on LibriVox</string>
+    <string name="tend_find_station">find a station</string>
+    <string name="tend_smart_plays">Smart Plays</string>
+    <string name="tend_new_smart_play">New Smart Play</string>
+    <string name="tend_subscriptions">Subscriptions</string>
+    <string name="tend_new_saved">new · saved</string>
+    <string name="tend_uncategorised">uncategorised</string>
+    <string name="tend_history">history</string>
+    <string name="tend_tune">tune ›</string>
+    <string name="tend_books">Your books</string>
+    <string name="tend_no_books">No books yet. Find one on LibriVox above.</string>
+    <string name="tend_book_progress">chapter %1$d of %2$d</string>
+    <string name="tend_book_finished">finished</string>
+    <string name="tend_folders">Your audio folders</string>
+    <string name="tend_add_folder">add a folder</string>
+    <string name="tend_stations">Your stations</string>
+    <string name="tend_nothing_yet">Nothing here yet.</string>
+    <string name="find_title">find</string>
+    <string name="find_results">results</string>
+    <string name="find_trending">trending</string>
+    <string name="find_categories">categories</string>
+    <string name="find_genres">genres</string>
+    <string name="find_new">new</string>
+    <string name="find_near_me">near me</string>
+    <string name="find_countries">countries</string>
+    <string name="find_follow">follow</string>
+    <string name="find_following">✓ following</string>
+    <string name="find_listen">listen</string>
+    <string name="find_on_shelf">✓ on your shelf</string>
+    <string name="find_add">add</string>
+    <string name="find_added">✓ added</string>
+    <string name="find_paste_feed">or paste a feed link, for private and Patreon feeds</string>
+    <string name="find_librivox_about">free public-domain audiobooks from LibriVox</string>
+    <string name="find_paste_stream">or paste a stream link</string>
+    <string name="find_searching">Looking…</string>
+    <string name="find_nothing">Nothing found for \"%1$s\"</string>
+    <string name="find_error">Couldn\'t reach the search. Check your connection and try again.</string>
+    <string name="find_type_above">Type above and press search, or try another tab.</string>
+    <string name="find_feed_link_hint">Feed link</string>
+    <string name="find_following_toast">Following %1$s. Its episodes will appear shortly.</string>
+    <string name="find_on_shelf_toast">%1$s is on your shelf. Its chapters will appear shortly.</string>
+    <string name="find_open">Open</string>
+    <string-array name="find_podcast_categories">
+        <item>comedy</item>
+        <item>news</item>
+        <item>politics</item>
+        <item>true crime</item>
+        <item>history</item>
+        <item>science</item>
+        <item>sport</item>
+        <item>society and culture</item>
+        <item>business</item>
+        <item>technology</item>
+        <item>arts</item>
+        <item>health</item>
+        <item>education</item>
+        <item>music</item>
+        <item>fiction</item>
+        <item>kids and family</item>
+        <item>religion</item>
+        <item>tv and film</item>
+    </string-array>
+    <string-array name="find_book_genres">
+        <item>crime</item>
+        <item>detective</item>
+        <item>thriller</item>
+        <item>adventure</item>
+        <item>biography</item>
+        <item>humour</item>
+        <item>romance</item>
+        <item>science fiction</item>
+        <item>fantasy</item>
+        <item>horror</item>
+        <item>history</item>
+        <item>poetry</item>
+        <item>philosophy</item>
+        <item>children</item>
+    </string-array>
+    <string-array name="find_radio_genres">
+        <item>news</item>
+        <item>talk</item>
+        <item>pop</item>
+        <item>rock</item>
+        <item>indie</item>
+        <item>jazz</item>
+        <item>classical</item>
+        <item>electronic</item>
+        <item>dance</item>
+        <item>hip hop</item>
+        <item>folk</item>
+        <item>country</item>
+        <item>soul</item>
+        <item>reggae</item>
+        <item>ambient</item>
+        <item>metal</item>
+    </string-array>
+    <string name="recording_plays_at">Saved · plays here at %1$s</string>
+    <string name="recording_listen_now">listen now anyway</string>
+    <string name="radio_short_name_hint">Short name, shown big on the Radio screen</string>
 </resources>

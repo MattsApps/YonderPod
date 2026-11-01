@@ -1,6 +1,5 @@
 package de.danoeh.antennapod.ui.screen.feed;
 
-import android.graphics.PorterDuff.Mode;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
 import android.view.Menu;
@@ -25,7 +24,7 @@ public class ToolbarIconTintManager extends OnCollapseChangeListener {
 
     @Override
     public void onCollapseChanged(boolean isCollapsed) {
-        PorterDuffColorFilter filter = isCollapsed ? null : new PorterDuffColorFilter(0xffffffff, Mode.SRC_ATOP);
+        PorterDuffColorFilter filter = null;
 
         safeSetColorFilter(toolbar.getNavigationIcon(), filter);
         safeSetColorFilter(toolbar.getOverflowIcon(), filter);

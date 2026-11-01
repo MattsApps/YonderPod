@@ -16,7 +16,7 @@
         android:layout_height="56dp"
         android:clickable="false"
         app:cardBackgroundColor="@color/non_square_icon_background"
-        app:cardCornerRadius="12dp"
+        app:cardCornerRadius="0dp"
         app:cardElevation="0dp">
 
         <RelativeLayout

@@ -1,115 +1,147 @@
 package de.danoeh.antennapod.smartplay.app;
 
 import android.content.Context;
-import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
-import android.widget.BaseAdapter;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.ListView;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-
-import com.bumptech.glide.Glide;
-import com.google.android.material.appbar.MaterialToolbar;
-
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
+import java.util.Set;
 
 import de.danoeh.antennapod.R;
-import de.danoeh.antennapod.activity.MainActivity;
+import de.danoeh.antennapod.model.feed.FeedItem;
 import de.danoeh.antennapod.playback.base.MediaItemAdapter;
 import de.danoeh.antennapod.storage.preferences.RadioPreferences;
-import de.danoeh.antennapod.ui.common.Keyboard;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Single;
-import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
-public class RadioSearchFragment extends Fragment {
+public class RadioSearchFragment extends FindFragment {
     private static final String TAG = "RadioSearch";
+    private static final String COUNTRY = "country:";
+    private static final String TAG_PREFIX = "tag:";
 
-    private final List<RadioBrowser.Station> results = new ArrayList<>();
-    private final CompositeDisposable disposables = new CompositeDisposable();
-    private ResultAdapter adapter;
-    private ProgressBar progress;
-    private TextView message;
-
-    @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.librivox_search_fragment, container, false);
-        MaterialToolbar toolbar = root.findViewById(R.id.toolbar);
-        toolbar.setTitle(R.string.radio_search_title);
-        ((MainActivity) getActivity()).setupToolbarToggle(toolbar, true);
-        ((TextView) root.findViewById(R.id.librivox_about)).setText(R.string.radio_search_about);
-        progress = root.findViewById(R.id.librivox_progress);
-        message = root.findViewById(R.id.librivox_message);
-        ListView list = root.findViewById(R.id.librivox_results);
-        adapter = new ResultAdapter();
-        list.setAdapter(adapter);
-        list.setOnItemClickListener((parent, view, position, id) -> addAndPlay(results.get(position)));
-        EditText query = root.findViewById(R.id.librivox_query);
-        query.setHint(R.string.radio_search_hint);
-        query.setOnEditorActionListener((v, actionId, event) -> {
-            if (actionId == EditorInfo.IME_ACTION_SEARCH || event != null) {
-                search(query.getText().toString());
-                Keyboard.hide(getActivity());
-                return true;
+    protected int world() {
+        return R.string.world_radio;
+    }
+
+    @Override
+    protected int hint() {
+        return R.string.radio_search_hint;
+    }
+
+    @Override
+    protected int[] tabLabels() {
+        return new int[] {R.string.find_results, R.string.find_near_me, R.string.find_countries,
+            R.string.find_genres};
+    }
+
+    @Override
+    protected int actionLabel() {
+        return R.string.find_add;
+    }
+
+    @Override
+    protected int doneLabel() {
+        return R.string.find_added;
+    }
+
+    @Override
+    protected int footer() {
+        return R.string.find_paste_stream;
+    }
+
+    @Override
+    protected boolean footerIsLink() {
+        return true;
+    }
+
+    @Override
+    protected void onFooter() {
+        RadioFragment.showAddLink(requireContext(), () -> { });
+    }
+
+    @Override
+    protected List<Result> fetch(int tab, String query) throws Exception {
+        Context app = requireContext().getApplicationContext();
+        List<Result> results = new ArrayList<>();
+        if (tab == 2) {
+            for (RadioBrowser.Country country : RadioBrowser.countries()) {
+                Result result = new Result();
+                result.title = country.name;
+                result.meta = String.valueOf(country.stations);
+                result.choice = true;
+                result.choiceQuery = COUNTRY + country.code;
+                results.add(result);
             }
-            return false;
-        });
-        query.requestFocus();
-        Keyboard.show(getContext(), query);
-        return root;
+            return results;
+        }
+        if (tab == 3) {
+            for (String genre : app.getResources().getStringArray(R.array.find_radio_genres)) {
+                Result result = new Result();
+                result.title = genre;
+                result.choice = true;
+                result.choiceQuery = TAG_PREFIX + genre;
+                results.add(result);
+            }
+            return results;
+        }
+        List<RadioBrowser.Station> stations;
+        if (tab == 1) {
+            stations = RadioBrowser.byCountry(Locale.getDefault().getCountry());
+        } else if (query.startsWith(COUNTRY)) {
+            stations = RadioBrowser.byCountry(query.substring(COUNTRY.length()));
+        } else if (query.startsWith(TAG_PREFIX)) {
+            stations = RadioBrowser.byTag(query.substring(TAG_PREFIX.length()));
+        } else {
+            stations = RadioBrowser.search(query);
+        }
+        Set<String> added = new HashSet<>();
+        Set<String> names = new HashSet<>();
+        for (FeedItem station : Radio.stations(app)) {
+            if (station.getMedia() != null) {
+                added.add(station.getMedia().getDownloadUrl());
+            }
+            names.add(station.getTitle());
+        }
+        for (RadioBrowser.Station station : stations) {
+            Result result = new Result();
+            result.title = station.name;
+            List<String> meta = new ArrayList<>();
+            if (!station.country.isEmpty()) {
+                meta.add(station.country);
+            }
+            String quality = RadioFragment.quality(app, station.codec, station.bitrate);
+            if (!quality.isEmpty()) {
+                meta.add(quality);
+            }
+            result.meta = TextUtils.join(" · ", meta);
+            result.artUrl = station.logoUrl;
+            result.payload = station;
+            result.done = added.contains(station.streamUrl) || names.contains(station.name);
+            results.add(result);
+        }
+        return results;
     }
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        disposables.clear();
+    protected void act(Result result, Runnable onDone) {
+        add((RadioBrowser.Station) result.payload, onDone, false);
     }
 
-    private void search(String query) {
-        if (TextUtils.isEmpty(query.trim())) {
-            return;
-        }
-        disposables.clear();
-        results.clear();
-        adapter.notifyDataSetChanged();
-        message.setVisibility(View.GONE);
-        progress.setVisibility(View.VISIBLE);
-        disposables.add(Single.fromCallable(() -> RadioBrowser.search(query))
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(stations -> {
-                    progress.setVisibility(View.GONE);
-                    results.addAll(stations);
-                    adapter.notifyDataSetChanged();
-                    if (stations.isEmpty()) {
-                        message.setText(getString(R.string.radio_no_results, query.trim()));
-                        message.setVisibility(View.VISIBLE);
-                    }
-                }, error -> {
-                    Log.e(TAG, Log.getStackTraceString(error));
-                    progress.setVisibility(View.GONE);
-                    message.setText(R.string.radio_search_error);
-                    message.setVisibility(View.VISIBLE);
-                }));
+    @Override
+    protected void open(Result result) {
+        RadioBrowser.Station station = (RadioBrowser.Station) result.payload;
+        add(station, () -> {
+            result.done = true;
+        }, true);
     }
 
-    private void addAndPlay(RadioBrowser.Station found) {
+    private void add(RadioBrowser.Station found, Runnable onDone, boolean play) {
         Context app = requireContext().getApplicationContext();
         Toast.makeText(app, getString(R.string.radio_adding, found.name), Toast.LENGTH_SHORT).show();
         disposables.add(Single.fromCallable(() -> {
@@ -130,47 +162,13 @@ public class RadioSearchFragment extends Fragment {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(station -> {
-                    RadioFragment.play(app, station);
-                    if (isAdded()) {
-                        getParentFragmentManager().popBackStack();
+                    onDone.run();
+                    if (play) {
+                        RadioFragment.play(app, station);
                     }
                 }, error -> {
                     Log.e(TAG, Log.getStackTraceString(error));
                     Toast.makeText(app, R.string.radio_link_failed, Toast.LENGTH_LONG).show();
                 }));
-    }
-
-    private final class ResultAdapter extends BaseAdapter {
-        @Override
-        public int getCount() {
-            return results.size();
-        }
-
-        @Override
-        public RadioBrowser.Station getItem(int position) {
-            return results.get(position);
-        }
-
-        @Override
-        public long getItemId(int position) {
-            return position;
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            View view = convertView != null ? convertView
-                    : LayoutInflater.from(parent.getContext()).inflate(R.layout.librivox_result_item, parent, false);
-            RadioBrowser.Station station = getItem(position);
-            ((TextView) view.findViewById(R.id.librivox_book_title)).setText(station.name);
-            TextView country = view.findViewById(R.id.librivox_book_author);
-            country.setText(station.country);
-            country.setVisibility(station.country.isEmpty() ? View.GONE : View.VISIBLE);
-            ((TextView) view.findViewById(R.id.librivox_book_details))
-                    .setText(RadioFragment.quality(parent.getContext(), station.codec, station.bitrate));
-            ImageView logo = view.findViewById(R.id.librivox_cover);
-            Glide.with(RadioSearchFragment.this).load(station.logoUrl).placeholder(R.drawable.ic_radio)
-                    .error(R.drawable.ic_radio).into(logo);
-            return view;
-        }
     }
 }

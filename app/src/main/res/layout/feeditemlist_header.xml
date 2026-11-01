@@ -20,7 +20,6 @@
             android:id="@+id/buttonContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/image_readability_tint"
             android:orientation="horizontal"
             android:gravity="center_vertical"
             android:layout_alignParentBottom="true">
@@ -58,6 +57,7 @@
                 android:scaleType="fitXY"
                 android:padding="12dp"
                 app:srcCompat="@drawable/ic_info_white"
+                app:tint="?android:attr/textColorPrimary"
                 tools:visibility="visible" />
 
             <ImageButton
@@ -69,6 +69,7 @@
                 android:scaleType="fitXY"
                 android:padding="12dp"
                 app:srcCompat="@drawable/ic_filter_white"
+                app:tint="?android:attr/textColorPrimary"
                 tools:visibility="visible" />
 
             <ImageButton
@@ -80,6 +81,7 @@
                 android:scaleType="fitXY"
                 android:padding="12dp"
                 app:srcCompat="@drawable/ic_settings_white"
+                app:tint="?android:attr/textColorPrimary"
                 tools:visibility="visible" />
 
         </LinearLayout>
@@ -90,6 +92,7 @@
             android:layout_alignParentBottom="true"
             android:layout_alignParentLeft="true"
             android:scaleType="fitXY"
+            android:visibility="gone"
             app:srcCompat="@drawable/ic_rounded_corner_left" />
 
         <ImageView
@@ -98,6 +101,7 @@
             android:layout_alignParentBottom="true"
             android:layout_alignParentRight="true"
             android:scaleType="fitXY"
+            android:visibility="gone"
             app:srcCompat="@drawable/ic_rounded_corner_right" />
 
         <androidx.cardview.widget.CardView
@@ -108,8 +112,8 @@
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
             android:layout_alignParentBottom="true"
-            app:cardBackgroundColor="@color/non_square_icon_background"
-            app:cardCornerRadius="16dp"
+            app:cardBackgroundColor="?attr/colorSurfaceContainerHigh"
+            app:cardCornerRadius="0dp"
             app:cardPreventCornerOverlap="false"
             app:cardElevation="0dp">
 
@@ -137,11 +141,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
-                android:maxLines="2"
-                android:shadowColor="@color/black"
-                android:shadowRadius="2"
-                android:textColor="@color/white"
-                style="@style/AntennaPod.TextView.Heading"
+                android:maxLines="3"
+                android:lineSpacingMultiplier="0.95"
+                android:textAppearance="@style/TextAppearance.WildInk.ItemTitle"
+                android:textSize="24sp"
                 tools:text="Podcast title" />
 
             <TextView
@@ -150,10 +153,8 @@
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
                 android:maxLines="2"
-                android:shadowColor="@color/black"
-                android:shadowRadius="2"
-                android:textColor="@color/white"
-                android:textSize="@dimen/text_size_small"
+                android:textAppearance="@style/TextAppearance.WildInk.DetailStrong"
+                android:textSize="14sp"
                 tools:text="Podcast author" />
 
         </LinearLayout>
@@ -219,6 +220,16 @@
             android:paddingHorizontal="16dp"
             android:paddingVertical="4dp"
             android:textColor="?android:attr/textColorSecondary"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/recordingListenNow"
+            style="@style/Widget.WildInk.Link"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="16dp"
+            android:text="@string/recording_listen_now"
+            android:textColor="?attr/colorPrimary"
             android:visibility="gone" />
 
         <LinearLayout

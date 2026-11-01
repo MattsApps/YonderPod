@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,9 +13,10 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.widget.TextViewCompat;
 import androidx.fragment.app.Fragment;
 
-import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.color.MaterialColors;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -22,6 +24,7 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.activity.MainActivity;
@@ -47,7 +50,7 @@ public class RadioStationFragment extends Fragment {
     private final CompositeDisposable disposables = new CompositeDisposable();
     private long stationId;
     private FeedItem station;
-    private MaterialToolbar toolbar;
+    private TextView name;
     private TextView info;
     private LinearLayout showsView;
 
@@ -56,10 +59,12 @@ public class RadioStationFragment extends Fragment {
         String times;
         String status;
         List<FeedItem> latest;
+        List<RecordingStore.Pending> waiting;
     }
 
     private static final class Loaded {
         FeedItem station;
+        String shortName = "";
         List<ShowBlock> shows = new ArrayList<>();
     }
 
@@ -77,8 +82,7 @@ public class RadioStationFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         stationId = getArguments() != null ? getArguments().getLong(ARG_STATION, -1) : -1;
         View root = inflater.inflate(R.layout.radio_station_fragment, container, false);
-        toolbar = root.findViewById(R.id.toolbar);
-        ((MainActivity) getActivity()).setupToolbarToggle(toolbar, true);
+        name = root.findViewById(R.id.station_name);
         info = root.findViewById(R.id.station_info);
         showsView = root.findViewById(R.id.station_shows);
         root.findViewById(R.id.station_listen).setOnClickListener(v -> {
@@ -123,11 +127,15 @@ public class RadioStationFragment extends Fragment {
         disposables.add(Single.fromCallable(() -> {
             Loaded loaded = new Loaded();
             loaded.station = DBReader.getFeedItem(stationId);
+            if (loaded.station != null) {
+                loaded.shortName = Radio.shortName(app, loaded.station);
+            }
             for (RecordingStore.Show show : Recordings.showsFor(app, stationId)) {
                 ShowBlock block = new ShowBlock();
                 block.show = show;
                 block.times = Recordings.timesLine(app, show);
                 block.status = Recordings.summary(app, show);
+                block.waiting = Recordings.pendingFor(app, show.id);
                 Feed feed = DBReader.getFeed(show.feedId, false, 0, 0);
                 block.latest = feed == null ? new ArrayList<>() : DBReader.getFeedItemList(feed,
                         FeedItemFilter.unfiltered(), SortOrder.DATE_NEW_OLD, 0, LATEST);
@@ -146,23 +154,33 @@ public class RadioStationFragment extends Fragment {
             getParentFragmentManager().popBackStack();
             return;
         }
-        toolbar.setTitle(station.getTitle());
+        name.setText(loaded.shortName.toLowerCase(Locale.getDefault()));
+        name.setTextSize(TypedValue.COMPLEX_UNIT_SP, loaded.shortName.length() > 12 ? 40 : 56);
         String details = RadioFragment.details(requireContext(), RadioPreferences.get(station.getId()));
-        info.setText(details);
-        info.setVisibility(details.isEmpty() ? View.GONE : View.VISIBLE);
+        info.setText(details.isEmpty() ? station.getTitle() : station.getTitle() + " · " + details);
         showsView.removeAllViews();
         if (loaded.shows.isEmpty()) {
             showsView.addView(line(getString(R.string.station_no_shows), false));
         }
         for (ShowBlock block : loaded.shows) {
-            TextView name = line(block.show.name, true);
-            name.setTextSize(16);
-            name.setPadding(0, dp(16), 0, 0);
-            name.setOnClickListener(v -> ((MainActivity) getActivity())
+            TextView showName = line(block.show.name, true);
+            TextViewCompat.setTextAppearance(showName, R.style.TextAppearance_WildInk_SectionHeading);
+            showName.setPadding(0, dp(18), 0, dp(2));
+            showName.setOnClickListener(v -> ((MainActivity) getActivity())
                     .loadChildFragment(FeedItemlistFragment.newInstance(block.show.feedId)));
-            showsView.addView(name);
+            showsView.addView(showName);
             showsView.addView(line(block.times, false));
             showsView.addView(line(block.status, false));
+            Context app = requireContext().getApplicationContext();
+            for (RecordingStore.Pending pending : block.waiting) {
+                TextView listen = line(getString(R.string.recording_listen_now), true);
+                TextViewCompat.setTextAppearance(listen, R.style.Widget_WildInk_Link);
+                listen.setTextColor(MaterialColors.getColor(listen, R.attr.colorPrimary));
+                listen.setMinHeight(dp(48));
+                listen.setGravity(Gravity.CENTER_VERTICAL);
+                listen.setOnClickListener(v -> RadioSurface.listenNow(app, pending.id));
+                showsView.addView(listen);
+            }
             if (block.latest.isEmpty()) {
                 showsView.addView(line(getString(R.string.station_no_recordings), false));
             }
@@ -173,7 +191,9 @@ public class RadioStationFragment extends Fragment {
                             item.getMedia().getDuration(), false);
                 }
                 TextView recording = line(text, true);
-                recording.setPadding(0, dp(10), 0, dp(10));
+                TextViewCompat.setTextAppearance(recording, R.style.Widget_WildInk_Link);
+                recording.setMinHeight(dp(48));
+                recording.setGravity(Gravity.CENTER_VERTICAL);
                 recording.setOnClickListener(v -> {
                     if (item.getMedia() != null) {
                         new PlaybackServiceStarter(requireContext(), item.getMedia()).callEvenIfRunning(true).start();
@@ -192,7 +212,7 @@ public class RadioStationFragment extends Fragment {
             requireContext().getTheme().resolveAttribute(android.R.attr.selectableItemBackground, value, true);
             view.setBackgroundResource(value.resourceId);
         } else {
-            view.setTextColor(view.getTextColors().withAlpha(180));
+            TextViewCompat.setTextAppearance(view, R.style.TextAppearance_WildInk_Detail);
         }
         return view;
     }
