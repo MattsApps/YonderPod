@@ -2,6 +2,7 @@ package de.danoeh.antennapod.smartplay.app;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,12 +29,15 @@ import java.util.TreeMap;
 
 import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.event.FeedListUpdateEvent;
+import de.danoeh.antennapod.event.FeedUpdateRunningEvent;
 import de.danoeh.antennapod.model.feed.Feed;
 import de.danoeh.antennapod.model.feed.FeedCounter;
 import de.danoeh.antennapod.model.feed.FeedOrder;
+import de.danoeh.antennapod.net.download.serviceinterface.FeedUpdateManager;
 import de.danoeh.antennapod.storage.database.DBReader;
 import de.danoeh.antennapod.storage.database.NavDrawerData;
 import de.danoeh.antennapod.ui.screen.feed.FeedItemlistFragment;
+import de.danoeh.antennapod.ui.screen.queue.QueueFragment;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
@@ -44,6 +48,7 @@ public class PodcastsTendFragment extends Fragment {
 
     private final CompositeDisposable disposables = new CompositeDisposable();
     private View root;
+    private boolean updating;
 
     private static final class State {
         List<SmartPlayStore.StoredSmartPlay> smartPlays = new ArrayList<>();
@@ -52,6 +57,7 @@ public class PodcastsTendFragment extends Fragment {
         List<Feed> uncategorised = new ArrayList<>();
         Map<Long, Integer> newCounts;
         Map<Long, Integer> savedCounts;
+        long lastUpdate;
     }
 
     @Nullable
@@ -63,6 +69,12 @@ public class PodcastsTendFragment extends Fragment {
                 () -> TendRows.open(this, new FindPodcastsFragment()));
         ((TextView) root.findViewById(R.id.tendListLabel)).setText(R.string.tend_subscriptions);
         ((TextView) root.findViewById(R.id.tendListNote)).setText(R.string.tend_new_saved);
+        TextView updated = root.findViewById(R.id.tendUpdated);
+        updated.setVisibility(View.VISIBLE);
+        updated.setOnClickListener(v -> {
+            updated.setText(R.string.tend_updating);
+            FeedUpdateManager.getInstance().runOnceOrAsk(requireContext());
+        });
         return root;
     }
 
@@ -97,6 +109,16 @@ public class PodcastsTendFragment extends Fragment {
         load();
     }
 
+    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
+    public void onFeedUpdateRunning(FeedUpdateRunningEvent event) {
+        updating = event.isFeedUpdateRunning;
+        if (!updating) {
+            load();
+        } else if (root != null) {
+            ((TextView) root.findViewById(R.id.tendUpdated)).setText(R.string.tend_updating);
+        }
+    }
+
     @Override
     public void onDestroyView() {
         super.onDestroyView();
@@ -121,6 +143,7 @@ public class PodcastsTendFragment extends Fragment {
                         || Radio.isRadioFeed(feed)) {
                     continue;
                 }
+                state.lastUpdate = Math.max(state.lastUpdate, feed.getLastRefreshAttempt());
                 List<String> categories = CategoryChips.categoriesOf(feed);
                 if (categories.isEmpty()) {
                     state.uncategorised.add(feed);
@@ -145,6 +168,15 @@ public class PodcastsTendFragment extends Fragment {
         if (root == null) {
             return;
         }
+        TextView updated = root.findViewById(R.id.tendUpdated);
+        if (updating) {
+            updated.setText(R.string.tend_updating);
+        } else if (state.lastUpdate > 0) {
+            updated.setText(getString(R.string.tend_updated, DateUtils.getRelativeTimeSpanString(
+                    state.lastUpdate, System.currentTimeMillis(), DateUtils.MINUTE_IN_MILLIS)));
+        } else {
+            updated.setText(R.string.tend_never_updated);
+        }
         LinearLayout top = root.findViewById(R.id.tendTop);
         top.removeAllViews();
         TextView label = new TextView(requireContext());
@@ -167,6 +199,10 @@ public class PodcastsTendFragment extends Fragment {
             }
             block.setText(smartPlay.getDefinition().getName().toLowerCase(Locale.getDefault()));
             block.setOnClickListener(v -> {
+                if (active) {
+                    TendRows.open(this, new QueueFragment());
+                    return;
+                }
                 SmartPlayQueueManager manager = SmartPlayQueueManager.getInstance();
                 if (manager != null) {
                     manager.activate(smartPlay.getId());

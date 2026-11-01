@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="?android:attr/colorBackground"
+    android:fitsSystemWindows="true"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -8,20 +10,25 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:paddingHorizontal="24dp"
+        android:paddingBottom="24dp">
 
         <TextView
+            style="@style/Widget.WildInk.PageTitle"
+            android:text="@string/tune_controls" />
+
+        <de.danoeh.antennapod.ui.common.LowercaseTextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/controls_buttons_title"
-            android:textAppearance="?attr/textAppearanceTitleMedium" />
+            android:textAppearance="@style/TextAppearance.WildInk.SectionHeading" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="4dp"
             android:text="@string/controls_buttons_hint"
-            android:textAppearance="?attr/textAppearanceBodySmall" />
+            android:textAppearance="@style/TextAppearance.WildInk.Detail" />
 
         <LinearLayout
             android:id="@+id/controls_buttons"
@@ -36,19 +43,19 @@
             android:layout_height="wrap_content"
             android:text="@string/controls_test_buttons" />
 
-        <TextView
+        <de.danoeh.antennapod.ui.common.LowercaseTextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:text="@string/controls_interruptions_title"
-            android:textAppearance="?attr/textAppearanceTitleMedium" />
+            android:textAppearance="@style/TextAppearance.WildInk.SectionHeading" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:text="@string/controls_notifications_label"
-            android:textAppearance="?attr/textAppearanceBodySmall" />
+            android:textAppearance="@style/TextAppearance.WildInk.Detail" />
 
         <Spinner
             android:id="@+id/controls_notifications"
@@ -59,14 +66,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/controls_calls_note"
-            android:textAppearance="?attr/textAppearanceBodySmall" />
+            android:textAppearance="@style/TextAppearance.WildInk.Detail" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
             android:text="@string/controls_reconnect_label"
-            android:textAppearance="?attr/textAppearanceBodySmall" />
+            android:textAppearance="@style/TextAppearance.WildInk.Detail" />
 
         <Spinner
             android:id="@+id/controls_reconnect"
@@ -83,7 +90,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/controls_car_devices"
-                android:textAppearance="?attr/textAppearanceBodyMedium" />
+                android:textAppearance="@style/TextAppearance.WildInk.Detail" />
 
             <LinearLayout
                 android:id="@+id/controls_car_list"
@@ -93,25 +100,25 @@
 
         </LinearLayout>
 
-        <TextView
+        <de.danoeh.antennapod.ui.common.LowercaseTextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:text="@string/car_mode_title"
-            android:textAppearance="?attr/textAppearanceTitleMedium" />
+            android:textAppearance="@style/TextAppearance.WildInk.SectionHeading" />
 
         <com.google.android.material.materialswitch.MaterialSwitch
             android:id="@+id/controls_car_mode_auto"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/car_mode_auto"
-            android:textAppearance="?attr/textAppearanceBodyLarge" />
+            android:textAppearance="@style/TextAppearance.WildInk.RowLabel" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/car_mode_auto_summary"
-            android:textAppearance="?attr/textAppearanceBodySmall" />
+            android:textAppearance="@style/TextAppearance.WildInk.Detail" />
 
         <LinearLayout
             android:id="@+id/controls_car_mode_details"
@@ -125,7 +132,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:textAppearance="?attr/textAppearanceBodyMedium" />
+                android:textAppearance="@style/TextAppearance.WildInk.Detail" />
 
             <Button
                 android:id="@+id/controls_car_mode_choose"
@@ -136,33 +143,33 @@
 
         </LinearLayout>
 
-        <TextView
+        <de.danoeh.antennapod.ui.common.LowercaseTextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:text="@string/controls_player_title"
-            android:textAppearance="?attr/textAppearanceTitleMedium" />
+            android:textAppearance="@style/TextAppearance.WildInk.SectionHeading" />
 
         <com.google.android.material.materialswitch.MaterialSwitch
             android:id="@+id/controls_fade_in"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/controls_fade_in"
-            android:textAppearance="?attr/textAppearanceBodyLarge" />
+            android:textAppearance="@style/TextAppearance.WildInk.RowLabel" />
 
         <com.google.android.material.materialswitch.MaterialSwitch
             android:id="@+id/controls_keep_screen_on"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/controls_keep_screen_on"
-            android:textAppearance="?attr/textAppearanceBodyLarge" />
+            android:textAppearance="@style/TextAppearance.WildInk.RowLabel" />
 
         <com.google.android.material.materialswitch.MaterialSwitch
             android:id="@+id/controls_show_speed"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/controls_show_speed"
-            android:textAppearance="?attr/textAppearanceBodyLarge" />
+            android:textAppearance="@style/TextAppearance.WildInk.RowLabel" />
 
         <Button
             android:id="@+id/controls_advanced_toggle"
@@ -184,13 +191,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/controls_rewind"
-                android:textAppearance="?attr/textAppearanceBodyLarge" />
+                android:textAppearance="@style/TextAppearance.WildInk.RowLabel" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/controls_rewind_summary"
-                android:textAppearance="?attr/textAppearanceBodySmall" />
+                android:textAppearance="@style/TextAppearance.WildInk.Detail" />
 
             <LinearLayout
                 android:id="@+id/controls_rewind_tiers"
@@ -203,7 +210,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
                 android:text="@string/controls_interruption_back"
-                android:textAppearance="?attr/textAppearanceBodySmall" />
+                android:textAppearance="@style/TextAppearance.WildInk.Detail" />
 
             <Spinner
                 android:id="@+id/controls_interruption_back"

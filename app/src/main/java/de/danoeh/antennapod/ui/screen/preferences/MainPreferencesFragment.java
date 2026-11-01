@@ -67,7 +67,7 @@ public class MainPreferencesFragment extends AnimatedPreferenceFragment {
     @Override
     public void onStart() {
         super.onStart();
-        ((PreferenceActivity) getActivity()).getSupportActionBar().setTitle(R.string.settings_label);
+        ((PreferenceActivity) getActivity()).getSupportActionBar().setTitle(R.string.tune_advanced);
     }
 
     private void setupMainScreen() {

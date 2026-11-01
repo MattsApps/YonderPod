@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="?android:attr/colorBackground"
+    android:fitsSystemWindows="true"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -8,27 +10,32 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:paddingHorizontal="24dp"
+        android:paddingBottom="24dp">
+
+        <TextView
+            style="@style/Widget.WildInk.PageTitle"
+            android:text="@string/tune_sleep" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
             android:text="@string/sleep_fade_note"
-            android:textAppearance="?attr/textAppearanceBodyMedium" />
+            android:textAppearance="@style/TextAppearance.WildInk.Detail" />
 
         <com.google.android.material.materialswitch.MaterialSwitch
             android:id="@+id/sleep_shake"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/sleep_shake"
-            android:textAppearance="?attr/textAppearanceBodyLarge" />
+            android:textAppearance="@style/TextAppearance.WildInk.RowLabel" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/sleep_shake_summary"
-            android:textAppearance="?attr/textAppearanceBodySmall" />
+            android:textAppearance="@style/TextAppearance.WildInk.Detail" />
 
         <com.google.android.material.materialswitch.MaterialSwitch
             android:id="@+id/sleep_vibrate"
@@ -36,14 +43,14 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:text="@string/sleep_vibrate"
-            android:textAppearance="?attr/textAppearanceBodyLarge" />
+            android:textAppearance="@style/TextAppearance.WildInk.RowLabel" />
 
-        <TextView
+        <de.danoeh.antennapod.ui.common.LowercaseTextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
             android:text="@string/sleep_stop_at_title"
-            android:textAppearance="?attr/textAppearanceTitleMedium" />
+            android:textAppearance="@style/TextAppearance.WildInk.SectionHeading" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -57,7 +64,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="@string/sleep_stop_at_switch"
-                android:textAppearance="?attr/textAppearanceBodyLarge" />
+                android:textAppearance="@style/TextAppearance.WildInk.RowLabel" />
 
             <Button
                 android:id="@+id/sleep_stop_at_time"
@@ -100,19 +107,19 @@
 
         </LinearLayout>
 
-        <TextView
+        <de.danoeh.antennapod.ui.common.LowercaseTextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
             android:text="@string/sleep_bedtime_title"
-            android:textAppearance="?attr/textAppearanceTitleMedium" />
+            android:textAppearance="@style/TextAppearance.WildInk.SectionHeading" />
 
         <com.google.android.material.materialswitch.MaterialSwitch
             android:id="@+id/sleep_bedtime"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/sleep_bedtime_switch"
-            android:textAppearance="?attr/textAppearanceBodyLarge" />
+            android:textAppearance="@style/TextAppearance.WildInk.RowLabel" />
 
         <LinearLayout
             android:id="@+id/sleep_bedtime_details"
@@ -125,7 +132,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:text="@string/sleep_bedtime_hours_label"
-                android:textAppearance="?attr/textAppearanceBodySmall" />
+                android:textAppearance="@style/TextAppearance.WildInk.Detail" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -159,7 +166,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:text="@string/sleep_bedtime_timer"
-                android:textAppearance="?attr/textAppearanceBodySmall" />
+                android:textAppearance="@style/TextAppearance.WildInk.Detail" />
 
             <Spinner
                 android:id="@+id/sleep_bedtime_timer"

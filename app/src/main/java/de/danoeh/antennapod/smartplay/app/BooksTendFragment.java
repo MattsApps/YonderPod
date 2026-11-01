@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -19,6 +20,8 @@ import androidx.annotation.Nullable;
 import androidx.core.widget.TextViewCompat;
 import androidx.documentfile.provider.DocumentFile;
 import androidx.fragment.app.Fragment;
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -36,9 +39,11 @@ import de.danoeh.antennapod.model.feed.Feed;
 import de.danoeh.antennapod.model.feed.SortOrder;
 import de.danoeh.antennapod.net.download.serviceinterface.FeedUpdateManager;
 import de.danoeh.antennapod.storage.database.DBReader;
+import de.danoeh.antennapod.storage.database.DBWriter;
 import de.danoeh.antennapod.storage.database.FeedDatabaseWriter;
 import de.danoeh.antennapod.ui.screen.feed.FeedItemlistFragment;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.Completable;
 import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
@@ -156,8 +161,13 @@ public class BooksTendFragment extends Fragment {
         LinearLayout list = root.findViewById(R.id.tendList);
         list.removeAllViews();
         for (BookRow book : state.books) {
-            list.addView(TendRows.row(this, list, book.feed.getTitle(), book.progress, book.feed.getImageUrl(),
-                    "", "", v -> TendRows.open(this, FeedItemlistFragment.newInstance(book.feed.getId()))));
+            View row = TendRows.row(this, list, book.feed.getTitle(), book.progress, book.feed.getImageUrl(),
+                    "", "", v -> TendRows.open(this, FeedItemlistFragment.newInstance(book.feed.getId())));
+            row.setOnLongClickListener(v -> {
+                offerDelete(v, book.feed, true);
+                return true;
+            });
+            list.addView(row);
         }
         if (state.books.isEmpty()) {
             TextView empty = new TextView(requireContext());
@@ -174,8 +184,13 @@ public class BooksTendFragment extends Fragment {
         label.setPadding(0, dp(28), 0, dp(4));
         extra.addView(label);
         for (Feed folder : state.folders) {
-            extra.addView(TendRows.row(this, extra, folder.getTitle(), null, folder.getImageUrl(), "", "",
-                    v -> TendRows.open(this, FeedItemlistFragment.newInstance(folder.getId()))));
+            View row = TendRows.row(this, extra, folder.getTitle(), null, folder.getImageUrl(), "", "",
+                    v -> TendRows.open(this, FeedItemlistFragment.newInstance(folder.getId())));
+            row.setOnLongClickListener(v -> {
+                offerDelete(v, folder, false);
+                return true;
+            });
+            extra.addView(row);
         }
         TextView add = new TextView(requireContext());
         TextViewCompat.setTextAppearance(add, R.style.Widget_WildInk_Link);
@@ -189,6 +204,39 @@ public class BooksTendFragment extends Fragment {
                 LinearLayout.LayoutParams.WRAP_CONTENT);
         params.topMargin = dp(12);
         extra.addView(add, params);
+    }
+
+    private void offerDelete(View anchor, Feed feed, boolean book) {
+        PopupMenu menu = new PopupMenu(requireContext(), anchor);
+        menu.getMenu().add(book ? R.string.tend_delete_book : R.string.tend_remove_folder);
+        menu.setOnMenuItemClickListener(item -> {
+            confirmDelete(feed, book);
+            return true;
+        });
+        menu.show();
+    }
+
+    private void confirmDelete(Feed feed, boolean book) {
+        Context app = requireContext().getApplicationContext();
+        new MaterialAlertDialogBuilder(requireContext())
+                .setTitle(getString(book ? R.string.tend_delete_book_question : R.string.tend_remove_folder_question,
+                        feed.getTitle()))
+                .setMessage(book ? R.string.tend_delete_book_message : R.string.tend_remove_folder_message)
+                .setPositiveButton(book ? R.string.tend_delete_book : R.string.tend_remove_folder, (dialog, which) ->
+                        disposables.add(Completable.fromAction(() -> {
+                            if (book) {
+                                long smartPlayId = Books.findBookSmartPlay(app, feed);
+                                if (smartPlayId >= 0) {
+                                    Books.deleteBookSmartPlay(app, smartPlayId);
+                                }
+                            }
+                            DBWriter.deleteFeed(app, feed.getId()).get();
+                        })
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(this::load, error -> Log.e(TAG, Log.getStackTraceString(error)))))
+                .setNegativeButton(R.string.cancel_label, null)
+                .show();
     }
 
     private void addFolderResult(@Nullable Uri uri) {

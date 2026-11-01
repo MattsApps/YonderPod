@@ -7,6 +7,7 @@ import android.provider.Settings;
 import android.util.Log;
 import android.view.MenuItem;
 import androidx.appcompat.app.ActionBar;
+import androidx.fragment.app.Fragment;
 import androidx.preference.PreferenceFragmentCompat;
 import com.bytehamster.lib.preferencesearch.SearchPreferenceResult;
 import com.bytehamster.lib.preferencesearch.SearchPreferenceResultListener;
@@ -21,6 +22,7 @@ import de.danoeh.antennapod.ui.preferences.databinding.SettingsActivityBinding;
 import de.danoeh.antennapod.ui.preferences.screen.AutoDownloadPreferencesFragment;
 import de.danoeh.antennapod.ui.preferences.screen.AutomaticDeletionPreferencesFragment;
 import de.danoeh.antennapod.ui.preferences.screen.NotificationPreferencesFragment;
+import de.danoeh.antennapod.ui.preferences.screen.about.AboutFragment;
 import de.danoeh.antennapod.ui.preferences.screen.synchronization.SynchronizationPreferencesFragment;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -35,6 +37,12 @@ public class PreferenceActivity extends ToolbarActivity implements SearchPrefere
     public static final String OPEN_AUTO_DOWNLOAD_SETTINGS = "OpenAutoDownloadSettings";
     public static final String OPEN_PLAYBACK_SETTINGS = "OpenPlaybackSettings";
     public static final String OPEN_SLEEP_SETTINGS = "OpenSleepSettings";
+    public static final String OPEN_AUTO_DOWNLOAD_SCREEN = "OpenAutoDownloadScreen";
+    public static final String OPEN_DOWNLOADS_SCREEN = "OpenDownloadsScreen";
+    public static final String OPEN_PLAYBACK_SCREEN = "OpenPlaybackScreen";
+    public static final String OPEN_IMPORT_EXPORT = "OpenImportExport";
+    public static final String OPEN_SYNC = "OpenSync";
+    public static final String OPEN_ABOUT = "OpenAbout";
     private SettingsActivityBinding binding;
 
     @Override
@@ -51,7 +59,7 @@ public class PreferenceActivity extends ToolbarActivity implements SearchPrefere
 
         if (getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG) == null) {
             getSupportFragmentManager().beginTransaction()
-                    .replace(binding.settingsContainer.getId(), new MainPreferencesFragment(), FRAGMENT_TAG)
+                    .replace(binding.settingsContainer.getId(), firstScreen(getIntent()), FRAGMENT_TAG)
                     .commit();
         }
         Intent intent = getIntent();
@@ -67,6 +75,23 @@ public class PreferenceActivity extends ToolbarActivity implements SearchPrefere
                     .addToBackStack(getString(R.string.sleep_settings_title))
                     .commit();
         }
+    }
+
+    private Fragment firstScreen(Intent intent) {
+        if (intent.getBooleanExtra(OPEN_AUTO_DOWNLOAD_SCREEN, false)) {
+            return getPreferenceScreen(R.xml.preferences_autodownload);
+        } else if (intent.getBooleanExtra(OPEN_DOWNLOADS_SCREEN, false)) {
+            return getPreferenceScreen(R.xml.preferences_downloads);
+        } else if (intent.getBooleanExtra(OPEN_PLAYBACK_SCREEN, false)) {
+            return getPreferenceScreen(R.xml.preferences_playback);
+        } else if (intent.getBooleanExtra(OPEN_IMPORT_EXPORT, false)) {
+            return getPreferenceScreen(R.xml.preferences_import_export);
+        } else if (intent.getBooleanExtra(OPEN_SYNC, false)) {
+            return getPreferenceScreen(R.xml.preferences_synchronization);
+        } else if (intent.getBooleanExtra(OPEN_ABOUT, false)) {
+            return new AboutFragment();
+        }
+        return new MainPreferencesFragment();
     }
 
     private PreferenceFragmentCompat getPreferenceScreen(int screen) {

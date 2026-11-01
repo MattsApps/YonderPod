@@ -168,6 +168,7 @@ public class MainActivity extends CastEnabledActivity implements NavigationToolb
             }
             drawerLayout = null;
             bottomNavigation.onCreateView();
+            bottomNavigation.hide();
         } else {
             bottomNavigation.hide();
             bottomNavigation = null;
@@ -688,6 +689,11 @@ public class MainActivity extends CastEnabledActivity implements NavigationToolb
         hideWorlds();
         sheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         bottomSheetCallback.onSlide(null, 1.0f);
+    }
+
+    public void openPlaylist() {
+        loadFragment(QueueFragment.TAG, null);
+        hideWorlds();
     }
 
     public void hideWorlds() {

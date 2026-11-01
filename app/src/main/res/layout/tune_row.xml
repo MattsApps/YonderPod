@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?android:attr/selectableItemBackground"
+    android:baselineAligned="true"
+    android:minHeight="48dp"
+    android:orientation="horizontal"
+    android:paddingTop="12dp"
+    android:paddingBottom="8dp">
+
+    <TextView
+        android:id="@+id/tuneRowLabel"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:textAppearance="@style/TextAppearance.WildInk.RowLabel" />
+
+    <TextView
+        android:id="@+id/tuneRowValue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:gravity="end"
+        android:maxWidth="200dp"
+        android:textAppearance="@style/TextAppearance.WildInk.Detail" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:fontFamily="@font/bricolage_extrabold"
+        android:importantForAccessibility="no"
+        android:text="›"
+        android:textColor="?android:attr/textColorSecondary"
+        android:textSize="17sp" />
+
+</LinearLayout>

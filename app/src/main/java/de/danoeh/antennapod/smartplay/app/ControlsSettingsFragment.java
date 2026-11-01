@@ -42,6 +42,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import de.danoeh.antennapod.R;
+import de.danoeh.antennapod.activity.MainActivity;
 import de.danoeh.antennapod.storage.preferences.ButtonAction;
 import de.danoeh.antennapod.storage.preferences.ButtonPress;
 import de.danoeh.antennapod.storage.preferences.ControlsPreferences;
@@ -61,11 +62,16 @@ public class ControlsSettingsFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         root = inflater.inflate(R.layout.controls_settings_fragment, container, false);
         setupButtons(inflater);
-        root.findViewById(R.id.controls_test_buttons).setOnClickListener(v ->
-                getParentFragmentManager().beginTransaction()
-                        .replace(getId(), new ButtonTesterFragment())
-                        .addToBackStack(getString(R.string.button_tester_title))
-                        .commit());
+        root.findViewById(R.id.controls_test_buttons).setOnClickListener(v -> {
+            if (getActivity() instanceof MainActivity) {
+                TendRows.open(this, new ButtonTesterFragment());
+                return;
+            }
+            getParentFragmentManager().beginTransaction()
+                    .replace(getId(), new ButtonTesterFragment())
+                    .addToBackStack(getString(R.string.button_tester_title))
+                    .commit();
+        });
         setupInterruptions();
         setupCarMode();
         setupSwitch(R.id.controls_fade_in, ControlsPreferences.fadeIn(), ControlsPreferences::setFadeIn);

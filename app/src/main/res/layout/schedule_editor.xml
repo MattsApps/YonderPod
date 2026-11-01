@@ -16,7 +16,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/schedule_time_label"
-            android:textAppearance="?attr/textAppearanceBodyLarge" />
+            android:textAppearance="@style/TextAppearance.WildInk.RowLabel" />
 
         <Button
             android:id="@+id/editor_time"
@@ -30,7 +30,7 @@
         android:id="@+id/editor_window"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textAppearance="?attr/textAppearanceBodySmall" />
+        android:textAppearance="@style/TextAppearance.WildInk.Detail" />
 
     <TextView
         android:id="@+id/editor_days_label"
@@ -38,7 +38,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
         android:text="@string/schedule_days_label"
-        android:textAppearance="?attr/textAppearanceBodyLarge" />
+        android:textAppearance="@style/TextAppearance.WildInk.RowLabel" />
 
     <com.google.android.material.chip.ChipGroup
         android:id="@+id/editor_days"
@@ -51,13 +51,13 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:text="@string/schedule_wifi_only"
-        android:textAppearance="?attr/textAppearanceBodyLarge" />
+        android:textAppearance="@style/TextAppearance.WildInk.RowLabel" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/schedule_wifi_only_summary"
-        android:textAppearance="?attr/textAppearanceBodySmall" />
+        android:textAppearance="@style/TextAppearance.WildInk.Detail" />
 
     <com.google.android.material.materialswitch.MaterialSwitch
         android:id="@+id/editor_charging"
@@ -65,7 +65,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:text="@string/schedule_charging_only"
-        android:textAppearance="?attr/textAppearanceBodyLarge" />
+        android:textAppearance="@style/TextAppearance.WildInk.RowLabel" />
 
     <Button
         android:id="@+id/editor_advanced_toggle"
@@ -93,7 +93,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/schedule_every_n_label"
-            android:textAppearance="?attr/textAppearanceBodySmall" />
+            android:textAppearance="@style/TextAppearance.WildInk.Detail" />
 
         <EditText
             android:id="@+id/editor_every_n_days"
@@ -108,7 +108,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:text="@string/schedule_catch_up_note"
-            android:textAppearance="?attr/textAppearanceBodySmall" />
+            android:textAppearance="@style/TextAppearance.WildInk.Detail" />
 
     </LinearLayout>
 

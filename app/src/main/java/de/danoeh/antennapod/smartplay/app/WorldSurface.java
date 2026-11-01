@@ -67,6 +67,16 @@ public abstract class WorldSurface extends Fragment {
             });
         }
         root.findViewById(R.id.worldHandle).setOnClickListener(v -> openTend());
+        for (int id : new int[] {R.id.worldFrom, R.id.worldNext}) {
+            View link = root.findViewById(id);
+            if (link != null) {
+                link.setOnClickListener(v -> {
+                    if (getActivity() instanceof MainActivity) {
+                        ((MainActivity) getActivity()).openPlaylist();
+                    }
+                });
+            }
+        }
         return root;
     }
 

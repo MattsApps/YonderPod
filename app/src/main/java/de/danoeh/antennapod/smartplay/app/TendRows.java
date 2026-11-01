@@ -1,6 +1,5 @@
 package de.danoeh.antennapod.smartplay.app;
 
-import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +16,7 @@ import java.util.Locale;
 import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.activity.MainActivity;
 import de.danoeh.antennapod.ui.screen.PlaybackHistoryFragment;
-import de.danoeh.antennapod.ui.screen.preferences.PreferenceActivity;
+import de.danoeh.antennapod.ui.screen.download.CompletedDownloadsFragment;
 
 public final class TendRows {
     private TendRows() {
@@ -27,12 +26,18 @@ public final class TendRows {
         ((TextView) root.findViewById(R.id.tendWorld)).setText(world);
         ((TextView) root.findViewById(R.id.tendSearchHint)).setText(hint);
         root.findViewById(R.id.tendSearch).setOnClickListener(v -> onSearch.run());
-        root.findViewById(R.id.tendHandle).setOnClickListener(v ->
-                fragment.requireActivity().getOnBackPressedDispatcher().onBackPressed());
+        Runnable toSurface = () -> {
+            if (fragment.getActivity() instanceof MainActivity) {
+                ((MainActivity) fragment.getActivity()).showWorlds();
+            }
+        };
+        root.findViewById(R.id.tendHandle).setOnClickListener(v -> toSurface.run());
+        ((TendScrollView) root.findViewById(R.id.tendScroll)).setOnPullDown(toSurface);
         root.findViewById(R.id.tendHistory).setOnClickListener(v ->
                 open(fragment, new PlaybackHistoryFragment()));
-        root.findViewById(R.id.tendTune).setOnClickListener(v ->
-                fragment.startActivity(new Intent(fragment.requireContext(), PreferenceActivity.class)));
+        root.findViewById(R.id.tendDownloads).setOnClickListener(v ->
+                open(fragment, new CompletedDownloadsFragment()));
+        root.findViewById(R.id.tendTune).setOnClickListener(v -> open(fragment, new TuneFragment()));
         return root;
     }
 

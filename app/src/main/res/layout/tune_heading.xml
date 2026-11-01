@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<de.danoeh.antennapod.ui.common.LowercaseTextView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:accessibilityHeading="true"
+    android:paddingTop="22dp"
+    android:paddingBottom="2dp"
+    android:textAppearance="@style/TextAppearance.WildInk.SectionHeading" />

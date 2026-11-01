@@ -38,6 +38,8 @@
         <item name="android:editTextStyle">@style/Widget.WildInk.EditText</item>
         <item name="textInputStyle">@style/Widget.WildInk.TextInputLayout</item>
         <item name="toolbarStyle">@style/Style.WildInk.Toolbar</item>
+        <item name="spinnerStyle">@style/Widget.WildInk.Spinner</item>
+        <item name="android:spinnerStyle">@style/Widget.WildInk.Spinner</item>
     </style>
 
     <style name="Theme.WildInk.Base.Dark" parent="Theme.AntennaPod.Dark">
@@ -77,6 +79,8 @@
         <item name="android:editTextStyle">@style/Widget.WildInk.EditText</item>
         <item name="textInputStyle">@style/Widget.WildInk.TextInputLayout</item>
         <item name="toolbarStyle">@style/Style.WildInk.Toolbar</item>
+        <item name="spinnerStyle">@style/Widget.WildInk.Spinner</item>
+        <item name="android:spinnerStyle">@style/Widget.WildInk.Spinner</item>
     </style>
 
     <style name="Theme.WildInk.Charcoal" parent="Theme.WildInk.Base.Dark">
@@ -646,6 +650,28 @@
         <item name="android:textSize">16sp</item>
         <item name="android:textColor">?android:attr/textColorPrimary</item>
         <item name="android:background">?android:attr/selectableItemBackground</item>
+    </style>
+
+    <style name="TextAppearance.WildInk.RowLabel" parent="">
+        <item name="android:fontFamily">@font/bricolage_semibold</item>
+        <item name="android:textSize">17sp</item>
+        <item name="android:textColor">?android:attr/textColorPrimary</item>
+    </style>
+
+    <style name="Widget.WildInk.Spinner" parent="Widget.AppCompat.Spinner">
+        <item name="android:background">@drawable/wildink_dropdown</item>
+        <item name="android:minHeight">48dp</item>
+        <item name="android:paddingStart">8dp</item>
+        <item name="android:paddingEnd">32dp</item>
+        <item name="android:popupBackground">?attr/colorSurfaceContainerHigh</item>
+    </style>
+
+    <style name="Widget.WildInk.PageTitle" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingTop">24dp</item>
+        <item name="android:paddingBottom">8dp</item>
+        <item name="android:textAppearance">@style/TextAppearance.WildInk.PageTitle</item>
     </style>
 
     <style name="Widget.WildInk.Handle" parent="">

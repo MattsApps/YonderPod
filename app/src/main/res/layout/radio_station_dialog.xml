@@ -51,7 +51,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
             android:text="@string/radio_quality_title"
-            android:textStyle="bold" />
+            android:textAppearance="@style/TextAppearance.WildInk.Label" />
 
         <RadioGroup
             android:id="@+id/station_quality"
@@ -83,14 +83,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:textColor="?android:attr/textColorSecondary" />
+            android:textAppearance="@style/TextAppearance.WildInk.Detail" />
 
         <TextView
             android:id="@+id/station_rewind"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:textColor="?android:attr/textColorSecondary" />
+            android:textAppearance="@style/TextAppearance.WildInk.Detail" />
 
     </LinearLayout>
 

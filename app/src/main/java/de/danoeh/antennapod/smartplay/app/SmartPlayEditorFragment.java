@@ -16,7 +16,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -24,12 +23,12 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.Nullable;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -41,12 +40,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
 import de.danoeh.antennapod.R;
-import de.danoeh.antennapod.activity.MainActivity;
 import de.danoeh.antennapod.model.feed.Feed;
 import de.danoeh.antennapod.smartplay.EpisodeSource;
 import de.danoeh.antennapod.smartplay.Exclusions;
@@ -87,11 +86,12 @@ public class SmartPlayEditorFragment extends Fragment {
     private long smartPlayId;
     private EditText nameView;
     private TextView coverageWarning;
-    private TextView neverSummary;
+    private ChipGroup neverTags;
+    private TextView hoursSummary;
     private Exclusions neverInclude = Exclusions.none();
     private String savedSnapshot = "";
     private OnBackPressedCallback backCallback;
-    private LinearLayout priorityContainer;
+    private ChipGroup priorityContainer;
     private RulesAdapter rulesAdapter;
     private ItemTouchHelper touchHelper;
     private boolean loaded = false;
@@ -171,28 +171,17 @@ public class SmartPlayEditorFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         smartPlayId = getArguments() != null ? getArguments().getLong(ARG_ID, -1) : -1;
         View root = inflater.inflate(R.layout.smartplay_editor_fragment, container, false);
-        MaterialToolbar toolbar = root.findViewById(R.id.toolbar);
-        ((MainActivity) getActivity()).setupToolbarToggle(toolbar, true);
-        toolbar.setNavigationOnClickListener(v -> handleExit());
-        toolbar.inflateMenu(R.menu.smartplay_editor);
-        toolbar.setOnMenuItemClickListener(item -> {
-            if (item.getItemId() == R.id.smartplay_save) {
-                save();
-                return true;
-            }
-            return false;
-        });
+        root.findViewById(R.id.smartplay_save_button).setOnClickListener(v -> save());
+        root.findViewById(R.id.smartplay_cancel_button).setOnClickListener(v -> handleExit());
 
         nameView = root.findViewById(R.id.smartplay_name);
         coverageWarning = root.findViewById(R.id.smartplay_coverage_warning);
-        neverSummary = root.findViewById(R.id.smartplay_never_summary);
-        neverSummary.setOnClickListener(v -> pickExclusions(R.string.smartplay_never_header, neverInclude,
-                chosen -> {
-                    neverInclude = chosen;
-                    showNeverInclude();
-                    updateCoverageWarning();
-                }));
+        neverTags = root.findViewById(R.id.smartplay_never_tags);
         priorityContainer = root.findViewById(R.id.smartplay_priority_container);
+        hoursSummary = root.findViewById(R.id.smartplay_hours_summary);
+        View hoursEditor = root.findViewById(R.id.smartplay_hours_editor);
+        hoursSummary.setOnClickListener(v -> hoursEditor.setVisibility(
+                hoursEditor.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE));
 
         RecyclerView rulesView = root.findViewById(R.id.smartplay_rules);
         rulesView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -232,7 +221,6 @@ public class SmartPlayEditorFragment extends Fragment {
             rulesAdapter.notifyItemInserted(rules.size() - 1);
             updateCoverageWarning();
         });
-        root.findViewById(R.id.smartplay_add_priority).setOnClickListener(v -> pickPriorityShow());
         setupHours(root);
 
         load();
@@ -384,6 +372,7 @@ public class SmartPlayEditorFragment extends Fragment {
         }
         hoursOverlap.setText(getString(R.string.smartplay_hours_overlap, TextUtils.join(", ", overlapping)));
         hoursOverlap.setVisibility(overlapping.isEmpty() ? View.GONE : View.VISIBLE);
+        showHoursSummary();
     }
 
     private void leave() {
@@ -496,6 +485,7 @@ public class SmartPlayEditorFragment extends Fragment {
         }
         loaded = true;
         savedSnapshot = snapshot();
+        showHoursSummary();
         offerDraft();
     }
 
@@ -534,6 +524,7 @@ public class SmartPlayEditorFragment extends Fragment {
         showPriorities();
         showNeverInclude();
         updateCoverageWarning();
+        showHoursSummary();
     }
 
     private void offerDraft() {
@@ -561,17 +552,38 @@ public class SmartPlayEditorFragment extends Fragment {
     }
 
     private void showNeverInclude() {
-        if (neverSummary == null) {
+        if (neverTags == null) {
             return;
         }
-        if (neverInclude.isEmpty()) {
-            neverSummary.setText(R.string.smartplay_never_none);
-        } else {
-            neverSummary.setText(exclusionNames(neverInclude));
+        neverTags.removeAllViews();
+        List<String> names = exclusionList(neverInclude);
+        if (names.isEmpty()) {
+            names.add(getString(R.string.smartplay_never_nothing));
+        }
+        for (String name : names) {
+            neverTags.addView(tag(name, v -> pickExclusions(R.string.smartplay_never_header, neverInclude,
+                    chosen -> {
+                        neverInclude = chosen;
+                        showNeverInclude();
+                        updateCoverageWarning();
+                    })));
         }
     }
 
+    private Chip tag(String text, View.OnClickListener onClick) {
+        Chip chip = new Chip(requireContext());
+        chip.setText(text);
+        chip.setTypeface(ResourcesCompat.getFont(requireContext(), R.font.bricolage_extrabold));
+        chip.setTextSize(16);
+        chip.setOnClickListener(onClick);
+        return chip;
+    }
+
     private String exclusionNames(Exclusions exclusions) {
+        return TextUtils.join(", ", exclusionList(exclusions));
+    }
+
+    private List<String> exclusionList(Exclusions exclusions) {
         List<String> names = new ArrayList<>();
         for (String category : allCategories) {
             if (exclusions.getCategories().contains(category)) {
@@ -586,7 +598,7 @@ public class SmartPlayEditorFragment extends Fragment {
         for (long feedId : exclusions.getFeedIds()) {
             names.add(feedTitle(feedId));
         }
-        return TextUtils.join(", ", names);
+        return names;
     }
 
     private String sourceShortName(EpisodeSource source) {
@@ -701,6 +713,47 @@ public class SmartPlayEditorFragment extends Fragment {
         }
         coverageWarning.setText(text.toString());
         coverageWarning.setVisibility(text.length() > 0 ? View.VISIBLE : View.GONE);
+        showHoursSummary();
+    }
+
+    private void showHoursSummary() {
+        if (hoursSummary == null) {
+            return;
+        }
+        ActiveHours.Window window = hoursWindow();
+        String active = window == null ? getString(R.string.smartplay_hours_always)
+                : getString(R.string.smartplay_hours_active,
+                        ScheduleText.time(requireContext(), window.getFromMinute() / 60, window.getFromMinute() % 60),
+                        ScheduleText.time(requireContext(), window.getToMinute() / 60, window.getToMinute() % 60),
+                        daysText(window.getDays()));
+        int episodes = 0;
+        for (RuleDraft draft : rules) {
+            episodes += draft.count;
+        }
+        hoursSummary.setText(getString(R.string.smartplay_hours_and_size, active,
+                getResources().getQuantityString(R.plurals.smartplay_makes_about, episodes, episodes)));
+    }
+
+    private String daysText(int bits) {
+        int weekdays = 0;
+        for (int day = Calendar.MONDAY; day <= Calendar.FRIDAY; day++) {
+            weekdays |= ActiveHours.dayBit(day);
+        }
+        int weekend = ActiveHours.dayBit(Calendar.SATURDAY) | ActiveHours.dayBit(Calendar.SUNDAY);
+        if (bits == (weekdays | weekend)) {
+            return getString(R.string.smartplay_days_every);
+        } else if (bits == weekdays) {
+            return getString(R.string.smartplay_days_weekdays);
+        } else if (bits == weekend) {
+            return getString(R.string.smartplay_days_weekends);
+        }
+        List<String> names = new ArrayList<>();
+        for (int day : ScheduleText.DAYS_FROM_MONDAY) {
+            if ((bits & ActiveHours.dayBit(day)) != 0) {
+                names.add(ScheduleText.shortDay(day));
+            }
+        }
+        return getString(R.string.smartplay_days_list, TextUtils.join(" ", names));
     }
 
     private boolean isSubscribed(long feedId) {
@@ -758,7 +811,7 @@ public class SmartPlayEditorFragment extends Fragment {
 
     private ArrayAdapter<String> spinnerAdapter(List<String> labels) {
         ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(),
-                android.R.layout.simple_spinner_item, labels);
+                R.layout.wildink_spinner_item, labels);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         return adapter;
     }
@@ -848,25 +901,36 @@ public class SmartPlayEditorFragment extends Fragment {
 
     private void showPriorities() {
         priorityContainer.removeAllViews();
-        LayoutInflater inflater = LayoutInflater.from(requireContext());
-        List<String> orderLabels = new ArrayList<>();
-        orderLabels.add(getString(R.string.smartplay_priority_oldest));
-        orderLabels.add(getString(R.string.smartplay_priority_newest));
         for (PriorityDraft draft : priorities) {
-            View row = inflater.inflate(R.layout.smartplay_priority_item, priorityContainer, false);
-            ((TextView) row.findViewById(R.id.priority_title)).setText(feedTitle(draft.feedId));
-            Spinner order = row.findViewById(R.id.priority_order);
-            order.setAdapter(spinnerAdapter(orderLabels));
-            order.setSelection(draft.order == SmartPlayDefinition.PriorityOrder.OLDEST_FIRST ? 0 : 1, false);
-            order.setOnItemSelectedListener(new SimpleSelectionListener(position ->
-                    draft.order = PRIORITY_ORDERS[position]));
-            row.findViewById(R.id.priority_remove).setOnClickListener(v -> {
-                priorities.remove(draft);
-                showPriorities();
-                updateCoverageWarning();
-            });
-            priorityContainer.addView(row);
+            String order = getString(draft.order == SmartPlayDefinition.PriorityOrder.OLDEST_FIRST
+                    ? R.string.smartplay_priority_oldest_lower : R.string.smartplay_priority_newest_lower);
+            priorityContainer.addView(tag(getString(R.string.smartplay_priority_tag, feedTitle(draft.feedId), order),
+                    v -> editPriority(draft)));
         }
+        Chip add = tag(getString(R.string.smartplay_add_tag), v -> pickPriorityShow());
+        add.setContentDescription(getString(R.string.smartplay_add_priority));
+        priorityContainer.addView(add);
+    }
+
+    private void editPriority(PriorityDraft draft) {
+        String[] choices = {
+            getString(R.string.smartplay_priority_oldest),
+            getString(R.string.smartplay_priority_newest),
+            getString(R.string.smartplay_remove)
+        };
+        new MaterialAlertDialogBuilder(requireContext())
+                .setTitle(feedTitle(draft.feedId))
+                .setItems(choices, (dialog, which) -> {
+                    if (which == 2) {
+                        priorities.remove(draft);
+                    } else {
+                        draft.order = PRIORITY_ORDERS[which];
+                    }
+                    showPriorities();
+                    updateCoverageWarning();
+                })
+                .setNegativeButton(android.R.string.cancel, null)
+                .show();
     }
 
     private void pickPriorityShow() {
@@ -976,17 +1040,19 @@ public class SmartPlayEditorFragment extends Fragment {
     }
 
     private final class RuleHolder extends RecyclerView.ViewHolder {
+        final TextView number;
         final TextView title;
         final Spinner order;
         final Spinner count;
         final Spinner source;
         final TextView except;
-        final Spinner maxPerShow;
+        final TextView maxPerShow;
         final TextView note;
 
         @SuppressLint("ClickableViewAccessibility")
         RuleHolder(View itemView) {
             super(itemView);
+            number = itemView.findViewById(R.id.rule_number);
             title = itemView.findViewById(R.id.rule_title);
             order = itemView.findViewById(R.id.rule_order);
             count = itemView.findViewById(R.id.rule_count);
@@ -1022,8 +1088,9 @@ public class SmartPlayEditorFragment extends Fragment {
         @Override
         public void onBindViewHolder(@NonNull RuleHolder holder, int position) {
             RuleDraft draft = rules.get(position);
-            holder.title.setText(getString(position == 0 ? R.string.smartplay_rule_start
-                    : R.string.smartplay_rule_then, position + 1));
+            holder.number.setText(String.valueOf(position + 1));
+            holder.title.setText(position == 0
+                    ? R.string.smartplay_rule_head_start : R.string.smartplay_rule_head_then);
 
             bindOrderAndCount(holder, draft);
 
@@ -1044,11 +1111,17 @@ public class SmartPlayEditorFragment extends Fragment {
                         updateCoverageWarning();
                     }));
 
-            holder.maxPerShow.setOnItemSelectedListener(null);
-            holder.maxPerShow.setAdapter(spinnerAdapter(maxPerShowLabels()));
-            holder.maxPerShow.setSelection(draft.maxPerShow, false);
-            holder.maxPerShow.setOnItemSelectedListener(new SimpleSelectionListener(selected ->
-                    draft.maxPerShow = selected));
+            List<String> maxLabels = maxPerShowLabels();
+            holder.maxPerShow.setText(maxLabels.get(draft.maxPerShow).toLowerCase(Locale.getDefault()));
+            holder.maxPerShow.setOnClickListener(v -> new MaterialAlertDialogBuilder(requireContext())
+                    .setSingleChoiceItems(maxLabels.toArray(new String[0]), draft.maxPerShow, (dialog, which) -> {
+                        draft.maxPerShow = which;
+                        holder.maxPerShow.setText(maxLabels.get(which).toLowerCase(Locale.getDefault()));
+                        updateCoverageWarning();
+                        dialog.dismiss();
+                    })
+                    .setNegativeButton(android.R.string.cancel, null)
+                    .show());
         }
 
         @Override

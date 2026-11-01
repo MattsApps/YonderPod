@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="?android:attr/colorBackground"
+    android:fitsSystemWindows="true"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -9,14 +11,19 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:paddingHorizontal="24dp"
+        android:paddingBottom="24dp">
 
-        <com.google.android.material.card.MaterialCardView
+        <TextView
+            style="@style/Widget.WildInk.PageTitle"
+            android:text="@string/tune_updates" />
+
+        <FrameLayout
             android:id="@+id/schedule_battery_card"
-            style="?attr/materialCardViewFilledStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
+            android:background="@drawable/wildink_block"
             android:visibility="gone">
 
             <LinearLayout
@@ -31,7 +38,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="@string/schedule_battery_warning"
-                    android:textAppearance="?attr/textAppearanceBodyMedium" />
+                    android:textAppearance="@style/TextAppearance.WildInk.Detail" />
 
                 <Button
                     android:id="@+id/schedule_battery_fix"
@@ -42,32 +49,32 @@
 
             </LinearLayout>
 
-        </com.google.android.material.card.MaterialCardView>
+        </FrameLayout>
 
-        <TextView
+        <de.danoeh.antennapod.ui.common.LowercaseTextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
             android:text="@string/schedule_default_title"
-            android:textAppearance="?attr/textAppearanceTitleMedium" />
+            android:textAppearance="@style/TextAppearance.WildInk.SectionHeading" />
 
         <include
             android:id="@+id/schedule_default_editor"
             layout="@layout/schedule_editor" />
 
-        <TextView
+        <de.danoeh.antennapod.ui.common.LowercaseTextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
             android:text="@string/schedule_categories_title"
-            android:textAppearance="?attr/textAppearanceTitleMedium" />
+            android:textAppearance="@style/TextAppearance.WildInk.SectionHeading" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
             android:text="@string/schedule_categories_hint"
-            android:textAppearance="?attr/textAppearanceBodySmall" />
+            android:textAppearance="@style/TextAppearance.WildInk.Detail" />
 
         <LinearLayout
             android:id="@+id/schedule_categories"
@@ -80,7 +87,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:textAppearance="?attr/textAppearanceBodySmall" />
+            android:textAppearance="@style/TextAppearance.WildInk.Detail" />
 
     </LinearLayout>
 

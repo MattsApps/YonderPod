@@ -61,28 +61,33 @@
                 android:summary="@string/pref_full_notification_buttons_sum"
                 android:title="@string/pref_full_notification_buttons_title"/>
     </PreferenceCategory>
-    <PreferenceCategory android:title="@string/behavior">
+    <PreferenceCategory android:title="@string/behavior"
+            app:isPreferenceVisible="false">
         <de.danoeh.antennapod.ui.preferences.preference.MaterialListPreference
                 android:entryValues="@array/default_page_values"
                 android:entries="@array/default_page_titles"
                 android:key="prefDefaultPage"
                 android:title="@string/pref_default_page"
                 android:summary="@string/pref_default_page_sum"
-                android:defaultValue="HomeFragment"/>
+                android:defaultValue="HomeFragment"
+                app:isPreferenceVisible="false"/>
         <SwitchPreferenceCompat
                 android:title="@string/bottom_navigation"
                 android:summary="@string/bottom_navigation_summary"
                 android:defaultValue="true"
-                android:key="prefBottomNavigation" />
+                android:key="prefBottomNavigation"
+                app:isPreferenceVisible="false" />
         <Preference
                 android:key="prefHiddenDrawerItems"
                 android:summary="@string/pref_nav_drawer_items_sum"
-                android:title="@string/pref_nav_drawer_items_title"/>
+                android:title="@string/pref_nav_drawer_items_title"
+                app:isPreferenceVisible="false"/>
         <SwitchPreferenceCompat
                 android:key="prefBackButtonOpensDrawer"
                 android:title="@string/pref_back_button_opens_drawer"
                 android:summary="@string/pref_back_button_opens_drawer_summary"
-                android:defaultValue="false"/>
+                android:defaultValue="false"
+                app:isPreferenceVisible="false"/>
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/episode_lists">
         <Preference

@@ -3,14 +3,21 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="?android:attr/colorBackground"
+    android:fitsSystemWindows="true"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:paddingHorizontal="24dp"
+    android:paddingBottom="24dp">
+
+    <de.danoeh.antennapod.ui.common.LowercaseTextView
+        style="@style/Widget.WildInk.PageTitle"
+        android:text="@string/button_tester_title" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/button_tester_hint"
-        android:textAppearance="?attr/textAppearanceBodyMedium" />
+        android:textAppearance="@style/TextAppearance.WildInk.Detail" />
 
     <Button
         android:id="@+id/button_tester_clear"
@@ -25,6 +32,6 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:scrollbars="vertical"
-        android:textAppearance="?attr/textAppearanceBodyMedium" />
+        android:textAppearance="@style/TextAppearance.WildInk.Detail" />
 
 </LinearLayout>
