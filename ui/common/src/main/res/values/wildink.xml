@@ -1,0 +1,631 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <style name="Theme.WildInk.Base.Light" parent="Theme.AntennaPod.Light">
+        <item name="android:fontFamily">@font/bricolage</item>
+        <item name="fontFamily">@font/bricolage</item>
+        <item name="textAppearanceDisplayLarge">@style/TextAppearance.WildInk.DisplayLarge</item>
+        <item name="textAppearanceDisplayMedium">@style/TextAppearance.WildInk.DisplayMedium</item>
+        <item name="textAppearanceDisplaySmall">@style/TextAppearance.WildInk.DisplaySmall</item>
+        <item name="textAppearanceHeadlineLarge">@style/TextAppearance.WildInk.HeadlineLarge</item>
+        <item name="textAppearanceHeadlineMedium">@style/TextAppearance.WildInk.HeadlineMedium</item>
+        <item name="textAppearanceHeadlineSmall">@style/TextAppearance.WildInk.HeadlineSmall</item>
+        <item name="textAppearanceTitleLarge">@style/TextAppearance.WildInk.TitleLarge</item>
+        <item name="textAppearanceTitleMedium">@style/TextAppearance.WildInk.TitleMedium</item>
+        <item name="textAppearanceTitleSmall">@style/TextAppearance.WildInk.TitleSmall</item>
+        <item name="textAppearanceBodyLarge">@style/TextAppearance.WildInk.BodyLarge</item>
+        <item name="textAppearanceBodyMedium">@style/TextAppearance.WildInk.BodyMedium</item>
+        <item name="textAppearanceBodySmall">@style/TextAppearance.WildInk.BodySmall</item>
+        <item name="textAppearanceLabelLarge">@style/TextAppearance.WildInk.LabelLarge</item>
+        <item name="textAppearanceLabelMedium">@style/TextAppearance.WildInk.LabelMedium</item>
+        <item name="textAppearanceLabelSmall">@style/TextAppearance.WildInk.LabelSmall</item>
+        <item name="shapeAppearanceCornerExtraSmall">@style/ShapeAppearance.WildInk.Square</item>
+        <item name="shapeAppearanceCornerSmall">@style/ShapeAppearance.WildInk.Square</item>
+        <item name="shapeAppearanceCornerMedium">@style/ShapeAppearance.WildInk.Square</item>
+        <item name="shapeAppearanceCornerLarge">@style/ShapeAppearance.WildInk.Square</item>
+        <item name="shapeAppearanceCornerExtraLarge">@style/ShapeAppearance.WildInk.Square</item>
+        <item name="shapeAppearanceSmallComponent">@style/ShapeAppearance.WildInk.Square</item>
+        <item name="shapeAppearanceMediumComponent">@style/ShapeAppearance.WildInk.Square</item>
+        <item name="shapeAppearanceLargeComponent">@style/ShapeAppearance.WildInk.Square</item>
+        <item name="materialButtonStyle">@style/Widget.WildInk.Button</item>
+        <item name="materialButtonOutlinedStyle">@style/Widget.WildInk.Button.Raised</item>
+        <item name="materialButtonTonalStyle">@style/Widget.WildInk.Button.Raised</item>
+        <item name="borderlessButtonStyle">@style/Widget.WildInk.Button.Text</item>
+        <item name="chipStyle">@style/Widget.WildInk.Chip</item>
+        <item name="materialDividerStyle">@style/Widget.WildInk.Divider</item>
+        <item name="linearProgressIndicatorStyle">@style/Widget.WildInk.LinearProgressIndicator</item>
+        <item name="editTextStyle">@style/Widget.WildInk.EditText</item>
+        <item name="android:editTextStyle">@style/Widget.WildInk.EditText</item>
+        <item name="textInputStyle">@style/Widget.WildInk.TextInputLayout</item>
+        <item name="toolbarStyle">@style/Style.WildInk.Toolbar</item>
+    </style>
+
+    <style name="Theme.WildInk.Base.Dark" parent="Theme.AntennaPod.Dark">
+        <item name="android:fontFamily">@font/bricolage</item>
+        <item name="fontFamily">@font/bricolage</item>
+        <item name="textAppearanceDisplayLarge">@style/TextAppearance.WildInk.DisplayLarge</item>
+        <item name="textAppearanceDisplayMedium">@style/TextAppearance.WildInk.DisplayMedium</item>
+        <item name="textAppearanceDisplaySmall">@style/TextAppearance.WildInk.DisplaySmall</item>
+        <item name="textAppearanceHeadlineLarge">@style/TextAppearance.WildInk.HeadlineLarge</item>
+        <item name="textAppearanceHeadlineMedium">@style/TextAppearance.WildInk.HeadlineMedium</item>
+        <item name="textAppearanceHeadlineSmall">@style/TextAppearance.WildInk.HeadlineSmall</item>
+        <item name="textAppearanceTitleLarge">@style/TextAppearance.WildInk.TitleLarge</item>
+        <item name="textAppearanceTitleMedium">@style/TextAppearance.WildInk.TitleMedium</item>
+        <item name="textAppearanceTitleSmall">@style/TextAppearance.WildInk.TitleSmall</item>
+        <item name="textAppearanceBodyLarge">@style/TextAppearance.WildInk.BodyLarge</item>
+        <item name="textAppearanceBodyMedium">@style/TextAppearance.WildInk.BodyMedium</item>
+        <item name="textAppearanceBodySmall">@style/TextAppearance.WildInk.BodySmall</item>
+        <item name="textAppearanceLabelLarge">@style/TextAppearance.WildInk.LabelLarge</item>
+        <item name="textAppearanceLabelMedium">@style/TextAppearance.WildInk.LabelMedium</item>
+        <item name="textAppearanceLabelSmall">@style/TextAppearance.WildInk.LabelSmall</item>
+        <item name="shapeAppearanceCornerExtraSmall">@style/ShapeAppearance.WildInk.Square</item>
+        <item name="shapeAppearanceCornerSmall">@style/ShapeAppearance.WildInk.Square</item>
+        <item name="shapeAppearanceCornerMedium">@style/ShapeAppearance.WildInk.Square</item>
+        <item name="shapeAppearanceCornerLarge">@style/ShapeAppearance.WildInk.Square</item>
+        <item name="shapeAppearanceCornerExtraLarge">@style/ShapeAppearance.WildInk.Square</item>
+        <item name="shapeAppearanceSmallComponent">@style/ShapeAppearance.WildInk.Square</item>
+        <item name="shapeAppearanceMediumComponent">@style/ShapeAppearance.WildInk.Square</item>
+        <item name="shapeAppearanceLargeComponent">@style/ShapeAppearance.WildInk.Square</item>
+        <item name="materialButtonStyle">@style/Widget.WildInk.Button</item>
+        <item name="materialButtonOutlinedStyle">@style/Widget.WildInk.Button.Raised</item>
+        <item name="materialButtonTonalStyle">@style/Widget.WildInk.Button.Raised</item>
+        <item name="borderlessButtonStyle">@style/Widget.WildInk.Button.Text</item>
+        <item name="chipStyle">@style/Widget.WildInk.Chip</item>
+        <item name="materialDividerStyle">@style/Widget.WildInk.Divider</item>
+        <item name="linearProgressIndicatorStyle">@style/Widget.WildInk.LinearProgressIndicator</item>
+        <item name="editTextStyle">@style/Widget.WildInk.EditText</item>
+        <item name="android:editTextStyle">@style/Widget.WildInk.EditText</item>
+        <item name="textInputStyle">@style/Widget.WildInk.TextInputLayout</item>
+        <item name="toolbarStyle">@style/Style.WildInk.Toolbar</item>
+    </style>
+
+    <style name="Theme.WildInk.Charcoal" parent="Theme.WildInk.Base.Dark">
+        <item name="colorPrimary">#FF5A2B</item>
+        <item name="colorAccent">#FF5A2B</item>
+        <item name="colorSecondary">#FF5A2B</item>
+        <item name="colorTertiary">#FF5A2B</item>
+        <item name="colorPrimaryDark">#FF5A2B</item>
+        <item name="colorOnPrimary">#1C1B19</item>
+        <item name="colorOnSecondary">#1C1B19</item>
+        <item name="colorOnTertiary">#1C1B19</item>
+        <item name="colorPrimaryContainer">#2C2A27</item>
+        <item name="colorSecondaryContainer">#2C2A27</item>
+        <item name="colorTertiaryContainer">#2C2A27</item>
+        <item name="colorOnPrimaryContainer">#F1ECE2</item>
+        <item name="colorOnSecondaryContainer">#F1ECE2</item>
+        <item name="colorOnTertiaryContainer">#F1ECE2</item>
+        <item name="android:colorBackground">#1C1B19</item>
+        <item name="colorSurface">#1C1B19</item>
+        <item name="background_color">#1C1B19</item>
+        <item name="colorSurfaceContainerLowest">#1C1B19</item>
+        <item name="background_elevated">#2C2A27</item>
+        <item name="colorSurfaceVariant">#2C2A27</item>
+        <item name="colorSurfaceContainer">#2C2A27</item>
+        <item name="colorSurfaceContainerLow">#2C2A27</item>
+        <item name="colorSurfaceContainerHigh">#2C2A27</item>
+        <item name="colorSurfaceContainerHighest">#2C2A27</item>
+        <item name="colorOnSurface">#F1ECE2</item>
+        <item name="colorOnContainer">#F1ECE2</item>
+        <item name="colorOnBackground">#F1ECE2</item>
+        <item name="android:textColorPrimary">#F1ECE2</item>
+        <item name="action_icon_color">#F1ECE2</item>
+        <item name="colorOnSurfaceVariant">#B5AEA2</item>
+        <item name="android:textColorSecondary">#B5AEA2</item>
+        <item name="android:textColorTertiary">#B5AEA2</item>
+        <item name="android:textColorHint">#B5AEA2</item>
+        <item name="colorOutline">#B5AEA2</item>
+        <item name="colorOutlineVariant">#2C2A27</item>
+        <item name="icon_gray">#B5AEA2</item>
+    </style>
+
+    <style name="Theme.WildInk.Charcoal.NoTitle" parent="Theme.WildInk.Charcoal">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="windowActionModeOverlay">true</item>
+    </style>
+
+    <style name="Theme.WildInk.Charcoal.Translucent" parent="Theme.WildInk.Charcoal.NoTitle">
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:backgroundDimEnabled">true</item>
+        <item name="android:windowAnimationStyle">@style/AnimationFade</item>
+    </style>
+
+    <style name="Theme.WildInk.Paper" parent="Theme.WildInk.Base.Light">
+        <item name="colorPrimary">#FF4A1C</item>
+        <item name="colorAccent">#FF4A1C</item>
+        <item name="colorSecondary">#FF4A1C</item>
+        <item name="colorTertiary">#FF4A1C</item>
+        <item name="colorPrimaryDark">#FF4A1C</item>
+        <item name="colorOnPrimary">#111111</item>
+        <item name="colorOnSecondary">#111111</item>
+        <item name="colorOnTertiary">#111111</item>
+        <item name="colorPrimaryContainer">#E4DED2</item>
+        <item name="colorSecondaryContainer">#E4DED2</item>
+        <item name="colorTertiaryContainer">#E4DED2</item>
+        <item name="colorOnPrimaryContainer">#111111</item>
+        <item name="colorOnSecondaryContainer">#111111</item>
+        <item name="colorOnTertiaryContainer">#111111</item>
+        <item name="android:colorBackground">#F3EFE6</item>
+        <item name="colorSurface">#F3EFE6</item>
+        <item name="background_color">#F3EFE6</item>
+        <item name="colorSurfaceContainerLowest">#F3EFE6</item>
+        <item name="background_elevated">#E4DED2</item>
+        <item name="colorSurfaceVariant">#E4DED2</item>
+        <item name="colorSurfaceContainer">#E4DED2</item>
+        <item name="colorSurfaceContainerLow">#E4DED2</item>
+        <item name="colorSurfaceContainerHigh">#E4DED2</item>
+        <item name="colorSurfaceContainerHighest">#E4DED2</item>
+        <item name="colorOnSurface">#111111</item>
+        <item name="colorOnContainer">#111111</item>
+        <item name="colorOnBackground">#111111</item>
+        <item name="android:textColorPrimary">#111111</item>
+        <item name="action_icon_color">#111111</item>
+        <item name="colorOnSurfaceVariant">#555049</item>
+        <item name="android:textColorSecondary">#555049</item>
+        <item name="android:textColorTertiary">#555049</item>
+        <item name="android:textColorHint">#555049</item>
+        <item name="colorOutline">#555049</item>
+        <item name="colorOutlineVariant">#E4DED2</item>
+        <item name="icon_gray">#555049</item>
+    </style>
+
+    <style name="Theme.WildInk.Paper.NoTitle" parent="Theme.WildInk.Paper">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="windowActionModeOverlay">true</item>
+    </style>
+
+    <style name="Theme.WildInk.Paper.Translucent" parent="Theme.WildInk.Paper.NoTitle">
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:backgroundDimEnabled">true</item>
+        <item name="android:windowAnimationStyle">@style/AnimationFade</item>
+    </style>
+
+    <style name="Theme.WildInk.Forest" parent="Theme.WildInk.Base.Dark">
+        <item name="colorPrimary">#E8B33A</item>
+        <item name="colorAccent">#E8B33A</item>
+        <item name="colorSecondary">#E8B33A</item>
+        <item name="colorTertiary">#E8B33A</item>
+        <item name="colorPrimaryDark">#E8B33A</item>
+        <item name="colorOnPrimary">#1E2A23</item>
+        <item name="colorOnSecondary">#1E2A23</item>
+        <item name="colorOnTertiary">#1E2A23</item>
+        <item name="colorPrimaryContainer">#2A3A30</item>
+        <item name="colorSecondaryContainer">#2A3A30</item>
+        <item name="colorTertiaryContainer">#2A3A30</item>
+        <item name="colorOnPrimaryContainer">#EFE9DA</item>
+        <item name="colorOnSecondaryContainer">#EFE9DA</item>
+        <item name="colorOnTertiaryContainer">#EFE9DA</item>
+        <item name="android:colorBackground">#1E2A23</item>
+        <item name="colorSurface">#1E2A23</item>
+        <item name="background_color">#1E2A23</item>
+        <item name="colorSurfaceContainerLowest">#1E2A23</item>
+        <item name="background_elevated">#2A3A30</item>
+        <item name="colorSurfaceVariant">#2A3A30</item>
+        <item name="colorSurfaceContainer">#2A3A30</item>
+        <item name="colorSurfaceContainerLow">#2A3A30</item>
+        <item name="colorSurfaceContainerHigh">#2A3A30</item>
+        <item name="colorSurfaceContainerHighest">#2A3A30</item>
+        <item name="colorOnSurface">#EFE9DA</item>
+        <item name="colorOnContainer">#EFE9DA</item>
+        <item name="colorOnBackground">#EFE9DA</item>
+        <item name="android:textColorPrimary">#EFE9DA</item>
+        <item name="action_icon_color">#EFE9DA</item>
+        <item name="colorOnSurfaceVariant">#AEB8A8</item>
+        <item name="android:textColorSecondary">#AEB8A8</item>
+        <item name="android:textColorTertiary">#AEB8A8</item>
+        <item name="android:textColorHint">#AEB8A8</item>
+        <item name="colorOutline">#AEB8A8</item>
+        <item name="colorOutlineVariant">#2A3A30</item>
+        <item name="icon_gray">#AEB8A8</item>
+    </style>
+
+    <style name="Theme.WildInk.Forest.NoTitle" parent="Theme.WildInk.Forest">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="windowActionModeOverlay">true</item>
+    </style>
+
+    <style name="Theme.WildInk.Forest.Translucent" parent="Theme.WildInk.Forest.NoTitle">
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:backgroundDimEnabled">true</item>
+        <item name="android:windowAnimationStyle">@style/AnimationFade</item>
+    </style>
+
+    <style name="Theme.WildInk.Night" parent="Theme.WildInk.Base.Dark">
+        <item name="colorPrimary">#FF7A59</item>
+        <item name="colorAccent">#FF7A59</item>
+        <item name="colorSecondary">#FF7A59</item>
+        <item name="colorTertiary">#FF7A59</item>
+        <item name="colorPrimaryDark">#FF7A59</item>
+        <item name="colorOnPrimary">#151E36</item>
+        <item name="colorOnSecondary">#151E36</item>
+        <item name="colorOnTertiary">#151E36</item>
+        <item name="colorPrimaryContainer">#202B48</item>
+        <item name="colorSecondaryContainer">#202B48</item>
+        <item name="colorTertiaryContainer">#202B48</item>
+        <item name="colorOnPrimaryContainer">#F3EEE3</item>
+        <item name="colorOnSecondaryContainer">#F3EEE3</item>
+        <item name="colorOnTertiaryContainer">#F3EEE3</item>
+        <item name="android:colorBackground">#151E36</item>
+        <item name="colorSurface">#151E36</item>
+        <item name="background_color">#151E36</item>
+        <item name="colorSurfaceContainerLowest">#151E36</item>
+        <item name="background_elevated">#202B48</item>
+        <item name="colorSurfaceVariant">#202B48</item>
+        <item name="colorSurfaceContainer">#202B48</item>
+        <item name="colorSurfaceContainerLow">#202B48</item>
+        <item name="colorSurfaceContainerHigh">#202B48</item>
+        <item name="colorSurfaceContainerHighest">#202B48</item>
+        <item name="colorOnSurface">#F3EEE3</item>
+        <item name="colorOnContainer">#F3EEE3</item>
+        <item name="colorOnBackground">#F3EEE3</item>
+        <item name="android:textColorPrimary">#F3EEE3</item>
+        <item name="action_icon_color">#F3EEE3</item>
+        <item name="colorOnSurfaceVariant">#AEB5C8</item>
+        <item name="android:textColorSecondary">#AEB5C8</item>
+        <item name="android:textColorTertiary">#AEB5C8</item>
+        <item name="android:textColorHint">#AEB5C8</item>
+        <item name="colorOutline">#AEB5C8</item>
+        <item name="colorOutlineVariant">#202B48</item>
+        <item name="icon_gray">#AEB5C8</item>
+    </style>
+
+    <style name="Theme.WildInk.Night.NoTitle" parent="Theme.WildInk.Night">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="windowActionModeOverlay">true</item>
+    </style>
+
+    <style name="Theme.WildInk.Night.Translucent" parent="Theme.WildInk.Night.NoTitle">
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:backgroundDimEnabled">true</item>
+        <item name="android:windowAnimationStyle">@style/AnimationFade</item>
+    </style>
+
+    <style name="Theme.WildInk.Kraft" parent="Theme.WildInk.Base.Light">
+        <item name="colorPrimary">#C2341B</item>
+        <item name="colorAccent">#C2341B</item>
+        <item name="colorSecondary">#C2341B</item>
+        <item name="colorTertiary">#C2341B</item>
+        <item name="colorPrimaryDark">#C2341B</item>
+        <item name="colorOnPrimary">#F3EBDD</item>
+        <item name="colorOnSecondary">#F3EBDD</item>
+        <item name="colorOnTertiary">#F3EBDD</item>
+        <item name="colorPrimaryContainer">#C9B897</item>
+        <item name="colorSecondaryContainer">#C9B897</item>
+        <item name="colorTertiaryContainer">#C9B897</item>
+        <item name="colorOnPrimaryContainer">#1A1712</item>
+        <item name="colorOnSecondaryContainer">#1A1712</item>
+        <item name="colorOnTertiaryContainer">#1A1712</item>
+        <item name="android:colorBackground">#D6C7AE</item>
+        <item name="colorSurface">#D6C7AE</item>
+        <item name="background_color">#D6C7AE</item>
+        <item name="colorSurfaceContainerLowest">#D6C7AE</item>
+        <item name="background_elevated">#C9B897</item>
+        <item name="colorSurfaceVariant">#C9B897</item>
+        <item name="colorSurfaceContainer">#C9B897</item>
+        <item name="colorSurfaceContainerLow">#C9B897</item>
+        <item name="colorSurfaceContainerHigh">#C9B897</item>
+        <item name="colorSurfaceContainerHighest">#C9B897</item>
+        <item name="colorOnSurface">#1A1712</item>
+        <item name="colorOnContainer">#1A1712</item>
+        <item name="colorOnBackground">#1A1712</item>
+        <item name="android:textColorPrimary">#1A1712</item>
+        <item name="action_icon_color">#1A1712</item>
+        <item name="colorOnSurfaceVariant">#4E4436</item>
+        <item name="android:textColorSecondary">#4E4436</item>
+        <item name="android:textColorTertiary">#4E4436</item>
+        <item name="android:textColorHint">#4E4436</item>
+        <item name="colorOutline">#4E4436</item>
+        <item name="colorOutlineVariant">#C9B897</item>
+        <item name="icon_gray">#4E4436</item>
+    </style>
+
+    <style name="Theme.WildInk.Kraft.NoTitle" parent="Theme.WildInk.Kraft">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="windowActionModeOverlay">true</item>
+    </style>
+
+    <style name="Theme.WildInk.Kraft.Translucent" parent="Theme.WildInk.Kraft.NoTitle">
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:backgroundDimEnabled">true</item>
+        <item name="android:windowAnimationStyle">@style/AnimationFade</item>
+    </style>
+
+    <style name="Theme.WildInk.Plum" parent="Theme.WildInk.Base.Dark">
+        <item name="colorPrimary">#FFB21F</item>
+        <item name="colorAccent">#FFB21F</item>
+        <item name="colorSecondary">#FFB21F</item>
+        <item name="colorTertiary">#FFB21F</item>
+        <item name="colorPrimaryDark">#FFB21F</item>
+        <item name="colorOnPrimary">#2A1C2D</item>
+        <item name="colorOnSecondary">#2A1C2D</item>
+        <item name="colorOnTertiary">#2A1C2D</item>
+        <item name="colorPrimaryContainer">#3A283E</item>
+        <item name="colorSecondaryContainer">#3A283E</item>
+        <item name="colorTertiaryContainer">#3A283E</item>
+        <item name="colorOnPrimaryContainer">#F3E9E3</item>
+        <item name="colorOnSecondaryContainer">#F3E9E3</item>
+        <item name="colorOnTertiaryContainer">#F3E9E3</item>
+        <item name="android:colorBackground">#2A1C2D</item>
+        <item name="colorSurface">#2A1C2D</item>
+        <item name="background_color">#2A1C2D</item>
+        <item name="colorSurfaceContainerLowest">#2A1C2D</item>
+        <item name="background_elevated">#3A283E</item>
+        <item name="colorSurfaceVariant">#3A283E</item>
+        <item name="colorSurfaceContainer">#3A283E</item>
+        <item name="colorSurfaceContainerLow">#3A283E</item>
+        <item name="colorSurfaceContainerHigh">#3A283E</item>
+        <item name="colorSurfaceContainerHighest">#3A283E</item>
+        <item name="colorOnSurface">#F3E9E3</item>
+        <item name="colorOnContainer">#F3E9E3</item>
+        <item name="colorOnBackground">#F3E9E3</item>
+        <item name="android:textColorPrimary">#F3E9E3</item>
+        <item name="action_icon_color">#F3E9E3</item>
+        <item name="colorOnSurfaceVariant">#C2B1BD</item>
+        <item name="android:textColorSecondary">#C2B1BD</item>
+        <item name="android:textColorTertiary">#C2B1BD</item>
+        <item name="android:textColorHint">#C2B1BD</item>
+        <item name="colorOutline">#C2B1BD</item>
+        <item name="colorOutlineVariant">#3A283E</item>
+        <item name="icon_gray">#C2B1BD</item>
+    </style>
+
+    <style name="Theme.WildInk.Plum.NoTitle" parent="Theme.WildInk.Plum">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="windowActionModeOverlay">true</item>
+    </style>
+
+    <style name="Theme.WildInk.Plum.Translucent" parent="Theme.WildInk.Plum.NoTitle">
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:backgroundDimEnabled">true</item>
+        <item name="android:windowAnimationStyle">@style/AnimationFade</item>
+    </style>
+
+    <style name="TextAppearance.WildInk.DisplayLarge" parent="TextAppearance.Material3.DisplayLarge">
+        <item name="android:fontFamily">@font/bricolage_extrabold</item>
+        <item name="fontFamily">@font/bricolage_extrabold</item>
+    </style>
+
+    <style name="TextAppearance.WildInk.DisplayMedium" parent="TextAppearance.Material3.DisplayMedium">
+        <item name="android:fontFamily">@font/bricolage_extrabold</item>
+        <item name="fontFamily">@font/bricolage_extrabold</item>
+    </style>
+
+    <style name="TextAppearance.WildInk.DisplaySmall" parent="TextAppearance.Material3.DisplaySmall">
+        <item name="android:fontFamily">@font/bricolage_extrabold</item>
+        <item name="fontFamily">@font/bricolage_extrabold</item>
+    </style>
+
+    <style name="TextAppearance.WildInk.HeadlineLarge" parent="TextAppearance.Material3.HeadlineLarge">
+        <item name="android:fontFamily">@font/bricolage_extrabold</item>
+        <item name="fontFamily">@font/bricolage_extrabold</item>
+    </style>
+
+    <style name="TextAppearance.WildInk.HeadlineMedium" parent="TextAppearance.Material3.HeadlineMedium">
+        <item name="android:fontFamily">@font/bricolage_extrabold</item>
+        <item name="fontFamily">@font/bricolage_extrabold</item>
+    </style>
+
+    <style name="TextAppearance.WildInk.HeadlineSmall" parent="TextAppearance.Material3.HeadlineSmall">
+        <item name="android:fontFamily">@font/bricolage_extrabold</item>
+        <item name="fontFamily">@font/bricolage_extrabold</item>
+    </style>
+
+    <style name="TextAppearance.WildInk.TitleLarge" parent="TextAppearance.Material3.TitleLarge">
+        <item name="android:fontFamily">@font/bricolage_extrabold</item>
+        <item name="fontFamily">@font/bricolage_extrabold</item>
+    </style>
+
+    <style name="TextAppearance.WildInk.TitleMedium" parent="TextAppearance.Material3.TitleMedium">
+        <item name="android:fontFamily">@font/bricolage_semibold</item>
+        <item name="fontFamily">@font/bricolage_semibold</item>
+    </style>
+
+    <style name="TextAppearance.WildInk.TitleSmall" parent="TextAppearance.Material3.TitleSmall">
+        <item name="android:fontFamily">@font/bricolage_semibold</item>
+        <item name="fontFamily">@font/bricolage_semibold</item>
+    </style>
+
+    <style name="TextAppearance.WildInk.BodyLarge" parent="TextAppearance.Material3.BodyLarge">
+        <item name="android:fontFamily">@font/bricolage</item>
+        <item name="fontFamily">@font/bricolage</item>
+    </style>
+
+    <style name="TextAppearance.WildInk.BodyMedium" parent="TextAppearance.Material3.BodyMedium">
+        <item name="android:fontFamily">@font/bricolage</item>
+        <item name="fontFamily">@font/bricolage</item>
+    </style>
+
+    <style name="TextAppearance.WildInk.BodySmall" parent="TextAppearance.Material3.BodySmall">
+        <item name="android:fontFamily">@font/bricolage</item>
+        <item name="fontFamily">@font/bricolage</item>
+    </style>
+
+    <style name="TextAppearance.WildInk.LabelLarge" parent="TextAppearance.Material3.LabelLarge">
+        <item name="android:fontFamily">@font/bricolage_semibold</item>
+        <item name="fontFamily">@font/bricolage_semibold</item>
+    </style>
+
+    <style name="TextAppearance.WildInk.LabelMedium" parent="TextAppearance.Material3.LabelMedium">
+        <item name="android:fontFamily">@font/bricolage_semibold</item>
+        <item name="fontFamily">@font/bricolage_semibold</item>
+    </style>
+
+    <style name="TextAppearance.WildInk.LabelSmall" parent="TextAppearance.Material3.LabelSmall">
+        <item name="android:fontFamily">@font/bricolage_semibold</item>
+        <item name="fontFamily">@font/bricolage_semibold</item>
+    </style>
+
+    <style name="ShapeAppearance.WildInk.Square" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">0dp</item>
+    </style>
+
+    <style name="Widget.WildInk.Button" parent="Widget.Material3.Button">
+        <item name="shapeAppearance">@style/ShapeAppearance.WildInk.Square</item>
+        <item name="android:fontFamily">@font/bricolage_extrabold</item>
+        <item name="android:minHeight">48dp</item>
+    </style>
+
+    <style name="Widget.WildInk.Button.Raised" parent="Widget.Material3.Button.OutlinedButton">
+        <item name="shapeAppearance">@style/ShapeAppearance.WildInk.Square</item>
+        <item name="android:fontFamily">@font/bricolage_extrabold</item>
+        <item name="android:minHeight">48dp</item>
+        <item name="strokeWidth">0dp</item>
+        <item name="backgroundTint">@color/wildink_raised</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
+    </style>
+
+    <style name="Widget.WildInk.Button.Text" parent="Widget.Material3.Button.TextButton">
+        <item name="shapeAppearance">@style/ShapeAppearance.WildInk.Square</item>
+        <item name="android:fontFamily">@font/bricolage_extrabold</item>
+        <item name="android:minHeight">48dp</item>
+    </style>
+
+    <style name="Widget.WildInk.Chip" parent="Widget.Material3.Chip.Assist">
+        <item name="shapeAppearance">@style/ShapeAppearance.WildInk.Square</item>
+        <item name="shapeAppearanceOverlay">@null</item>
+        <item name="chipStrokeWidth">0dp</item>
+        <item name="chipBackgroundColor">@color/wildink_chip_background</item>
+        <item name="android:textColor">@color/wildink_chip_text</item>
+        <item name="android:fontFamily">@font/bricolage_semibold</item>
+    </style>
+
+    <style name="Widget.WildInk.Divider" parent="Widget.Material3.MaterialDivider">
+        <item name="dividerThickness">6dp</item>
+        <item name="dividerColor">?android:attr/textColorPrimary</item>
+    </style>
+
+    <style name="Widget.WildInk.LinearProgressIndicator" parent="Widget.Material3.LinearProgressIndicator">
+        <item name="trackThickness">6dp</item>
+        <item name="trackCornerRadius">0dp</item>
+        <item name="indicatorColor">?attr/colorPrimary</item>
+        <item name="trackColor">?attr/colorSurfaceContainerHigh</item>
+    </style>
+
+    <style name="Widget.WildInk.EditText" parent="Widget.AppCompat.EditText">
+        <item name="android:background">@drawable/wildink_field</item>
+        <item name="android:minHeight">48dp</item>
+        <item name="android:textColor">?android:attr/textColorPrimary</item>
+        <item name="android:textColorHint">?android:attr/textColorSecondary</item>
+    </style>
+
+    <style name="Widget.WildInk.TextInputLayout" parent="Widget.Material3.TextInputLayout.FilledBox">
+        <item name="shapeAppearance">@style/ShapeAppearance.WildInk.Square</item>
+        <item name="boxBackgroundColor">?attr/colorSurfaceContainerHigh</item>
+        <item name="boxStrokeWidth">0dp</item>
+        <item name="boxStrokeWidthFocused">0dp</item>
+    </style>
+
+    <style name="Style.WildInk.Toolbar" parent="Style.AntennaPod.Toolbar">
+        <item name="titleTextAppearance">@style/TextAppearance.WildInk.ToolbarTitle</item>
+    </style>
+
+    <style name="TextAppearance.WildInk.ToolbarTitle" parent="TextAppearance.Material3.TitleLarge">
+        <item name="android:fontFamily">@font/bricolage_extrabold</item>
+        <item name="fontFamily">@font/bricolage_extrabold</item>
+        <item name="android:textSize">22sp</item>
+        <item name="android:letterSpacing">-0.03</item>
+    </style>
+
+    <style name="TextAppearance.WildInk.Hero" parent="">
+        <item name="android:fontFamily">@font/bricolage_extrabold</item>
+        <item name="android:textSize">52sp</item>
+        <item name="android:letterSpacing">-0.04</item>
+        <item name="android:textColor">?android:attr/textColorPrimary</item>
+    </style>
+
+    <style name="TextAppearance.WildInk.PageTitle" parent="TextAppearance.WildInk.Hero">
+        <item name="android:textSize">44sp</item>
+    </style>
+
+    <style name="TextAppearance.WildInk.World" parent="TextAppearance.WildInk.Hero">
+        <item name="android:textSize">34sp</item>
+        <item name="android:letterSpacing">-0.03</item>
+    </style>
+
+    <style name="TextAppearance.WildInk.WorldOther" parent="">
+        <item name="android:fontFamily">@font/bricolage_regular</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">?android:attr/textColorSecondary</item>
+    </style>
+
+    <style name="TextAppearance.WildInk.SectionHeading" parent="TextAppearance.WildInk.Hero">
+        <item name="android:textSize">22sp</item>
+        <item name="android:letterSpacing">-0.03</item>
+    </style>
+
+    <style name="TextAppearance.WildInk.ItemTitle" parent="">
+        <item name="android:fontFamily">@font/bricolage_extrabold</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:letterSpacing">-0.02</item>
+        <item name="android:textColor">?android:attr/textColorPrimary</item>
+    </style>
+
+    <style name="TextAppearance.WildInk.Detail" parent="">
+        <item name="android:fontFamily">@font/bricolage_regular</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:textColor">?android:attr/textColorSecondary</item>
+    </style>
+
+    <style name="TextAppearance.WildInk.DetailStrong" parent="TextAppearance.WildInk.Detail">
+        <item name="android:fontFamily">@font/bricolage_semibold</item>
+    </style>
+
+    <style name="TextAppearance.WildInk.Label" parent="">
+        <item name="android:fontFamily">@font/bricolage_semibold</item>
+        <item name="android:textSize">13sp</item>
+        <item name="android:letterSpacing">0.08</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textColor">?android:attr/textColorSecondary</item>
+    </style>
+
+    <style name="Widget.WildInk.Row" parent="">
+        <item name="android:minHeight">48dp</item>
+        <item name="android:paddingStart">24dp</item>
+        <item name="android:paddingEnd">24dp</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:background">?android:attr/selectableItemBackground</item>
+    </style>
+
+    <style name="Widget.WildInk.Bar" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">6dp</item>
+        <item name="android:background">?android:attr/textColorPrimary</item>
+    </style>
+
+    <style name="Widget.WildInk.Handle" parent="">
+        <item name="android:layout_width">44dp</item>
+        <item name="android:layout_height">5dp</item>
+        <item name="android:background">?android:attr/textColorPrimary</item>
+    </style>
+
+</resources>

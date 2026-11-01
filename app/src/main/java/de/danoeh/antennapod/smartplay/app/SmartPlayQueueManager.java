@@ -55,6 +55,7 @@ public class SmartPlayQueueManager {
     private static final String PREF_SKIP_KEEPS_EPISODE = "prefSkipKeepsEpisode";
     private static final String STATE_PREFS = "SmartPlayState";
     private static final String KEY_ACTIVE_ID = "activeId";
+    private static final String KEY_ACTIVE_NAME = "activeName";
     private static final String KEY_PAUSED = "paused";
     private static final String KEY_FEED_QUEUE_ACTION_CLEARED = "feedQueueActionCleared";
     private static final String KEY_COUNTER_SET = "subscriptionCounterSet";
@@ -258,6 +259,9 @@ public class SmartPlayQueueManager {
             state.edit().putLong(KEY_ACTIVE_ID, active.getId()).apply();
         }
         activeName = active.getDefinition().getName();
+        if (!activeName.equals(state.getString(KEY_ACTIVE_NAME, null))) {
+            state.edit().putString(KEY_ACTIVE_NAME, activeName).apply();
+        }
         return active.getDefinition();
     }
 

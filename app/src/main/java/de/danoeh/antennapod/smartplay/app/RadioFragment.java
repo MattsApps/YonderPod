@@ -120,6 +120,7 @@ public class RadioFragment extends Fragment {
 
     public static void play(Context context, FeedItem station) {
         if (station.getMedia() != null) {
+            Radio.setLastStation(context, station.getId());
             new PlaybackServiceStarter(context, station.getMedia()).callEvenIfRunning(true).start();
         }
     }

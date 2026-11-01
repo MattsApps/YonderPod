@@ -145,6 +145,29 @@ public final class Radio {
         return true;
     }
 
+    private static final String STATE_PREFS = "YonderRadioState";
+    private static final String KEY_LAST_STATION = "lastStation";
+
+    public static void setLastStation(Context context, long stationItemId) {
+        context.getSharedPreferences(STATE_PREFS, Context.MODE_PRIVATE).edit()
+                .putLong(KEY_LAST_STATION, stationItemId).apply();
+    }
+
+    public static FeedItem lastStation(Context context) {
+        FeedMedia current = DBReader.getFeedMedia(PlaybackPreferences.getCurrentlyPlayingFeedMediaId());
+        if (current != null && current.isLiveRadio() && current.getItem() != null) {
+            return current.getItem();
+        }
+        long id = context.getSharedPreferences(STATE_PREFS, Context.MODE_PRIVATE).getLong(KEY_LAST_STATION, -1);
+        List<FeedItem> stations = stations(context);
+        for (FeedItem station : stations) {
+            if (station.getId() == id) {
+                return station;
+            }
+        }
+        return stations.isEmpty() ? null : stations.get(0);
+    }
+
     public static boolean isPlaying(FeedItem station) {
         return station.getMedia() != null
                 && PlaybackPreferences.getCurrentlyPlayingFeedMediaId() == station.getMedia().getId();

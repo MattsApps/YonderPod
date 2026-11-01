@@ -47,6 +47,7 @@ public abstract class UserPreferences {
     public static final String PREF_THEME = "prefTheme";
     public static final String PREF_THEME_BLACK = "prefThemeBlack";
     public static final String PREF_TINTED_COLORS = "prefTintedColors";
+    public static final String PREF_PALETTE = "prefPalette";
     public static final String PREF_HIDDEN_DRAWER_ITEMS = "prefHiddenDrawerItems";
     public static final String PREF_DRAWER_ITEM_ORDER = "prefDrawerItemOrder";
     public static final String PREF_DRAWER_FEED_ORDER = "prefDrawerFeedOrder";
@@ -184,6 +185,14 @@ public abstract class UserPreferences {
             default:
                 return ThemePreference.SYSTEM;
         }
+    }
+
+    public static String getPalette() {
+        return prefs.getString(PREF_PALETTE, "charcoal");
+    }
+
+    public static void setPalette(String palette) {
+        prefs.edit().putString(PREF_PALETTE, palette).apply();
     }
 
     public static boolean isParentalControlPasswordSet() {

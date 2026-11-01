@@ -3,7 +3,6 @@
     <string-array name="nav_drawer_section_tags">
         <item>HomeFragment</item>
         <item>QueueFragment</item>
-        <item>NewEpisodesFragment</item>
         <item>SubscriptionFragment</item>
         <item>RadioFragment</item>
         <item>EpisodesFragment</item>

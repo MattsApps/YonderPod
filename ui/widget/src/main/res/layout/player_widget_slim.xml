@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="@dimen/widget_margin">
+
+    <ImageView
+        android:id="@+id/widgetBackground"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:importantForAccessibility="no"
+        android:scaleType="fitXY"
+        android:src="@drawable/widget_wildink_bg" />
+
+    <LinearLayout
+        android:id="@+id/widgetLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingHorizontal="10dp">
+
+        <FrameLayout
+            android:id="@+id/playBox"
+            android:layout_width="52dp"
+            android:layout_height="52dp">
+
+            <ImageView
+                android:id="@+id/butPlayCircle"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:contentDescription="@string/play_label"
+                android:src="@drawable/widget_wildink_circle" />
+
+            <ImageView
+                android:id="@+id/butPlay"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="center"
+                android:importantForAccessibility="no"
+                android:src="@drawable/wildink_play" />
+
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/txtvTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:fontFamily="sans-serif-black"
+            android:lineSpacingMultiplier="0.95"
+            android:maxLines="2"
+            android:textSize="17sp" />
+
+        <ImageView
+            android:id="@+id/butSkip"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:contentDescription="@string/skip_episode_label"
+            android:padding="13dp"
+            android:src="@drawable/wildink_next" />
+
+    </LinearLayout>
+
+</FrameLayout>

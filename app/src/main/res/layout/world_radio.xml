@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/worldRoot"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?android:attr/colorBackground"
+    android:orientation="vertical"
+    android:paddingHorizontal="24dp">
+
+    <include layout="@layout/world_names" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp">
+
+        <FrameLayout
+            android:id="@+id/worldPlay"
+            android:layout_width="@dimen/world_play_large"
+            android:layout_height="@dimen/world_play_large"
+            android:layout_gravity="start"
+            android:layout_marginStart="-4dp"
+            android:background="@drawable/wildink_play_circle"
+            android:contentDescription="@string/play_label"
+            android:foreground="?android:attr/selectableItemBackgroundBorderless">
+
+            <ImageView
+                android:id="@+id/worldPlayIcon"
+                android:layout_width="92dp"
+                android:layout_height="92dp"
+                android:layout_gravity="center"
+                android:importantForAccessibility="no"
+                android:src="@drawable/wildink_play"
+                android:tint="?attr/colorOnPrimary" />
+
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/worldLive"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginTop="20dp"
+            android:fontFamily="@font/bricolage_extrabold"
+            android:letterSpacing="0.08"
+            android:text="@string/radio_live"
+            android:textColor="?attr/colorPrimary"
+            android:textSize="13sp" />
+
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/worldShow"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textAppearance="@style/TextAppearance.WildInk.DetailStrong" />
+
+    <TextView
+        android:id="@+id/worldTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:ellipsize="end"
+        android:lineSpacingMultiplier="0.95"
+        android:maxLines="2"
+        android:textAppearance="@style/TextAppearance.WildInk.Hero"
+        android:textSize="56sp" />
+
+    <TextView
+        android:id="@+id/worldHint"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:textAppearance="@style/TextAppearance.WildInk.Detail"
+        android:visibility="gone" />
+
+    <LinearLayout
+        android:id="@+id/worldReady"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="28dp"
+        android:orientation="vertical">
+
+        <View style="@style/Widget.WildInk.Bar" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="22dp"
+            android:layout_marginBottom="4dp"
+            android:text="@string/world_ready_to_play"
+            android:textAppearance="@style/TextAppearance.WildInk.Label" />
+
+        <LinearLayout
+            android:id="@+id/worldReadyList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+
+    </LinearLayout>
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <include layout="@layout/world_handle" />
+
+</LinearLayout>

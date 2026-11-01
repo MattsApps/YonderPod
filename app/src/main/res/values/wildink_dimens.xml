@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="world_play_large">252dp</dimen>
+    <dimen name="world_play_medium">216dp</dimen>
+</resources>

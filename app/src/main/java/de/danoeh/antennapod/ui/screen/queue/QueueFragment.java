@@ -30,7 +30,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import de.danoeh.antennapod.event.MessageEvent;
 import de.danoeh.antennapod.event.playback.SpeedChangedEvent;
-import de.danoeh.antennapod.ui.screen.InboxFragment;
 import de.danoeh.antennapod.ui.screen.SearchFragment;
 import de.danoeh.antennapod.net.download.serviceinterface.FeedUpdateManager;
 import de.danoeh.antennapod.ui.episodes.PlaybackSpeedUtils;
@@ -581,13 +580,6 @@ public class QueueFragment extends Fragment implements MaterialToolbar.OnMenuIte
                 .subscribe(itemsAndDisplayButton -> {
                     final boolean restoreScrollPosition = queue == null || queue.isEmpty();
                     queue = itemsAndDisplayButton.first;
-                    if (itemsAndDisplayButton.second) {
-                        emptyView.setMessage(R.string.no_queue_items_inbox_has_items_label);
-                        emptyView.setButtonText(R.string.no_queue_items_inbox_has_items_button_label);
-                        emptyView.setButtonVisibility(View.VISIBLE);
-                        emptyView.setButtonOnClickListener(v -> ((MainActivity) getActivity())
-                                .loadChildFragment(new InboxFragment()));
-                    }
                     if (SmartPlayQueueManager.getInstance().isPaused()) {
                         emptyView.setMessage(R.string.smartplay_paused_message);
                     }

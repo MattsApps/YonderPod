@@ -61,7 +61,7 @@ public class PlayerWidget extends AppWidgetProvider {
     public void onDisabled(Context context) {
         super.onDisabled(context);
         Log.d(TAG, "Widget disabled");
-        setEnabled(context, false);
+        setEnabled(context, widgetIds(context).length > 0);
     }
 
     @Override
@@ -76,9 +76,7 @@ public class PlayerWidget extends AppWidgetProvider {
             prefs.edit().remove(KEY_WIDGET_SKIP + appWidgetId).apply();
             prefs.edit().remove(KEY_WIDGET_COVER_BACKGROUND + appWidgetId).apply();
         }
-        AppWidgetManager manager = AppWidgetManager.getInstance(context);
-        int[] widgetIds = manager.getAppWidgetIds(new ComponentName(context, PlayerWidget.class));
-        if (widgetIds.length == 0) {
+        if (widgetIds(context).length == 0) {
             prefs.edit().putBoolean(KEY_WORKAROUND_ENABLED, false).apply();
             WorkManager.getInstance(context).cancelUniqueWork(WORKAROUND_WORK_NAME);
         }
@@ -94,6 +92,25 @@ public class PlayerWidget extends AppWidgetProvider {
                 .build();
         WorkManager.getInstance(context)
                 .enqueueUniqueWork(WORKAROUND_WORK_NAME, ExistingWorkPolicy.REPLACE, workRequest);
+    }
+
+    public static int[] widgetIds(Context context) {
+        AppWidgetManager manager = AppWidgetManager.getInstance(context);
+        int[] wide = manager.getAppWidgetIds(new ComponentName(context, PlayerWidget.class));
+        int[] slim = manager.getAppWidgetIds(new ComponentName(context, PlayerWidgetSlim.class));
+        int[] all = Arrays.copyOf(wide, wide.length + slim.length);
+        System.arraycopy(slim, 0, all, wide.length, slim.length);
+        return all;
+    }
+
+    public static boolean isSlim(Context context, int widgetId) {
+        for (int id : AppWidgetManager.getInstance(context)
+                .getAppWidgetIds(new ComponentName(context, PlayerWidgetSlim.class))) {
+            if (id == widgetId) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public static boolean isEnabled(Context context) {

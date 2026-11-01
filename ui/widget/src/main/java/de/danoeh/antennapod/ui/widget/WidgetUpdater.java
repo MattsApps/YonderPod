@@ -2,43 +2,35 @@ package de.danoeh.antennapod.ui.widget;
 
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
-import android.content.ComponentName;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.os.Bundle;
-import android.util.Log;
+import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.view.View;
 import android.widget.RemoteViews;
 
 import androidx.media3.common.Player;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.Transformation;
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
-
-import de.danoeh.antennapod.ui.appstartintent.MediaButtonStarter;
-import de.danoeh.antennapod.ui.common.Converter;
-import de.danoeh.antennapod.storage.preferences.UserPreferences;
-
-import java.util.concurrent.TimeUnit;
+import java.util.Locale;
 
 import de.danoeh.antennapod.model.feed.FeedMedia;
 import de.danoeh.antennapod.model.playback.MediaType;
 import de.danoeh.antennapod.model.playback.Playable;
 import de.danoeh.antennapod.playback.base.PlayerStatus;
+import de.danoeh.antennapod.storage.preferences.UserPreferences;
 import de.danoeh.antennapod.ui.appstartintent.MainActivityStarter;
-import de.danoeh.antennapod.ui.appstartintent.PlaybackSpeedActivityStarter;
+import de.danoeh.antennapod.ui.appstartintent.MediaButtonStarter;
 import de.danoeh.antennapod.ui.appstartintent.VideoPlayerActivityStarter;
-import de.danoeh.antennapod.ui.episodes.ImageResourceUtils;
+import de.danoeh.antennapod.ui.common.WildInkPalette;
 import de.danoeh.antennapod.ui.episodes.TimeSpeedConverter;
-import de.danoeh.antennapod.ui.glide.FastBlurTransformation;
 
 /**
  * Updates the state of the player widget.
  */
 public abstract class WidgetUpdater {
-    private static final String TAG = "WidgetUpdater";
+    private static final String SMART_PLAY_PREFS = "SmartPlayState";
+    private static final String KEY_ACTIVE_NAME = "activeName";
+    private static final int PROGRESS_WIDTH = 300;
 
     public static class WidgetState {
         final Playable media;
@@ -67,7 +59,7 @@ public abstract class WidgetUpdater {
         if (!PlayerWidget.isEnabled(context) || widgetState == null) {
             return;
         }
-
+        WildInkPalette palette = WildInkPalette.current();
         PendingIntent startMediaPlayer;
         if (widgetState.media != null && widgetState.media.getMediaType() == MediaType.VIDEO) {
             startMediaPlayer = new VideoPlayerActivityStarter(context).getPendingIntent();
@@ -75,187 +67,93 @@ public abstract class WidgetUpdater {
             startMediaPlayer = new MainActivityStarter(context)
                     .withOpenPlayer().withClearBackStack().getPendingIntent();
         }
-
-        PendingIntent startPlaybackSpeedDialog = new PlaybackSpeedActivityStarter(context).getPendingIntent();
-
-        RemoteViews views;
-        views = new RemoteViews(context.getPackageName(), R.layout.player_widget);
-
-        if (widgetState.media != null) {
-            views.setOnClickPendingIntent(R.id.layout_left, startMediaPlayer);
-            views.setOnClickPendingIntent(R.id.imgvCover, startMediaPlayer);
-            views.setOnClickPendingIntent(R.id.imgvCoverLarge, startMediaPlayer);
-            views.setOnClickPendingIntent(R.id.butPlaybackSpeed, startPlaybackSpeedDialog);
-
-            views.setTextViewText(R.id.txtvTitle, widgetState.media.getEpisodeTitle());
-            views.setViewVisibility(R.id.txtvTitle, View.VISIBLE);
-            views.setViewVisibility(R.id.txtNoPlaying, View.GONE);
-
-            boolean live = widgetState.media instanceof FeedMedia && ((FeedMedia) widgetState.media).isLiveRadio();
-            String progressString = live ? context.getString(R.string.radio_live)
-                    : getProgressString(widgetState.position, widgetState.duration, widgetState.playbackSpeed);
-            if (progressString != null) {
-                views.setViewVisibility(R.id.txtvProgress, View.VISIBLE);
-                views.setTextViewText(R.id.txtvProgress, progressString);
-            }
-
-            if (widgetState.status == PlayerStatus.PLAYING) {
-                views.setImageViewResource(R.id.butPlay, R.drawable.ic_widget_pause);
-                views.setContentDescription(R.id.butPlay, context.getString(R.string.pause_label));
-                views.setImageViewResource(R.id.butPlayExtended, R.drawable.ic_widget_pause);
-                views.setContentDescription(R.id.butPlayExtended, context.getString(R.string.pause_label));
-            } else {
-                views.setImageViewResource(R.id.butPlay, R.drawable.ic_widget_play);
-                views.setContentDescription(R.id.butPlay, context.getString(R.string.play_label));
-                views.setImageViewResource(R.id.butPlayExtended, R.drawable.ic_widget_play);
-                views.setContentDescription(R.id.butPlayExtended, context.getString(R.string.play_label));
-            }
-            views.setOnClickPendingIntent(R.id.butPlay,
-                    MediaButtonStarter.createPendingIntent(context, Player.COMMAND_PLAY_PAUSE));
-            views.setOnClickPendingIntent(R.id.butPlayExtended,
-                    MediaButtonStarter.createPendingIntent(context, Player.COMMAND_PLAY_PAUSE));
-            views.setOnClickPendingIntent(R.id.butRew,
-                    MediaButtonStarter.createPendingIntent(context, Player.COMMAND_SEEK_BACK));
-            views.setOnClickPendingIntent(R.id.butFastForward,
-                    MediaButtonStarter.createPendingIntent(context, Player.COMMAND_SEEK_FORWARD));
-            views.setOnClickPendingIntent(R.id.butSkip,
-                    MediaButtonStarter.createPendingIntent(context, Player.COMMAND_SEEK_TO_NEXT_MEDIA_ITEM));
-        } else {
-            // start the app if they click anything
-            views.setOnClickPendingIntent(R.id.layout_left, startMediaPlayer);
-            views.setOnClickPendingIntent(R.id.butPlay, startMediaPlayer);
-            views.setOnClickPendingIntent(R.id.butPlayExtended, startMediaPlayer);
-            views.setViewVisibility(R.id.txtvProgress, View.GONE);
-            views.setViewVisibility(R.id.txtvTitle, View.GONE);
-            views.setViewVisibility(R.id.txtNoPlaying, View.VISIBLE);
-            views.setImageViewResource(R.id.imgvCover, R.mipmap.ic_launcher);
-            views.setImageViewResource(R.id.butPlay, R.drawable.ic_widget_play);
-            views.setImageViewResource(R.id.butPlayExtended, R.drawable.ic_widget_play);
-        }
-
-        ComponentName playerWidget = new ComponentName(context, PlayerWidget.class);
+        PendingIntent startApp = new MainActivityStarter(context).getPendingIntent();
+        String smartPlay = context.getSharedPreferences(SMART_PLAY_PREFS, Context.MODE_PRIVATE)
+                .getString(KEY_ACTIVE_NAME, "");
         AppWidgetManager manager = AppWidgetManager.getInstance(context);
-        int[] widgetIds = manager.getAppWidgetIds(playerWidget);
-
-        for (int id : widgetIds) {
-            Bundle options = manager.getAppWidgetOptions(id);
-            SharedPreferences prefs = context.getSharedPreferences(PlayerWidget.PREFS_NAME, Context.MODE_PRIVATE);
-            int minWidth = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH);
-            int columns = getCellsForSize(minWidth);
-            if (columns < 3) {
-                views.setViewVisibility(R.id.layout_center, View.INVISIBLE);
+        for (int id : PlayerWidget.widgetIds(context)) {
+            boolean slim = PlayerWidget.isSlim(context, id);
+            RemoteViews views = new RemoteViews(context.getPackageName(),
+                    slim ? R.layout.player_widget_slim : R.layout.player_widget);
+            views.setInt(R.id.widgetBackground, "setColorFilter", palette.background);
+            views.setInt(R.id.butPlayCircle, "setColorFilter", palette.accent);
+            views.setInt(R.id.butPlay, "setColorFilter", palette.onAccent);
+            views.setInt(R.id.butSkip, "setColorFilter", palette.text);
+            views.setTextColor(R.id.txtvTitle, palette.text);
+            boolean playing = widgetState.status == PlayerStatus.PLAYING;
+            views.setImageViewResource(R.id.butPlay, playing ? R.drawable.wildink_pause : R.drawable.wildink_play);
+            views.setContentDescription(R.id.butPlayCircle,
+                    context.getString(playing ? R.string.pause_label : R.string.play_label));
+            if (widgetState.media != null) {
+                views.setTextViewText(R.id.txtvTitle, widgetState.media.getEpisodeTitle());
+                views.setOnClickPendingIntent(R.id.txtvTitle, startMediaPlayer);
+                views.setOnClickPendingIntent(R.id.butPlayCircle,
+                        MediaButtonStarter.createPendingIntent(context, Player.COMMAND_PLAY_PAUSE));
+                views.setOnClickPendingIntent(R.id.butSkip,
+                        MediaButtonStarter.createPendingIntent(context, Player.COMMAND_SEEK_TO_NEXT_MEDIA_ITEM));
             } else {
-                views.setViewVisibility(R.id.layout_center, View.VISIBLE);
+                views.setTextViewText(R.id.txtvTitle, context.getString(R.string.no_media_playing_label));
+                views.setOnClickPendingIntent(R.id.txtvTitle, startApp);
+                views.setOnClickPendingIntent(R.id.butPlayCircle, startApp);
+                views.setOnClickPendingIntent(R.id.butSkip, startApp);
             }
-            boolean showPlaybackSpeed = prefs.getBoolean(PlayerWidget.KEY_WIDGET_PLAYBACK_SPEED + id, false);
-            boolean showRewind = prefs.getBoolean(PlayerWidget.KEY_WIDGET_REWIND + id, false);
-            boolean showFastForward = prefs.getBoolean(PlayerWidget.KEY_WIDGET_FAST_FORWARD + id, false);
-            boolean showSkip = prefs.getBoolean(PlayerWidget.KEY_WIDGET_SKIP + id, false);
-            boolean showCoverAsBcg = prefs.getBoolean(PlayerWidget.KEY_WIDGET_COVER_BACKGROUND + id, false);
-
-            if (showPlaybackSpeed || showRewind || showSkip || showFastForward) {
-                views.setInt(R.id.extendedButtonsContainer, "setVisibility", View.VISIBLE);
-                views.setInt(R.id.butPlay, "setVisibility", View.GONE);
-                views.setInt(R.id.butPlaybackSpeed, "setVisibility", showPlaybackSpeed ? View.VISIBLE : View.GONE);
-                views.setInt(R.id.butRew, "setVisibility", showRewind ? View.VISIBLE : View.GONE);
-                views.setInt(R.id.butFastForward, "setVisibility", showFastForward ? View.VISIBLE : View.GONE);
-                views.setInt(R.id.butSkip, "setVisibility", showSkip ? View.VISIBLE : View.GONE);
-            } else {
-                views.setInt(R.id.extendedButtonsContainer, "setVisibility", View.GONE);
-                views.setInt(R.id.butPlay, "setVisibility", View.VISIBLE);
+            if (!slim) {
+                fillWide(context, views, widgetState, palette, smartPlay, startMediaPlayer, startApp);
             }
-
-            if (showCoverAsBcg) {
-                views.setViewVisibility(R.id.imgvCover, View.GONE);
-                views.setViewVisibility(R.id.imgvCoverLarge, View.GONE);
-                views.setViewVisibility(R.id.imgvBackground, View.VISIBLE);
-                int iconSize = 4 * context.getResources().getDimensionPixelSize(android.R.dimen.app_icon_size);
-                Bitmap icon = null;
-                if (widgetState.media != null) {
-                    icon = loadCover(context, iconSize, widgetState.media, new FastBlurTransformation());
-                }
-                if (icon != null) {
-                    views.setImageViewBitmap(R.id.imgvBackground, icon);
-                } else {
-                    views.setViewVisibility(R.id.imgvBackground, View.GONE);
-                }
-            } else {
-                int minHeight = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT);
-                boolean largeCover = minHeight >= 100 && columns >= 2;
-                views.setViewVisibility(R.id.imgvCover, largeCover ? View.GONE : View.VISIBLE);
-                views.setViewVisibility(R.id.imgvCoverLarge, largeCover ? View.VISIBLE : View.GONE);
-                views.setViewVisibility(R.id.imgvBackground, View.GONE);
-                int iconSize = largeCover
-                        ? context.getResources().getDimensionPixelSize(R.dimen.widget_cover_large)
-                        : context.getResources().getDimensionPixelSize(android.R.dimen.app_icon_size);
-                int radius = context.getResources().getDimensionPixelSize(R.dimen.widget_inner_radius);
-                Bitmap icon = null;
-                if (widgetState.media != null) {
-                    icon = loadCover(context, iconSize, widgetState.media, new RoundedCorners(radius));
-                }
-                if (icon != null) {
-                    views.setImageViewBitmap(largeCover ? R.id.imgvCoverLarge : R.id.imgvCover, icon);
-                } else {
-                    views.setImageViewResource(largeCover ? R.id.imgvCoverLarge : R.id.imgvCover, R.mipmap.ic_launcher);
-                }
-            }
-            int backgroundColor = prefs.getInt(PlayerWidget.KEY_WIDGET_COLOR + id, PlayerWidget.DEFAULT_COLOR);
-            views.setInt(R.id.widgetLayout, "setBackgroundColor", backgroundColor);
-
             manager.updateAppWidget(id, views);
         }
     }
 
-    private static Bitmap loadCover(Context context, int iconSize, Playable media, Transformation<Bitmap> transform) {
-        try {
-            return Glide.with(context)
-                    .asBitmap()
-                    .load(media.getImageLocation())
-                    .dontAnimate()
-                    .transform(transform)
-                    .submit(iconSize, iconSize)
-                    .get(500, TimeUnit.MILLISECONDS);
-        } catch (Throwable tr1) {
-            try {
-                return Glide.with(context)
-                        .asBitmap()
-                        .load(ImageResourceUtils.getFallbackImageLocation(media))
-                        .dontAnimate()
-                        .transform(transform)
-                        .submit(iconSize, iconSize)
-                        .get(500, TimeUnit.MILLISECONDS);
-            } catch (Throwable tr2) {
-                Log.e(TAG, "Error loading the media icon for the widget", tr2);
-                return null;
-            }
+    private static void fillWide(Context context, RemoteViews views, WidgetState widgetState, WildInkPalette palette,
+                                 String smartPlay, PendingIntent startMediaPlayer, PendingIntent startApp) {
+        views.setTextColor(R.id.txtvShow, palette.secondary);
+        views.setTextColor(R.id.txtvProgress, palette.secondary);
+        views.setTextColor(R.id.txtvSmartPlay, palette.secondary);
+        views.setTextColor(R.id.butRew, palette.text);
+        views.setTextColor(R.id.butFastForward, palette.text);
+        views.setTextViewText(R.id.txtvSmartPlay, smartPlay.toLowerCase(Locale.getDefault()));
+        views.setTextViewText(R.id.butRew, "\u2212" + UserPreferences.getRewindSecs());
+        views.setTextViewText(R.id.butFastForward, "+" + UserPreferences.getFastForwardSecs());
+        views.setOnClickPendingIntent(R.id.layout_center, widgetState.media != null ? startMediaPlayer : startApp);
+        if (widgetState.media == null) {
+            views.setViewVisibility(R.id.txtvShow, View.GONE);
+            views.setViewVisibility(R.id.progressRow, View.GONE);
+            views.setOnClickPendingIntent(R.id.butRew, startApp);
+            views.setOnClickPendingIntent(R.id.butFastForward, startApp);
+            return;
         }
+        views.setViewVisibility(R.id.txtvShow, View.VISIBLE);
+        views.setViewVisibility(R.id.progressRow, View.VISIBLE);
+        views.setTextViewText(R.id.txtvShow, widgetState.media.getFeedTitle());
+        views.setOnClickPendingIntent(R.id.butRew,
+                MediaButtonStarter.createPendingIntent(context, Player.COMMAND_SEEK_BACK));
+        views.setOnClickPendingIntent(R.id.butFastForward,
+                MediaButtonStarter.createPendingIntent(context, Player.COMMAND_SEEK_FORWARD));
+        boolean live = widgetState.media instanceof FeedMedia && ((FeedMedia) widgetState.media).isLiveRadio();
+        float progress = 0;
+        String progressText = "";
+        if (live) {
+            progressText = context.getString(R.string.radio_live);
+        } else if (widgetState.position >= 0 && widgetState.duration > 0) {
+            progress = (float) widgetState.position / widgetState.duration;
+            TimeSpeedConverter converter = new TimeSpeedConverter(widgetState.playbackSpeed);
+            long minutes = Math.round(converter.convert(Math.max(0, widgetState.duration - widgetState.position))
+                    / 60000.0);
+            progressText = minutes >= 60
+                    ? context.getString(R.string.world_hours_minutes, (int) (minutes / 60), (int) (minutes % 60))
+                    : context.getString(R.string.world_minutes, (int) minutes);
+        }
+        views.setTextViewText(R.id.txtvProgress, progressText);
+        views.setImageViewBitmap(R.id.imgvProgress, progressBar(progress, palette.raised, palette.text));
     }
 
-    /**
-     * Returns number of cells needed for given size of the widget.
-     *
-     * @param size Widget size in dp.
-     * @return Size in number of cells.
-     */
-    private static int getCellsForSize(int size) {
-        int n = 2;
-        while (70 * n - 30 < size) {
-            ++n;
-        }
-        return n - 1;
-    }
-
-    private static String getProgressString(int position, int duration, float speed) {
-        if (position < 0 || duration <= 0) {
-            return null;
-        }
-        TimeSpeedConverter converter = new TimeSpeedConverter(speed);
-        if (UserPreferences.shouldShowRemainingTime()) {
-            return Converter.getDurationStringLong(converter.convert(position)) + " / -"
-                    + Converter.getDurationStringLong(converter.convert(Math.max(0, duration - position)));
-        } else {
-            return Converter.getDurationStringLong(converter.convert(position)) + " / "
-                    + Converter.getDurationStringLong(converter.convert(duration));
-        }
+    private static Bitmap progressBar(float progress, int track, int fill) {
+        Bitmap bitmap = Bitmap.createBitmap(PROGRESS_WIDTH, 10, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        canvas.drawColor(track);
+        Paint paint = new Paint();
+        paint.setColor(fill);
+        canvas.drawRect(0, 0, Math.max(0, Math.min(1, progress)) * PROGRESS_WIDTH, 10, paint);
+        return bitmap;
     }
 }

@@ -19,6 +19,7 @@ import de.danoeh.antennapod.storage.preferences.UserPreferences;
 import de.danoeh.antennapod.ui.preferences.screen.AnimatedPreferenceFragment;
 import de.danoeh.antennapod.ui.screen.drawer.DrawerPreferencesDialog;
 import de.danoeh.antennapod.ui.screen.subscriptions.EpisodeListGlobalDefaultSortDialog;
+import de.danoeh.antennapod.ui.widget.WidgetUpdaterWorker;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -46,6 +47,11 @@ public class UserInterfacePreferencesFragment extends AnimatedPreferenceFragment
             ActivityCompat.recreate(getActivity());
             return true;
         };
+        findPreference(UserPreferences.PREF_PALETTE).setOnPreferenceChangeListener((preference, newValue) -> {
+            WidgetUpdaterWorker.enqueueWork(getContext());
+            ActivityCompat.recreate(getActivity());
+            return true;
+        });
         findPreference(UserPreferences.PREF_THEME).setOnPreferenceChangeListener(restartApp);
         findPreference(UserPreferences.PREF_THEME_BLACK).setOnPreferenceChangeListener(restartApp);
         findPreference(UserPreferences.PREF_TINTED_COLORS).setOnPreferenceChangeListener(restartApp);

@@ -116,7 +116,7 @@ public class HomeFragment extends Fragment implements Toolbar.OnMenuItemClickLis
     private Fragment getSection(String tag) {
         return switch (tag) {
             case QueueSection.TAG -> new QueueSection();
-            case InboxSection.TAG -> new InboxSection();
+            case InboxSection.TAG -> null;
             case EpisodesSurpriseSection.TAG -> new EpisodesSurpriseSection();
             case SubscriptionsSection.TAG -> new SubscriptionsSection();
             case DownloadsSection.TAG -> new DownloadsSection();

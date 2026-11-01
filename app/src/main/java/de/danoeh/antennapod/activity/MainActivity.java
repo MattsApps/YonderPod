@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.IdRes;
@@ -55,6 +56,8 @@ import de.danoeh.antennapod.storage.databasemaintenanceservice.DatabaseMaintenan
 import de.danoeh.antennapod.storage.importexport.AutomaticDatabaseExportWorker;
 import de.danoeh.antennapod.storage.preferences.PlaybackPreferences;
 import de.danoeh.antennapod.smartplay.app.RadioFragment;
+import de.danoeh.antennapod.smartplay.app.WorldSurface;
+import de.danoeh.antennapod.smartplay.app.WorldsFragment;
 import de.danoeh.antennapod.smartplay.app.CarModeAutoOpener;
 import de.danoeh.antennapod.storage.preferences.ControlsPreferences;
 import de.danoeh.antennapod.storage.preferences.UserPreferences;
@@ -67,7 +70,6 @@ import de.danoeh.antennapod.ui.discovery.DiscoveryFragment;
 import de.danoeh.antennapod.ui.screen.FavoritesFragment;
 import de.danoeh.antennapod.ui.screen.AddFeedFragment;
 import de.danoeh.antennapod.ui.screen.AllEpisodesFragment;
-import de.danoeh.antennapod.ui.screen.InboxFragment;
 import de.danoeh.antennapod.ui.screen.PlaybackHistoryFragment;
 import de.danoeh.antennapod.ui.screen.SearchFragment;
 import de.danoeh.antennapod.ui.screen.download.CompletedDownloadsFragment;
@@ -109,6 +111,7 @@ public class MainActivity extends CastEnabledActivity implements NavigationToolb
 
     public static final String EXTRA_REFRESH_ON_START = "refresh_on_start";
     public static final String KEY_GENERATED_VIEW_ID = "generated_view_id";
+    private static final String KEY_WORLDS_HIDDEN = "worlds_hidden";
 
     private @Nullable DrawerLayout drawerLayout;
     private @Nullable ActionBarDrawerToggle drawerToggle;
@@ -119,6 +122,7 @@ public class MainActivity extends CastEnabledActivity implements NavigationToolb
     private OnBackPressedCallback openDefaultPageBackPressedCallback;
     private int lastTheme = 0;
     private Insets systemBarInsets = Insets.NONE;
+    private FrameLayout worldsContainer;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -130,6 +134,14 @@ public class MainActivity extends CastEnabledActivity implements NavigationToolb
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+        worldsContainer = new FrameLayout(this);
+        worldsContainer.setId(R.id.worlds_container);
+        worldsContainer.setClickable(true);
+        ((ViewGroup) findViewById(android.R.id.content)).addView(worldsContainer,
+                new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        if (savedInstanceState != null && savedInstanceState.getBoolean(KEY_WORLDS_HIDDEN, false)) {
+            worldsContainer.setVisibility(View.GONE);
+        }
         checkFirstLaunch();
 
         drawerLayout = findViewById(R.id.drawer_layout);
@@ -210,6 +222,7 @@ public class MainActivity extends CastEnabledActivity implements NavigationToolb
         transaction.replace(R.id.navDrawerFragment, navDrawerFragment, NavDrawerFragment.TAG);
         AudioPlayerFragment audioPlayerFragment = new AudioPlayerFragment();
         transaction.replace(R.id.audioplayerFragment, audioPlayerFragment, AudioPlayerFragment.TAG);
+        transaction.replace(R.id.worlds_container, new WorldsFragment(), WorldsFragment.TAG);
         transaction.commit();
 
         FragmentContainerView bottomSheet = findViewById(R.id.audioplayerFragment);
@@ -297,6 +310,7 @@ public class MainActivity extends CastEnabledActivity implements NavigationToolb
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt(KEY_GENERATED_VIEW_ID, View.generateViewId());
+        outState.putBoolean(KEY_WORLDS_HIDDEN, worldsHidden());
     }
 
     private final BottomSheetBehavior.BottomSheetCallback bottomSheetCallback = new AntennaPodBottomSheetCallback();
@@ -435,9 +449,6 @@ public class MainActivity extends CastEnabledActivity implements NavigationToolb
                 break;
             case QueueFragment.TAG:
                 fragment = new QueueFragment();
-                break;
-            case InboxFragment.TAG:
-                fragment = new InboxFragment();
                 break;
             case AllEpisodesFragment.TAG:
                 fragment = new AllEpisodesFragment();
@@ -655,13 +666,45 @@ public class MainActivity extends CastEnabledActivity implements NavigationToolb
     }
 
     private void updateMainBackCallbackEnabledState() {
-        String defaultPage = UserPreferences.getDefaultPage();
-        boolean shouldEnable = getSupportFragmentManager().getBackStackEntryCount() > 0
-                || (!NavDrawerFragment.getLastNavFragment(this).equals(defaultPage)
-                        && !UserPreferences.DEFAULT_PAGE_REMEMBER.equals(defaultPage))
-                || (UserPreferences.backButtonOpensDrawer() && drawerLayout != null
-                        && bottomNavigation == null && !drawerLayout.isDrawerOpen(navDrawer));
-        openDefaultPageBackPressedCallback.setEnabled(shouldEnable);
+        openDefaultPageBackPressedCallback.setEnabled(worldsHidden());
+    }
+
+    private boolean worldsHidden() {
+        return worldsContainer != null && worldsContainer.getVisibility() != View.VISIBLE;
+    }
+
+    public void openWorld(int world) {
+        loadFragment(world == WorldSurface.RADIO ? RadioFragment.TAG : SubscriptionFragment.TAG, null);
+        hideWorlds();
+    }
+
+    public void openPlayer() {
+        hideWorlds();
+        sheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+        bottomSheetCallback.onSlide(null, 1.0f);
+    }
+
+    public void hideWorlds() {
+        if (worldsHidden()) {
+            return;
+        }
+        worldsContainer.animate().cancel();
+        worldsContainer.animate().translationY(-worldsContainer.getHeight()).setDuration(250)
+                .withEndAction(() -> {
+                    worldsContainer.setVisibility(View.GONE);
+                    worldsContainer.setTranslationY(0);
+                    updateMainBackCallbackEnabledState();
+                }).start();
+        worldsContainer.setVisibility(View.VISIBLE);
+        openDefaultPageBackPressedCallback.setEnabled(true);
+    }
+
+    public void showWorlds() {
+        worldsContainer.animate().cancel();
+        worldsContainer.setVisibility(View.VISIBLE);
+        worldsContainer.setTranslationY(-worldsContainer.getHeight());
+        worldsContainer.animate().translationY(0).setDuration(250).start();
+        updateMainBackCallbackEnabledState();
     }
 
     class OpenDefaultPageBackPressedCallback extends OnBackPressedCallback {
@@ -674,6 +717,8 @@ public class MainActivity extends CastEnabledActivity implements NavigationToolb
             String defaultPage = UserPreferences.getDefaultPage();
             if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
                 getSupportFragmentManager().popBackStack();
+            } else if (worldsHidden()) {
+                showWorlds();
             } else if (!NavDrawerFragment.getLastNavFragment(MainActivity.this).equals(defaultPage)
                     && !UserPreferences.DEFAULT_PAGE_REMEMBER.equals(defaultPage)) {
                 loadFragment(defaultPage, null);
@@ -728,6 +773,13 @@ public class MainActivity extends CastEnabledActivity implements NavigationToolb
     private void handleNavIntent() {
         Log.d(TAG, "handleNavIntent()");
         Intent intent = getIntent();
+        if (intent.hasExtra(MainActivityStarter.EXTRA_EPISODE_ID) || intent.hasExtra(MainActivityStarter.EXTRA_FEED_ID)
+                || intent.hasExtra(MainActivityStarter.EXTRA_FRAGMENT_TAG) || intent.getData() != null
+                || intent.getBooleanExtra(MainActivityStarter.EXTRA_OPEN_PLAYER, false)
+                || intent.getBooleanExtra(MainActivityStarter.EXTRA_OPEN_DRAWER, false)
+                || intent.getBooleanExtra(MainActivityStarter.EXTRA_OPEN_DOWNLOAD_LOGS, false)) {
+            hideWorlds();
+        }
         if (intent.hasExtra(MainActivityStarter.EXTRA_EPISODE_ID)) {
             long episodeId = intent.getLongExtra(MainActivityStarter.EXTRA_EPISODE_ID, 0);
             if (episodeId <= 0) {

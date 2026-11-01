@@ -260,7 +260,6 @@
     <string-array name="default_page_values">
         <item>HomeFragment</item>
         <item>QueueFragment</item>
-        <item>NewEpisodesFragment</item>
         <item>EpisodesFragment</item>
         <item>SubscriptionFragment</item>
         <item>StatisticsFragment</item>
@@ -270,7 +269,6 @@
     <string-array name="default_page_titles">
         <item>@string/home_label</item>
         <item>@string/queue_label</item>
-        <item>@string/inbox_label</item>
         <item>@string/episodes_label</item>
         <item>@string/subscriptions_label</item>
         <item>@string/statistics_label</item>
