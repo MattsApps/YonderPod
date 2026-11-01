@@ -254,7 +254,7 @@
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
         <item name="android:enforceNavigationBarContrast" tools:targetApi="q">false</item>
         <item name="windowSplashScreenAnimatedIcon">@drawable/launcher_animate</item>
-        <item name="windowSplashScreenBackground">#1C1B19</item>
+        <item name="windowSplashScreenBackground">@color/wildink_charcoal_1c1b19</item>
     </style>
 
     <style name="Theme.AntennaPod.Splash.Translucent" parent="Theme.AntennaPod.Splash">
