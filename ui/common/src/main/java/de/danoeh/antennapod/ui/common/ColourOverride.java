@@ -70,10 +70,7 @@ public final class ColourOverride {
                 loaderColours = new TreeMap<>(colours);
             }
         }
-        ResourcesLoader current = (ResourcesLoader) loader;
-        if (!context.getResources().getLoaders().contains(current)) {
-            context.getResources().addLoaders(current);
-        }
+        context.getResources().addLoaders((ResourcesLoader) loader);
     }
 
     static byte[] table(Resources resources, Map<Integer, Integer> colours) {
