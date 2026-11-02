@@ -73,7 +73,7 @@
     <string name="home_continue_empty_text">You can add episodes by downloading them or long-pressing them and selecting \"Add to queue\".</string>
     <string name="home_new_empty_text">New episodes will show up here. You can then decide whether you are interested in them.</string>
     <string name="home_downloads_empty_text">You can download any episode to listen to it offline.</string>
-    <string name="home_welcome_title">Welcome to YonderPod!</string>
+    <string name="home_welcome_title">Welcome to Yonder!</string>
     <string name="home_welcome_text">You are not subscribed to any podcasts yet. Open the menu to add a podcast.</string>
     <string name="notification_permission_denied">You denied the permission.</string>
     <string name="configure_home">Configure home screen</string>
@@ -303,7 +303,7 @@
     <string name="no_transcript_label">No transcript</string>
     <string name="visit_website_label">Visit website</string>
     <string name="visit_social_interact_label">Show comments</string>
-    <string name="visit_social_interact_confirm_dialog_title">You are leaving YonderPod</string>
+    <string name="visit_social_interact_confirm_dialog_title">You are leaving Yonder</string>
     <string name="visit_social_interact_confirm_dialog_message">Please make sure that you trust the website \"%1$s\".</string>
     <string name="skip_episode_label">Skip episode</string>
     <string name="reset_playback_position_label">Reset playback position</string>
@@ -312,7 +312,7 @@
         <item quantity="other">%d episode positions reset.</item>
     </plurals>
     <string name="no_items_selected_message">No items selected</string>
-    <string name="delete_local_feed_confirmation_dialog_message">Deleting removes the episode from YonderPod and deletes the media file from your device storage. It cannot be downloaded again through YonderPod.</string>
+    <string name="delete_local_feed_confirmation_dialog_message">Deleting removes the episode from Yonder and deletes the media file from your device storage. It cannot be downloaded again through Yonder.</string>
 
     <!-- Download messages and labels -->
     <string name="download_successful">successful</string>
@@ -360,10 +360,10 @@
     <string name="download_type_feed">Feed</string>
     <string name="download_type_media">Media file</string>
     <string name="null_value_podcast_error">The link you tapped does not contain a valid podcast URL. Please verify the link and try again, or search for the podcast manually.</string>
-    <string name="no_feed_url_podcast_found_by_search">The suggested podcast did not have an RSS link, YonderPod found a podcast that could match</string>
+    <string name="no_feed_url_podcast_found_by_search">The suggested podcast did not have an RSS link, Yonder found a podcast that could match</string>
     <string name="authentication_notification_title">Authentication required</string>
     <string name="confirm_mobile_download_dialog_title">Confirm mobile download</string>
-    <string name="confirm_mobile_download_dialog_message">Downloading over mobile data connection is disabled in the settings. YonderPod can download the episode later automatically when Wi-Fi is available.</string>
+    <string name="confirm_mobile_download_dialog_message">Downloading over mobile data connection is disabled in the settings. Yonder can download the episode later automatically when Wi-Fi is available.</string>
     <string name="confirm_mobile_download_dialog_message_vpn">- Using a VPN? Your VPN app pretends to be a mobile network (metered connection). If you want this problem fixed, contact the creators of your VPN app.\n- Not using a VPN? Open the Android Wi-Fi settings and change the type of your Wi-Fi to not be metered.</string>
     <string name="confirm_mobile_download_dialog_download_later">Download later</string>
     <string name="confirm_mobile_download_dialog_allow_this_time">Download anyway</string>
@@ -381,7 +381,7 @@
     <string name="playback_error_generic">The media file could not be played.\n\n- Try deleting and re-downloading the episode.\n- Check your network connection, and make sure no VPN or login page is blocking access.\n- Try long-pressing and sharing the \"Media address\" to your web browser to see if it can be played there. If not, contact the podcast creators.</string>
     <string name="no_media_playing_label">No media playing</string>
     <string name="position_default_label" translatable="false">00:00:00</string>
-    <string name="unknown_media_key">YonderPod - Unknown media key: %1$d</string>
+    <string name="unknown_media_key">Yonder - Unknown media key: %1$d</string>
     <string name="error_file_not_found">File not found</string>
     <string name="no_media_label">Item does not contain a media file</string>
     <string name="no_following_in_queue">This was the last episode in the queue</string>
@@ -483,8 +483,8 @@
     <string name="pref_auto_delete_title">Automatic deletion</string>
     <string name="pref_auto_delete_sum">Delete episodes after playing or when automatic download needs space</string>
     <string name="pref_auto_local_delete_title">Auto delete from local folders</string>
-    <string name="pref_auto_local_delete_sum">Also delete files added through \"add local folder\". Note that these are not downloaded by YonderPod and cannot be re-downloaded</string>
-    <string name="pref_auto_local_delete_dialog_body">Note that for local folders this will remove episodes from YonderPod and delete their media files from your device storage. They cannot be downloaded again through YonderPod. Enable auto delete?</string>
+    <string name="pref_auto_local_delete_sum">Also delete files added through \"add local folder\". Note that these are not downloaded by Yonder and cannot be re-downloaded</string>
+    <string name="pref_auto_local_delete_dialog_body">Note that for local folders this will remove episodes from Yonder and delete their media files from your device storage. They cannot be downloaded again through Yonder. Enable auto delete?</string>
     <string name="pref_smart_mark_as_played_sum">Mark episodes as played even if less than a certain amount of seconds of playing time is still left</string>
     <string name="pref_smart_mark_as_played_title">Smart mark as played</string>
     <string name="pref_skip_keeps_episodes_sum">Keep episodes when they are skipped</string>
@@ -496,7 +496,7 @@
     <string name="downloads_pref">Downloads</string>
     <string name="downloads_pref_sum">Update interval, Mobile data, Automatic download, Automatic deletion</string>
     <string name="feed_refresh_title">Refresh podcasts</string>
-    <string name="feed_refresh_sum">Specify an interval at which YonderPod looks for new episodes automatically</string>
+    <string name="feed_refresh_sum">Specify an interval at which Yonder looks for new episodes automatically</string>
     <string name="feed_refresh_never">Never</string>
     <string name="feed_every_hour">Every hour</string>
     <string name="feed_every_2_hours">Every 2 hours</string>
@@ -593,7 +593,7 @@
     <string name="behavior">Behavior</string>
     <string name="episode_lists">Episode lists</string>
     <string name="pref_default_page">Default page</string>
-    <string name="pref_default_page_sum">Screen that is opened when starting YonderPod</string>
+    <string name="pref_default_page_sum">Screen that is opened when starting Yonder</string>
     <string name="pref_back_button_opens_drawer">Back button opens drawer</string>
     <string name="pref_back_button_opens_drawer_summary">Pressing the back button on the default page opens the navigation drawer</string>
     <string name="remember_last_page">Remember last page</string>
@@ -633,7 +633,7 @@
 
     <!-- About screen -->
     <string name="about_pref">About</string>
-    <string name="antennapod_version">YonderPod version</string>
+    <string name="antennapod_version">Yonder version</string>
     <string name="smartplay_rebuild_now">Rebuild now</string>
     <string name="smartplay_rebuild_button">Rebuild Smart Play</string>
     <string name="smartplay_paused_message">The playlist was cleared, so Smart Play is paused. Tap Rebuild Smart Play to fill it again.</string>
@@ -794,10 +794,10 @@
         <item quantity="one">Download settings for this show</item>
         <item quantity="other">Download settings for all %d shows</item>
     </plurals>
-    <string name="schedule_battery_warning">Battery optimisation is on for YonderPod, so Android may delay or skip scheduled updates.</string>
+    <string name="schedule_battery_warning">Battery optimisation is on for Yonder, so Android may delay or skip scheduled updates.</string>
     <string name="schedule_battery_fix">Fix</string>
     <string name="schedule_battery_dialog_title">Let updates run on time?</string>
-    <string name="schedule_battery_dialog_message">Battery optimisation can stop updates running at the time you chose. Allow YonderPod to run in the background?</string>
+    <string name="schedule_battery_dialog_message">Battery optimisation can stop updates running at the time you chose. Allow Yonder to run in the background?</string>
     <string name="schedule_status_updated">Updated %s</string>
     <string name="schedule_status_never">Not updated yet</string>
     <string name="schedule_status_next">Next: %s</string>
@@ -810,7 +810,7 @@
     <string name="local_order_newest">Newest first</string>
     <string name="local_play_order_hint">Smart Play rules on this show follow this order, so Oldest means the next one in order.</string>
     <string name="local_allow_delete">Allow deleting files</string>
-    <string name="local_allow_delete_off">Off: YonderPod never deletes these files, whatever the cleanup, keep or delete-after-playing settings say.</string>
+    <string name="local_allow_delete_off">Off: Yonder never deletes these files, whatever the cleanup, keep or delete-after-playing settings say.</string>
     <string name="local_allow_delete_warning_title">Delete files from your phone?</string>
     <string name="local_allow_delete_warning">With this on, cleanup, keep limits, age limits and delete-after-playing will delete the actual files in this folder from your phone. Deleted files can\'t be recovered.</string>
     <string name="local_allow_delete_confirm">Allow deleting</string>
@@ -824,8 +824,8 @@
     <string name="open_file_play_now">Play now</string>
     <string name="open_file_play_next">Play next</string>
     <string name="open_file_add">Add to playlist</string>
-    <string name="open_file_copied">Copied into YonderPod (%1$s)</string>
-    <string name="open_file_linked">Added. YonderPod plays it from where it is.</string>
+    <string name="open_file_copied">Copied into Yonder (%1$s)</string>
+    <string name="open_file_linked">Added. Yonder plays it from where it is.</string>
     <string name="open_file_failed">Couldn\'t add this file</string>
     <string name="sleep_grid_episode">This episode ends</string>
     <string name="sleep_grid_minutes">%d min</string>
@@ -856,7 +856,7 @@
     <string name="sleep_bedtime_and">and</string>
     <string name="sleep_bedtime_timer">Timer to start</string>
     <string name="added_files_remove">Remove from Added files</string>
-    <string name="added_files_remove_copy">Delete YonderPod\'s copy of this file? This frees %1$s. The original file isn\'t touched.</string>
+    <string name="added_files_remove_copy">Delete Yonder\'s copy of this file? This frees %1$s. The original file isn\'t touched.</string>
     <string name="added_files_remove_link">Remove this from Added files? The original file isn\'t touched.</string>
     <string name="controls_title">Controls</string>
     <string name="controls_summary">Headset and car buttons, interruptions, rewind on resume</string>
@@ -885,7 +885,7 @@
     <string name="controls_reconnect_any">Any headphones or Bluetooth</string>
     <string name="controls_reconnect_car">Car only</string>
     <string name="controls_car_devices">Which Bluetooth device is your car?</string>
-    <string name="controls_car_none">Connect your car\'s Bluetooth once while YonderPod is open, then choose it here.</string>
+    <string name="controls_car_none">Connect your car\'s Bluetooth once while Yonder is open, then choose it here.</string>
     <string name="controls_player_title">Player</string>
     <string name="controls_fade_in">Fade in when playback starts</string>
     <string name="controls_keep_screen_on">Keep the screen on while the player is open</string>
@@ -925,11 +925,11 @@
     <string name="car_mode_exit">Exit car mode</string>
     <string name="car_mode_nothing">Nothing playing</string>
     <string name="car_mode_auto">Open car mode when a chosen Bluetooth device connects</string>
-    <string name="car_mode_auto_summary">Works while YonderPod is on screen, or the next time you open it.</string>
+    <string name="car_mode_auto_summary">Works while Yonder is on screen, or the next time you open it.</string>
     <string name="car_mode_choose_devices">Choose devices</string>
     <string name="car_mode_no_devices">No paired Bluetooth devices found</string>
     <string name="button_tester_title">Button tester</string>
-    <string name="button_tester_hint">Press buttons on your headset or in the car. While this screen is open, YonderPod only shows what it receives and doesn\'t act on it. Play something first so the buttons reach YonderPod.</string>
+    <string name="button_tester_hint">Press buttons on your headset or in the car. While this screen is open, Yonder only shows what it receives and doesn\'t act on it. Play something first so the buttons reach Yonder.</string>
     <string name="button_tester_empty">Nothing received yet</string>
     <string name="button_tester_clear">Clear</string>
     <plurals name="download_summary_episodes">
@@ -937,7 +937,7 @@
         <item quantity="other">%d episodes</item>
     </plurals>
     <string name="about_based_on_title">Based on AntennaPod</string>
-    <string name="about_based_on_summary">YonderPod is based on AntennaPod, licensed under the GPL v3</string>
+    <string name="about_based_on_summary">Yonder is based on AntennaPod, licensed under the GPL v3</string>
     <string name="contributors">Contributors</string>
     <string name="contributors_summary">Everyone can help to make AntennaPod better - with code, translations or by helping users in our forum</string>
     <string name="developers">Developers</string>
@@ -945,7 +945,7 @@
     <string name="special_thanks">Special thanks</string>
     <string name="privacy_policy">Privacy policy</string>
     <string name="licenses">Licenses</string>
-    <string name="licenses_summary">YonderPod uses other great software</string>
+    <string name="licenses_summary">Yonder uses other great software</string>
 
     <!-- Search -->
     <string name="search_status_no_results">No results were found</string>
@@ -973,8 +973,8 @@
     <string name="html_export_summary">Show your subscriptions to a friend</string>
     <string name="opml_export_summary">Transfer your subscriptions to another podcast app</string>
     <string name="opml_import_summary">Import your subscriptions from another podcast app</string>
-    <string name="database_export_summary">Transfer subscriptions, listened episodes and queue to YonderPod on another device</string>
-    <string name="database_import_summary">Import YonderPod database from another device</string>
+    <string name="database_export_summary">Transfer subscriptions, listened episodes and queue to Yonder on another device</string>
+    <string name="database_import_summary">Import Yonder database from another device</string>
     <string name="opml_import_label">OPML import</string>
     <string name="opml_add_podcast_label">Import podcast list (OPML)</string>
     <string name="opml_reader_error">An error has occurred while reading the file. Make sure that you have actually selected an OPML file and that the file is valid.</string>
@@ -985,7 +985,7 @@
     <string name="html_export_label">HTML export</string>
     <string name="database_export_label">Database export</string>
     <string name="automatic_database_export_label">Automatic database export</string>
-    <string name="automatic_database_export_summary">Create a backup of the YonderPod database every 3 days. Only keep the 5 most recent backups.</string>
+    <string name="automatic_database_export_summary">Create a backup of the Yonder database every 3 days. Only keep the 5 most recent backups.</string>
     <string name="automatic_database_export_error">Error during automatic database backup</string>
     <string name="database_import_label">Database import</string>
     <string name="database_import_warning">Importing a database will replace all of your current subscriptions and playing history. You should export your current database as a backup. Do you want to replace?</string>
@@ -994,8 +994,8 @@
     <string name="export_success_title">Export successful</string>
     <string name="opml_import_ask_read_permission">Access to external storage is required to read the OPML file</string>
     <string name="successful_import_label">Import successful</string>
-    <string name="import_ok">Please press OK to restart YonderPod</string>
-    <string name="import_no_downgrade">This database was exported with a newer version of YonderPod. Your current installation does not yet know how to handle this file.</string>
+    <string name="import_ok">Please press OK to restart Yonder</string>
+    <string name="import_no_downgrade">This database was exported with a newer version of Yonder. Your current installation does not yet know how to handle this file.</string>
     <string name="import_error_label">Import error</string>
     <string name="favorites_export_label">Favorites export</string>
     <string name="favorites_export_summary">Export saved favorites to file</string>
@@ -1051,15 +1051,15 @@
     <string name="synchronization_choose_title">Choose synchronization provider</string>
     <string name="synchronization_summary_unchoosen">You can choose from multiple providers to synchronize your subscriptions and episode play state with</string>
     <string name="dialog_choose_sync_service_title">Choose synchronization provider</string>
-    <string name="gpodnet_description">Gpodder.net is an open-source podcast synchronization service that you can install on your own server. Gpodder.net is independent of the YonderPod project.</string>
-    <string name="synchronization_summary_nextcloud">Gpodder Sync is an open-source Nextcloud app that you can easily install on your own server. Gpodder Sync is independent of the YonderPod project.</string>
+    <string name="gpodnet_description">Gpodder.net is an open-source podcast synchronization service that you can install on your own server. Gpodder.net is independent of the Yonder project.</string>
+    <string name="synchronization_summary_nextcloud">Gpodder Sync is an open-source Nextcloud app that you can easily install on your own server. Gpodder Sync is independent of the Yonder project.</string>
     <string name="synchronization_host_explanation">You can pick your own server to synchronize with. When you have identified your preferred synchronization server, please enter its address here.</string>
-    <string name="synchronization_provider_chooser_explanation">Devices need a central server to synchronize. YonderPod does not offer such a central synchronization server, but allows you to connect with the different types of servers listed below.</string>
+    <string name="synchronization_provider_chooser_explanation">Devices need a central server to synchronize. Yonder does not offer such a central synchronization server, but allows you to connect with the different types of servers listed below.</string>
     <string name="back_label">Back</string>
     <string name="synchronization_more_information">More information</string>
     <string name="synchronization_host_label">Server address</string>
     <string name="proceed_to_login_butLabel">Proceed to login</string>
-    <string name="synchronization_nextcloud_authenticate_browser">Grant access using the opened web browser and come back to YonderPod.</string>
+    <string name="synchronization_nextcloud_authenticate_browser">Grant access using the opened web browser and come back to Yonder.</string>
     <string name="gpodnetauth_login_butLabel">Login</string>
     <string name="synchronization_credentials_explanation">Please provide the credentials of your account on the synchronization server.</string>
     <string name="gpodnetauth_encryption_warning">Password and data are not encrypted!</string>
@@ -1070,10 +1070,10 @@
     <string name="synchronization_login_butLabel">Log in</string>
     <string name="synchronization_selectDevice_explanation">Please select the device that you created on the synchronization server or create a new one.</string>
     <string name="gpodnetauth_device_name">Device name</string>
-    <string name="gpodnetauth_device_name_default">YonderPod on %1$s</string>
+    <string name="gpodnetauth_device_name_default">Yonder on %1$s</string>
     <string name="gpodnetauth_existing_devices">Existing devices</string>
     <string name="gpodnetauth_create_device">Create device</string>
-    <string name="gpodnetauth_finish_descr">Congratulations! Your gpodder.net account is now linked with your device. YonderPod will from now on automatically sync subscriptions on your device with your gpodder.net account.</string>
+    <string name="gpodnetauth_finish_descr">Congratulations! Your gpodder.net account is now linked with your device. Yonder will from now on automatically sync subscriptions on your device with your gpodder.net account.</string>
     <string name="pref_gpodnet_setlogin_information_title">Change login information</string>
     <string name="pref_gpodnet_setlogin_information_sum">Change the login information for your gpodder.net account.</string>
     <string name="synchronization_sync_changes_title">Synchronize now</string>
@@ -1092,7 +1092,7 @@
 
     <!-- Directory chooser -->
     <string name="choose_data_directory">Choose data folder</string>
-    <string name="choose_data_directory_message">Please choose the base of your data folder. YonderPod will create the appropriate subdirectories.</string>
+    <string name="choose_data_directory_message">Please choose the base of your data folder. Yonder will create the appropriate subdirectories.</string>
     <string name="choose_data_directory_available_space">%1$s of %2$s free</string>
 
     <!-- Rating dialog -->
@@ -1214,7 +1214,7 @@
     <string name="reconnect_local_folder">Re-connect local folder</string>
     <string name="reconnect_local_folder_summary">Risky: only re-connect to the exact same folder. Otherwise, you will lose all your playback state.</string>
     <string name="reconnect_local_folder_warning">In case of permission denials, you can use this to re-connect to the exact same folder. Do not select another folder.</string>
-    <string name="local_feed_description">This virtual podcast was created by adding a folder to YonderPod.</string>
+    <string name="local_feed_description">This virtual podcast was created by adding a folder to Yonder.</string>
     <string name="unable_to_start_system_file_manager">Unable to start system file manager</string>
 
     <!-- Filter dialog -->
@@ -1285,9 +1285,9 @@
     <string name="widget_settings">Widget settings</string>
     <string name="widget_create_button">Create widget</string>
     <string name="widget_opacity">Opacity</string>
-    <string name="widget_wide_label">YonderPod player</string>
+    <string name="widget_wide_label">Yonder player</string>
     <string name="widget_wide_description">Big player with cover and controls</string>
-    <string name="widget_slim_label">YonderPod slim player</string>
+    <string name="widget_slim_label">Yonder slim player</string>
     <string name="widget_slim_description">One row player</string>
     <string name="cover_as_background">Cover as background</string>
 
@@ -1313,8 +1313,8 @@
     <string name="pref_parental_control_require_subscribe_sum">Ask for the parental control password when subscribing to new podcasts</string>
 
     <!-- Echo -->
-    <string name="antennapod_echo" translatable="false">YonderPod Echo</string>
-    <string name="antennapod_echo_year" translatable="false">YonderPod Echo %d</string>
+    <string name="antennapod_echo" translatable="false">Yonder Echo</string>
+    <string name="antennapod_echo_year" translatable="false">Yonder Echo %d</string>
     <string name="echo_home_header">Review the year</string>
     <string name="echo_home_subtitle">Your top podcasts and stats from the past year. Exclusively on your phone.</string>
 
@@ -1362,18 +1362,18 @@
     <string name="echo_thanks_now_favorite">Now, let\'s take a look at your favorite podcasts…</string>
 
     <string name="echo_share_heading">My favorite podcasts</string>
-    <string name="echo_share">My year %d in podcasts. #YonderPodEcho</string>
+    <string name="echo_share">My year %d in podcasts. #YonderEcho</string>
 
     <!-- WearOS specific strings (unused in main app module, so we need to suppress the warnings) -->
     <string name="wearos_connected_to" tools:ignore="UnusedResources">Connected to %s</string>
     <string name="wearos_version" tools:ignore="UnusedResources">Version %s</string>
-    <string name="wearos_phone_not_supported" tools:ignore="UnusedResources">Phone not compatible. Make sure you are running the most recent version of YonderPod from Google Play on your phone.</string>
+    <string name="wearos_phone_not_supported" tools:ignore="UnusedResources">Phone not compatible. Make sure you are running the most recent version of Yonder from Google Play on your phone.</string>
     <string name="wearos_no_items" tools:ignore="UnusedResources">No items</string>
-    <string name="wearos_phone_not_reachable" tools:ignore="UnusedResources">Could not reach the phone. Make sure your phone is nearby and YonderPod is installed.</string>
+    <string name="wearos_phone_not_reachable" tools:ignore="UnusedResources">Could not reach the phone. Make sure your phone is nearby and Yonder is installed.</string>
     <string name="wearos_play_on_phone" tools:ignore="UnusedResources">Play on phone</string>
     <string name="wearos_browse_phone" tools:ignore="UnusedResources">Browse phone</string>
     <string name="wearos_open_on_phone" tools:ignore="UnusedResources">Open on phone</string>
-    <!-- YonderPod audiobooks -->
+    <!-- Yonder audiobooks -->
     <string name="search_audiobooks_label">Search audiobooks (LibriVox)</string>
     <string name="librivox_title">Audiobooks from LibriVox</string>
     <string name="librivox_hint">Title, author or genre</string>
@@ -1423,7 +1423,7 @@
         <item quantity="one">%d chapter downloaded ahead of where you are, topped up as you listen</item>
         <item quantity="other">%d chapters downloaded ahead of where you are, topped up as you listen</item>
     </plurals>
-    <!-- YonderPod radio -->
+    <!-- Yonder radio -->
     <string name="radio_title">Radio</string>
     <string name="radio_empty">No stations yet. Find one above, or paste a stream link below.</string>
     <string name="radio_add">Add station</string>
@@ -1459,7 +1459,7 @@
     <string name="radio_no_results">No stations found for \"%1$s\"</string>
     <string name="radio_search_error">Couldn\'t reach Radio Browser. Check your connection and try again.</string>
     <string name="radio_adding">Adding %1$s…</string>
-    <!-- YonderPod radio recordings -->
+    <!-- Yonder radio recordings -->
     <string name="radio_stream_hint">Stream link</string>
     <string name="radio_rewind_both">This link: %1$s · Rewindable version: %2$s</string>
     <string name="radio_rewind_short_window">about %1$s</string>
@@ -1496,7 +1496,7 @@
     </plurals>
     <string name="record_needs_times">Pick at least one day, and a start and end time.</string>
     <string name="record_alarm_title">Allow exact start times?</string>
-    <string name="record_alarm_message">This station can only be recorded live, so YonderPod needs to start on time. Android asks for permission to use Alarms &amp; reminders for this. Without it, recordings may start a few minutes late.</string>
+    <string name="record_alarm_message">This station can only be recorded live, so Yonder needs to start on time. Android asks for permission to use Alarms &amp; reminders for this. Without it, recordings may start a few minutes late.</string>
     <string name="record_alarm_allow">Allow</string>
     <string name="record_alarm_later">Not now</string>
     <string name="recording_status_held">Saved %1$s · Ready %2$s</string>
@@ -1553,10 +1553,17 @@
     <string name="palette_night">Night</string>
     <string name="palette_kraft">Kraft</string>
     <string name="palette_plum">Plum</string>
+    <string name="palette_custom">Custom</string>
     <string name="look_title">Look</string>
     <string name="world_books">books</string>
     <string name="world_podcasts">podcasts</string>
     <string name="world_radio">radio</string>
+    <string name="world_short_books">books</string>
+    <string name="world_short_podcasts">pods</string>
+    <string name="world_short_radio">radio</string>
+    <string name="world_neighbour_left">‹ %1$s</string>
+    <string name="world_neighbour_right">%1$s ›</string>
+    <string name="yonder_wordmark">yonder</string>
     <string name="world_from">from\n%1$s</string>
     <string name="world_then">then %1$s</string>
     <string name="world_chapter">chapter</string>
@@ -1588,7 +1595,7 @@
     <string name="tend_smart_play_delete">Delete</string>
     <string name="tend_smart_play_copy_name">%1$s copy</string>
     <string name="tend_smart_play_delete_question">Delete %1$s?</string>
-    <string name="tend_smart_play_delete_message">The list goes; your episodes stay. If it\'s playing now, YonderPod switches to another Smart Play.</string>
+    <string name="tend_smart_play_delete_message">The list goes; your episodes stay. If it\'s playing now, Yonder switches to another Smart Play.</string>
     <string name="tend_subscriptions">Subscriptions</string>
     <string name="tend_new_saved">new · saved</string>
     <string name="tend_uncategorised">uncategorised</string>
@@ -1609,10 +1616,24 @@
     <string name="tend_delete_book_question">Delete %1$s?</string>
     <string name="tend_delete_book_message">It leaves your bookshelf, with its downloaded chapters, its place and its Smart Play.</string>
     <string name="tend_remove_folder">Remove folder</string>
-    <string name="tend_remove_folder_question">Remove %1$s from YonderPod?</string>
-    <string name="tend_remove_folder_message">YonderPod stops showing it. The files stay on your phone, untouched.</string>
+    <string name="tend_remove_folder_question">Remove %1$s from Yonder?</string>
+    <string name="tend_remove_folder_message">Yonder stops showing it. The files stay on your phone, untouched.</string>
     <string name="tend_stations">Your stations</string>
     <string name="tend_nothing_yet">Nothing here yet.</string>
+    <string name="playlist_title">playlist</string>
+    <string name="playlist_summary">%1$s · %2$s</string>
+    <string name="playlist_date_length">%1$s · %2$s</string>
+    <string name="playlist_time_left">%1$s left</string>
+    <string name="playlist_more">More for this episode</string>
+    <string name="playlist_play_next">Play next</string>
+    <string name="playlist_notes">Episode notes</string>
+    <string name="playlist_favourite">Favourite</string>
+    <string name="playlist_unfavourite">Remove from favourites</string>
+    <string name="playlist_mark_played">Mark played</string>
+    <string name="playlist_share">Share</string>
+    <string name="playlist_open_show">Open show</string>
+    <string name="playlist_remove">Remove from playlist</string>
+    <string name="playlist_delete">Delete episode</string>
     <string name="tune_title">tune</string>
     <string name="tune_tagline">everything, quietly</string>
     <string name="tune_updates">updates</string>
@@ -1634,11 +1655,30 @@
     <string name="tune_playback">Playback and headphones</string>
     <string name="tune_look">look</string>
     <string name="tune_palette_label">%1$s palette</string>
+    <string name="look_per_world">Palette per world</string>
+    <string name="look_on">on</string>
+    <string name="look_day_night">Day and night</string>
+    <string name="look_day_night_switch">Follow the phone\'s dark mode</string>
+    <string name="look_day_night_value">%1$s / %2$s</string>
+    <string name="look_day">day</string>
+    <string name="look_night">night</string>
+    <string name="look_custom">Custom palette</string>
+    <string name="look_custom_save">Save and use</string>
+    <string name="look_custom_background">Background</string>
+    <string name="look_custom_accent">Accent</string>
+    <string name="look_hue">Colour</string>
+    <string name="look_saturation">Strength</string>
+    <string name="look_lightness">Lightness</string>
+    <string name="look_custom_preview_show">The News Quiz</string>
+    <string name="look_custom_preview_block">stuff</string>
+    <string name="look_custom_nudged">Adjusted slightly so text stays easy to read.</string>
+    <string name="look_wallpaper">Match my wallpaper</string>
+    <string name="look_wallpaper_unavailable">Your phone doesn\'t share its wallpaper colours.</string>
     <string name="tune_backup">backup</string>
     <string name="tune_import_export">Back up and restore</string>
     <string name="tune_sync">Sync</string>
     <string name="tune_about">about</string>
-    <string name="tune_about_app">About YonderPod</string>
+    <string name="tune_about_app">About Yonder</string>
     <string name="tune_episodes">episodes</string>
     <string name="tune_favourites">favourites</string>
     <string name="tune_statistics">statistics</string>

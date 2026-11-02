@@ -2,14 +2,11 @@ package de.danoeh.antennapod.smartplay.app;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -22,12 +19,11 @@ import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.smartplay.schedule.CategoryScheduleMode;
 import de.danoeh.antennapod.storage.preferences.SleepTimerPreferences;
 import de.danoeh.antennapod.storage.preferences.UserPreferences;
-import de.danoeh.antennapod.ui.common.WildInkPalette;
+import de.danoeh.antennapod.ui.common.Palette;
 import de.danoeh.antennapod.ui.screen.AllEpisodesFragment;
 import de.danoeh.antennapod.ui.screen.FavoritesFragment;
 import de.danoeh.antennapod.ui.screen.preferences.PreferenceActivity;
 import de.danoeh.antennapod.ui.statistics.StatisticsFragment;
-import de.danoeh.antennapod.ui.widget.WidgetUpdaterWorker;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
@@ -136,7 +132,7 @@ public class TuneFragment extends Fragment {
         row(sections, R.string.tune_playback, "", () -> openSettings(PreferenceActivity.OPEN_PLAYBACK_SCREEN));
 
         heading(sections, R.string.tune_look);
-        sections.addView(swatches());
+        look(sections);
 
         heading(sections, R.string.tune_backup);
         row(sections, R.string.tune_import_export, "", () -> openSettings(PreferenceActivity.OPEN_IMPORT_EXPORT));
@@ -176,44 +172,38 @@ public class TuneFragment extends Fragment {
         return valueView;
     }
 
-    private View swatches() {
-        LinearLayout row = new LinearLayout(requireContext());
-        row.setOrientation(LinearLayout.HORIZONTAL);
-        row.setPadding(0, dp(14), 0, dp(6));
-        WildInkPalette current = WildInkPalette.current();
-        for (WildInkPalette palette : WildInkPalette.values()) {
-            FrameLayout swatch = new FrameLayout(requireContext());
-            GradientDrawable ground = new GradientDrawable();
-            ground.setShape(GradientDrawable.OVAL);
-            ground.setColor(palette.background);
-            ground.setStroke(dp(palette == current ? 3 : 2), palette == current ? current.accent : current.raised);
-            swatch.setBackground(ground);
-            View dot = new View(requireContext());
-            GradientDrawable accent = new GradientDrawable();
-            accent.setShape(GradientDrawable.OVAL);
-            accent.setColor(palette.accent);
-            dot.setBackground(accent);
-            FrameLayout.LayoutParams dotParams = new FrameLayout.LayoutParams(dp(14), dp(14));
-            dotParams.gravity = Gravity.CENTER;
-            swatch.addView(dot, dotParams);
-            swatch.setContentDescription(getString(R.string.tune_palette_label, getString(palette.name)));
-            swatch.setSelected(palette == current);
-            swatch.setOnClickListener(v -> {
-                if (palette == current) {
-                    return;
-                }
-                UserPreferences.setPalette(palette.key);
-                WidgetUpdaterWorker.enqueueWork(requireContext());
-                requireActivity().recreate();
-            });
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(dp(44), dp(44));
-            params.setMarginEnd(dp(10));
-            row.addView(swatch, params);
+    private void look(LinearLayout sections) {
+        Context context = sections.getContext();
+        boolean perWorld = UserPreferences.isPalettePerWorld();
+        row(sections, R.string.look_per_world, getString(perWorld ? R.string.look_on : R.string.tune_off), () -> {
+            UserPreferences.setPalettePerWorld(!perWorld);
+            LookDialogs.changed(requireActivity());
+        });
+        if (perWorld) {
+            int[] labels = {R.string.world_short_books, R.string.world_short_podcasts, R.string.world_short_radio};
+            for (int world = Palette.BOOKS; world <= Palette.RADIO; world++) {
+                int target = world;
+                sections.addView(LookDialogs.swatchRow(context, getString(labels[world]),
+                        UserPreferences.getWorldPalette(world), key -> {
+                            UserPreferences.setWorldPalette(target, key);
+                            LookDialogs.changed(requireActivity());
+                        }));
+            }
+        } else {
+            sections.addView(LookDialogs.swatchRow(context, null, UserPreferences.getPalette(), key -> {
+                UserPreferences.setPalette(key);
+                LookDialogs.changed(requireActivity());
+            }));
         }
-        return row;
-    }
-
-    private int dp(int value) {
-        return (int) (value * getResources().getDisplayMetrics().density);
+        String dayNight = UserPreferences.isPaletteDayNight()
+                ? getString(R.string.look_day_night_value, getString(Palette.of(UserPreferences.getDayPalette()).name),
+                        getString(Palette.of(UserPreferences.getNightPalette()).name))
+                : getString(R.string.tune_off);
+        row(sections, R.string.look_day_night, dayNight, () -> LookDialogs.dayNight(requireActivity()));
+        if (LookDialogs.customSupported()) {
+            row(sections, R.string.look_custom, "", () -> LookDialogs.custom(requireActivity(),
+                    UserPreferences.getCustomBackground(), UserPreferences.getCustomAccent()));
+            row(sections, R.string.look_wallpaper, "", () -> LookDialogs.wallpaper(requireActivity()));
+        }
     }
 }

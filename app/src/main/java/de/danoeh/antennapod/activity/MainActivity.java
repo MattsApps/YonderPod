@@ -58,6 +58,7 @@ import de.danoeh.antennapod.storage.preferences.PlaybackPreferences;
 import de.danoeh.antennapod.smartplay.app.BooksTendFragment;
 import de.danoeh.antennapod.smartplay.app.PodcastsTendFragment;
 import de.danoeh.antennapod.smartplay.app.RadioFragment;
+import de.danoeh.antennapod.smartplay.app.TendRows;
 import de.danoeh.antennapod.smartplay.app.WorldSurface;
 import de.danoeh.antennapod.smartplay.app.WorldsFragment;
 import de.danoeh.antennapod.smartplay.app.CarModeAutoOpener;
@@ -66,6 +67,7 @@ import de.danoeh.antennapod.storage.preferences.UserPreferences;
 import de.danoeh.antennapod.ui.appstartintent.MainActivityStarter;
 import de.danoeh.antennapod.ui.appstartintent.MediaButtonStarter;
 import de.danoeh.antennapod.ui.common.NavigationToolbarActivity;
+import de.danoeh.antennapod.ui.common.Palette;
 import de.danoeh.antennapod.ui.common.ThemeSwitcher;
 import de.danoeh.antennapod.ui.common.ThemeUtils;
 import de.danoeh.antennapod.ui.discovery.DiscoveryFragment;
@@ -510,6 +512,7 @@ public class MainActivity extends CastEnabledActivity implements NavigationToolb
     }
 
     public void loadFragment(Fragment fragment) {
+        TendRows.statusBar(this, Palette.app(this));
         FragmentManager fragmentManager = getSupportFragmentManager();
         // Clear all synchronously to avoid conflicting with predictive back gesture cancellation
         fragmentManager.popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
@@ -531,6 +534,7 @@ public class MainActivity extends CastEnabledActivity implements NavigationToolb
 
     public void loadChildFragment(Fragment fragment, String navigationTag) {
         Objects.requireNonNull(fragment);
+        TendRows.statusBar(this, Palette.app(this));
         if (navigationTag != null && bottomNavigation != null) {
             bottomNavigation.updateSelectedItem(navigationTag);
         }
@@ -712,6 +716,10 @@ public class MainActivity extends CastEnabledActivity implements NavigationToolb
     }
 
     public void showWorlds() {
+        Fragment worlds = getSupportFragmentManager().findFragmentByTag(WorldsFragment.TAG);
+        if (worlds instanceof WorldsFragment) {
+            ((WorldsFragment) worlds).refreshStatusBar();
+        }
         worldsContainer.animate().cancel();
         worldsContainer.setVisibility(View.VISIBLE);
         worldsContainer.setTranslationY(-worldsContainer.getHeight());

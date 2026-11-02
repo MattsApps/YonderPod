@@ -71,7 +71,8 @@ public class BooksTendFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        root = inflater.inflate(R.layout.tend_fragment, container, false);
+        root = TendRows.worldInflater(this, inflater, WorldSurface.BOOKS)
+                .inflate(R.layout.tend_fragment, container, false);
         TendRows.setUp(this, root, R.string.world_books, R.string.tend_find_book,
                 () -> TendRows.open(this, LibriVoxSearchFragment.newInstance(null)));
         ((TextView) root.findViewById(R.id.tendListLabel)).setText(R.string.tend_books);
@@ -81,6 +82,7 @@ public class BooksTendFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        TendRows.statusBarForWorld(this, WorldSurface.BOOKS);
         load();
     }
 
@@ -100,6 +102,7 @@ public class BooksTendFragment extends Fragment {
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
         if (!hidden) {
+            TendRows.statusBarForWorld(this, WorldSurface.BOOKS);
             load();
         }
     }
@@ -170,7 +173,7 @@ public class BooksTendFragment extends Fragment {
             list.addView(row);
         }
         if (state.books.isEmpty()) {
-            TextView empty = new TextView(requireContext());
+            TextView empty = new TextView(root.getContext());
             TextViewCompat.setTextAppearance(empty, R.style.TextAppearance_WildInk_Detail);
             empty.setText(R.string.tend_no_books);
             empty.setPadding(0, dp(12), 0, 0);
@@ -178,7 +181,7 @@ public class BooksTendFragment extends Fragment {
         }
         LinearLayout extra = root.findViewById(R.id.tendExtra);
         extra.removeAllViews();
-        TextView label = new TextView(requireContext());
+        TextView label = new TextView(root.getContext());
         TextViewCompat.setTextAppearance(label, R.style.TextAppearance_WildInk_Label);
         label.setText(R.string.tend_folders);
         label.setPadding(0, dp(28), 0, dp(4));
@@ -192,7 +195,7 @@ public class BooksTendFragment extends Fragment {
             });
             extra.addView(row);
         }
-        TextView add = new TextView(requireContext());
+        TextView add = new TextView(root.getContext());
         TextViewCompat.setTextAppearance(add, R.style.Widget_WildInk_Link);
         add.setBackgroundResource(R.drawable.wildink_block);
         add.setMinHeight(dp(48));

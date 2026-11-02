@@ -48,6 +48,13 @@ public abstract class UserPreferences {
     public static final String PREF_THEME_BLACK = "prefThemeBlack";
     public static final String PREF_TINTED_COLORS = "prefTintedColors";
     public static final String PREF_PALETTE = "prefPalette";
+    private static final String PREF_PALETTE_PER_WORLD = "prefPalettePerWorld";
+    private static final String PREF_PALETTE_WORLD = "prefPaletteWorld";
+    private static final String PREF_PALETTE_DAY_NIGHT = "prefPaletteDayNight";
+    private static final String PREF_PALETTE_DAY = "prefPaletteDay";
+    private static final String PREF_PALETTE_NIGHT = "prefPaletteNight";
+    private static final String PREF_CUSTOM_BACKGROUND = "prefCustomBackground";
+    private static final String PREF_CUSTOM_ACCENT = "prefCustomAccent";
     public static final String PREF_HIDDEN_DRAWER_ITEMS = "prefHiddenDrawerItems";
     public static final String PREF_DRAWER_ITEM_ORDER = "prefDrawerItemOrder";
     public static final String PREF_DRAWER_FEED_ORDER = "prefDrawerFeedOrder";
@@ -193,6 +200,59 @@ public abstract class UserPreferences {
 
     public static void setPalette(String palette) {
         prefs.edit().putString(PREF_PALETTE, palette).apply();
+    }
+
+    public static boolean isPalettePerWorld() {
+        return prefs.getBoolean(PREF_PALETTE_PER_WORLD, true);
+    }
+
+    public static void setPalettePerWorld(boolean enabled) {
+        prefs.edit().putBoolean(PREF_PALETTE_PER_WORLD, enabled).apply();
+    }
+
+    public static String getWorldPalette(int world) {
+        String[] defaults = {"plum", "charcoal", "night"};
+        return prefs.getString(PREF_PALETTE_WORLD + world, defaults[Math.max(0, Math.min(2, world))]);
+    }
+
+    public static void setWorldPalette(int world, String palette) {
+        prefs.edit().putString(PREF_PALETTE_WORLD + world, palette).apply();
+    }
+
+    public static boolean isPaletteDayNight() {
+        return prefs.getBoolean(PREF_PALETTE_DAY_NIGHT, false);
+    }
+
+    public static void setPaletteDayNight(boolean enabled) {
+        prefs.edit().putBoolean(PREF_PALETTE_DAY_NIGHT, enabled).apply();
+    }
+
+    public static String getDayPalette() {
+        return prefs.getString(PREF_PALETTE_DAY, "paper");
+    }
+
+    public static String getNightPalette() {
+        return prefs.getString(PREF_PALETTE_NIGHT, "charcoal");
+    }
+
+    public static void setDayNightPalettes(String day, String night) {
+        prefs.edit().putString(PREF_PALETTE_DAY, day).putString(PREF_PALETTE_NIGHT, night).apply();
+    }
+
+    public static boolean hasCustomPalette() {
+        return prefs.contains(PREF_CUSTOM_BACKGROUND);
+    }
+
+    public static int getCustomBackground() {
+        return prefs.getInt(PREF_CUSTOM_BACKGROUND, 0xFF1C1B19);
+    }
+
+    public static int getCustomAccent() {
+        return prefs.getInt(PREF_CUSTOM_ACCENT, 0xFFFF5A2B);
+    }
+
+    public static void setCustomPalette(int background, int accent) {
+        prefs.edit().putInt(PREF_CUSTOM_BACKGROUND, background).putInt(PREF_CUSTOM_ACCENT, accent).apply();
     }
 
     public static boolean isParentalControlPasswordSet() {

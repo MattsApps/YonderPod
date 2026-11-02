@@ -582,6 +582,27 @@
         <item name="android:textColor">?android:attr/textColorSecondary</item>
     </style>
 
+    <style name="TextAppearance.WildInk.Wordmark" parent="">
+        <item name="android:fontFamily">@font/bricolage_extrabold</item>
+        <item name="android:textSize">58sp</item>
+        <item name="android:letterSpacing">-0.06</item>
+        <item name="android:textColor">?android:attr/textColorPrimary</item>
+    </style>
+
+    <style name="TextAppearance.WildInk.WorldNeighbour" parent="">
+        <item name="android:fontFamily">@font/bricolage_extrabold</item>
+        <item name="android:textSize">19sp</item>
+        <item name="android:letterSpacing">-0.02</item>
+        <item name="android:textColor">?android:attr/textColorSecondary</item>
+    </style>
+
+    <style name="TextAppearance.WildInk.WorldName" parent="">
+        <item name="android:fontFamily">@font/bricolage_extrabold</item>
+        <item name="android:textSize">50sp</item>
+        <item name="android:letterSpacing">-0.05</item>
+        <item name="android:textColor">?attr/colorPrimary</item>
+    </style>
+
     <style name="TextAppearance.WildInk.SectionHeading" parent="TextAppearance.WildInk.Hero">
         <item name="android:textSize">22sp</item>
         <item name="android:letterSpacing">-0.03</item>
@@ -679,5 +700,116 @@
         <item name="android:layout_height">5dp</item>
         <item name="android:background">?android:attr/textColorPrimary</item>
     </style>
+
+    <style name="Theme.WildInk.CustomDark" parent="Theme.WildInk.Base.Dark">
+        <item name="colorPrimary">@color/wildink_custom_accent</item>
+        <item name="colorAccent">@color/wildink_custom_accent</item>
+        <item name="colorSecondary">@color/wildink_custom_accent</item>
+        <item name="colorTertiary">@color/wildink_custom_accent</item>
+        <item name="colorPrimaryDark">@color/wildink_custom_accent</item>
+        <item name="colorOnPrimary">@color/wildink_custom_on_accent</item>
+        <item name="colorOnSecondary">@color/wildink_custom_on_accent</item>
+        <item name="colorOnTertiary">@color/wildink_custom_on_accent</item>
+        <item name="colorPrimaryContainer">@color/wildink_custom_raised</item>
+        <item name="colorSecondaryContainer">@color/wildink_custom_raised</item>
+        <item name="colorTertiaryContainer">@color/wildink_custom_raised</item>
+        <item name="colorOnPrimaryContainer">@color/wildink_custom_text</item>
+        <item name="colorOnSecondaryContainer">@color/wildink_custom_text</item>
+        <item name="colorOnTertiaryContainer">@color/wildink_custom_text</item>
+        <item name="android:colorBackground">@color/wildink_custom_bg</item>
+        <item name="colorSurface">@color/wildink_custom_bg</item>
+        <item name="background_color">@color/wildink_custom_bg</item>
+        <item name="colorSurfaceContainerLowest">@color/wildink_custom_bg</item>
+        <item name="background_elevated">@color/wildink_custom_raised</item>
+        <item name="colorSurfaceVariant">@color/wildink_custom_raised</item>
+        <item name="colorSurfaceContainer">@color/wildink_custom_raised</item>
+        <item name="colorSurfaceContainerLow">@color/wildink_custom_raised</item>
+        <item name="colorSurfaceContainerHigh">@color/wildink_custom_raised</item>
+        <item name="colorSurfaceContainerHighest">@color/wildink_custom_raised</item>
+        <item name="colorOnSurface">@color/wildink_custom_text</item>
+        <item name="colorOnContainer">@color/wildink_custom_text</item>
+        <item name="colorOnBackground">@color/wildink_custom_text</item>
+        <item name="android:textColorPrimary">@color/wildink_custom_text</item>
+        <item name="action_icon_color">@color/wildink_custom_text</item>
+        <item name="colorOnSurfaceVariant">@color/wildink_custom_secondary</item>
+        <item name="android:textColorSecondary">@color/wildink_custom_secondary</item>
+        <item name="android:textColorTertiary">@color/wildink_custom_secondary</item>
+        <item name="android:textColorHint">@color/wildink_custom_secondary</item>
+        <item name="colorOutline">@color/wildink_custom_secondary</item>
+        <item name="colorOutlineVariant">@color/wildink_custom_raised</item>
+        <item name="icon_gray">@color/wildink_custom_secondary</item>
+    </style>
+
+    <style name="Theme.WildInk.CustomDark.NoTitle" parent="Theme.WildInk.CustomDark">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="windowActionModeOverlay">true</item>
+    </style>
+
+    <style name="Theme.WildInk.CustomDark.Translucent" parent="Theme.WildInk.CustomDark.NoTitle">
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:backgroundDimEnabled">true</item>
+        <item name="android:windowAnimationStyle">@style/AnimationFade</item>
+    </style>
+
+    <style name="Theme.WildInk.CustomLight" parent="Theme.WildInk.Base.Light">
+        <item name="colorPrimary">@color/wildink_custom_accent</item>
+        <item name="colorAccent">@color/wildink_custom_accent</item>
+        <item name="colorSecondary">@color/wildink_custom_accent</item>
+        <item name="colorTertiary">@color/wildink_custom_accent</item>
+        <item name="colorPrimaryDark">@color/wildink_custom_accent</item>
+        <item name="colorOnPrimary">@color/wildink_custom_on_accent</item>
+        <item name="colorOnSecondary">@color/wildink_custom_on_accent</item>
+        <item name="colorOnTertiary">@color/wildink_custom_on_accent</item>
+        <item name="colorPrimaryContainer">@color/wildink_custom_raised</item>
+        <item name="colorSecondaryContainer">@color/wildink_custom_raised</item>
+        <item name="colorTertiaryContainer">@color/wildink_custom_raised</item>
+        <item name="colorOnPrimaryContainer">@color/wildink_custom_text</item>
+        <item name="colorOnSecondaryContainer">@color/wildink_custom_text</item>
+        <item name="colorOnTertiaryContainer">@color/wildink_custom_text</item>
+        <item name="android:colorBackground">@color/wildink_custom_bg</item>
+        <item name="colorSurface">@color/wildink_custom_bg</item>
+        <item name="background_color">@color/wildink_custom_bg</item>
+        <item name="colorSurfaceContainerLowest">@color/wildink_custom_bg</item>
+        <item name="background_elevated">@color/wildink_custom_raised</item>
+        <item name="colorSurfaceVariant">@color/wildink_custom_raised</item>
+        <item name="colorSurfaceContainer">@color/wildink_custom_raised</item>
+        <item name="colorSurfaceContainerLow">@color/wildink_custom_raised</item>
+        <item name="colorSurfaceContainerHigh">@color/wildink_custom_raised</item>
+        <item name="colorSurfaceContainerHighest">@color/wildink_custom_raised</item>
+        <item name="colorOnSurface">@color/wildink_custom_text</item>
+        <item name="colorOnContainer">@color/wildink_custom_text</item>
+        <item name="colorOnBackground">@color/wildink_custom_text</item>
+        <item name="android:textColorPrimary">@color/wildink_custom_text</item>
+        <item name="action_icon_color">@color/wildink_custom_text</item>
+        <item name="colorOnSurfaceVariant">@color/wildink_custom_secondary</item>
+        <item name="android:textColorSecondary">@color/wildink_custom_secondary</item>
+        <item name="android:textColorTertiary">@color/wildink_custom_secondary</item>
+        <item name="android:textColorHint">@color/wildink_custom_secondary</item>
+        <item name="colorOutline">@color/wildink_custom_secondary</item>
+        <item name="colorOutlineVariant">@color/wildink_custom_raised</item>
+        <item name="icon_gray">@color/wildink_custom_secondary</item>
+    </style>
+
+    <style name="Theme.WildInk.CustomLight.NoTitle" parent="Theme.WildInk.CustomLight">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="windowActionModeOverlay">true</item>
+    </style>
+
+    <style name="Theme.WildInk.CustomLight.Translucent" parent="Theme.WildInk.CustomLight.NoTitle">
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:backgroundDimEnabled">true</item>
+        <item name="android:windowAnimationStyle">@style/AnimationFade</item>
+    </style>
+
 
 </resources>

@@ -1,5 +1,8 @@
 package de.danoeh.antennapod.smartplay.app;
 
+import android.app.Activity;
+import android.content.Context;
+import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -7,6 +10,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
@@ -15,6 +20,9 @@ import java.util.Locale;
 
 import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.activity.MainActivity;
+import de.danoeh.antennapod.ui.common.CustomColours;
+import de.danoeh.antennapod.ui.common.Palette;
+import de.danoeh.antennapod.ui.common.ThemeSwitcher;
 import de.danoeh.antennapod.ui.screen.PlaybackHistoryFragment;
 import de.danoeh.antennapod.ui.screen.download.CompletedDownloadsFragment;
 
@@ -39,6 +47,28 @@ public final class TendRows {
                 open(fragment, new CompletedDownloadsFragment()));
         root.findViewById(R.id.tendTune).setOnClickListener(v -> open(fragment, new TuneFragment()));
         return root;
+    }
+
+    public static LayoutInflater worldInflater(Fragment fragment, LayoutInflater inflater, int world) {
+        Context context = fragment.requireContext();
+        return inflater.cloneInContext(new ContextThemeWrapper(context, ThemeSwitcher.getWorldTheme(context, world)));
+    }
+
+    public static void statusBar(@Nullable Activity activity, Palette palette) {
+        if (activity == null) {
+            return;
+        }
+        boolean light = CustomColours.isLight(palette.background);
+        WindowInsetsControllerCompat controller = WindowCompat.getInsetsController(activity.getWindow(),
+                activity.getWindow().getDecorView());
+        controller.setAppearanceLightStatusBars(light);
+        controller.setAppearanceLightNavigationBars(light);
+    }
+
+    public static void statusBarForWorld(Fragment fragment, int world) {
+        if (fragment.getActivity() != null && !fragment.isHidden()) {
+            statusBar(fragment.getActivity(), Palette.forWorld(fragment.requireContext(), world));
+        }
     }
 
     public static void open(Fragment fragment, Fragment child) {

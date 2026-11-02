@@ -73,7 +73,8 @@ public class PodcastsTendFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        root = inflater.inflate(R.layout.tend_fragment, container, false);
+        root = TendRows.worldInflater(this, inflater, WorldSurface.PODCASTS)
+                .inflate(R.layout.tend_fragment, container, false);
         TendRows.setUp(this, root, R.string.world_podcasts, R.string.tend_find_podcast,
                 () -> TendRows.open(this, new FindPodcastsFragment()));
         ((TextView) root.findViewById(R.id.tendListLabel)).setText(R.string.tend_subscriptions);
@@ -93,6 +94,7 @@ public class PodcastsTendFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        TendRows.statusBarForWorld(this, WorldSurface.PODCASTS);
         load();
     }
 
@@ -112,6 +114,7 @@ public class PodcastsTendFragment extends Fragment {
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
         if (!hidden) {
+            TendRows.statusBarForWorld(this, WorldSurface.PODCASTS);
             load();
         }
     }
@@ -236,17 +239,17 @@ public class PodcastsTendFragment extends Fragment {
         }
         LinearLayout top = root.findViewById(R.id.tendTop);
         top.removeAllViews();
-        TextView label = new TextView(requireContext());
+        TextView label = new TextView(root.getContext());
         TextViewCompat.setTextAppearance(label, R.style.TextAppearance_WildInk_Label);
         label.setText(R.string.tend_smart_plays);
         label.setPadding(0, dp(24), 0, dp(8));
         top.addView(label);
-        HorizontalScrollView scroller = new HorizontalScrollView(requireContext());
+        HorizontalScrollView scroller = new HorizontalScrollView(root.getContext());
         scroller.setHorizontalScrollBarEnabled(false);
         scroller.setClipToPadding(false);
-        LinearLayout blocks = new LinearLayout(requireContext());
+        LinearLayout blocks = new LinearLayout(root.getContext());
         blocks.setOrientation(LinearLayout.HORIZONTAL);
-        LayoutInflater inflater = LayoutInflater.from(requireContext());
+        LayoutInflater inflater = LayoutInflater.from(root.getContext());
         for (SmartPlayStore.StoredSmartPlay smartPlay : state.smartPlays) {
             boolean active = smartPlay.getId() == state.activeId;
             TextView block = (TextView) inflater.inflate(R.layout.tend_block, blocks, false);
@@ -291,7 +294,7 @@ public class PodcastsTendFragment extends Fragment {
             addGroup(list, group.getKey().toLowerCase(Locale.getDefault()), group.getValue(), state);
         }
         if (list.getChildCount() == 0) {
-            TextView empty = new TextView(requireContext());
+            TextView empty = new TextView(root.getContext());
             TextViewCompat.setTextAppearance(empty, R.style.TextAppearance_WildInk_Detail);
             empty.setText(R.string.tend_nothing_yet);
             empty.setPadding(0, dp(12), 0, 0);

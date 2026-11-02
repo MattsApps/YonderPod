@@ -21,7 +21,7 @@ import de.danoeh.antennapod.storage.preferences.UserPreferences;
 import de.danoeh.antennapod.ui.appstartintent.MainActivityStarter;
 import de.danoeh.antennapod.ui.appstartintent.MediaButtonStarter;
 import de.danoeh.antennapod.ui.appstartintent.VideoPlayerActivityStarter;
-import de.danoeh.antennapod.ui.common.WildInkPalette;
+import de.danoeh.antennapod.ui.common.Palette;
 import de.danoeh.antennapod.ui.episodes.TimeSpeedConverter;
 
 /**
@@ -59,7 +59,7 @@ public abstract class WidgetUpdater {
         if (!PlayerWidget.isEnabled(context) || widgetState == null) {
             return;
         }
-        WildInkPalette palette = WildInkPalette.current();
+        Palette palette = Palette.forWorld(context, Palette.PODCASTS);
         PendingIntent startMediaPlayer;
         if (widgetState.media != null && widgetState.media.getMediaType() == MediaType.VIDEO) {
             startMediaPlayer = new VideoPlayerActivityStarter(context).getPendingIntent();
@@ -104,7 +104,7 @@ public abstract class WidgetUpdater {
         }
     }
 
-    private static void fillWide(Context context, RemoteViews views, WidgetState widgetState, WildInkPalette palette,
+    private static void fillWide(Context context, RemoteViews views, WidgetState widgetState, Palette palette,
                                  String smartPlay, PendingIntent startMediaPlayer, PendingIntent startApp) {
         views.setTextColor(R.id.txtvShow, palette.secondary);
         views.setTextColor(R.id.txtvProgress, palette.secondary);

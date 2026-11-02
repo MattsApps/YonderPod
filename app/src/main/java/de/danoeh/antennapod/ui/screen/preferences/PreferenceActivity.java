@@ -6,15 +6,22 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.preference.PreferenceFragmentCompat;
 import com.bytehamster.lib.preferencesearch.SearchPreferenceResult;
 import com.bytehamster.lib.preferencesearch.SearchPreferenceResultListener;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 import de.danoeh.antennapod.R;
+import de.danoeh.antennapod.smartplay.app.ButtonTesterFragment;
+import de.danoeh.antennapod.smartplay.app.ControlsSettingsFragment;
 import de.danoeh.antennapod.smartplay.app.SleepSettingsFragment;
+import de.danoeh.antennapod.smartplay.app.UpdateScheduleFragment;
 import de.danoeh.antennapod.event.MessageEvent;
 import de.danoeh.antennapod.ui.common.Keyboard;
 import de.danoeh.antennapod.ui.common.ToolbarActivity;
@@ -56,6 +63,16 @@ public class PreferenceActivity extends ToolbarActivity implements SearchPrefere
 
         binding = SettingsActivityBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        if (ab != null) {
+            ab.hide();
+        }
+        getSupportFragmentManager().registerFragmentLifecycleCallbacks(
+                new FragmentManager.FragmentLifecycleCallbacks() {
+                    @Override
+                    public void onFragmentStarted(@NonNull FragmentManager fm, @NonNull Fragment fragment) {
+                        showTitle(fragment);
+                    }
+                }, false);
 
         if (getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG) == null) {
             getSupportFragmentManager().beginTransaction()
@@ -74,6 +91,19 @@ public class PreferenceActivity extends ToolbarActivity implements SearchPrefere
                     .replace(binding.settingsContainer.getId(), new SleepSettingsFragment())
                     .addToBackStack(getString(R.string.sleep_settings_title))
                     .commit();
+        }
+    }
+
+    private void showTitle(Fragment fragment) {
+        if (fragment instanceof DialogFragment) {
+            return;
+        }
+        boolean ownTitle = fragment instanceof SleepSettingsFragment || fragment instanceof ControlsSettingsFragment
+                || fragment instanceof UpdateScheduleFragment || fragment instanceof ButtonTesterFragment;
+        binding.settingsTitle.setVisibility(ownTitle ? View.GONE : View.VISIBLE);
+        ActionBar ab = getSupportActionBar();
+        if (!ownTitle && ab != null) {
+            binding.settingsTitle.setText(ab.getTitle());
         }
     }
 

@@ -84,25 +84,24 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layoutDirection="ltr"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:paddingHorizontal="16dp">
 
             <de.danoeh.antennapod.ui.screen.playback.audio.ChapterSeekBar
                 android:id="@+id/sbPosition"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="8dp"
-                android:layout_marginRight="8dp"
+                android:layout_height="32dp"
                 android:clickable="true"
                 android:max="500"
+                android:paddingHorizontal="8dp"
+                android:splitTrack="false"
+                android:thumb="@drawable/wildink_seek_thumb"
                 tools:progress="100" />
 
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:layout_marginBottom="4dp"
-                android:paddingLeft="8dp"
-                android:paddingRight="8dp">
+                android:paddingHorizontal="8dp">
 
                 <de.danoeh.antennapod.ui.screen.playback.audio.NoRelayoutTextView
                     android:id="@+id/txtvPosition"
@@ -110,11 +109,10 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentStart="true"
                     android:layout_alignParentLeft="true"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginLeft="16dp"
+                    android:fontFamily="@font/bricolage_semibold"
                     android:text="@string/position_default_label"
-                    android:textColor="?android:attr/textColorSecondary"
-                    android:textSize="@dimen/text_size_micro" />
+                    android:textColor="?android:attr/textColorPrimary"
+                    android:textSize="15sp" />
 
                 <de.danoeh.antennapod.ui.screen.playback.audio.NoRelayoutTextView
                     android:id="@+id/txtvLength"
@@ -122,13 +120,12 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentRight="true"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginRight="16dp"
-                    android:textAlignment="textEnd"
                     android:background="?android:attr/selectableItemBackground"
+                    android:fontFamily="@font/bricolage_semibold"
                     android:text="@string/position_default_label"
-                    android:textColor="?android:attr/textColorSecondary"
-                    android:textSize="@dimen/text_size_micro" />
+                    android:textAlignment="textEnd"
+                    android:textColor="?android:attr/textColorPrimary"
+                    android:textSize="15sp" />
 
             </RelativeLayout>
 
@@ -136,59 +133,43 @@
                 android:id="@+id/player_control"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="24dp">
+                android:layout_marginTop="10dp">
 
                 <de.danoeh.antennapod.ui.screen.playback.PlayButton
                     android:id="@+id/butPlay"
-                    android:layout_width="@dimen/audioplayer_playercontrols_length_big"
-                    android:layout_height="@dimen/audioplayer_playercontrols_length_big"
+                    android:layout_width="104dp"
+                    android:layout_height="104dp"
                     android:layout_centerHorizontal="true"
-                    android:layout_centerVertical="true"
-                    android:layout_marginStart="@dimen/audioplayer_playercontrols_margin"
-                    android:layout_marginLeft="@dimen/audioplayer_playercontrols_margin"
-                    android:layout_marginEnd="@dimen/audioplayer_playercontrols_margin"
-                    android:layout_marginRight="@dimen/audioplayer_playercontrols_margin"
-                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:layout_marginHorizontal="20dp"
+                    android:background="@drawable/wildink_play_circle"
                     android:contentDescription="@string/pause_label"
-                    android:padding="8dp"
+                    android:foreground="?attr/selectableItemBackgroundBorderless"
+                    android:padding="30dp"
                     android:scaleType="fitCenter"
                     app:srcCompat="@drawable/ic_play_48dp"
-                    tools:srcCompat="@drawable/ic_play_48dp" />
-
-                <de.danoeh.antennapod.ui.common.CircularProgressBar
-                    android:layout_width="@dimen/audioplayer_playercontrols_length_big"
-                    android:layout_height="@dimen/audioplayer_playercontrols_length_big"
-                    android:layout_centerHorizontal="true"
-                    android:layout_centerVertical="true"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginLeft="16dp"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginRight="16dp"
-                    app:foregroundColor="?attr/action_icon_color" />
+                    app:tint="?attr/colorOnPrimary" />
 
                 <ProgressBar
                     android:id="@+id/progLoading"
-                    android:layout_width="@dimen/audioplayer_playercontrols_length_big"
-                    android:layout_height="@dimen/audioplayer_playercontrols_length_big"
+                    style="?android:attr/progressBarStyle"
+                    android:layout_width="104dp"
+                    android:layout_height="104dp"
                     android:layout_centerHorizontal="true"
-                    android:layout_centerVertical="true"
-                    android:visibility="gone"
-                    style="?android:attr/progressBarStyle" />
+                    android:visibility="gone" />
 
                 <ImageButton
                     android:id="@+id/butRev"
-                    android:layout_width="@dimen/audioplayer_playercontrols_length"
-                    android:layout_height="@dimen/audioplayer_playercontrols_length"
-                    android:layout_centerVertical="true"
-                    android:layout_marginStart="@dimen/audioplayer_playercontrols_margin"
-                    android:layout_marginLeft="@dimen/audioplayer_playercontrols_margin"
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    android:layout_marginTop="18dp"
                     android:layout_toStartOf="@id/butPlay"
                     android:layout_toLeftOf="@id/butPlay"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:contentDescription="@string/rewind_label"
+                    android:padding="8dp"
                     android:scaleType="fitCenter"
                     app:srcCompat="@drawable/ic_fast_rewind"
-                    tools:srcCompat="@drawable/ic_fast_rewind" />
+                    app:tint="?android:attr/textColorPrimary" />
 
                 <TextView
                     android:id="@+id/txtvRev"
@@ -200,54 +181,25 @@
                     android:layout_alignEnd="@id/butRev"
                     android:layout_alignRight="@id/butRev"
                     android:clickable="false"
+                    android:fontFamily="@font/bricolage_extrabold"
                     android:gravity="center"
                     android:text="30"
-                    android:textColor="?android:attr/textColorSecondary"
-                    android:textSize="12sp" />
-
-                <ImageButton
-                    android:id="@+id/butPlaybackSpeed"
-                    android:layout_width="@dimen/audioplayer_playercontrols_length"
-                    android:layout_height="@dimen/audioplayer_playercontrols_length"
-                    android:padding="8dp"
-                    android:layout_centerVertical="true"
-                    android:layout_toStartOf="@id/butRev"
-                    android:layout_toLeftOf="@id/butRev"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:contentDescription="@string/playback_speed"
-                    android:scaleType="fitCenter"
-                    app:foregroundColor="?attr/action_icon_color"
-                    app:srcCompat="@drawable/ic_playback_speed" />
-
-                <TextView
-                    android:id="@+id/txtvPlaybackSpeed"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/butPlaybackSpeed"
-                    android:layout_alignStart="@id/butPlaybackSpeed"
-                    android:layout_alignLeft="@id/butPlaybackSpeed"
-                    android:layout_alignEnd="@id/butPlaybackSpeed"
-                    android:layout_alignRight="@id/butPlaybackSpeed"
-                    android:clickable="false"
-                    android:gravity="center"
-                    android:text="1.00"
-                    android:textColor="?android:attr/textColorSecondary"
-                    android:textSize="12sp" />
+                    android:textColor="?android:attr/textColorPrimary"
+                    android:textSize="13sp" />
 
                 <ImageButton
                     android:id="@+id/butFF"
-                    android:layout_width="@dimen/audioplayer_playercontrols_length"
-                    android:layout_height="@dimen/audioplayer_playercontrols_length"
-                    android:layout_centerVertical="true"
-                    android:layout_marginEnd="@dimen/audioplayer_playercontrols_margin"
-                    android:layout_marginRight="@dimen/audioplayer_playercontrols_margin"
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    android:layout_marginTop="18dp"
                     android:layout_toEndOf="@id/butPlay"
                     android:layout_toRightOf="@id/butPlay"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:contentDescription="@string/fast_forward_label"
+                    android:padding="8dp"
                     android:scaleType="fitCenter"
                     app:srcCompat="@drawable/ic_fast_forward"
-                    tools:srcCompat="@drawable/ic_fast_forward" />
+                    app:tint="?android:attr/textColorPrimary" />
 
                 <TextView
                     android:id="@+id/txtvFF"
@@ -259,25 +211,112 @@
                     android:layout_alignEnd="@id/butFF"
                     android:layout_alignRight="@id/butFF"
                     android:clickable="false"
+                    android:fontFamily="@font/bricolage_extrabold"
                     android:gravity="center"
                     android:text="30"
-                    android:textColor="?android:attr/textColorSecondary"
-                    android:textSize="12sp" />
+                    android:textColor="?android:attr/textColorPrimary"
+                    android:textSize="13sp" />
 
                 <ImageButton
                     android:id="@+id/butSkip"
-                    android:layout_width="@dimen/audioplayer_playercontrols_length"
-                    android:layout_height="@dimen/audioplayer_playercontrols_length"
-                    android:layout_centerVertical="true"
-                    android:layout_toEndOf="@id/butFF"
-                    android:layout_toRightOf="@id/butFF"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginTop="22dp"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:contentDescription="@string/skip_episode_label"
+                    android:padding="8dp"
                     android:scaleType="fitCenter"
                     app:srcCompat="@drawable/ic_skip_48dp"
-                    tools:srcCompat="@drawable/ic_skip_48dp" />
+                    app:tint="?android:attr/textColorPrimary" />
 
             </RelativeLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <ImageButton
+                    android:id="@+id/butSleep"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_marginHorizontal="10dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/set_sleeptimer_label"
+                    android:padding="12dp"
+                    android:scaleType="fitCenter"
+                    app:srcCompat="@drawable/ic_sleep"
+                    app:tint="?android:attr/textColorSecondary" />
+
+                <FrameLayout
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_marginHorizontal="10dp">
+
+                    <ImageButton
+                        android:id="@+id/butPlaybackSpeed"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:contentDescription="@string/playback_speed"
+                        android:padding="12dp"
+                        android:scaleType="fitCenter"
+                        android:visibility="invisible" />
+
+                    <TextView
+                        android:id="@+id/txtvPlaybackSpeed"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:clickable="false"
+                        android:fontFamily="@font/bricolage_extrabold"
+                        android:text="1.00"
+                        android:textColor="?android:attr/textColorSecondary"
+                        android:textSize="14sp" />
+
+                </FrameLayout>
+
+                <ImageButton
+                    android:id="@+id/butCarMode"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_marginHorizontal="10dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/car_mode_title"
+                    android:padding="12dp"
+                    android:scaleType="fitCenter"
+                    app:srcCompat="@drawable/ic_car"
+                    app:tint="?android:attr/textColorSecondary" />
+
+                <ImageButton
+                    android:id="@+id/butChapters"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_marginHorizontal="10dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/chapters_label"
+                    android:padding="12dp"
+                    android:scaleType="fitCenter"
+                    android:visibility="gone"
+                    app:srcCompat="@drawable/ic_chapter_next"
+                    app:tint="?android:attr/textColorSecondary" />
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/txtvThen"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="8dp"
+                android:layout_marginTop="6dp"
+                android:layout_marginBottom="20dp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textAppearance="@style/TextAppearance.WildInk.Detail" />
 
         </LinearLayout>
 

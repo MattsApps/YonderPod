@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/play_next_item"
+        android:title="@string/playlist_play_next" />
+
+    <item
+        android:id="@+id/playlist_notes_item"
+        android:title="@string/playlist_notes" />
+
+    <item
+        android:id="@+id/add_to_favorites_item"
+        android:title="@string/playlist_favourite" />
+
+    <item
+        android:id="@+id/remove_from_favorites_item"
+        android:title="@string/playlist_unfavourite" />
+
+    <item
+        android:id="@+id/mark_read_item"
+        android:title="@string/playlist_mark_played" />
+
+    <item
+        android:id="@+id/share_item"
+        android:title="@string/playlist_share" />
+
+    <item
+        android:id="@+id/playlist_open_show_item"
+        android:title="@string/playlist_open_show" />
+
+    <item
+        android:id="@+id/remove_from_queue_item"
+        android:title="@string/playlist_remove" />
+
+    <item
+        android:id="@+id/remove_item"
+        android:title="@string/playlist_delete" />
+
+</menu>

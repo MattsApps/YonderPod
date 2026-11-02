@@ -43,9 +43,9 @@ public class ChapterSeekBar extends androidx.appcompat.widget.AppCompatSeekBar {
         dividerPos = null;
         density = context.getResources().getDisplayMetrics().density;
 
-        paintBackground.setColor(ThemeUtils.getColorFromAttr(getContext(), R.attr.colorSurfaceVariant));
-        paintBackground.setAlpha(128);
-        paintProgressPrimary.setColor(ThemeUtils.getColorFromAttr(getContext(), R.attr.colorPrimary));
+        paintBackground.setColor(ThemeUtils.getColorFromAttr(getContext(), android.R.attr.textColorPrimary));
+        paintBackground.setAlpha(70);
+        paintProgressPrimary.setColor(ThemeUtils.getColorFromAttr(getContext(), android.R.attr.textColorPrimary));
     }
 
     /**
@@ -78,8 +78,8 @@ public class ChapterSeekBar extends androidx.appcompat.widget.AppCompatSeekBar {
     @Override
     protected synchronized void onDraw(Canvas canvas) {
         center = (getBottom() - getPaddingBottom() - getTop() - getPaddingTop()) / 2.0f;
-        top = center - density * 1.5f;
-        bottom = center + density * 1.5f;
+        top = center - density * 3f;
+        bottom = center + density * 3f;
         width = (float) (getRight() - getPaddingRight() - getLeft() - getPaddingLeft());
         progressSecondary = getSecondaryProgress() / (float) getMax() * width;
         progressPrimary = getProgress() / (float) getMax() * width;
@@ -105,8 +105,8 @@ public class ChapterSeekBar extends androidx.appcompat.widget.AppCompatSeekBar {
         final int saveCount = canvas.save();
         int currChapter = 1;
         float chapterMargin = density * 1.2f;
-        float topExpanded = center - density * 2.0f;
-        float bottomExpanded = center + density * 2.0f;
+        float topExpanded = center - density * 4.0f;
+        float bottomExpanded = center + density * 4.0f;
 
         canvas.translate(getPaddingLeft(), getPaddingTop());
 

@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.ProgressBar;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -40,6 +41,7 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.smartplay.app.SmartPlayHours;
@@ -64,6 +66,8 @@ import de.danoeh.antennapod.ui.episodeslist.EpisodeMultiSelectActionHandler;
 import de.danoeh.antennapod.ui.swipeactions.SwipeActions;
 import de.danoeh.antennapod.ui.episodeslist.FeedItemMenuHandler;
 import de.danoeh.antennapod.model.feed.FeedItem;
+import de.danoeh.antennapod.ui.screen.episode.ItemPagerFragment;
+import de.danoeh.antennapod.ui.screen.feed.FeedItemlistFragment;
 import de.danoeh.antennapod.model.feed.FeedItemFilter;
 import de.danoeh.antennapod.model.feed.SortOrder;
 import de.danoeh.antennapod.storage.preferences.UserPreferences;
@@ -87,6 +91,7 @@ public class QueueFragment extends Fragment implements MaterialToolbar.OnMenuIte
     private static final String SCROLL_OFFSET_KEY = "scroll_offset";
 
     private TextView infoBar;
+    private TextView smartPlayBlock;
     private EpisodeItemListRecyclerView recyclerView;
     private QueueRecyclerAdapter recyclerAdapter;
     private EmptyViewHandler emptyView;
@@ -233,6 +238,7 @@ public class QueueFragment extends Fragment implements MaterialToolbar.OnMenuIte
                         recyclerView.findViewHolderForAdapterPosition(i);
                 if (holder != null && holder.isPlayingItem()) {
                     holder.notifyPlaybackPositionUpdated(event);
+                    PlaylistRow.showLeft(holder, event.getDuration(), event.getPosition());
                     break;
                 }
             }
@@ -435,10 +441,8 @@ public class QueueFragment extends Fragment implements MaterialToolbar.OnMenuIte
         progressBar.setVisibility(View.VISIBLE);
 
         infoBar = root.findViewById(R.id.info_bar);
-        infoBar.setOnClickListener(v -> showSmartPlaySwitcher());
-        boolean largePadding = displayUpArrow || !UserPreferences.isBottomNavigationEnabled();
-        int paddingHorizontal = (int) (getResources().getDisplayMetrics().density * (largePadding ? 60 : 16));
-        infoBar.setPadding(paddingHorizontal, 0, paddingHorizontal, 0);
+        smartPlayBlock = root.findViewById(R.id.smartplayBlock);
+        smartPlayBlock.setOnClickListener(v -> showSmartPlaySwitcher());
 
         recyclerView = root.findViewById(R.id.recyclerView);
         RecyclerView.ItemAnimator animator = recyclerView.getItemAnimator();
@@ -453,6 +457,12 @@ public class QueueFragment extends Fragment implements MaterialToolbar.OnMenuIte
         swipeActions.attachTo(recyclerView);
 
         recyclerAdapter = new QueueRecyclerAdapter((MainActivity) getActivity(), swipeActions) {
+            @Override
+            protected void afterBindViewHolder(EpisodeItemViewHolder holder, int pos) {
+                super.afterBindViewHolder(holder, pos);
+                PlaylistRow.style(holder, v -> showRowMenu(v, holder.getFeedItem()));
+            }
+
             @Override
             public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
                 super.onCreateContextMenu(menu, v, menuInfo);
@@ -523,14 +533,39 @@ public class QueueFragment extends Fragment implements MaterialToolbar.OnMenuIte
         }
         String episodes = getResources().getQuantityString(R.plurals.num_episodes, queue.size(), queue.size());
         String time = Converter.getDurationStringLocalized(getResources(), timeLeft, false);
-        infoBar.setText(getString(R.string.smartplay_header, SmartPlayQueueManager.getInstance().getActiveName(),
-                getString(R.string.queue_time_left_label, episodes, time)));
+        smartPlayBlock.setText(SmartPlayQueueManager.getInstance().getActiveName().toLowerCase(Locale.getDefault()));
+        infoBar.setText(getString(R.string.playlist_summary, episodes, time));
 
         if (recyclerAdapter.inActionMode()) {
             infoBar.setVisibility(View.INVISIBLE);
         } else {
             infoBar.setVisibility(View.VISIBLE);
         }
+    }
+
+    private void showRowMenu(View anchor, @Nullable FeedItem item) {
+        if (item == null) {
+            return;
+        }
+        PopupMenu menu = new PopupMenu(requireContext(), anchor);
+        menu.inflate(R.menu.playlist_row);
+        boolean downloaded = item.getMedia() != null && item.getMedia().isDownloaded();
+        boolean favourite = item.isTagged(FeedItem.TAG_FAVORITE);
+        menu.getMenu().findItem(R.id.remove_item).setVisible(downloaded);
+        menu.getMenu().findItem(R.id.add_to_favorites_item).setVisible(!favourite);
+        menu.getMenu().findItem(R.id.remove_from_favorites_item).setVisible(favourite);
+        menu.setOnMenuItemClickListener(menuItem -> {
+            int id = menuItem.getItemId();
+            if (id == R.id.playlist_notes_item) {
+                ((MainActivity) getActivity()).loadChildFragment(ItemPagerFragment.newInstance(item.getId()));
+                return true;
+            } else if (id == R.id.playlist_open_show_item) {
+                ((MainActivity) getActivity()).loadChildFragment(FeedItemlistFragment.newInstance(item.getFeedId()));
+                return true;
+            }
+            return FeedItemMenuHandler.onMenuItemClicked(this, id, item);
+        });
+        menu.show();
     }
 
     private void showSmartPlaySwitcher() {

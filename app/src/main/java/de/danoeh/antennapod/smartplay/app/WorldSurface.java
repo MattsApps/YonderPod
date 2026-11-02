@@ -11,7 +11,6 @@ import android.widget.TextView;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.widget.TextViewCompat;
 import androidx.fragment.app.Fragment;
 
 import org.greenrobot.eventbus.EventBus;
@@ -54,19 +53,12 @@ public abstract class WorldSurface extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        root = inflater.inflate(layout(), container, false);
-        int[] names = {R.id.worldBooks, R.id.worldPodcasts, R.id.worldRadio};
-        for (int i = 0; i < names.length; i++) {
-            TextView name = root.findViewById(names[i]);
-            int target = i;
-            TextViewCompat.setTextAppearance(name, i == world()
-                    ? R.style.TextAppearance_WildInk_World : R.style.TextAppearance_WildInk_WorldOther);
-            name.setOnClickListener(v -> {
-                if (getParentFragment() instanceof WorldsFragment) {
-                    ((WorldsFragment) getParentFragment()).showWorld(target);
-                }
-            });
-        }
+        root = TendRows.worldInflater(this, inflater, world()).inflate(layout(), container, false);
+        int[] fullNames = {R.string.world_books, R.string.world_podcasts, R.string.world_radio};
+        int[] shortNames = {R.string.world_short_books, R.string.world_short_podcasts, R.string.world_short_radio};
+        ((TextView) root.findViewById(R.id.worldName)).setText(fullNames[world()]);
+        neighbour(root.findViewById(R.id.worldLeft), world() - 1, shortNames, R.string.world_neighbour_left);
+        neighbour(root.findViewById(R.id.worldRight), world() + 1, shortNames, R.string.world_neighbour_right);
         root.findViewById(R.id.worldHandle).setOnClickListener(v -> openTend());
         for (int id : new int[] {R.id.worldFrom, R.id.worldNext}) {
             View link = root.findViewById(id);
@@ -79,6 +71,22 @@ public abstract class WorldSurface extends Fragment {
             }
         }
         return root;
+    }
+
+    private void neighbour(TextView label, int target, int[] shortNames, int format) {
+        if (target < 0 || target >= shortNames.length) {
+            label.setText("");
+            label.setClickable(false);
+            label.setBackground(null);
+            return;
+        }
+        label.setText(getString(format, getString(shortNames[target])));
+        label.setContentDescription(getString(shortNames[target]));
+        label.setOnClickListener(v -> {
+            if (getParentFragment() instanceof WorldsFragment) {
+                ((WorldsFragment) getParentFragment()).showWorld(target);
+            }
+        });
     }
 
     @Override

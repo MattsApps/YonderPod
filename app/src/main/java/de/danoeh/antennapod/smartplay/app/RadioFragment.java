@@ -51,12 +51,13 @@ public class RadioFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        root = inflater.inflate(R.layout.tend_fragment, container, false);
+        root = TendRows.worldInflater(this, inflater, WorldSurface.RADIO)
+                .inflate(R.layout.tend_fragment, container, false);
         TendRows.setUp(this, root, R.string.world_radio, R.string.tend_find_station,
                 () -> TendRows.open(this, new RadioSearchFragment()));
         ((TextView) root.findViewById(R.id.tendListLabel)).setText(R.string.tend_stations);
         LinearLayout extra = root.findViewById(R.id.tendExtra);
-        TextView paste = new TextView(requireContext());
+        TextView paste = new TextView(root.getContext());
         TextViewCompat.setTextAppearance(paste, R.style.Widget_WildInk_Link);
         paste.setText(R.string.find_paste_stream);
         paste.setMinHeight((int) (48 * getResources().getDisplayMetrics().density));
@@ -72,6 +73,12 @@ public class RadioFragment extends Fragment {
         super.onStart();
         EventBus.getDefault().register(this);
         load();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        TendRows.statusBarForWorld(this, WorldSurface.RADIO);
     }
 
     @Override
@@ -95,6 +102,7 @@ public class RadioFragment extends Fragment {
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
         if (!hidden) {
+            TendRows.statusBarForWorld(this, WorldSurface.RADIO);
             load();
         }
     }
@@ -125,7 +133,7 @@ public class RadioFragment extends Fragment {
             list.addView(row);
         }
         if (stations.isEmpty()) {
-            TextView empty = new TextView(requireContext());
+            TextView empty = new TextView(root.getContext());
             TextViewCompat.setTextAppearance(empty, R.style.TextAppearance_WildInk_Detail);
             empty.setText(R.string.radio_empty);
             empty.setPadding(0, (int) (12 * getResources().getDisplayMetrics().density), 0, 0);

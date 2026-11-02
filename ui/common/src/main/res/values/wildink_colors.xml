@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="wildink_custom_bg">#1C1B19</color>
+    <color name="wildink_custom_text">#F1ECE2</color>
+    <color name="wildink_custom_secondary">#B5AEA2</color>
+    <color name="wildink_custom_accent">#FF5A2B</color>
+    <color name="wildink_custom_on_accent">#1C1B19</color>
+    <color name="wildink_custom_raised">#2C2A27</color>
     <color name="wildink_charcoal_1c1b19">#1C1B19</color>
     <color name="wildink_charcoal_2c2a27">#2C2A27</color>
     <color name="wildink_charcoal_b5aea2">#B5AEA2</color>

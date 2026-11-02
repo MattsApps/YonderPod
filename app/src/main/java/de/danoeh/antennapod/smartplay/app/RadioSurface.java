@@ -143,7 +143,7 @@ public class RadioSurface extends WorldSurface {
         list.removeAllViews();
         root.findViewById(R.id.worldReady).setVisibility(state.ready.isEmpty() && state.waiting.isEmpty()
                 ? View.GONE : View.VISIBLE);
-        LayoutInflater inflater = LayoutInflater.from(requireContext());
+        LayoutInflater inflater = LayoutInflater.from(root.getContext());
         Context app = requireContext().getApplicationContext();
         for (Waiting waiting : state.waiting) {
             View row = inflater.inflate(R.layout.world_ready_row, list, false);

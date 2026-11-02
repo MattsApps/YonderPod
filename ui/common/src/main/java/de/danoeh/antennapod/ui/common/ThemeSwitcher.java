@@ -6,11 +6,18 @@ import androidx.annotation.StyleRes;
 public abstract class ThemeSwitcher {
     @StyleRes
     public static int getNoTitleTheme(Context context) {
-        return WildInkPalette.current().noTitleTheme;
+        Palette.applyCustomColours(context);
+        return Palette.app(context).noTitleTheme;
     }
 
     @StyleRes
     public static int getTranslucentTheme(Context context) {
-        return WildInkPalette.current().translucentTheme;
+        Palette.applyCustomColours(context);
+        return Palette.app(context).translucentTheme;
+    }
+
+    @StyleRes
+    public static int getWorldTheme(Context context, int world) {
+        return Palette.forWorld(context, world).noTitleTheme;
     }
 }

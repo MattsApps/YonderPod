@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.graphics.ColorUtils;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -16,6 +17,7 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.activity.MainActivity;
+import de.danoeh.antennapod.ui.common.Palette;
 
 public class WorldsFragment extends Fragment {
     public static final String TAG = "WorldsFragment";
@@ -49,6 +51,22 @@ public class WorldsFragment extends Fragment {
             }
         });
         pager.setOffscreenPageLimit(2);
+        int[] grounds = new int[3];
+        for (int world = 0; world < grounds.length; world++) {
+            grounds[world] = Palette.forWorld(requireContext(), world).background;
+        }
+        pager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+            @Override
+            public void onPageScrolled(int position, float offset, int offsetPixels) {
+                int next = Math.min(position + 1, grounds.length - 1);
+                layout.setBackgroundColor(ColorUtils.blendARGB(grounds[position], grounds[next], offset));
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                refreshStatusBar();
+            }
+        });
         if (savedInstanceState == null) {
             pager.setCurrentItem(WorldSurface.PODCASTS, false);
         }
@@ -65,6 +83,12 @@ public class WorldsFragment extends Fragment {
             return insets;
         });
         return layout;
+    }
+
+    public void refreshStatusBar() {
+        if (pager != null && getActivity() != null) {
+            TendRows.statusBar(getActivity(), Palette.forWorld(requireContext(), pager.getCurrentItem()));
+        }
     }
 
     public void showWorld(int world) {
