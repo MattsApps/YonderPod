@@ -61,6 +61,7 @@ import de.danoeh.antennapod.smartplay.app.RadioFragment;
 import de.danoeh.antennapod.smartplay.app.TendRows;
 import de.danoeh.antennapod.smartplay.app.WorldSurface;
 import de.danoeh.antennapod.smartplay.app.WorldsFragment;
+import de.danoeh.antennapod.smartplay.app.YonderBackupWorker;
 import de.danoeh.antennapod.smartplay.app.CarModeAutoOpener;
 import de.danoeh.antennapod.storage.preferences.ControlsPreferences;
 import de.danoeh.antennapod.storage.preferences.UserPreferences;
@@ -239,6 +240,7 @@ public class MainActivity extends CastEnabledActivity implements NavigationToolb
         FeedUpdateManager.getInstance().restartUpdateAlarm(this, false);
         SynchronizationQueue.getInstance().syncIfNotSyncedRecently();
         AutomaticDatabaseExportWorker.enqueueIfNeeded(this, false);
+        YonderBackupWorker.schedule(this, false);
         DatabaseMaintenanceWorker.enqueueIfNeeded(this);
 
         WorkManager.getInstance(this)

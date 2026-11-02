@@ -28,6 +28,7 @@ import de.danoeh.antennapod.smartplay.app.CategoryPrompt;
 import de.danoeh.antennapod.ui.appstartintent.MainActivityStarter;
 import de.danoeh.antennapod.net.download.serviceinterface.FeedUpdateManager;
 
+import de.danoeh.antennapod.smartplay.app.ImportedPlayState;
 import de.danoeh.antennapod.storage.database.FeedDatabaseWriter;
 import de.danoeh.antennapod.databinding.OpmlSelectionBinding;
 import de.danoeh.antennapod.model.feed.Feed;
@@ -137,6 +138,7 @@ public class OpmlImportActivity extends ToolbarActivity {
             if (importedCount == 1 && lastImportedFeedId >= 0) {
                 CategoryPrompt.request(this, lastImportedFeedId);
             }
+            ImportedPlayState.remember(this, uri);
             FeedUpdateManager.getInstance().runOnce(this);
         })
                 .subscribeOn(Schedulers.computation())

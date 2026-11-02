@@ -142,7 +142,7 @@ public class TuneFragment extends Fragment {
         look(sections);
 
         heading(sections, R.string.tune_backup);
-        row(sections, R.string.tune_import_export, "", () -> openSettings(PreferenceActivity.OPEN_IMPORT_EXPORT));
+        row(sections, R.string.tune_import_export, "", () -> TendRows.open(this, new BackupFragment()));
         row(sections, R.string.tune_sync, "", () -> openSettings(PreferenceActivity.OPEN_SYNC));
 
         heading(sections, R.string.tune_about);

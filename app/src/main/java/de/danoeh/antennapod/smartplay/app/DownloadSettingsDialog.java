@@ -274,7 +274,7 @@ public final class DownloadSettingsDialog {
         }
     }
 
-    private static String modeLabel(Context context, DownloadMode mode) {
+    static String modeLabel(Context context, DownloadMode mode) {
         switch (mode) {
             case LATEST:
                 return context.getString(R.string.download_mode_latest);

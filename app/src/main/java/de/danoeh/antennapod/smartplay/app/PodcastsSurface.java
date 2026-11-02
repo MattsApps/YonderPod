@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Set;
 
 import de.danoeh.antennapod.R;
+import de.danoeh.antennapod.activity.MainActivity;
 import de.danoeh.antennapod.event.playback.PlaybackPositionEvent;
 import de.danoeh.antennapod.model.feed.FeedItem;
 import de.danoeh.antennapod.model.feed.FeedMedia;
@@ -125,9 +126,23 @@ public class PodcastsSurface extends WorldSurface {
             progressRow.setVisibility(View.VISIBLE);
             onPosition(new PlaybackPositionEvent(shown.getPosition(), shown.getDuration()));
         }
+        next.setOnClickListener(v -> {
+            if (getActivity() instanceof MainActivity) {
+                ((MainActivity) getActivity()).openPlaylist();
+            }
+        });
         if (state.next != null && state.next.getFeed() != null) {
             next.setText(getString(R.string.world_then, state.next.getFeed().getTitle()));
             next.setVisibility(View.VISIBLE);
+        } else if (shown == null) {
+            next.setText(R.string.moving_link);
+            next.setVisibility(View.VISIBLE);
+            next.setOnClickListener(v -> {
+                if (getActivity() instanceof MainActivity) {
+                    ((MainActivity) getActivity()).hideWorlds();
+                    ((MainActivity) getActivity()).loadChildFragment(new MovingFragment());
+                }
+            });
         } else {
             next.setVisibility(View.INVISIBLE);
         }

@@ -42,6 +42,8 @@ import de.danoeh.antennapod.net.download.serviceinterface.DownloadRequestCreator
 import de.danoeh.antennapod.parser.feed.FeedHandler;
 import de.danoeh.antennapod.parser.feed.FeedHandlerResult;
 import de.danoeh.antennapod.parser.feed.UnsupportedFeedtypeException;
+import de.danoeh.antennapod.smartplay.app.ShowResolver;
+import de.danoeh.antennapod.smartplay.moving.ShowLinks;
 import de.danoeh.antennapod.storage.database.DBReader;
 import de.danoeh.antennapod.storage.database.DBWriter;
 import de.danoeh.antennapod.storage.database.FeedDatabaseWriter;
@@ -53,6 +55,7 @@ import de.danoeh.antennapod.ui.screen.download.DownloadErrorLabel;
 import de.danoeh.antennapod.ui.screen.feed.FeedItemlistFragment;
 import io.reactivex.rxjava3.core.Maybe;
 import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
@@ -106,6 +109,10 @@ public class OnlineFeedViewActivity extends AppCompatActivity {
             feedUrl = getIntent().getStringExtra(ARG_FEEDURL);
         } else if (TextUtils.equals(getIntent().getAction(), Intent.ACTION_SEND)) {
             feedUrl = getIntent().getStringExtra(Intent.EXTRA_TEXT);
+            String sharedLink = ShowLinks.extractUrl(feedUrl);
+            if (sharedLink != null) {
+                feedUrl = sharedLink;
+            }
         } else if (TextUtils.equals(getIntent().getAction(), Intent.ACTION_VIEW)) {
             feedUrl = getIntent().getDataString();
         }
@@ -119,7 +126,7 @@ public class OnlineFeedViewActivity extends AppCompatActivity {
                 username = savedInstanceState.getString("username");
                 password = savedInstanceState.getString("password");
             }
-            String preparedUrl = UrlChecker.prepareUrl(feedUrl);
+            String preparedUrl = UrlChecker.prepareUrl(ShowLinks.withoutPodcastScheme(feedUrl));
             if (UserPreferences.isParentalControlPasswordSet()
                     && UserPreferences.isParentalControlRequireSubscribeSet()) {
                 ParentalControlDialog.show(this, () -> lookupUrlAndDownload(preparedUrl), this::finish);
@@ -127,6 +134,16 @@ public class OnlineFeedViewActivity extends AppCompatActivity {
                 lookupUrlAndDownload(preparedUrl);
             }
         }
+    }
+
+    private void showSpotifyOnly(String name) {
+        runOnUiThread(() -> new MaterialAlertDialogBuilder(OnlineFeedViewActivity.this)
+                .setNeutralButton(android.R.string.ok, (dialog, which) -> finish())
+                .setTitle(R.string.moving_spotify_only_title)
+                .setMessage(name == null || name.isEmpty() ? getString(R.string.moving_spotify_only_unknown)
+                        : getString(R.string.moving_spotify_only, name))
+                .setOnDismissListener(dialog1 -> finish())
+                .show());
     }
 
     private void showNoPodcastFoundError() {
@@ -189,12 +206,16 @@ public class OnlineFeedViewActivity extends AppCompatActivity {
     }
 
     private void lookupUrlAndDownload(String url) {
-        download = PodcastSearcherRegistry.lookupUrl(url)
+        Single<String> lookup = ShowLinks.kind(url) == ShowLinks.SPOTIFY
+                ? ShowResolver.spotifyFeed(url) : PodcastSearcherRegistry.lookupUrl(url);
+        download = lookup
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
                 .subscribe(this::downloadIfNotAlreadySubscribed,
                         error -> {
-                            if (error instanceof FeedUrlNotFoundException) {
+                            if (error instanceof ShowResolver.SpotifyOnlyException) {
+                                showSpotifyOnly(((ShowResolver.SpotifyOnlyException) error).name);
+                            } else if (error instanceof FeedUrlNotFoundException) {
                                 tryToRetrieveFeedUrlBySearch((FeedUrlNotFoundException) error);
                             } else {
                                 showNoPodcastFoundError();
