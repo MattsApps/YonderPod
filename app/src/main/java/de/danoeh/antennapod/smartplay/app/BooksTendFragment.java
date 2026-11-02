@@ -224,12 +224,7 @@ public class BooksTendFragment extends Fragment {
                 .setMessage(book ? R.string.tend_delete_book_message : R.string.tend_remove_folder_message)
                 .setPositiveButton(book ? R.string.tend_delete_book : R.string.tend_remove_folder, (dialog, which) ->
                         disposables.add(Completable.fromAction(() -> {
-                            if (book) {
-                                long smartPlayId = Books.findBookSmartPlay(app, feed);
-                                if (smartPlayId >= 0) {
-                                    Books.deleteBookSmartPlay(app, smartPlayId);
-                                }
-                            }
+                            Books.removeFromSmartPlays(app, feed.getId());
                             DBWriter.deleteFeed(app, feed.getId()).get();
                         })
                                 .subscribeOn(Schedulers.io())

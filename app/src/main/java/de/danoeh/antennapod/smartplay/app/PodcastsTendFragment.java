@@ -9,12 +9,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.widget.TextViewCompat;
 import androidx.fragment.app.Fragment;
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -34,11 +37,14 @@ import de.danoeh.antennapod.model.feed.Feed;
 import de.danoeh.antennapod.model.feed.FeedCounter;
 import de.danoeh.antennapod.model.feed.FeedOrder;
 import de.danoeh.antennapod.net.download.serviceinterface.FeedUpdateManager;
+import de.danoeh.antennapod.smartplay.SmartPlayDefinition;
+import de.danoeh.antennapod.smartplay.SmartPlayRule;
 import de.danoeh.antennapod.storage.database.DBReader;
 import de.danoeh.antennapod.storage.database.NavDrawerData;
 import de.danoeh.antennapod.ui.screen.feed.FeedItemlistFragment;
 import de.danoeh.antennapod.ui.screen.queue.QueueFragment;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.Completable;
 import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
@@ -49,6 +55,9 @@ public class PodcastsTendFragment extends Fragment {
     private final CompositeDisposable disposables = new CompositeDisposable();
     private View root;
     private boolean updating;
+    private long updateStart;
+    private long lastProgress;
+    private String progressText = "";
 
     private static final class State {
         List<SmartPlayStore.StoredSmartPlay> smartPlays = new ArrayList<>();
@@ -72,6 +81,9 @@ public class PodcastsTendFragment extends Fragment {
         TextView updated = root.findViewById(R.id.tendUpdated);
         updated.setVisibility(View.VISIBLE);
         updated.setOnClickListener(v -> {
+            if (updating) {
+                return;
+            }
             updated.setText(R.string.tend_updating);
             FeedUpdateManager.getInstance().runOnceOrAsk(requireContext());
         });
@@ -106,17 +118,62 @@ public class PodcastsTendFragment extends Fragment {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onFeedListChanged(FeedListUpdateEvent event) {
-        load();
+        if (updating) {
+            showProgress();
+        } else {
+            load();
+        }
     }
 
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
     public void onFeedUpdateRunning(FeedUpdateRunningEvent event) {
+        if (event.isFeedUpdateRunning && !updating) {
+            updateStart = System.currentTimeMillis() - 2000;
+            progressText = getString(R.string.tend_updating);
+        }
         updating = event.isFeedUpdateRunning;
         if (!updating) {
             load();
-        } else if (root != null) {
-            ((TextView) root.findViewById(R.id.tendUpdated)).setText(R.string.tend_updating);
+        } else {
+            showProgress();
         }
+    }
+
+    private void showProgress() {
+        if (root == null) {
+            return;
+        }
+        ((TextView) root.findViewById(R.id.tendUpdated)).setText(progressText);
+        long now = System.currentTimeMillis();
+        if (now - lastProgress < 500) {
+            return;
+        }
+        lastProgress = now;
+        long since = updateStart;
+        disposables.add(Single.fromCallable(() -> {
+            int total = 0;
+            int done = 0;
+            for (Feed feed : DBReader.getFeedList()) {
+                if (feed.getState() != Feed.STATE_SUBSCRIBED || feed.isAppManaged() || feed.getPreferences() == null
+                        || !feed.getPreferences().getKeepUpdated()) {
+                    continue;
+                }
+                total++;
+                if (feed.getLastRefreshAttempt() >= since) {
+                    done++;
+                }
+            }
+            return new int[] {done, total};
+        })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(counts -> {
+                    if (!updating || root == null || counts[1] == 0) {
+                        return;
+                    }
+                    progressText = getString(R.string.tend_updating_progress, counts[0], counts[1]);
+                    ((TextView) root.findViewById(R.id.tendUpdated)).setText(progressText);
+                }, error -> Log.e(TAG, Log.getStackTraceString(error))));
     }
 
     @Override
@@ -170,7 +227,7 @@ public class PodcastsTendFragment extends Fragment {
         }
         TextView updated = root.findViewById(R.id.tendUpdated);
         if (updating) {
-            updated.setText(R.string.tend_updating);
+            updated.setText(progressText);
         } else if (state.lastUpdate > 0) {
             updated.setText(getString(R.string.tend_updated, DateUtils.getRelativeTimeSpanString(
                     state.lastUpdate, System.currentTimeMillis(), DateUtils.MINUTE_IN_MILLIS)));
@@ -210,7 +267,7 @@ public class PodcastsTendFragment extends Fragment {
                 v.postDelayed(this::load, 300);
             });
             block.setOnLongClickListener(v -> {
-                TendRows.open(this, SmartPlayEditorFragment.newInstance(smartPlay.getId()));
+                smartPlayMenu(v, smartPlay, state.smartPlays.size());
                 return true;
             });
             blocks.addView(block);
@@ -240,6 +297,65 @@ public class PodcastsTendFragment extends Fragment {
             empty.setPadding(0, dp(12), 0, 0);
             list.addView(empty);
         }
+    }
+
+    private void smartPlayMenu(View anchor, SmartPlayStore.StoredSmartPlay smartPlay, int total) {
+        PopupMenu menu = new PopupMenu(requireContext(), anchor);
+        menu.getMenu().add(0, 0, 0, R.string.tend_smart_play_edit);
+        menu.getMenu().add(0, 1, 1, R.string.tend_smart_play_duplicate);
+        menu.getMenu().add(0, 2, 2, R.string.tend_smart_play_delete).setEnabled(total > 1);
+        menu.setOnMenuItemClickListener(item -> {
+            if (item.getItemId() == 0) {
+                TendRows.open(this, SmartPlayEditorFragment.newInstance(smartPlay.getId()));
+            } else if (item.getItemId() == 1) {
+                duplicate(smartPlay);
+            } else {
+                confirmDelete(smartPlay);
+            }
+            return true;
+        });
+        menu.show();
+    }
+
+    private void duplicate(SmartPlayStore.StoredSmartPlay smartPlay) {
+        Context app = requireContext().getApplicationContext();
+        SmartPlayDefinition original = smartPlay.getDefinition();
+        SmartPlayDefinition.Builder builder = SmartPlayDefinition.builder(
+                getString(R.string.tend_smart_play_copy_name, original.getName()));
+        for (SmartPlayDefinition.PriorityFeed feed : original.getPriorityFeeds()) {
+            builder.priorityFeed(feed.getFeedId(), feed.getOrder());
+        }
+        for (SmartPlayRule rule : original.getRules()) {
+            builder.rule(rule);
+        }
+        SmartPlayDefinition copy = builder.neverInclude(original.getNeverInclude()).build();
+        disposables.add(Completable.fromAction(() -> SmartPlayStore.getInstance(app).insert(copy))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(this::load, error -> Log.e(TAG, Log.getStackTraceString(error))));
+    }
+
+    private void confirmDelete(SmartPlayStore.StoredSmartPlay smartPlay) {
+        Context app = requireContext().getApplicationContext();
+        new MaterialAlertDialogBuilder(requireContext())
+                .setTitle(getString(R.string.tend_smart_play_delete_question, smartPlay.getDefinition().getName()))
+                .setMessage(R.string.tend_smart_play_delete_message)
+                .setPositiveButton(R.string.tend_smart_play_delete, (dialog, which) ->
+                        disposables.add(Completable.fromAction(() -> {
+                            if (SmartPlayStore.getInstance(app).getAll().size() <= 1) {
+                                return;
+                            }
+                            SmartPlayStore.getInstance(app).delete(smartPlay.getId());
+                            SmartPlayHours.set(app, smartPlay.getId(), null);
+                            SmartPlayHours.reschedule(app);
+                            SmartPlayQueueManager.getInstance().onSmartPlayDeleted(smartPlay.getId());
+                        })
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(() -> root.postDelayed(this::load, 300),
+                                        error -> Log.e(TAG, Log.getStackTraceString(error)))))
+                .setNegativeButton(R.string.cancel_label, null)
+                .show();
     }
 
     private void addGroup(LinearLayout list, String name, List<Feed> feeds, State state) {

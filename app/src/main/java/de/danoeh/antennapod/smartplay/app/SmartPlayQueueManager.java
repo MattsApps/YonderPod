@@ -56,6 +56,7 @@ public class SmartPlayQueueManager {
     private static final String STATE_PREFS = "SmartPlayState";
     private static final String KEY_ACTIVE_ID = "activeId";
     private static final String KEY_ACTIVE_NAME = "activeName";
+    private static final String KEY_PREVIOUS_ID = "previousId";
     private static final String KEY_PAUSED = "paused";
     private static final String KEY_FEED_QUEUE_ACTION_CLEARED = "feedQueueActionCleared";
     private static final String KEY_COUNTER_SET = "subscriptionCounterSet";
@@ -156,7 +157,7 @@ public class SmartPlayQueueManager {
 
     public void activate(long smartPlayId, FeedMedia fallback) {
         executor.execute(() -> {
-            state.edit().putLong(KEY_ACTIVE_ID, smartPlayId).apply();
+            setActive(smartPlayId);
             update(true);
             List<FeedItem> queue = DBReader.getQueue();
             FeedMedia media = !queue.isEmpty() ? queue.get(0).getMedia() : fallback;
@@ -170,7 +171,7 @@ public class SmartPlayQueueManager {
 
     public void activateAndPlay(long smartPlayId, FeedItem chapter) {
         executor.execute(() -> {
-            state.edit().putLong(KEY_ACTIVE_ID, smartPlayId).apply();
+            setActive(smartPlayId);
             update(true);
             try {
                 List<FeedItem> newQueue = new ArrayList<>();
@@ -195,7 +196,7 @@ public class SmartPlayQueueManager {
             if (smartPlayId == state.getLong(KEY_ACTIVE_ID, -1)) {
                 return;
             }
-            state.edit().putLong(KEY_ACTIVE_ID, smartPlayId).apply();
+            setActive(smartPlayId);
             update(true);
             keepPlayingOnTop();
         });
@@ -225,6 +226,38 @@ public class SmartPlayQueueManager {
         } catch (Exception e) {
             Log.e(TAG, "Could not keep the playing episode on top", e);
         }
+    }
+
+    private void setActive(long smartPlayId) {
+        long current = state.getLong(KEY_ACTIVE_ID, -1);
+        SharedPreferences.Editor editor = state.edit().putLong(KEY_ACTIVE_ID, smartPlayId);
+        if (current >= 0 && current != smartPlayId) {
+            editor.putLong(KEY_PREVIOUS_ID, current);
+        }
+        editor.apply();
+    }
+
+    public void onSmartPlayDeleted(long smartPlayId) {
+        executor.execute(() -> {
+            if (smartPlayId != state.getLong(KEY_ACTIVE_ID, -1)) {
+                activeSmartPlay();
+                return;
+            }
+            long previous = state.getLong(KEY_PREVIOUS_ID, -1);
+            long next = -1;
+            for (SmartPlayStore.StoredSmartPlay stored : store.getAll()) {
+                if (stored.getId() == previous) {
+                    next = previous;
+                    break;
+                }
+                if (next < 0) {
+                    next = stored.getId();
+                }
+            }
+            state.edit().putLong(KEY_ACTIVE_ID, next).remove(KEY_PREVIOUS_ID).apply();
+            update(true);
+            keepPlayingOnTop();
+        });
     }
 
     public void onSmartPlaysChanged() {

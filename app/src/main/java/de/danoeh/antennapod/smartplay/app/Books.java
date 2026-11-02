@@ -279,12 +279,49 @@ public final class Books {
         }
     }
 
+    public static void removeFromSmartPlays(Context context, long feedId) {
+        SmartPlayStore store = SmartPlayStore.getInstance(context);
+        SmartPlayQueueManager manager = SmartPlayQueueManager.getInstance();
+        for (SmartPlayStore.StoredSmartPlay stored : store.getAll()) {
+            SmartPlayDefinition definition = stored.getDefinition();
+            SmartPlayDefinition.Builder builder = SmartPlayDefinition.builder(definition.getName());
+            boolean changed = false;
+            int kept = 0;
+            for (SmartPlayDefinition.PriorityFeed priority : definition.getPriorityFeeds()) {
+                if (priority.getFeedId() == feedId) {
+                    changed = true;
+                } else {
+                    builder.priorityFeed(priority.getFeedId(), priority.getOrder());
+                    kept++;
+                }
+            }
+            for (SmartPlayRule rule : definition.getRules()) {
+                if (rule.getSource().getType() == EpisodeSource.Type.FEED && rule.getSource().getFeedId() == feedId) {
+                    changed = true;
+                } else {
+                    builder.rule(rule);
+                    kept++;
+                }
+            }
+            if (!changed) {
+                continue;
+            }
+            if (kept == 0) {
+                store.delete(stored.getId());
+                manager.onSmartPlayDeleted(stored.getId());
+            } else {
+                store.update(stored.getId(), builder.neverInclude(definition.getNeverInclude()).build());
+                manager.onSmartPlaysChanged();
+                if (manager.getActiveId() == stored.getId()) {
+                    manager.rebuildNow();
+                }
+            }
+        }
+    }
+
     public static void deleteBookSmartPlay(Context context, long id) {
         SmartPlayStore.getInstance(context).delete(id);
-        SmartPlayQueueManager.getInstance().onSmartPlaysChanged();
-        if (SmartPlayQueueManager.getInstance().getActiveId() == id) {
-            SmartPlayQueueManager.getInstance().rebuildNow();
-        }
+        SmartPlayQueueManager.getInstance().onSmartPlayDeleted(id);
     }
 
     public static Map<Long, Long> lastPlayedPerBook(Context context, Set<Long> books) {

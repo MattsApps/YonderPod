@@ -21,6 +21,7 @@ import org.greenrobot.eventbus.ThreadMode;
 import de.danoeh.antennapod.BuildConfig;
 import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.activity.MainActivity;
+import de.danoeh.antennapod.event.FeedUpdateRunningEvent;
 import de.danoeh.antennapod.event.PlayerStatusEvent;
 import de.danoeh.antennapod.event.QueueEvent;
 import de.danoeh.antennapod.event.playback.PlaybackPositionEvent;
@@ -107,6 +108,13 @@ public abstract class WorldSurface extends Fragment {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onQueueChanged(QueueEvent event) {
         load();
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onFeedUpdateRunning(FeedUpdateRunningEvent event) {
+        if (!event.isFeedUpdateRunning) {
+            load();
+        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
