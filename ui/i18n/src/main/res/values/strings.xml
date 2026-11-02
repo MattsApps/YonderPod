@@ -669,6 +669,8 @@
         <item quantity="other">%d episodes</item>
     </plurals>
     <string name="smartplay_source_all">All feeds</string>
+    <string name="smartplay_source_except_option">Everything except…</string>
+    <string name="smartplay_source_all_except">All feeds except %1$s</string>
     <string name="smartplay_source_category">Category: %1$s</string>
     <string name="smartplay_unknown_show">Unknown show</string>
     <string name="smartplay_add_rule">Add rule</string>

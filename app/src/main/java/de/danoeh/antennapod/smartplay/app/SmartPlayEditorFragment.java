@@ -132,7 +132,7 @@ public class SmartPlayEditorFragment extends Fragment {
         }
 
         boolean matches(EpisodeSource other) {
-            if (other.getType() != source.getType()) {
+            if (source == null || other.getType() != source.getType()) {
                 return false;
             }
             switch (source.getType()) {
@@ -453,6 +453,7 @@ public class SmartPlayEditorFragment extends Fragment {
         applyHours(result.hours);
         sourceOptions.clear();
         sourceOptions.add(new SourceOption(getString(R.string.smartplay_source_all), EpisodeSource.allFeeds()));
+        sourceOptions.add(new SourceOption(getString(R.string.smartplay_source_except_option), null));
         Map<String, Integer> categoryCounts = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         for (Feed feed : feeds) {
             for (String category : CategoryChips.categoriesOf(feed)) {
@@ -1095,9 +1096,26 @@ public class SmartPlayEditorFragment extends Fragment {
             bindOrderAndCount(holder, draft);
 
             holder.source.setOnItemSelectedListener(null);
-            holder.source.setAdapter(spinnerAdapter(sourceLabels()));
+            List<String> labels = sourceLabels();
+            if (draft.source.getType() == EpisodeSource.Type.ALL_FEEDS && !draft.exclusions.isEmpty()) {
+                labels.set(0, getString(R.string.smartplay_source_all_except, exclusionNames(draft.exclusions)));
+            }
+            holder.source.setAdapter(spinnerAdapter(labels));
             holder.source.setSelection(sourceIndex(draft.source), false);
             holder.source.setOnItemSelectedListener(new SimpleSelectionListener(selected -> {
+                if (sourceOptions.get(selected).source == null) {
+                    holder.source.setSelection(sourceIndex(draft.source), false);
+                    pickExclusions(R.string.smartplay_except_title, draft.exclusions, chosen -> {
+                        draft.source = EpisodeSource.allFeeds();
+                        draft.exclusions = chosen;
+                        int at = holder.getBindingAdapterPosition();
+                        if (at >= 0) {
+                            rulesAdapter.notifyItemChanged(at);
+                        }
+                        updateCoverageWarning();
+                    });
+                    return;
+                }
                 draft.source = sourceOptions.get(selected).source;
                 holder.except.setText(exceptLabel(draft));
                 bindOrderAndCount(holder, draft);
