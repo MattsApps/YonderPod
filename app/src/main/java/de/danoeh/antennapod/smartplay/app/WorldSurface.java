@@ -27,6 +27,7 @@ import de.danoeh.antennapod.event.playback.PlaybackPositionEvent;
 import de.danoeh.antennapod.model.feed.FeedMedia;
 import de.danoeh.antennapod.playback.service.PlaybackController;
 import de.danoeh.antennapod.playback.service.PlaybackService;
+import de.danoeh.antennapod.smartplay.worlds.WorldPages;
 import de.danoeh.antennapod.storage.preferences.PlaybackPreferences;
 import de.danoeh.antennapod.ui.appstartintent.MediaButtonStarter;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
@@ -55,10 +56,8 @@ public abstract class WorldSurface extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         root = TendRows.worldInflater(this, inflater, world()).inflate(layout(), container, false);
         int[] fullNames = {R.string.world_books, R.string.world_podcasts, R.string.world_radio};
-        int[] shortNames = {R.string.world_short_books, R.string.world_short_podcasts, R.string.world_short_radio};
         ((TextView) root.findViewById(R.id.worldName)).setText(fullNames[world()]);
-        neighbour(root.findViewById(R.id.worldLeft), world() - 1, shortNames, R.string.world_neighbour_left);
-        neighbour(root.findViewById(R.id.worldRight), world() + 1, shortNames, R.string.world_neighbour_right);
+        neighbours(this, root, AppShelves.pages(requireContext()), world());
         root.findViewById(R.id.worldHandle).setOnClickListener(v -> openTend());
         for (int id : new int[] {R.id.worldFrom, R.id.worldNext}) {
             View link = root.findViewById(id);
@@ -73,18 +72,26 @@ public abstract class WorldSurface extends Fragment {
         return root;
     }
 
-    private void neighbour(TextView label, int target, int[] shortNames, int format) {
-        if (target < 0 || target >= shortNames.length) {
+    static void neighbours(Fragment fragment, View root, WorldPages pages, int page) {
+        neighbour(fragment, root.findViewById(R.id.worldLeft), pages.leftOf(page), R.string.world_neighbour_left);
+        neighbour(fragment, root.findViewById(R.id.worldRight), pages.rightOf(page),
+                R.string.world_neighbour_right);
+    }
+
+    private static void neighbour(Fragment fragment, TextView label, int target, int format) {
+        if (target == WorldPages.NONE) {
             label.setText("");
             label.setClickable(false);
             label.setBackground(null);
             return;
         }
-        label.setText(getString(format, getString(shortNames[target])));
-        label.setContentDescription(getString(shortNames[target]));
+        int[] shortNames = {R.string.world_short_books, R.string.world_short_podcasts, R.string.world_short_radio};
+        String name = fragment.getString(WorldPages.isWorld(target) ? shortNames[target] : R.string.world_short_apps);
+        label.setText(fragment.getString(format, name));
+        label.setContentDescription(name);
         label.setOnClickListener(v -> {
-            if (getParentFragment() instanceof WorldsFragment) {
-                ((WorldsFragment) getParentFragment()).showWorld(target);
+            if (fragment.getParentFragment() instanceof WorldsFragment) {
+                ((WorldsFragment) fragment.getParentFragment()).showPage(target);
             }
         });
     }

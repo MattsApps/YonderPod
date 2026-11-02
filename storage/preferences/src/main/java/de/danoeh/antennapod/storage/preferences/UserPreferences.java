@@ -55,6 +55,10 @@ public abstract class UserPreferences {
     public static final String PREF_CUSTOM_PALETTES = "prefCustomPalettes";
     private static final String PREF_CUSTOM_BACKGROUND = "prefCustomBackground";
     private static final String PREF_CUSTOM_ACCENT = "prefCustomAccent";
+    private static final String PREF_WORLD_SHOWN = "prefWorldShown";
+    private static final String PREF_SHELF_LEFT = "prefShelfLeft";
+    private static final String PREF_SHELF_RIGHT = "prefShelfRight";
+    private static final String PREF_SHELF_TIP_SHOWN = "prefShelfTipShown";
     public static final String PREF_HIDDEN_DRAWER_ITEMS = "prefHiddenDrawerItems";
     public static final String PREF_DRAWER_ITEM_ORDER = "prefDrawerItemOrder";
     public static final String PREF_DRAWER_FEED_ORDER = "prefDrawerFeedOrder";
@@ -233,6 +237,37 @@ public abstract class UserPreferences {
 
     public static void setCustomPalettes(String json) {
         prefs.edit().putString(PREF_CUSTOM_PALETTES, json).apply();
+    }
+
+    public static boolean isWorldShown(int world) {
+        return world == 1 || prefs.getBoolean(PREF_WORLD_SHOWN + world, true);
+    }
+
+    public static void setWorldShown(int world, boolean shown) {
+        prefs.edit().putBoolean(PREF_WORLD_SHOWN + world, shown).apply();
+    }
+
+    public static List<String> getShelfApps(boolean right) {
+        String value = prefs.getString(right ? PREF_SHELF_RIGHT : PREF_SHELF_LEFT, "");
+        List<String> apps = new ArrayList<>();
+        for (String app : TextUtils.split(value, ",")) {
+            if (!app.isEmpty()) {
+                apps.add(app);
+            }
+        }
+        return apps;
+    }
+
+    public static void setShelfApps(boolean right, List<String> apps) {
+        prefs.edit().putString(right ? PREF_SHELF_RIGHT : PREF_SHELF_LEFT, TextUtils.join(",", apps)).apply();
+    }
+
+    public static boolean isShelfTipShown() {
+        return prefs.getBoolean(PREF_SHELF_TIP_SHOWN, false);
+    }
+
+    public static void setShelfTipShown() {
+        prefs.edit().putBoolean(PREF_SHELF_TIP_SHOWN, true).apply();
     }
 
     public static boolean hasOldCustomPalette() {

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="6dp"
+    android:background="@drawable/wildink_block"
+    android:minHeight="148dp"
+    android:orientation="vertical"
+    android:padding="18dp">
+
+    <ImageView
+        android:id="@+id/shelfTileIcon"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:importantForAccessibility="no" />
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:minHeight="14dp" />
+
+    <TextView
+        android:id="@+id/shelfTileName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:maxLines="2"
+        android:textAppearance="@style/TextAppearance.WildInk.ItemTitle" />
+
+</LinearLayout>

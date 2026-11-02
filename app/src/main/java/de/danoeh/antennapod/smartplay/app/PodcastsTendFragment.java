@@ -39,8 +39,10 @@ import de.danoeh.antennapod.model.feed.FeedOrder;
 import de.danoeh.antennapod.net.download.serviceinterface.FeedUpdateManager;
 import de.danoeh.antennapod.smartplay.SmartPlayDefinition;
 import de.danoeh.antennapod.smartplay.SmartPlayRule;
+import de.danoeh.antennapod.smartplay.worlds.WorldPages;
 import de.danoeh.antennapod.storage.database.DBReader;
 import de.danoeh.antennapod.storage.database.NavDrawerData;
+import de.danoeh.antennapod.storage.preferences.UserPreferences;
 import de.danoeh.antennapod.ui.screen.feed.FeedItemlistFragment;
 import de.danoeh.antennapod.ui.screen.queue.QueueFragment;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
@@ -198,9 +200,14 @@ public class PodcastsTendFragment extends Fragment {
             state.savedCounts = DBReader.getNavDrawerData(null, FeedOrder.ALPHABETICAL,
                     FeedCounter.SHOW_DOWNLOADED, Feed.STATE_SUBSCRIBED).feedCounters;
             Set<Long> books = Books.bookIds(app);
+            boolean booksHere = !UserPreferences.isWorldShown(WorldPages.BOOKS);
+            boolean recordingsHere = !UserPreferences.isWorldShown(WorldPages.RADIO);
             for (Feed feed : DBReader.getFeedList()) {
-                if (feed.getState() != Feed.STATE_SUBSCRIBED || feed.isLocalFeed() || books.contains(feed.getId())
-                        || Radio.isRadioFeed(feed)) {
+                if (feed.getState() != Feed.STATE_SUBSCRIBED || Radio.isRadioFeed(feed)) {
+                    continue;
+                }
+                if (Recordings.isRecordingsFeed(feed) ? !recordingsHere
+                        : (feed.isLocalFeed() || books.contains(feed.getId())) && !booksHere) {
                     continue;
                 }
                 state.lastUpdate = Math.max(state.lastUpdate, feed.getLastRefreshAttempt());

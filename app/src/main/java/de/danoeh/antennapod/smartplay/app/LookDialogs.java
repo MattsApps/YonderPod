@@ -245,6 +245,9 @@ public final class LookDialogs {
         } else {
             int[] labels = {R.string.world_short_books, R.string.world_short_podcasts, R.string.world_short_radio};
             for (int world = Palette.BOOKS; world <= Palette.RADIO; world++) {
+                if (!UserPreferences.isWorldShown(world)) {
+                    continue;
+                }
                 content.addView(strip(activity, activity.getString(labels[world]), Palette.nightKey(world), world,
                         true));
             }

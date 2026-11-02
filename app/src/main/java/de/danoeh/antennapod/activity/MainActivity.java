@@ -715,7 +715,19 @@ public class MainActivity extends CastEnabledActivity implements NavigationToolb
         openDefaultPageBackPressedCallback.setEnabled(true);
     }
 
+    public void refreshWorlds() {
+        Fragment worlds = getSupportFragmentManager().findFragmentByTag(WorldsFragment.TAG);
+        if (worlds instanceof WorldsFragment && ((WorldsFragment) worlds).isOutOfDate()
+                && !getSupportFragmentManager().isStateSaved()) {
+            int page = ((WorldsFragment) worlds).currentPage();
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.worlds_container, WorldsFragment.newInstance(page), WorldsFragment.TAG)
+                    .commitNow();
+        }
+    }
+
     public void showWorlds() {
+        refreshWorlds();
         Fragment worlds = getSupportFragmentManager().findFragmentByTag(WorldsFragment.TAG);
         if (worlds instanceof WorldsFragment) {
             ((WorldsFragment) worlds).refreshStatusBar();

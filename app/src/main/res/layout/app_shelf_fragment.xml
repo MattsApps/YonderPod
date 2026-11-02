@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?android:attr/colorBackground"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical"
+    android:paddingHorizontal="24dp"
+    android:paddingTop="24dp"
+    android:paddingBottom="16dp">
+
+    <de.danoeh.antennapod.ui.common.LowercaseTextView
+        android:id="@+id/shelfTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:accessibilityHeading="true"
+        android:textAppearance="@style/TextAppearance.WildInk.PageTitle" />
+
+    <TextView
+        android:id="@+id/shelfHint"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:textAppearance="@style/TextAppearance.WildInk.Detail" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/shelfApps"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:overScrollMode="never" />
+
+    <TextView
+        android:id="@+id/shelfAdd"
+        style="@style/Widget.WildInk.Link"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/shelf_add" />
+
+</LinearLayout>

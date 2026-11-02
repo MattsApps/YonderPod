@@ -6,6 +6,7 @@ import android.util.TypedValue;
 import android.view.View;
 import android.widget.TextView;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -15,8 +16,10 @@ import de.danoeh.antennapod.model.feed.FeedItem;
 import de.danoeh.antennapod.model.feed.FeedMedia;
 import de.danoeh.antennapod.model.playback.Playable;
 import de.danoeh.antennapod.playback.service.PlaybackServiceStarter;
+import de.danoeh.antennapod.smartplay.worlds.WorldPages;
 import de.danoeh.antennapod.storage.database.DBReader;
 import de.danoeh.antennapod.storage.preferences.PlaybackPreferences;
+import de.danoeh.antennapod.storage.preferences.UserPreferences;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.schedulers.Schedulers;
@@ -47,7 +50,8 @@ public class PodcastsSurface extends WorldSurface {
         Context app = requireContext().getApplicationContext();
         disposables.add(Single.fromCallable(() -> {
             State state = new State();
-            Set<Long> books = Books.bookIds(app);
+            Set<Long> books = UserPreferences.isWorldShown(WorldPages.BOOKS)
+                    ? Books.bookIds(app) : new HashSet<>();
             FeedMedia current = DBReader.getFeedMedia(PlaybackPreferences.getCurrentlyPlayingFeedMediaId());
             List<FeedItem> queue = DBReader.getQueue();
             if (isPodcast(current, books)) {

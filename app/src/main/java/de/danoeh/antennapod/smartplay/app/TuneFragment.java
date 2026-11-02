@@ -15,9 +15,12 @@ import androidx.annotation.Nullable;
 import androidx.core.widget.TextViewCompat;
 import androidx.fragment.app.Fragment;
 
+import java.util.List;
+
 import de.danoeh.antennapod.BuildConfig;
 import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.smartplay.schedule.CategoryScheduleMode;
+import de.danoeh.antennapod.smartplay.worlds.WorldPages;
 import de.danoeh.antennapod.storage.preferences.SleepTimerPreferences;
 import de.danoeh.antennapod.storage.preferences.UserPreferences;
 import de.danoeh.antennapod.ui.common.Palette;
@@ -132,6 +135,9 @@ public class TuneFragment extends Fragment {
                 () -> TendRows.open(this, new ControlsSettingsFragment()));
         row(sections, R.string.tune_playback, "", () -> openSettings(PreferenceActivity.OPEN_PLAYBACK_SCREEN));
 
+        heading(sections, R.string.tune_worlds);
+        worlds(sections);
+
         heading(sections, R.string.tune_look);
         look(sections);
 
@@ -173,6 +179,25 @@ public class TuneFragment extends Fragment {
         return valueView;
     }
 
+    private void worlds(LinearLayout sections) {
+        for (int world : new int[] {WorldPages.BOOKS, WorldPages.RADIO}) {
+            boolean shown = UserPreferences.isWorldShown(world);
+            row(sections, world == WorldPages.BOOKS ? R.string.world_books : R.string.world_radio,
+                    getString(shown ? R.string.look_on : R.string.tune_off), () -> {
+                        UserPreferences.setWorldShown(world, !shown);
+                        load();
+                    });
+        }
+        for (boolean right : new boolean[] {false, true}) {
+            List<AppShelves.App> apps = AppShelves.installed(requireContext(), right);
+            String value = apps.isEmpty() ? getString(R.string.worlds_edge_none)
+                    : apps.size() == 1 ? apps.get(0).label.toString()
+                    : getString(R.string.shelf_count, apps.size());
+            row(sections, right ? R.string.worlds_right_edge : R.string.worlds_left_edge, value,
+                    () -> TendRows.open(this, AppShelfFragment.newInstance(right)));
+        }
+    }
+
     private void look(LinearLayout sections) {
         boolean everywhere = UserPreferences.isPaletteEverywhere();
         row(sections, R.string.look_everywhere, getString(everywhere ? R.string.look_on : R.string.tune_off), () -> {
@@ -185,6 +210,9 @@ public class TuneFragment extends Fragment {
         } else {
             int[] labels = {R.string.world_short_books, R.string.world_short_podcasts, R.string.world_short_radio};
             for (int world = Palette.BOOKS; world <= Palette.RADIO; world++) {
+                if (!UserPreferences.isWorldShown(world)) {
+                    continue;
+                }
                 sections.addView(LookDialogs.strip(requireActivity(), getString(labels[world]),
                         UserPreferences.getWorldPalette(world), world, false));
             }
