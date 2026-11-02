@@ -1714,6 +1714,12 @@
     <string name="backup_done">Backed up</string>
     <string name="backup_failed">Backup didn\'t work: %1$s</string>
     <string name="backup_restore">Restore</string>
+    <string name="backup_restore_value">pick a file</string>
+    <string name="backup_beyondpod">Import from BeyondPod</string>
+    <string name="backup_beyondpod_value">.bpbak file</string>
+    <string name="backup_recent">Backups in your folder. Tap one to see what\'s in it before restoring.</string>
+    <string name="backup_recent_auto">automatic</string>
+    <string name="backup_recent_manual">manual</string>
     <string name="backup_automatic_heading">automatic</string>
     <string name="backup_automatic">Automatic backups</string>
     <string name="backup_daily">daily</string>

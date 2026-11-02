@@ -27,7 +27,10 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.TimeZone;
 
 import de.danoeh.antennapod.R;
@@ -35,6 +38,7 @@ import de.danoeh.antennapod.smartplay.backup.BackupFiles;
 import de.danoeh.antennapod.ui.screen.preferences.PreferenceActivity;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Completable;
+import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
@@ -105,7 +109,12 @@ public class BackupFragment extends Fragment {
 
         LinearLayout sections = root.findViewById(R.id.pageSections);
         sections.removeAllViews();
-        row(sections, R.string.backup_restore, "", () -> pickRestore.launch(new String[] {"*/*"}));
+        row(sections, R.string.backup_restore, getString(R.string.backup_restore_value),
+                () -> pickRestore.launch(new String[] {"*/*"}));
+        LinearLayout recent = new LinearLayout(context);
+        recent.setOrientation(LinearLayout.VERTICAL);
+        sections.addView(recent);
+        listRecent(recent);
 
         heading(sections, R.string.backup_automatic_heading);
         String frequency = BackupSettings.frequency(context);
@@ -122,12 +131,54 @@ public class BackupFragment extends Fragment {
                 ? R.string.look_on : R.string.tune_off), this::choosePassword);
 
         heading(sections, R.string.backup_moving_heading);
+        row(sections, R.string.backup_beyondpod, getString(R.string.backup_beyondpod_value),
+                () -> pickRestore.launch(new String[] {"*/*"}));
         row(sections, R.string.moving_title, "", () -> TendRows.open(this, new MovingFragment()));
         row(sections, R.string.backup_opml, "", () -> {
             Intent intent = new Intent(requireContext(), PreferenceActivity.class);
             intent.putExtra(PreferenceActivity.OPEN_IMPORT_EXPORT, true);
             startActivity(intent);
         });
+    }
+
+    private void listRecent(LinearLayout recent) {
+        String folder = BackupSettings.folder(requireContext());
+        if (folder == null) {
+            return;
+        }
+        Context app = requireContext().getApplicationContext();
+        disposables.add(Single.fromCallable(() -> {
+            List<DocumentFile> found = new ArrayList<>();
+            DocumentFile tree = DocumentFile.fromTreeUri(app, Uri.parse(folder));
+            if (tree != null && tree.canRead()) {
+                for (DocumentFile file : tree.listFiles()) {
+                    if (file.getName() != null && file.getName().endsWith(BackupFiles.EXTENSION)) {
+                        found.add(file);
+                    }
+                }
+            }
+            Collections.sort(found, (a, b) -> Long.compare(b.lastModified(), a.lastModified()));
+            return found.subList(0, Math.min(5, found.size()));
+        })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(files -> {
+                    if (getContext() == null || files.isEmpty()) {
+                        return;
+                    }
+                    note(recent, R.string.backup_recent);
+                    for (DocumentFile file : files) {
+                        View row = LayoutInflater.from(getContext()).inflate(R.layout.tune_row, recent, false);
+                        ((TextView) row.findViewById(R.id.tuneRowLabel)).setText(DateUtils.formatDateTime(
+                                getContext(), file.lastModified(), DateUtils.FORMAT_SHOW_DATE
+                                        | DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_ABBREV_MONTH));
+                        ((TextView) row.findViewById(R.id.tuneRowValue)).setText(
+                                file.getName().startsWith("Yonder-auto") ? getString(R.string.backup_recent_auto)
+                                        : getString(R.string.backup_recent_manual));
+                        row.setOnClickListener(v -> ImportFlow.open(this, file.getUri()));
+                        recent.addView(row);
+                    }
+                }, error -> Log.d(TAG, "Can't list backups: " + error.getMessage())));
     }
 
     private String folderName() {
