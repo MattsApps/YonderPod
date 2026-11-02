@@ -22,8 +22,8 @@ public class BeyondPodMappingTest {
         assertEquals(DownloadMode.MANUAL, BeyondPodMapping.mode(0));
         assertEquals(DownloadMode.LATEST, BeyondPodMapping.mode(1));
         assertEquals(DownloadMode.STREAM_LATEST, BeyondPodMapping.mode(2));
-        assertEquals(DownloadMode.IN_ORDER, BeyondPodMapping.mode(3));
-        assertEquals(DownloadMode.STREAM_IN_ORDER, BeyondPodMapping.mode(4));
+        assertEquals(DownloadMode.STREAM_IN_ORDER, BeyondPodMapping.mode(3));
+        assertEquals(DownloadMode.IN_ORDER, BeyondPodMapping.mode(4));
         assertEquals(DownloadMode.IGNORE, BeyondPodMapping.mode(5));
         assertEquals(DownloadMode.LATEST, BeyondPodMapping.mode(null));
         assertEquals(DownloadMode.LATEST, BeyondPodMapping.mode(42));
@@ -37,7 +37,7 @@ public class BeyondPodMappingTest {
         assertEquals(5, settings.getKeepAtMost());
         assertEquals(ShowDownloadSettings.NO_LIMIT, settings.getDeleteOlderThanDays());
         ShowDownloadSettings custom = BeyondPodMapping.settings(4, 3, 8, 30, DEFAULTS);
-        assertEquals(DownloadMode.STREAM_IN_ORDER, custom.getMode());
+        assertEquals(DownloadMode.IN_ORDER, custom.getMode());
         assertEquals(3, custom.getEpisodeCount());
         assertEquals(8, custom.getKeepAtMost());
         assertEquals(30, custom.getDeleteOlderThanDays());

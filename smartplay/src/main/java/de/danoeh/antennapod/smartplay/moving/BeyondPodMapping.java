@@ -27,9 +27,9 @@ public final class BeyondPodMapping {
             case 2:
                 return DownloadMode.STREAM_LATEST;
             case 3:
-                return DownloadMode.IN_ORDER;
-            case 4:
                 return DownloadMode.STREAM_IN_ORDER;
+            case 4:
+                return DownloadMode.IN_ORDER;
             case 5:
                 return DownloadMode.IGNORE;
             case 1:
