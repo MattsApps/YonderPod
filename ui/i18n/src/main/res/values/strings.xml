@@ -1694,6 +1694,7 @@
     <string name="shelf_one_hint">With one app here, the swipe opens it straight away.</string>
     <string name="shelf_add">+ add an app</string>
     <string name="shelf_pick_title">Add an app</string>
+    <string name="shelf_pick_ok">OK</string>
     <string name="shelf_no_apps">No other apps to add.</string>
     <string name="shelf_remove">Remove %1$s</string>
     <string name="shelf_reorder">Drag to reorder %1$s</string>

@@ -7,7 +7,9 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.CheckBox;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -164,37 +166,56 @@ public class AppShelfFragment extends Fragment {
             Toast.makeText(requireContext(), R.string.shelf_no_apps, Toast.LENGTH_SHORT).show();
             return;
         }
+        Set<Integer> ticked = new HashSet<>();
+        ListView list = new ListView(requireContext());
+        list.setDivider(null);
+        list.setAdapter(new BaseAdapter() {
+            @Override
+            public int getCount() {
+                return choices.size();
+            }
+
+            @Override
+            public Object getItem(int position) {
+                return choices.get(position);
+            }
+
+            @Override
+            public long getItemId(int position) {
+                return position;
+            }
+
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent) {
+                View row = convertView != null ? convertView : LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.shelf_pick_row, parent, false);
+                AppShelves.App app = choices.get(position);
+                ((ImageView) row.findViewById(R.id.shelfPickIcon)).setImageDrawable(app.icon);
+                ((TextView) row.findViewById(R.id.shelfPickName)).setText(app.label);
+                ((CheckBox) row.findViewById(R.id.shelfPickCheck)).setChecked(ticked.contains(position));
+                return row;
+            }
+        });
+        list.setOnItemClickListener((parent, view, position, id) -> {
+            if (!ticked.remove(position)) {
+                ticked.add(position);
+            }
+            ((CheckBox) view.findViewById(R.id.shelfPickCheck)).setChecked(ticked.contains(position));
+        });
         new MaterialAlertDialogBuilder(requireContext())
                 .setTitle(R.string.shelf_pick_title)
-                .setAdapter(new BaseAdapter() {
-                    @Override
-                    public int getCount() {
-                        return choices.size();
+                .setView(list)
+                .setPositiveButton(R.string.shelf_pick_ok, (dialog, which) -> {
+                    int before = apps.size();
+                    for (int position = 0; position < choices.size(); position++) {
+                        if (ticked.contains(position)) {
+                            apps.add(choices.get(position));
+                        }
                     }
-
-                    @Override
-                    public Object getItem(int position) {
-                        return choices.get(position);
+                    if (apps.size() > before) {
+                        adapter.notifyItemRangeInserted(before, apps.size() - before);
+                        save();
                     }
-
-                    @Override
-                    public long getItemId(int position) {
-                        return position;
-                    }
-
-                    @Override
-                    public View getView(int position, View convertView, ViewGroup parent) {
-                        View row = convertView != null ? convertView : LayoutInflater.from(parent.getContext())
-                                .inflate(R.layout.shelf_pick_row, parent, false);
-                        AppShelves.App app = choices.get(position);
-                        ((ImageView) row.findViewById(R.id.shelfPickIcon)).setImageDrawable(app.icon);
-                        ((TextView) row.findViewById(R.id.shelfPickName)).setText(app.label);
-                        return row;
-                    }
-                }, (dialog, which) -> {
-                    apps.add(choices.get(which));
-                    adapter.notifyItemInserted(apps.size() - 1);
-                    save();
                 })
                 .setNegativeButton(R.string.cancel_label, null)
                 .show();
