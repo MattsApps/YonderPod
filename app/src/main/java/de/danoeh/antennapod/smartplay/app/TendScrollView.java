@@ -16,8 +16,10 @@ public class TendScrollView extends NestedScrollView {
 
     private final int slop;
     private Runnable onPullDown;
+    private float startX;
     private float startY;
     private boolean pulling;
+    private boolean decided;
 
     public TendScrollView(@NonNull Context context) {
         this(context, null);
@@ -54,11 +56,22 @@ public class TendScrollView extends NestedScrollView {
     private boolean watch(MotionEvent ev) {
         switch (ev.getActionMasked()) {
             case MotionEvent.ACTION_DOWN:
+                startX = ev.getX();
                 startY = ev.getY();
                 pulling = false;
+                decided = false;
                 return false;
             case MotionEvent.ACTION_MOVE:
-                if (!pulling && onPullDown != null && getScrollY() == 0 && ev.getY() - startY > slop) {
+                if (decided || pulling || onPullDown == null) {
+                    return false;
+                }
+                float dy = ev.getY() - startY;
+                int direction = SwipeDirection.classify(ev.getX() - startX, dy, slop);
+                if (direction == SwipeDirection.UNDECIDED) {
+                    return false;
+                }
+                decided = true;
+                if (direction == SwipeDirection.VERTICAL && dy > 0 && getScrollY() == 0) {
                     pulling = true;
                     startY = ev.getY();
                     return true;
