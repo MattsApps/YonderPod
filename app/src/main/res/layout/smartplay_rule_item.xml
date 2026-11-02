@@ -15,7 +15,9 @@
         android:layout_height="wrap_content"
         android:fontFamily="@font/bricolage_extrabold"
         android:includeFontPadding="false"
+        android:gravity="center_horizontal"
         android:letterSpacing="-0.04"
+        android:lineSpacingMultiplier="0.82"
         android:textColor="?attr/colorPrimary"
         android:textSize="56sp" />
 

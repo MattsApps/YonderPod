@@ -694,8 +694,8 @@
     <string name="smartplay_included_in">Included in: %1$s</string>
     <string name="smartplay_not_included">Not in any Smart Play</string>
     <plurals name="smartplay_category_option">
-        <item quantity="one">Category: %1$s · %2$d show</item>
-        <item quantity="other">Category: %1$s · %2$d shows</item>
+        <item quantity="one">%1$s · %2$d show</item>
+        <item quantity="other">%1$s · %2$d shows</item>
     </plurals>
     <plurals name="smartplay_uncovered_shows">
         <item quantity="one">%1$d show isn\'t covered by any rule: %2$s</item>
@@ -1388,8 +1388,8 @@
         <item quantity="other">%d chapters</item>
     </plurals>
     <plurals name="smartplay_book_category_option">
-        <item quantity="one">Category: %1$s · %2$d book</item>
-        <item quantity="other">Category: %1$s · %2$d books</item>
+        <item quantity="one">%1$s · %2$d book</item>
+        <item quantity="other">%1$s · %2$d books</item>
     </plurals>
     <string name="smartplay_books_not_in_all">Audiobooks and recorded radio shows aren\'t in All feeds. To add them, pick the book or show, or its category.</string>
     <string name="book_not_included">Not in any Smart Play. Books only play through rules that name them.</string>

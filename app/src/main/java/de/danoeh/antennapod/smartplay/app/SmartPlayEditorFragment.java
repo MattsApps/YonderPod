@@ -637,7 +637,7 @@ public class SmartPlayEditorFragment extends Fragment {
         List<String> labels = new ArrayList<>();
         List<Boolean> checkedList = new ArrayList<>();
         for (String category : allCategories) {
-            labels.add(getString(R.string.smartplay_category_label, category));
+            labels.add(category);
             checkedList.add(current.getCategories().contains(category));
         }
         for (Feed feed : feeds) {
@@ -808,6 +808,36 @@ public class SmartPlayEditorFragment extends Fragment {
             return getString(R.string.smartplay_unsubscribed_show, allFeedTitles.get(feedId));
         }
         return getString(R.string.smartplay_unknown_show);
+    }
+
+    private static String stacked(int number) {
+        String digits = String.valueOf(number);
+        StringBuilder text = new StringBuilder();
+        for (int i = 0; i < digits.length(); i++) {
+            if (i > 0) {
+                text.append('\n');
+            }
+            text.append(digits.charAt(i));
+        }
+        return text.toString();
+    }
+
+    private ArrayAdapter<String> sourceAdapter(List<String> labels) {
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(requireContext(),
+                R.layout.wildink_spinner_item, labels) {
+            @NonNull
+            @Override
+            public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+                TextView view = (TextView) super.getView(position, convertView, parent);
+                EpisodeSource source = sourceOptions.get(position).source;
+                if (source != null && source.getType() != EpisodeSource.Type.ALL_FEEDS) {
+                    view.setText(sourceShortName(source));
+                }
+                return view;
+            }
+        };
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        return adapter;
     }
 
     private ArrayAdapter<String> spinnerAdapter(List<String> labels) {
@@ -1089,7 +1119,7 @@ public class SmartPlayEditorFragment extends Fragment {
         @Override
         public void onBindViewHolder(@NonNull RuleHolder holder, int position) {
             RuleDraft draft = rules.get(position);
-            holder.number.setText(String.valueOf(position + 1));
+            holder.number.setText(stacked(position + 1));
             holder.title.setText(position == 0
                     ? R.string.smartplay_rule_head_start : R.string.smartplay_rule_head_then);
 
@@ -1100,7 +1130,7 @@ public class SmartPlayEditorFragment extends Fragment {
             if (draft.source.getType() == EpisodeSource.Type.ALL_FEEDS && !draft.exclusions.isEmpty()) {
                 labels.set(0, getString(R.string.smartplay_source_all_except, exclusionNames(draft.exclusions)));
             }
-            holder.source.setAdapter(spinnerAdapter(labels));
+            holder.source.setAdapter(sourceAdapter(labels));
             holder.source.setSelection(sourceIndex(draft.source), false);
             holder.source.setOnItemSelectedListener(new SimpleSelectionListener(selected -> {
                 if (sourceOptions.get(selected).source == null) {
