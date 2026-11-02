@@ -9,8 +9,11 @@ import android.os.Build;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
+import android.widget.PopupMenu;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -20,18 +23,18 @@ import androidx.core.graphics.ColorUtils;
 import androidx.core.widget.TextViewCompat;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.android.material.materialswitch.MaterialSwitch;
 
 import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.storage.preferences.UserPreferences;
-import de.danoeh.antennapod.ui.common.ColourOverride;
+import de.danoeh.antennapod.ui.common.CustomPalettes;
 import de.danoeh.antennapod.ui.common.Palette;
+import de.danoeh.antennapod.ui.common.ThemeUtils;
 import de.danoeh.antennapod.ui.widget.WidgetUpdaterWorker;
 
 public final class LookDialogs {
-    public interface KeyCallback {
-        void onChosen(String key);
-    }
+    public static final int EVERYWHERE = -1;
+    private static final String[] WORLD_DEFAULTS = {"plum", "charcoal", "night"};
+    private static final String NONE = "";
 
     private LookDialogs() {
     }
@@ -41,29 +44,75 @@ public final class LookDialogs {
         activity.recreate();
     }
 
-    public static View swatchRow(Context context, @Nullable String label, String selected, KeyCallback callback) {
+    public static void choose(Activity activity, int target, boolean night, String key) {
+        if (night) {
+            UserPreferences.setWorldNightPalette(target == EVERYWHERE ? Palette.PODCASTS : target, key);
+        } else if (target == EVERYWHERE) {
+            UserPreferences.setPalette(key);
+        } else {
+            UserPreferences.setWorldPalette(target, key);
+        }
+        changed(activity);
+    }
+
+    public static View strip(Activity activity, @Nullable String label, String selected, int target,
+                             boolean night) {
+        Context context = activity;
         float density = context.getResources().getDisplayMetrics().density;
-        LinearLayout row = new LinearLayout(context);
-        row.setOrientation(LinearLayout.HORIZONTAL);
-        row.setGravity(Gravity.CENTER_VERTICAL);
-        row.setPadding(0, (int) (10 * density), 0, (int) (4 * density));
+        LinearLayout column = new LinearLayout(context);
+        column.setOrientation(LinearLayout.VERTICAL);
+        column.setPadding(0, (int) (10 * density), 0, (int) (2 * density));
         if (label != null) {
             TextView name = new TextView(context);
             TextViewCompat.setTextAppearance(name, R.style.TextAppearance_WildInk_DetailStrong);
             name.setText(label);
-            row.addView(name, new LinearLayout.LayoutParams((int) (52 * density),
-                    LinearLayout.LayoutParams.WRAP_CONTENT));
+            column.addView(name);
         }
-        Palette current = Palette.of(selected);
+        HorizontalScrollView scroller = new HorizontalScrollView(context);
+        scroller.setHorizontalScrollBarEnabled(false);
+        LinearLayout row = new LinearLayout(context);
+        row.setOrientation(LinearLayout.HORIZONTAL);
+        row.setPadding(0, (int) (6 * density), 0, (int) (6 * density));
+        if (night) {
+            row.addView(swatch(context, null, NONE.equals(selected), context.getString(R.string.look_night_none),
+                    "–", v -> choose(activity, target, true, NONE), null));
+        }
         for (String key : Palette.keys()) {
             Palette palette = Palette.of(key);
-            boolean isSelected = key.equals(current.key);
-            FrameLayout swatch = new FrameLayout(context);
-            GradientDrawable ground = new GradientDrawable();
-            ground.setShape(GradientDrawable.OVAL);
+            boolean isSelected = key.equals(selected);
+            String description = palette.label != null ? palette.label : context.getString(palette.name);
+            View.OnLongClickListener longClick = CustomPalettes.isCustom(key)
+                    ? v -> {
+                        customMenu(activity, v, key);
+                        return true;
+                    } : null;
+            row.addView(swatch(context, palette, isSelected, description, "",
+                    v -> choose(activity, target, night, key), longClick));
+        }
+        if (Palette.customSupported()) {
+            row.addView(swatch(context, null, false, context.getString(R.string.look_new), "+",
+                    v -> editor(activity, null, target, night, 0xFF1C1B19, 0xFFFF5A2B), null));
+        }
+        scroller.addView(row);
+        column.addView(scroller);
+        return column;
+    }
+
+    private static View swatch(Context context, @Nullable Palette palette, boolean selected, String description,
+                               String symbol, View.OnClickListener onClick,
+                               @Nullable View.OnLongClickListener onLongClick) {
+        float density = context.getResources().getDisplayMetrics().density;
+        LinearLayout holder = new LinearLayout(context);
+        holder.setOrientation(LinearLayout.VERTICAL);
+        holder.setGravity(Gravity.CENTER_HORIZONTAL);
+        FrameLayout circle = new FrameLayout(context);
+        GradientDrawable ground = new GradientDrawable();
+        ground.setShape(GradientDrawable.OVAL);
+        int secondary = colourOf(context, android.R.attr.textColorSecondary);
+        if (palette != null) {
             ground.setColor(palette.background);
-            ground.setStroke((int) ((isSelected ? 3 : 2) * density), isSelected ? palette.accent : palette.raised);
-            swatch.setBackground(ground);
+            ground.setStroke((int) ((selected ? 4 : 2) * density),
+                    selected ? colourOf(context, android.R.attr.textColorPrimary) : palette.raised);
             View dot = new View(context);
             GradientDrawable accent = new GradientDrawable();
             accent.setShape(GradientDrawable.OVAL);
@@ -72,66 +121,150 @@ public final class LookDialogs {
             FrameLayout.LayoutParams dotParams = new FrameLayout.LayoutParams((int) (12 * density),
                     (int) (12 * density));
             dotParams.gravity = Gravity.CENTER;
-            swatch.addView(dot, dotParams);
-            swatch.setContentDescription(context.getString(R.string.tune_palette_label,
-                    context.getString(palette.name)));
-            swatch.setSelected(isSelected);
-            swatch.setOnClickListener(v -> callback.onChosen(key));
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams((int) (36 * density),
-                    (int) (36 * density));
-            params.setMarginEnd((int) (8 * density));
-            row.addView(swatch, params);
+            circle.addView(dot, dotParams);
+        } else {
+            ground.setColor(0x00000000);
+            ground.setStroke((int) ((selected ? 3 : 2) * density),
+                    selected ? colourOf(context, R.attr.colorPrimary) : secondary);
+            TextView plus = new TextView(context);
+            plus.setText(symbol);
+            plus.setTextColor(secondary);
+            plus.setTextSize(18);
+            plus.setGravity(Gravity.CENTER);
+            circle.addView(plus, new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,
+                    FrameLayout.LayoutParams.MATCH_PARENT));
         }
-        return row;
+        circle.setBackground(ground);
+        circle.setContentDescription(description);
+        circle.setSelected(selected);
+        circle.setOnClickListener(onClick);
+        if (onLongClick != null) {
+            circle.setOnLongClickListener(onLongClick);
+        }
+        holder.addView(circle, new LinearLayout.LayoutParams((int) (40 * density), (int) (40 * density)));
+        if (palette == null || palette.label != null) {
+            TextView name = new TextView(context);
+            name.setText(palette != null ? palette.label : description);
+            name.setTextSize(11);
+            name.setTextColor(secondary);
+            name.setMaxLines(1);
+            name.setGravity(Gravity.CENTER);
+            holder.addView(name, new LinearLayout.LayoutParams((int) (56 * density),
+                    LinearLayout.LayoutParams.WRAP_CONTENT));
+        }
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT);
+        params.setMarginEnd((int) (4 * density));
+        holder.setMinimumWidth((int) (52 * density));
+        holder.setLayoutParams(params);
+        return holder;
     }
 
-    public static void dayNight(Activity activity) {
-        float density = activity.getResources().getDisplayMetrics().density;
-        LinearLayout content = new LinearLayout(activity);
-        content.setOrientation(LinearLayout.VERTICAL);
-        content.setPadding((int) (24 * density), (int) (8 * density), (int) (24 * density), 0);
-        MaterialSwitch enabled = new MaterialSwitch(activity);
-        enabled.setText(R.string.look_day_night_switch);
-        enabled.setChecked(UserPreferences.isPaletteDayNight());
-        content.addView(enabled);
-        String[] chosen = {UserPreferences.getDayPalette(), UserPreferences.getNightPalette()};
-        LinearLayout rows = new LinearLayout(activity);
-        rows.setOrientation(LinearLayout.VERTICAL);
-        content.addView(rows);
-        Runnable[] fill = new Runnable[1];
-        fill[0] = () -> {
-            rows.removeAllViews();
-            rows.addView(swatchRow(activity, activity.getString(R.string.look_day), chosen[0], key -> {
-                chosen[0] = key;
-                fill[0].run();
-            }));
-            rows.addView(swatchRow(activity, activity.getString(R.string.look_night), chosen[1], key -> {
-                chosen[1] = key;
-                fill[0].run();
-            }));
-        };
-        fill[0].run();
+    private static int colourOf(Context context, int attr) {
+        return ThemeUtils.getColorFromAttr(context, attr);
+    }
+
+    private static void customMenu(Activity activity, View anchor, String key) {
+        CustomPalettes.Entry entry = CustomPalettes.get(key);
+        if (entry == null) {
+            return;
+        }
+        PopupMenu menu = new PopupMenu(activity, anchor);
+        menu.getMenu().add(0, 0, 0, R.string.look_edit);
+        menu.getMenu().add(0, 1, 1, R.string.look_rename);
+        menu.getMenu().add(0, 2, 2, R.string.look_delete);
+        menu.setOnMenuItemClickListener(item -> {
+            if (item.getItemId() == 0) {
+                editor(activity, key, EVERYWHERE, false, entry.background, entry.accent);
+            } else if (item.getItemId() == 1) {
+                rename(activity, entry);
+            } else {
+                confirmDelete(activity, entry);
+            }
+            return true;
+        });
+        menu.show();
+    }
+
+    private static void rename(Activity activity, CustomPalettes.Entry entry) {
+        EditText name = new EditText(activity);
+        name.setText(entry.name);
+        name.setSelectAllOnFocus(true);
+        FrameLayout frame = new FrameLayout(activity);
+        int padding = (int) (24 * activity.getResources().getDisplayMetrics().density);
+        frame.setPadding(padding, 0, padding, 0);
+        frame.addView(name);
         new MaterialAlertDialogBuilder(activity)
-                .setTitle(R.string.look_day_night)
-                .setView(content)
+                .setTitle(R.string.look_rename)
+                .setView(frame)
                 .setPositiveButton(R.string.confirm_label, (dialog, which) -> {
-                    UserPreferences.setPaletteDayNight(enabled.isChecked());
-                    UserPreferences.setDayNightPalettes(chosen[0], chosen[1]);
+                    String chosen = name.getText().toString().trim();
+                    CustomPalettes.update(entry.key(), chosen.isEmpty() ? entry.name : chosen,
+                            entry.background, entry.accent);
                     changed(activity);
                 })
                 .setNegativeButton(R.string.cancel_label, null)
                 .show();
     }
 
-    public static void wallpaper(Activity activity) {
+    private static void confirmDelete(Activity activity, CustomPalettes.Entry entry) {
+        new MaterialAlertDialogBuilder(activity)
+                .setTitle(activity.getString(R.string.look_delete_question, entry.name))
+                .setMessage(R.string.look_delete_message)
+                .setPositiveButton(R.string.look_delete, (dialog, which) -> {
+                    String key = entry.key();
+                    CustomPalettes.delete(key);
+                    if (key.equals(UserPreferences.getPalette())) {
+                        UserPreferences.setPalette("charcoal");
+                    }
+                    for (int world = Palette.BOOKS; world <= Palette.RADIO; world++) {
+                        if (key.equals(UserPreferences.getWorldPalette(world))) {
+                            UserPreferences.setWorldPalette(world, WORLD_DEFAULTS[world]);
+                        }
+                        if (key.equals(UserPreferences.getWorldNightPalette(world))) {
+                            UserPreferences.setWorldNightPalette(world, NONE);
+                        }
+                    }
+                    changed(activity);
+                })
+                .setNegativeButton(R.string.cancel_label, null)
+                .show();
+    }
+
+    public static void nightPalettes(Activity activity) {
+        float density = activity.getResources().getDisplayMetrics().density;
+        LinearLayout content = new LinearLayout(activity);
+        content.setOrientation(LinearLayout.VERTICAL);
+        content.setPadding((int) (24 * density), 0, (int) (24 * density), 0);
+        TextView hint = new TextView(activity);
+        TextViewCompat.setTextAppearance(hint, R.style.TextAppearance_WildInk_Detail);
+        hint.setText(R.string.look_night_hint);
+        content.addView(hint);
+        if (UserPreferences.isPaletteEverywhere()) {
+            content.addView(strip(activity, null, Palette.nightKey(Palette.PODCASTS), EVERYWHERE, true));
+        } else {
+            int[] labels = {R.string.world_short_books, R.string.world_short_podcasts, R.string.world_short_radio};
+            for (int world = Palette.BOOKS; world <= Palette.RADIO; world++) {
+                content.addView(strip(activity, activity.getString(labels[world]), Palette.nightKey(world), world,
+                        true));
+            }
+        }
+        new MaterialAlertDialogBuilder(activity)
+                .setTitle(R.string.look_night)
+                .setView(content)
+                .setPositiveButton(R.string.confirm_label, null)
+                .show();
+    }
+
+    public static void wallpaper(Activity activity, int target) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O_MR1) {
             Toast.makeText(activity, R.string.look_wallpaper_unavailable, Toast.LENGTH_LONG).show();
             return;
         }
-        WallpaperColors colours = null;
+        WallpaperColors colours;
         try {
             colours = WallpaperManager.getInstance(activity).getWallpaperColors(WallpaperManager.FLAG_SYSTEM);
-        } catch (Exception ignored) {
+        } catch (Exception e) {
             colours = null;
         }
         if (colours == null) {
@@ -149,13 +282,21 @@ public final class LookDialogs {
             ColorUtils.colorToHSL(background, hsl);
             accent = ColorUtils.HSLToColor(new float[] {(hsl[0] + 180) % 360, 0.85f, 0.55f});
         }
-        custom(activity, background, accent);
+        editor(activity, null, target, false, background, accent);
     }
 
-    public static void custom(Activity activity, int startBackground, int startAccent) {
+    public static void editor(Activity activity, @Nullable String existingKey, int target, boolean night,
+                              int startBackground, int startAccent) {
         View content = LayoutInflater.from(activity).inflate(R.layout.look_custom_dialog, null);
         int[] background = {startBackground | 0xFF000000};
         int[] accent = {startAccent | 0xFF000000};
+        EditText name = content.findViewById(R.id.customName);
+        CustomPalettes.Entry existing = existingKey != null ? CustomPalettes.get(existingKey) : null;
+        name.setText(existing != null ? existing.name
+                : CustomPalettes.suggestName(activity.getString(R.string.look_custom_name_pattern)));
+        int world = target == EVERYWHERE ? Palette.PODCASTS : target;
+        int[] worldNames = {R.string.world_books, R.string.world_podcasts, R.string.world_radio};
+        ((TextView) content.findViewById(R.id.customPreviewWorld)).setText(worldNames[world]);
         Runnable preview = () -> showPreview(activity, content, background[0], accent[0]);
         bindSliders(content, R.id.customBackgroundHue, R.id.customBackgroundSaturation,
                 R.id.customBackgroundLightness, background, preview);
@@ -163,23 +304,26 @@ public final class LookDialogs {
                 R.id.customAccentLightness, accent, preview);
         preview.run();
         new MaterialAlertDialogBuilder(activity)
-                .setTitle(R.string.look_custom)
+                .setTitle(existing != null ? R.string.look_edit_custom : R.string.look_new_custom)
                 .setView(content)
-                .setPositiveButton(R.string.look_custom_save, (dialog, which) -> {
-                    UserPreferences.setCustomPalette(background[0], accent[0]);
-                    if (UserPreferences.isPalettePerWorld()) {
-                        UserPreferences.setWorldPalette(Palette.PODCASTS, Palette.CUSTOM);
-                    } else {
-                        UserPreferences.setPalette(Palette.CUSTOM);
-                    }
-                    changed(activity);
-                })
+                .setPositiveButton(existing != null ? R.string.look_custom_save_edit : R.string.look_custom_save,
+                        (dialog, which) -> {
+                            String chosenName = name.getText().toString().trim();
+                            if (existing != null) {
+                                CustomPalettes.update(existing.key(),
+                                        chosenName.isEmpty() ? existing.name : chosenName,
+                                        background[0], accent[0]);
+                                changed(activity);
+                            } else {
+                                String key = CustomPalettes.add(chosenName.isEmpty()
+                                        ? CustomPalettes.suggestName(
+                                                activity.getString(R.string.look_custom_name_pattern))
+                                        : chosenName, background[0], accent[0]);
+                                choose(activity, target, night, key);
+                            }
+                        })
                 .setNegativeButton(R.string.cancel_label, null)
                 .show();
-    }
-
-    public static boolean customSupported() {
-        return ColourOverride.isSupported();
     }
 
     private static void bindSliders(View content, int hueId, int saturationId, int lightnessId, int[] colour,
@@ -217,8 +361,9 @@ public final class LookDialogs {
     }
 
     private static void showPreview(Context context, View content, int chosenBackground, int chosenAccent) {
-        Palette palette = Palette.custom(chosenBackground, chosenAccent);
+        Palette palette = Palette.custom("", "", chosenBackground, chosenAccent, 0);
         content.findViewById(R.id.customPreview).setBackgroundColor(palette.background);
+        ((TextView) content.findViewById(R.id.customPreviewWorld)).setTextColor(palette.accent);
         ((TextView) content.findViewById(R.id.customPreviewTitle)).setTextColor(palette.text);
         ((TextView) content.findViewById(R.id.customPreviewDetail)).setTextColor(palette.secondary);
         GradientDrawable circle = new GradientDrawable();
@@ -227,10 +372,8 @@ public final class LookDialogs {
         TextView play = content.findViewById(R.id.customPreviewPlay);
         play.setBackground(circle);
         play.setTextColor(palette.onAccent);
-        TextView block = content.findViewById(R.id.customPreviewBlock);
-        block.setBackgroundColor(palette.raised);
-        block.setTextColor(palette.text);
         content.findViewById(R.id.customPreviewBar).setBackgroundColor(palette.text);
+        content.findViewById(R.id.customPreviewHandle).setBackgroundColor(palette.accent);
         TextView note = content.findViewById(R.id.customNudged);
         boolean nudged = palette.background != (chosenBackground | 0xFF000000)
                 || palette.accent != (chosenAccent | 0xFF000000);

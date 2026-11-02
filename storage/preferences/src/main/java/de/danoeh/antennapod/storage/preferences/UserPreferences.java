@@ -50,9 +50,9 @@ public abstract class UserPreferences {
     public static final String PREF_PALETTE = "prefPalette";
     private static final String PREF_PALETTE_PER_WORLD = "prefPalettePerWorld";
     private static final String PREF_PALETTE_WORLD = "prefPaletteWorld";
-    private static final String PREF_PALETTE_DAY_NIGHT = "prefPaletteDayNight";
-    private static final String PREF_PALETTE_DAY = "prefPaletteDay";
-    private static final String PREF_PALETTE_NIGHT = "prefPaletteNight";
+    private static final String PREF_PALETTE_EVERYWHERE = "prefPaletteEverywhere";
+    private static final String PREF_PALETTE_NIGHT_WORLD = "prefPaletteNightWorld";
+    public static final String PREF_CUSTOM_PALETTES = "prefCustomPalettes";
     private static final String PREF_CUSTOM_BACKGROUND = "prefCustomBackground";
     private static final String PREF_CUSTOM_ACCENT = "prefCustomAccent";
     public static final String PREF_HIDDEN_DRAWER_ITEMS = "prefHiddenDrawerItems";
@@ -202,12 +202,12 @@ public abstract class UserPreferences {
         prefs.edit().putString(PREF_PALETTE, palette).apply();
     }
 
-    public static boolean isPalettePerWorld() {
-        return prefs.getBoolean(PREF_PALETTE_PER_WORLD, true);
+    public static boolean isPaletteEverywhere() {
+        return prefs.getBoolean(PREF_PALETTE_EVERYWHERE, !prefs.getBoolean(PREF_PALETTE_PER_WORLD, true));
     }
 
-    public static void setPalettePerWorld(boolean enabled) {
-        prefs.edit().putBoolean(PREF_PALETTE_PER_WORLD, enabled).apply();
+    public static void setPaletteEverywhere(boolean everywhere) {
+        prefs.edit().putBoolean(PREF_PALETTE_EVERYWHERE, everywhere).apply();
     }
 
     public static String getWorldPalette(int world) {
@@ -219,40 +219,36 @@ public abstract class UserPreferences {
         prefs.edit().putString(PREF_PALETTE_WORLD + world, palette).apply();
     }
 
-    public static boolean isPaletteDayNight() {
-        return prefs.getBoolean(PREF_PALETTE_DAY_NIGHT, false);
+    public static String getWorldNightPalette(int world) {
+        return prefs.getString(PREF_PALETTE_NIGHT_WORLD + world, "");
     }
 
-    public static void setPaletteDayNight(boolean enabled) {
-        prefs.edit().putBoolean(PREF_PALETTE_DAY_NIGHT, enabled).apply();
+    public static void setWorldNightPalette(int world, String palette) {
+        prefs.edit().putString(PREF_PALETTE_NIGHT_WORLD + world, palette).apply();
     }
 
-    public static String getDayPalette() {
-        return prefs.getString(PREF_PALETTE_DAY, "paper");
+    public static String getCustomPalettes() {
+        return prefs.getString(PREF_CUSTOM_PALETTES, "");
     }
 
-    public static String getNightPalette() {
-        return prefs.getString(PREF_PALETTE_NIGHT, "charcoal");
+    public static void setCustomPalettes(String json) {
+        prefs.edit().putString(PREF_CUSTOM_PALETTES, json).apply();
     }
 
-    public static void setDayNightPalettes(String day, String night) {
-        prefs.edit().putString(PREF_PALETTE_DAY, day).putString(PREF_PALETTE_NIGHT, night).apply();
-    }
-
-    public static boolean hasCustomPalette() {
+    public static boolean hasOldCustomPalette() {
         return prefs.contains(PREF_CUSTOM_BACKGROUND);
     }
 
-    public static int getCustomBackground() {
+    public static int getOldCustomBackground() {
         return prefs.getInt(PREF_CUSTOM_BACKGROUND, 0xFF1C1B19);
     }
 
-    public static int getCustomAccent() {
+    public static int getOldCustomAccent() {
         return prefs.getInt(PREF_CUSTOM_ACCENT, 0xFFFF5A2B);
     }
 
-    public static void setCustomPalette(int background, int accent) {
-        prefs.edit().putInt(PREF_CUSTOM_BACKGROUND, background).putInt(PREF_CUSTOM_ACCENT, accent).apply();
+    public static void clearOldCustomPalette() {
+        prefs.edit().remove(PREF_CUSTOM_BACKGROUND).remove(PREF_CUSTOM_ACCENT).apply();
     }
 
     public static boolean isParentalControlPasswordSet() {

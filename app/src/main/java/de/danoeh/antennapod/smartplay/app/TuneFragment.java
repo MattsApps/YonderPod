@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.widget.TextViewCompat;
 import androidx.fragment.app.Fragment;
 
 import de.danoeh.antennapod.BuildConfig;
@@ -173,37 +174,35 @@ public class TuneFragment extends Fragment {
     }
 
     private void look(LinearLayout sections) {
-        Context context = sections.getContext();
-        boolean perWorld = UserPreferences.isPalettePerWorld();
-        row(sections, R.string.look_per_world, getString(perWorld ? R.string.look_on : R.string.tune_off), () -> {
-            UserPreferences.setPalettePerWorld(!perWorld);
+        boolean everywhere = UserPreferences.isPaletteEverywhere();
+        row(sections, R.string.look_everywhere, getString(everywhere ? R.string.look_on : R.string.tune_off), () -> {
+            UserPreferences.setPaletteEverywhere(!everywhere);
             LookDialogs.changed(requireActivity());
         });
-        if (perWorld) {
+        if (everywhere) {
+            sections.addView(LookDialogs.strip(requireActivity(), null, UserPreferences.getPalette(),
+                    LookDialogs.EVERYWHERE, false));
+        } else {
             int[] labels = {R.string.world_short_books, R.string.world_short_podcasts, R.string.world_short_radio};
             for (int world = Palette.BOOKS; world <= Palette.RADIO; world++) {
-                int target = world;
-                sections.addView(LookDialogs.swatchRow(context, getString(labels[world]),
-                        UserPreferences.getWorldPalette(world), key -> {
-                            UserPreferences.setWorldPalette(target, key);
-                            LookDialogs.changed(requireActivity());
-                        }));
+                sections.addView(LookDialogs.strip(requireActivity(), getString(labels[world]),
+                        UserPreferences.getWorldPalette(world), world, false));
             }
-        } else {
-            sections.addView(LookDialogs.swatchRow(context, null, UserPreferences.getPalette(), key -> {
-                UserPreferences.setPalette(key);
-                LookDialogs.changed(requireActivity());
-            }));
         }
-        String dayNight = UserPreferences.isPaletteDayNight()
-                ? getString(R.string.look_day_night_value, getString(Palette.of(UserPreferences.getDayPalette()).name),
-                        getString(Palette.of(UserPreferences.getNightPalette()).name))
-                : getString(R.string.tune_off);
-        row(sections, R.string.look_day_night, dayNight, () -> LookDialogs.dayNight(requireActivity()));
-        if (LookDialogs.customSupported()) {
-            row(sections, R.string.look_custom, "", () -> LookDialogs.custom(requireActivity(),
-                    UserPreferences.getCustomBackground(), UserPreferences.getCustomAccent()));
-            row(sections, R.string.look_wallpaper, "", () -> LookDialogs.wallpaper(requireActivity()));
+        TextView advanced = new TextView(sections.getContext());
+        TextViewCompat.setTextAppearance(advanced, R.style.TextAppearance_WildInk_Label);
+        advanced.setText(R.string.look_advanced);
+        advanced.setPadding(0, (int) (18 * getResources().getDisplayMetrics().density), 0, 0);
+        sections.addView(advanced);
+        boolean anyNight = false;
+        for (int world = Palette.BOOKS; world <= Palette.RADIO; world++) {
+            anyNight |= !Palette.nightKey(world).isEmpty();
+        }
+        row(sections, R.string.look_night, getString(anyNight ? R.string.look_on : R.string.tune_off),
+                () -> LookDialogs.nightPalettes(requireActivity()));
+        if (Palette.customSupported()) {
+            row(sections, R.string.look_wallpaper, "", () -> LookDialogs.wallpaper(requireActivity(),
+                    everywhere ? LookDialogs.EVERYWHERE : Palette.PODCASTS));
         }
     }
 }
