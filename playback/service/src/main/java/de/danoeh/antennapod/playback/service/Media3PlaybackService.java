@@ -65,6 +65,7 @@ import de.danoeh.antennapod.playback.service.internal.ExoPlayerUtils;
 import de.danoeh.antennapod.playback.service.internal.MediaLibrarySessionCallback;
 import de.danoeh.antennapod.playback.service.internal.PlayableUtils;
 import de.danoeh.antennapod.playback.service.internal.SkipUtils;
+import de.danoeh.antennapod.playback.service.internal.AudioFocusPolicy;
 import de.danoeh.antennapod.playback.service.internal.ButtonPressHandler;
 import de.danoeh.antennapod.playback.service.internal.SleepTimer;
 import de.danoeh.antennapod.playback.service.internal.ClockSleepTimer;
@@ -204,10 +205,18 @@ public class Media3PlaybackService extends MediaLibraryService {
                             seekTo(startPosition);
                         }
                     }
-                    applyAudioAttributes();
                     startFadeIn();
                 }
+                applyAudioAttributes();
                 super.play();
+            }
+
+            @Override
+            public void setPlayWhenReady(boolean playWhenReady) {
+                if (AudioFocusPolicy.holdsFocus(playWhenReady)) {
+                    applyAudioAttributes();
+                }
+                super.setPlayWhenReady(playWhenReady);
             }
 
             @Override
@@ -368,9 +377,15 @@ public class Media3PlaybackService extends MediaLibraryService {
                     return true;
                 }
             } else if (keyEvent != null && source == null
-                    && (keyEvent.getDownTime() > 0 || keyEvent.getEventTime() > 0)
-                    && buttonPressHandler.onKeyEvent(keyEvent)) {
-                return true;
+                    && (keyEvent.getDownTime() > 0 || keyEvent.getEventTime() > 0)) {
+                if (!AudioFocusPolicy.takesButtons(player.getPlayWhenReady(), isMusicActive())) {
+                    Log.d(TAG, "Media button ignored, another app is playing: "
+                            + KeyEvent.keyCodeToString(keyEvent.getKeyCode()));
+                    return true;
+                }
+                if (buttonPressHandler.onKeyEvent(keyEvent)) {
+                    return true;
+                }
             }
             return super.onMediaButtonEvent(session, controllerInfo, intent);
         }
@@ -382,6 +397,8 @@ public class Media3PlaybackService extends MediaLibraryService {
 
         @Override
         public void onPlaybackSuppressionReasonChanged(int playbackSuppressionReason) {
+            Log.d(TAG, "Audio focus: suppression " + playbackSuppressionReason
+                    + ", playWhenReady " + player.getPlayWhenReady());
             if (playbackSuppressionReason
                     == Player.PLAYBACK_SUPPRESSION_REASON_TRANSIENT_AUDIO_FOCUS_LOSS) {
                 wasTemporarilySuspended = true;
@@ -393,8 +410,10 @@ public class Media3PlaybackService extends MediaLibraryService {
                 long away = System.currentTimeMillis() - suppressionStartedAt;
                 long back = Math.max(ControlsPreferences.getInterruptionBackSeconds() * 1000L,
                         ControlsPreferences.rewindMillisAfter(away));
-                if (back > 0 && savedPosition > 0) {
-                    player.seekTo(Math.max(0, savedPosition - back));
+                long target = AudioFocusPolicy.seekAfterInterruption(true, player.getPlayWhenReady(),
+                        savedPosition, back);
+                if (target != AudioFocusPolicy.NO_SEEK) {
+                    player.seekTo(target);
                 }
             } else {
                 wasTemporarilySuspended = false;
@@ -434,7 +453,14 @@ public class Media3PlaybackService extends MediaLibraryService {
 
         @Override
         public void onPlayWhenReadyChanged(boolean playWhenReady, int reason) {
-            pausedByDisconnect = !playWhenReady && reason == Player.PLAY_WHEN_READY_CHANGE_REASON_AUDIO_BECOMING_NOISY;
+            Log.d(TAG, "Audio focus: playWhenReady " + playWhenReady + ", reason " + reason);
+            pausedByDisconnect = AudioFocusPolicy.pausedByDisconnect(playWhenReady,
+                    reason == Player.PLAY_WHEN_READY_CHANGE_REASON_AUDIO_BECOMING_NOISY);
+            if (AudioFocusPolicy.holdsFocus(playWhenReady)) {
+                applyAudioAttributes();
+            } else {
+                releaseAudioFocus();
+            }
             PlaybackService.isRunning = !Util.shouldShowPlayButton(player);
             updatePlaybackPreferences();
         }
@@ -1138,6 +1164,16 @@ public class Media3PlaybackService extends MediaLibraryService {
                 .build(), true);
     }
 
+    @OptIn(markerClass = UnstableApi.class)
+    private void releaseAudioFocus() {
+        exoPlayer.setAudioAttributes(exoPlayer.getAudioAttributes(), false);
+    }
+
+    private boolean isMusicActive() {
+        AudioManager audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
+        return audioManager != null && audioManager.isMusicActive();
+    }
+
     private void startFadeIn() {
         fadeInHandler.removeCallbacksAndMessages(null);
         if (!ControlsPreferences.fadeIn() || (sleepTimer != null && sleepTimer.isActive()
@@ -1202,7 +1238,8 @@ public class Media3PlaybackService extends MediaLibraryService {
         boolean allowed = ControlsPreferences.RESUME_ANY.equals(mode)
                 || (ControlsPreferences.RESUME_CAR.equals(mode) && bluetooth
                     && ControlsPreferences.getCarDevices().contains(name));
-        if (allowed && pausedByDisconnect && player != null && !player.getPlayWhenReady() && currentPlayable != null) {
+        if (player != null && AudioFocusPolicy.resumesOnReconnect(allowed, pausedByDisconnect,
+                player.getPlayWhenReady(), currentPlayable != null, isMusicActive())) {
             pausedByDisconnect = false;
             player.play();
         }

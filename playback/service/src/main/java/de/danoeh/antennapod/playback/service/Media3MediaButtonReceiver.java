@@ -3,12 +3,14 @@ package de.danoeh.antennapod.playback.service;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.media.AudioManager;
 import android.util.Log;
 import android.view.KeyEvent;
 import androidx.annotation.Nullable;
 import androidx.annotation.OptIn;
 import androidx.media3.common.util.UnstableApi;
 import androidx.media3.session.MediaButtonReceiver;
+import de.danoeh.antennapod.playback.service.internal.AudioFocusPolicy;
 import de.danoeh.antennapod.storage.database.DBReader;
 import de.danoeh.antennapod.storage.preferences.PlaybackPreferences;
 import io.reactivex.rxjava3.core.Single;
@@ -37,6 +39,12 @@ public class Media3MediaButtonReceiver extends MediaButtonReceiver {
             } catch (IllegalStateException e) {
                 Log.e(TAG, "Unable to start service", e);
             }
+            return;
+        }
+
+        AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+        if (audioManager != null && !AudioFocusPolicy.resumesFromStopped(audioManager.isMusicActive())) {
+            Log.d(TAG, "Media button ignored, another app is playing");
             return;
         }
 
