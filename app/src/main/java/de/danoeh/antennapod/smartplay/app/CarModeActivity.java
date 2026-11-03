@@ -142,7 +142,8 @@ public class CarModeActivity extends AppCompatActivity {
             return;
         }
         progress.setProgress(duration > 0 ? (int) (1000L * position / duration) : 0);
-        time.setText(Converter.getDurationStringLong(position) + " / " + Converter.getDurationStringLong(duration));
+        time.setText(getString(R.string.position_of_duration, Converter.getDurationStringLong(position),
+                Converter.getDurationStringLong(duration)));
     }
 
     private void updatePlayButton() {

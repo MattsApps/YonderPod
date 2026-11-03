@@ -32,7 +32,7 @@
         android:layout_marginStart="12dp"
         android:fontFamily="@font/bricolage_extrabold"
         android:importantForAccessibility="no"
-        android:text="›"
+        android:text="@string/symbol_more"
         android:textColor="?android:attr/textColorSecondary"
         android:textSize="17sp" />
 

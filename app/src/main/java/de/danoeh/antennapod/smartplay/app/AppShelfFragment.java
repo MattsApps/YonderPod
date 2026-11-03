@@ -146,7 +146,7 @@ public class AppShelfFragment extends Fragment {
     private void showHint() {
         String text = getString(right ? R.string.shelf_right_hint : R.string.shelf_left_hint);
         if (apps.size() == 1) {
-            text += " " + getString(R.string.shelf_one_hint);
+            text = getString(R.string.two_sentences, text, getString(R.string.shelf_one_hint));
         }
         hint.setText(text);
     }

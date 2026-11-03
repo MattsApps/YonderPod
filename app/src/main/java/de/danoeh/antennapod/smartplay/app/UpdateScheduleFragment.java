@@ -112,7 +112,8 @@ public class UpdateScheduleFragment extends Fragment {
 
     private void updateStatus() {
         Context context = requireContext();
-        disposables.add(Single.fromCallable(() -> ScheduleText.updated(context) + " · " + ScheduleText.next(context))
+        disposables.add(Single.fromCallable(() -> context.getString(R.string.detail_joined,
+                ScheduleText.updated(context), ScheduleText.next(context)))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(text -> ((TextView) root.findViewById(R.id.schedule_status)).setText(text),

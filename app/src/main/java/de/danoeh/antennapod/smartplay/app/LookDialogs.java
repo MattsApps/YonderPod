@@ -75,7 +75,7 @@ public final class LookDialogs {
         row.setPadding(0, (int) (6 * density), 0, (int) (6 * density));
         if (night) {
             row.addView(swatch(context, null, NONE.equals(selected), context.getString(R.string.look_night_none),
-                    "–", v -> choose(activity, target, true, NONE), null));
+                    context.getString(R.string.symbol_none), v -> choose(activity, target, true, NONE), null));
         }
         for (String key : Palette.keys()) {
             Palette palette = Palette.of(key);
@@ -90,7 +90,8 @@ public final class LookDialogs {
                     v -> choose(activity, target, night, key), longClick));
         }
         if (Palette.customSupported()) {
-            row.addView(swatch(context, null, false, context.getString(R.string.look_new), "+",
+            row.addView(swatch(context, null, false, context.getString(R.string.look_new),
+                    context.getString(R.string.symbol_add),
                     v -> editor(activity, null, target, night, 0xFF1C1B19, 0xFFFF5A2B), null));
         }
         scroller.addView(row);

@@ -1,8 +1,12 @@
 package de.danoeh.antennapod.smartplay.app;
 
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,11 +16,14 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.os.ConfigurationCompat;
 import androidx.core.widget.TextViewCompat;
 import androidx.fragment.app.Fragment;
 
 import java.util.List;
+import java.util.Locale;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import de.danoeh.antennapod.BuildConfig;
 import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.smartplay.schedule.CategoryScheduleMode;
@@ -140,6 +147,7 @@ public class TuneFragment extends Fragment {
 
         heading(sections, R.string.tune_look);
         look(sections);
+        row(sections, R.string.tune_language, language(), this::openLanguage);
 
         heading(sections, R.string.tune_backup);
         row(sections, R.string.tune_import_export, "", () -> TendRows.open(this, new BackupFragment()));
@@ -152,6 +160,28 @@ public class TuneFragment extends Fragment {
         heading(sections, R.string.tune_about);
         row(sections, R.string.tune_about_app, BuildConfig.VERSION_NAME,
                 () -> TendRows.open(this, new AboutFragment()));
+    }
+
+    private String language() {
+        Locale locale = ConfigurationCompat.getLocales(getResources().getConfiguration()).get(0);
+        return locale == null ? "" : locale.getDisplayName(locale);
+    }
+
+    private void openLanguage() {
+        if (Build.VERSION.SDK_INT >= 33) {
+            try {
+                startActivity(new Intent(Settings.ACTION_APP_LOCALE_SETTINGS,
+                        Uri.fromParts("package", requireContext().getPackageName(), null)));
+                return;
+            } catch (ActivityNotFoundException e) {
+                Log.d(TAG, "No language setting for apps");
+            }
+        }
+        new MaterialAlertDialogBuilder(requireContext())
+                .setTitle(R.string.tune_language)
+                .setMessage(R.string.tune_language_older)
+                .setPositiveButton(android.R.string.ok, null)
+                .show();
     }
 
     private void openSchedule() {
@@ -196,7 +226,7 @@ public class TuneFragment extends Fragment {
             List<AppShelves.App> apps = AppShelves.installed(requireContext(), right);
             String value = apps.isEmpty() ? getString(R.string.worlds_edge_none)
                     : apps.size() == 1 ? apps.get(0).label.toString()
-                    : getString(R.string.shelf_count, apps.size());
+                    : getResources().getQuantityString(R.plurals.shelf_count, apps.size(), apps.size());
             row(sections, right ? R.string.worlds_right_edge : R.string.worlds_left_edge, value,
                     () -> TendRows.open(this, AppShelfFragment.newInstance(right)));
         }

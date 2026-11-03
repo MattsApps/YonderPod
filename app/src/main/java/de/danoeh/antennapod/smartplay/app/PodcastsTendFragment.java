@@ -284,7 +284,7 @@ public class PodcastsTendFragment extends Fragment {
         }
         TextView add = (TextView) inflater.inflate(R.layout.tend_block, blocks, false);
         add.setBackgroundResource(android.R.color.transparent);
-        add.setText("+");
+        add.setText(R.string.symbol_add);
         add.setTextSize(22);
         add.setContentDescription(getString(R.string.tend_new_smart_play));
         add.setOnClickListener(v -> TendRows.open(this, SmartPlayEditorFragment.newInstance(-1)));

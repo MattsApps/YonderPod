@@ -31,7 +31,7 @@
             android:layout_gravity="end|top"
             android:gravity="center"
             android:importantForAccessibility="no"
-            android:text="▶"
+            android:text="@string/symbol_play"
             android:textSize="24sp" />
 
         <LinearLayout

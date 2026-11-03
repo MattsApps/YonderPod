@@ -112,8 +112,10 @@ public abstract class WidgetUpdater {
         views.setTextColor(R.id.butRew, palette.text);
         views.setTextColor(R.id.butFastForward, palette.text);
         views.setTextViewText(R.id.txtvSmartPlay, smartPlay.toLowerCase(Locale.getDefault()));
-        views.setTextViewText(R.id.butRew, "\u2212" + UserPreferences.getRewindSecs());
-        views.setTextViewText(R.id.butFastForward, "+" + UserPreferences.getFastForwardSecs());
+        views.setTextViewText(R.id.butRew, context.getString(R.string.widget_rewind_seconds,
+                UserPreferences.getRewindSecs()));
+        views.setTextViewText(R.id.butFastForward, context.getString(R.string.widget_forward_seconds,
+                UserPreferences.getFastForwardSecs()));
         views.setOnClickPendingIntent(R.id.layout_center, widgetState.media != null ? startMediaPlayer : startApp);
         if (widgetState.media == null) {
             views.setViewVisibility(R.id.txtvShow, View.GONE);
@@ -141,7 +143,7 @@ public abstract class WidgetUpdater {
                     / 60000.0);
             progressText = minutes >= 60
                     ? context.getString(R.string.world_hours_minutes, (int) (minutes / 60), (int) (minutes % 60))
-                    : context.getString(R.string.world_minutes, (int) minutes);
+                    : context.getResources().getQuantityString(R.plurals.world_minutes, (int) minutes, (int) minutes);
         }
         views.setTextViewText(R.id.txtvProgress, progressText);
         views.setImageViewBitmap(R.id.imgvProgress, progressBar(progress, palette.raised, palette.text));

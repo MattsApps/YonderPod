@@ -693,6 +693,41 @@
         <item name="android:paddingTop">24dp</item>
         <item name="android:paddingBottom">8dp</item>
         <item name="android:textAppearance">@style/TextAppearance.WildInk.PageTitle</item>
+        <item name="android:maxLines">2</item>
+        <item name="android:hyphenationFrequency">normal</item>
+        <item name="autoSizeTextType">uniform</item>
+        <item name="autoSizeMinTextSize">20sp</item>
+        <item name="autoSizeMaxTextSize">44sp</item>
+        <item name="autoSizeStepGranularity">1sp</item>
+    </style>
+
+    <style name="Widget.WildInk.Fit" parent="">
+        <item name="android:hyphenationFrequency">normal</item>
+        <item name="autoSizeTextType">uniform</item>
+        <item name="autoSizeMinTextSize">12sp</item>
+        <item name="autoSizeStepGranularity">1sp</item>
+    </style>
+
+    <style name="Widget.WildInk.Fit.Hero">
+        <item name="android:maxLines">2</item>
+        <item name="autoSizeMinTextSize">22sp</item>
+        <item name="autoSizeMaxTextSize">52sp</item>
+    </style>
+
+    <style name="Widget.WildInk.Fit.PageTitle">
+        <item name="android:maxLines">2</item>
+        <item name="autoSizeMinTextSize">20sp</item>
+        <item name="autoSizeMaxTextSize">44sp</item>
+    </style>
+
+    <style name="Widget.WildInk.Fit.WorldName">
+        <item name="autoSizeMinTextSize">20sp</item>
+        <item name="autoSizeMaxTextSize">50sp</item>
+    </style>
+
+    <style name="Widget.WildInk.Fit.Neighbour">
+        <item name="autoSizeMinTextSize">11sp</item>
+        <item name="autoSizeMaxTextSize">19sp</item>
     </style>
 
     <style name="Widget.WildInk.Handle" parent="">

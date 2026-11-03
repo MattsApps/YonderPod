@@ -102,7 +102,9 @@ public final class DownloadSettingsDialog {
             text = context.getString(R.string.download_summary_keep, text, settings.getKeepAtMost());
         }
         if (settings.getDeleteOlderThanDays() > 0) {
-            text = context.getString(R.string.download_summary_age, text, settings.getDeleteOlderThanDays());
+            text = context.getString(R.string.download_summary_age, text, context.getResources()
+                    .getQuantityString(R.plurals.download_age_days, settings.getDeleteOlderThanDays(),
+                            settings.getDeleteOlderThanDays()));
         }
         if (!settings.isAllowDeletions()) {
             text = context.getString(R.string.download_summary_no_deletions, text);
@@ -227,8 +229,8 @@ public final class DownloadSettingsDialog {
                     }
                     new MaterialAlertDialogBuilder(context)
                             .setTitle(R.string.download_bulk_title)
-                            .setMessage(context.getString(R.string.download_bulk_confirm,
-                                    changed.size(), feedIds.size()))
+                            .setMessage(context.getResources().getQuantityString(R.plurals.download_bulk_confirm,
+                                    feedIds.size(), changed.size(), feedIds.size()))
                             .setPositiveButton(R.string.confirm_label, (d, which) ->
                                     applyBulk(context, changed, chosen))
                             .setNegativeButton(R.string.cancel_label, null)

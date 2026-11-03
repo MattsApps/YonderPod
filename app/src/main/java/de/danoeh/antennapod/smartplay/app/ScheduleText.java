@@ -4,11 +4,14 @@ import android.content.Context;
 import android.text.TextUtils;
 import android.text.format.DateFormat;
 
+import androidx.core.os.ConfigurationCompat;
+
 import java.text.DateFormatSymbols;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
+import java.util.TimeZone;
 
 import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.smartplay.schedule.ScheduleTimes;
@@ -24,16 +27,11 @@ public final class ScheduleText {
     }
 
     public static String time(Context context, int hour, int minute) {
-        if (DateFormat.is24HourFormat(context)) {
-            return String.format(Locale.getDefault(), "%02d:%02d", hour, minute);
-        }
-        String[] amPm = DateFormatSymbols.getInstance().getAmPmStrings();
-        String suffix = (hour < 12 ? amPm[0] : amPm[1]).toLowerCase(Locale.getDefault()).replace(".", "");
-        int hour12 = hour % 12 == 0 ? 12 : hour % 12;
-        if (minute == 0) {
-            return hour12 + suffix;
-        }
-        return String.format(Locale.getDefault(), "%d:%02d%s", hour12, minute, suffix);
+        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        calendar.setTimeInMillis((hour * 60L + minute) * 60000L);
+        Locale locale = ConfigurationCompat.getLocales(context.getResources().getConfiguration()).get(0);
+        return DateFormat.format(DateFormat.getBestDateTimePattern(locale == null ? Locale.getDefault() : locale,
+                DateFormat.is24HourFormat(context) ? "Hm" : "hm"), calendar).toString();
     }
 
     public static String time(Context context, long millis) {
@@ -48,7 +46,8 @@ public final class ScheduleText {
 
     public static String days(Context context, UpdateSchedule schedule) {
         if (schedule.getEveryNDays() >= 2) {
-            return context.getString(R.string.schedule_every_n_days, schedule.getEveryNDays());
+            return context.getResources().getQuantityString(R.plurals.schedule_every_n_days, schedule.getEveryNDays(),
+                    schedule.getEveryNDays());
         }
         if (schedule.isEveryDay()) {
             return context.getString(R.string.schedule_every_day);
@@ -62,16 +61,17 @@ public final class ScheduleText {
         if (names.isEmpty()) {
             return context.getString(R.string.schedule_no_days);
         }
-        return TextUtils.join(", ", names);
+        return TextUtils.join(context.getString(R.string.list_separator), names);
     }
 
     public static String summary(Context context, UpdateSchedule schedule) {
         String text = context.getString(R.string.schedule_summary, days(context, schedule),
                 time(context, schedule.getHour(), schedule.getMinute()));
-        text += " · " + context.getString(schedule.isWifiOnly()
-                ? R.string.schedule_condition_wifi : R.string.schedule_condition_mobile);
+        text = context.getString(R.string.detail_joined, text, context.getString(schedule.isWifiOnly()
+                ? R.string.schedule_condition_wifi : R.string.schedule_condition_mobile));
         if (schedule.isChargingOnly()) {
-            text += " · " + context.getString(R.string.schedule_condition_charging);
+            text = context.getString(R.string.detail_joined, text,
+                    context.getString(R.string.schedule_condition_charging));
         }
         return text;
     }
@@ -94,7 +94,7 @@ public final class ScheduleText {
         Calendar today = Calendar.getInstance();
         if (then.get(Calendar.YEAR) != today.get(Calendar.YEAR)
                 || then.get(Calendar.DAY_OF_YEAR) != today.get(Calendar.DAY_OF_YEAR)) {
-            text += " " + shortDay(then.get(Calendar.DAY_OF_WEEK));
+            text = context.getString(R.string.time_and_day, text, shortDay(then.get(Calendar.DAY_OF_WEEK)));
         }
         return context.getString(R.string.schedule_status_updated, text);
     }
@@ -107,6 +107,7 @@ public final class ScheduleText {
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(next);
         return context.getString(R.string.schedule_status_next,
-                time(context, next) + " " + shortDay(calendar.get(Calendar.DAY_OF_WEEK)));
+                context.getString(R.string.time_and_day, time(context, next),
+                        shortDay(calendar.get(Calendar.DAY_OF_WEEK))));
     }
 }

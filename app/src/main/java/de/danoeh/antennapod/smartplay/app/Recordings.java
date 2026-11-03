@@ -458,7 +458,7 @@ public final class Recordings {
         } else if (next != null) {
             parts.add(context.getString(R.string.recording_status_next, dayTime(context, next.getStart())));
         }
-        return TextUtils.join(" · ", parts);
+        return TextUtils.join(context.getString(R.string.detail_separator), parts);
     }
 
     public static String playsAtText(Context context, long millis) {
@@ -516,7 +516,8 @@ public final class Recordings {
     static String dayTime(Context context, long millis) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(millis);
-        return ScheduleText.shortDay(calendar.get(Calendar.DAY_OF_WEEK)) + " " + ScheduleText.time(context, millis);
+        return context.getString(R.string.day_and_time, ScheduleText.shortDay(calendar.get(Calendar.DAY_OF_WEEK)),
+                ScheduleText.time(context, millis));
     }
 
     public static String days(Context context, int weekdays) {

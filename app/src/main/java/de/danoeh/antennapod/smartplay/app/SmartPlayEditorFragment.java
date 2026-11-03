@@ -370,7 +370,8 @@ public class SmartPlayEditorFragment extends Fragment {
                 overlapping.add(otherNames.get(i));
             }
         }
-        hoursOverlap.setText(getString(R.string.smartplay_hours_overlap, TextUtils.join(", ", overlapping)));
+        hoursOverlap.setText(getString(R.string.smartplay_hours_overlap,
+                TextUtils.join(getString(R.string.list_separator), overlapping)));
         hoursOverlap.setVisibility(overlapping.isEmpty() ? View.GONE : View.VISIBLE);
         showHoursSummary();
     }
@@ -581,7 +582,7 @@ public class SmartPlayEditorFragment extends Fragment {
     }
 
     private String exclusionNames(Exclusions exclusions) {
-        return TextUtils.join(", ", exclusionList(exclusions));
+        return TextUtils.join(getString(R.string.list_separator), exclusionList(exclusions));
     }
 
     private List<String> exclusionList(Exclusions exclusions) {
@@ -704,7 +705,7 @@ public class SmartPlayEditorFragment extends Fragment {
         StringBuilder text = new StringBuilder();
         if (!uncovered.isEmpty()) {
             text.append(getResources().getQuantityString(R.plurals.smartplay_uncovered_shows,
-                    uncovered.size(), uncovered.size(), TextUtils.join(", ", uncovered)));
+                    uncovered.size(), uncovered.size(), TextUtils.join(getString(R.string.list_separator), uncovered)));
         }
         if (pointsAtUnsubscribed) {
             if (text.length() > 0) {

@@ -20,6 +20,7 @@
             android:textAppearance="@style/TextAppearance.WildInk.Label" />
 
         <de.danoeh.antennapod.ui.common.LowercaseTextView
+            style="@style/Widget.WildInk.Fit.Hero"
             android:id="@+id/welcomeTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

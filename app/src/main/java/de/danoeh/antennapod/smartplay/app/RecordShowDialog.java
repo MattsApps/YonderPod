@@ -104,7 +104,7 @@ public final class RecordShowDialog {
         };
         List<String> zoneLabels = new ArrayList<>();
         for (String id : zones) {
-            zoneLabels.add(zoneLabel(id));
+            zoneLabels.add(zoneLabel(context, id));
         }
         ArrayAdapter<String> zoneAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item,
                 zoneLabels);
@@ -250,8 +250,9 @@ public final class RecordShowDialog {
         return result;
     }
 
-    static String zoneLabel(String id) {
+    static String zoneLabel(Context context, String id) {
         String city = id.substring(id.lastIndexOf('/') + 1).replace('_', ' ');
-        return city + " (" + TimeZone.getTimeZone(id).getDisplayName(false, TimeZone.SHORT) + ")";
+        return context.getString(R.string.name_with_detail, city,
+                TimeZone.getTimeZone(id).getDisplayName(false, TimeZone.SHORT));
     }
 }

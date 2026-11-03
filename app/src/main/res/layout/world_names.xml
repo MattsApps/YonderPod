@@ -13,6 +13,7 @@
         android:orientation="horizontal">
 
         <TextView
+            style="@style/Widget.WildInk.Fit.Neighbour"
             android:id="@+id/worldLeft"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -33,6 +34,7 @@
             android:textAppearance="@style/TextAppearance.WildInk.Wordmark" />
 
         <TextView
+            style="@style/Widget.WildInk.Fit.Neighbour"
             android:id="@+id/worldRight"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -46,6 +48,7 @@
     </LinearLayout>
 
     <TextView
+        style="@style/Widget.WildInk.Fit.WorldName"
         android:id="@+id/worldName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

@@ -16,6 +16,7 @@
         android:paddingBottom="24dp">
 
         <de.danoeh.antennapod.ui.common.LowercaseTextView
+            style="@style/Widget.WildInk.Fit.PageTitle"
             android:id="@+id/pageTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

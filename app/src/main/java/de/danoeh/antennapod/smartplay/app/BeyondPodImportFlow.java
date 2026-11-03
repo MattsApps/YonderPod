@@ -66,7 +66,8 @@ public final class BeyondPodImportFlow {
                     DownloadSettingsDialog.modeLabel(context, entry.getKey())));
         }
         if (!modes.isEmpty()) {
-            lines.add(context.getString(R.string.beyondpod_modes, TextUtils.join(", ", modes)));
+            lines.add(context.getString(R.string.beyondpod_modes,
+                    TextUtils.join(context.getString(R.string.list_separator), modes)));
         }
         for (BeyondPodImport.SmartPlay list : summary.smartPlays) {
             lines.add(context.getResources().getQuantityString(R.plurals.beyondpod_smart_play, list.rules.size(),
@@ -88,7 +89,8 @@ public final class BeyondPodImportFlow {
         }
         settings.add(context.getString(R.string.beyondpod_defaults, summary.defaults.getEpisodeCount(),
                 summary.defaults.getKeepAtMost()));
-        lines.add(context.getString(R.string.beyondpod_settings, TextUtils.join(", ", settings)));
+        lines.add(context.getString(R.string.beyondpod_settings,
+                TextUtils.join(context.getString(R.string.list_separator), settings)));
         if (followed > 0) {
             lines.add(context.getResources().getQuantityString(R.plurals.beyondpod_already, followed, followed));
         }

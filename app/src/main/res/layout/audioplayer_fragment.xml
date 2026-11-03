@@ -274,7 +274,7 @@
                         android:layout_gravity="center"
                         android:clickable="false"
                         android:fontFamily="@font/bricolage_extrabold"
-                        android:text="1.00"
+                        tools:text="1.00"
                         android:textColor="?android:attr/textColorSecondary"
                         android:textSize="14sp" />
 

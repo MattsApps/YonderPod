@@ -179,6 +179,6 @@ public abstract class WorldSurface extends Fragment {
         if (minutes >= 60) {
             return getString(R.string.world_hours_minutes, (int) (minutes / 60), (int) (minutes % 60));
         }
-        return getString(R.string.world_minutes, (int) minutes);
+        return getResources().getQuantityString(R.plurals.world_minutes, (int) minutes, (int) minutes);
     }
 }

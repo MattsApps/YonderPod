@@ -35,6 +35,7 @@ public final class SmartPlayCoverage {
             return status + context.getString(book && !Recordings.isRecordingsFeed(feed)
                     ? R.string.book_not_included : R.string.smartplay_not_included);
         }
-        return status + context.getString(R.string.smartplay_included_in, TextUtils.join(", ", names));
+        return status + context.getString(R.string.smartplay_included_in,
+                TextUtils.join(context.getString(R.string.list_separator), names));
     }
 }

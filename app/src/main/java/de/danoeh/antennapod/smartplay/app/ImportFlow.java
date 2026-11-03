@@ -117,7 +117,7 @@ public final class ImportFlow {
             parts.add(context.getResources().getQuantityString(R.plurals.restore_recordings, recordings,
                     recordings));
         }
-        return TextUtils.join(" · ", parts);
+        return TextUtils.join(context.getString(R.string.detail_separator), parts);
     }
 
     private static void confirm(Fragment fragment, YonderBackup.Summary summary) {

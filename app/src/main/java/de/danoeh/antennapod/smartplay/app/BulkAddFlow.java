@@ -33,7 +33,8 @@ public final class BulkAddFlow {
             return;
         }
         AlertDialog working = new MaterialAlertDialogBuilder(fragment.requireContext())
-                .setMessage(fragment.getString(R.string.moving_bulk_finding, lines.size()))
+                .setMessage(fragment.getResources().getQuantityString(R.plurals.moving_bulk_finding, lines.size(),
+                        lines.size()))
                 .setCancelable(false)
                 .show();
         Single.fromCallable(() -> {
@@ -107,10 +108,12 @@ public final class BulkAddFlow {
     private static String notes(Context context, List<String> spotifyOnly, List<String> missing) {
         List<String> parts = new ArrayList<>();
         if (!spotifyOnly.isEmpty()) {
-            parts.add(context.getString(R.string.moving_bulk_spotify_only, TextUtils.join(", ", spotifyOnly)));
+            parts.add(context.getString(R.string.moving_bulk_spotify_only,
+                    TextUtils.join(context.getString(R.string.list_separator), spotifyOnly)));
         }
         if (!missing.isEmpty()) {
-            parts.add(context.getString(R.string.moving_bulk_missing, TextUtils.join(", ", missing)));
+            parts.add(context.getString(R.string.moving_bulk_missing,
+                    TextUtils.join(context.getString(R.string.list_separator), missing)));
         }
         return TextUtils.join("\n\n", parts);
     }

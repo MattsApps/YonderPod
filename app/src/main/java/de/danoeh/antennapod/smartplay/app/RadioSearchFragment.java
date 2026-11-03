@@ -119,7 +119,7 @@ public class RadioSearchFragment extends FindFragment {
             if (!quality.isEmpty()) {
                 meta.add(quality);
             }
-            result.meta = TextUtils.join(" · ", meta);
+            result.meta = TextUtils.join(getString(R.string.detail_separator), meta);
             result.artUrl = station.logoUrl;
             result.payload = station;
             result.done = added.contains(station.streamUrl) || names.contains(station.name);

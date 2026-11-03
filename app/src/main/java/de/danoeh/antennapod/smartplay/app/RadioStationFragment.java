@@ -165,7 +165,8 @@ public class RadioStationFragment extends Fragment {
         name.setText(loaded.shortName.toLowerCase(Locale.getDefault()));
         name.setTextSize(TypedValue.COMPLEX_UNIT_SP, loaded.shortName.length() > 12 ? 40 : 56);
         String details = RadioFragment.details(requireContext(), RadioPreferences.get(station.getId()));
-        info.setText(details.isEmpty() ? station.getTitle() : station.getTitle() + " · " + details);
+        info.setText(details.isEmpty() ? station.getTitle() : getString(R.string.detail_joined,
+                station.getTitle(), details));
         showsView.removeAllViews();
         if (loaded.shows.isEmpty()) {
             showsView.addView(line(getString(R.string.station_no_shows), false));
@@ -193,11 +194,12 @@ public class RadioStationFragment extends Fragment {
                 showsView.addView(line(getString(R.string.station_no_recordings), false));
             }
             for (FeedItem item : block.latest) {
-                String text = "▶  " + item.getTitle();
+                String text = item.getTitle();
                 if (item.getMedia() != null && item.getMedia().getDuration() > 0) {
-                    text += " · " + Converter.getDurationStringLocalized(getResources(),
-                            item.getMedia().getDuration(), false);
+                    text = getString(R.string.detail_joined, text, Converter.getDurationStringLocalized(
+                            getResources(), item.getMedia().getDuration(), false));
                 }
+                text = getString(R.string.play_symbol_label, text);
                 TextView recording = line(text, true);
                 TextViewCompat.setTextAppearance(recording, R.style.Widget_WildInk_Link);
                 recording.setMinHeight(dp(48));

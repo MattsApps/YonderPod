@@ -122,7 +122,7 @@ public class RadioFragment extends Fragment {
             String meta = details(requireContext(), RadioPreferences.get(station.getId()));
             if (Radio.isPlaying(station)) {
                 meta = meta.isEmpty() ? getString(R.string.radio_playing)
-                        : getString(R.string.radio_playing) + " · " + meta;
+                        : getString(R.string.detail_joined, getString(R.string.radio_playing), meta);
             }
             View row = TendRows.row(this, list, station.getTitle(), meta, station.getImageUrl(), "", "",
                     v -> TendRows.open(this, RadioStationFragment.newInstance(station.getId())));
@@ -242,7 +242,7 @@ public class RadioFragment extends Fragment {
         if (!quality.isEmpty()) {
             parts.add(quality);
         }
-        return TextUtils.join(" · ", parts);
+        return TextUtils.join(context.getString(R.string.detail_separator), parts);
     }
 
     static String quality(Context context, String codec, int bitrate) {

@@ -166,7 +166,8 @@ public class ControlsSettingsFragment extends Fragment {
 
     private void showCarModeDevices() {
         Set<String> chosen = new TreeSet<>(ControlsPreferences.getCarModeDevices());
-        ((TextView) root.findViewById(R.id.controls_car_mode_devices)).setText(TextUtils.join(", ", chosen));
+        ((TextView) root.findViewById(R.id.controls_car_mode_devices)).setText(
+                TextUtils.join(getString(R.string.list_separator), chosen));
     }
 
     @SuppressLint("MissingPermission")

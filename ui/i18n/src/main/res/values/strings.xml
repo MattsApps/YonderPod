@@ -757,10 +757,17 @@
     <string name="download_summary_stream_latest">Stream latest %1$s</string>
     <string name="download_summary_stream_in_order">Stream %1$s in order, oldest unheard first</string>
     <string name="download_summary_keep">%1$s and keep at most %2$d</string>
-    <string name="download_summary_age">%1$s, delete after %2$d days</string>
+    <string name="download_summary_age">%1$s, delete after %2$s</string>
+    <plurals name="download_age_days">
+        <item quantity="one">%d day</item>
+        <item quantity="other">%d days</item>
+    </plurals>
     <string name="download_summary_no_deletions">%1$s, deletions off</string>
     <string name="download_bulk_title">Download settings</string>
-    <string name="download_bulk_confirm">Change download settings for %1$d of %2$d shows?</string>
+    <plurals name="download_bulk_confirm">
+        <item quantity="one">Change download settings for %1$d of %2$d show?</item>
+        <item quantity="other">Change download settings for %1$d of %2$d shows?</item>
+    </plurals>
     <string name="download_bulk_none">These shows already use these settings.</string>
     <plurals name="download_bulk_done">
         <item quantity="one">Download settings changed for %d show</item>
@@ -784,7 +791,10 @@
     <string name="schedule_mode_own">Its own schedule</string>
     <string name="schedule_mode_manual">Manual only</string>
     <string name="schedule_every_day">Every day</string>
-    <string name="schedule_every_n_days">Every %d days</string>
+    <plurals name="schedule_every_n_days">
+        <item quantity="one">Every %d day</item>
+        <item quantity="other">Every %d days</item>
+    </plurals>
     <string name="schedule_no_days">No days chosen</string>
     <string name="schedule_summary">%1$s at %2$s</string>
     <string name="schedule_condition_wifi">Wi-Fi</string>
@@ -1575,7 +1585,10 @@
     <string name="world_today">today</string>
     <string name="world_yesterday">yesterday</string>
     <string name="world_hours_minutes">%1$d h %2$d min</string>
-    <string name="world_minutes">%1$d min</string>
+    <plurals name="world_minutes">
+        <item quantity="one">%1$d min</item>
+        <item quantity="other">%1$d min</item>
+    </plurals>
     <string name="world_more">Swipe up for more</string>
     <string name="world_podcasts_empty">nothing to play yet</string>
     <string name="world_podcasts_empty_hint">Swipe up to find podcasts.</string>
@@ -1654,6 +1667,8 @@
     <string name="tune_skip_value">back %1$d · forward %2$d</string>
     <string name="tune_playback">Playback and headphones</string>
     <string name="tune_look">look</string>
+    <string name="tune_language">language</string>
+    <string name="tune_language_older">Yonder speaks English for now. On Android 13 and newer, this opens your phone\'s language setting for Yonder. More languages are coming.</string>
     <string name="tune_palette_label">%1$s palette</string>
     <string name="look_on">on</string>
     <string name="look_everywhere">One palette everywhere</string>
@@ -1703,7 +1718,10 @@
     <string name="shelf_tip_title">Getting back</string>
     <string name="shelf_tip_message">Swipe along the bottom bar, or use Back, to return to Yonder.</string>
     <string name="shelf_tip_ok">Got it</string>
-    <string name="shelf_count">%1$d apps</string>
+    <plurals name="shelf_count">
+        <item quantity="one">%1$d app</item>
+        <item quantity="other">%1$d apps</item>
+    </plurals>
     <string name="tune_help">help</string>
     <string name="tune_welcome">Welcome tour</string>
     <string name="about_intro">Version %1$s. Podcasts, books and radio, the way you want to hear them.</string>
@@ -1868,7 +1886,29 @@
     <string name="moving_bulk_placeholder">The Rest Is Politics\nhttps://open.spotify.com/show/…</string>
     <string name="moving_bulk_find">find these shows</string>
     <string name="moving_bulk_empty">Paste at least one show name or link.</string>
-    <string name="moving_bulk_finding">Finding %1$d shows…</string>
+    <string name="list_separator">", "</string>
+    <string name="detail_separator">" · "</string>
+    <string name="detail_joined">%1$s · %2$s</string>
+    <string name="name_with_detail">%1$s (%2$s)</string>
+    <string name="two_sentences">%1$s %2$s</string>
+    <string name="day_and_time">%1$s %2$s</string>
+    <string name="time_and_day">%1$s %2$s</string>
+    <string name="position_of_duration">%1$s / %2$s</string>
+    <string name="play_symbol_label">▶  %1$s</string>
+    <string name="symbol_add" translatable="false">+</string>
+    <string name="symbol_none" translatable="false">–</string>
+    <string name="symbol_more" translatable="false">›</string>
+    <string name="symbol_play" translatable="false">▶</string>
+    <string name="symbol_remove" translatable="false">×</string>
+    <string name="symbol_drag" translatable="false">≡</string>
+    <string name="widget_rewind_seconds">−%1$d</string>
+    <string name="widget_forward_seconds">+%1$d</string>
+    <string name="beyondpod_name" translatable="false">BeyondPod</string>
+    <string name="beyondpod_copy_name">%1$s (BeyondPod)</string>
+    <plurals name="moving_bulk_finding">
+        <item quantity="one">Finding %1$d show…</item>
+        <item quantity="other">Finding %1$d shows…</item>
+    </plurals>
     <string name="moving_bulk_confirm">Follow these shows?</string>
     <string name="moving_bulk_by">%1$s · %2$s</string>
     <string name="moving_bulk_closest">%1$s (closest match for \"%2$s\")</string>

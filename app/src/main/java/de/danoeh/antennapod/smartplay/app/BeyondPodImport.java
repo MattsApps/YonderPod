@@ -380,9 +380,9 @@ public final class BeyondPodImport {
             if (list.rules.isEmpty()) {
                 continue;
             }
-            String name = list.name.isEmpty() ? "BeyondPod" : list.name;
+            String name = list.name.isEmpty() ? context.getString(R.string.beyondpod_name) : list.name;
             if (names.contains(name.toLowerCase(Locale.ROOT))) {
-                name = name + " (BeyondPod)";
+                name = context.getString(R.string.beyondpod_copy_name, name);
             }
             SmartPlayDefinition.Builder builder = SmartPlayDefinition.builder(name);
             for (Rule rule : list.rules) {

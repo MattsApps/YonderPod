@@ -116,7 +116,8 @@ public class RadioSurface extends WorldSurface {
             root.findViewById(R.id.worldPlay).setOnClickListener(v -> openTend());
         } else {
             String name = station.getTitle() != null ? station.getTitle() : "";
-            subtitle.setText(state.country.isEmpty() ? name : name + " · " + state.country);
+            subtitle.setText(state.country.isEmpty() ? name : getString(R.string.detail_joined, name,
+                    state.country));
             subtitle.setVisibility(View.VISIBLE);
             live.setVisibility(View.VISIBLE);
             title.setText(state.shortName.toLowerCase(Locale.getDefault()));

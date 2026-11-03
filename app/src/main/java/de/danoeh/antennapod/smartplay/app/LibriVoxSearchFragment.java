@@ -89,7 +89,7 @@ public class LibriVoxSearchFragment extends FindFragment {
             if (!book.language.isEmpty() && !"English".equals(book.language)) {
                 meta.add(book.language);
             }
-            result.meta = TextUtils.join(" · ", meta);
+            result.meta = TextUtils.join(getString(R.string.detail_separator), meta);
             result.artUrl = book.coverUrl;
             result.payload = book;
             result.done = urls.contains(book.rssUrl);

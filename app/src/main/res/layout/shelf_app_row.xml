@@ -31,7 +31,7 @@
         android:background="?android:attr/selectableItemBackgroundBorderless"
         android:fontFamily="@font/bricolage_extrabold"
         android:gravity="center"
-        android:text="×"
+        android:text="@string/symbol_remove"
         android:textColor="?android:attr/textColorSecondary"
         android:textSize="22sp" />
 
@@ -41,7 +41,7 @@
         android:layout_height="48dp"
         android:fontFamily="@font/bricolage_extrabold"
         android:gravity="center"
-        android:text="≡"
+        android:text="@string/symbol_drag"
         android:textColor="?android:attr/textColorSecondary"
         android:textSize="22sp" />
 

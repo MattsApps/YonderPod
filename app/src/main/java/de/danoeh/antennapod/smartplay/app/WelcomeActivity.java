@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -239,6 +240,9 @@ public class WelcomeActivity extends AppCompatActivity {
                     : R.style.TextAppearance_WildInk_WorldOther);
             world.setText(names[i]);
             world.setGravity(Gravity.CENTER);
+            world.setMaxLines(1);
+            TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(world, 10, i == 1 ? 34 : 16, 1,
+                    TypedValue.COMPLEX_UNIT_SP);
             row.addView(world, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1));
         }
         picture.addView(row);
