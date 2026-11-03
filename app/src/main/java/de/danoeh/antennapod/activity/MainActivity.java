@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
+import androidx.activity.BackEventCompat;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
@@ -58,6 +59,7 @@ import de.danoeh.antennapod.storage.preferences.PlaybackPreferences;
 import de.danoeh.antennapod.smartplay.app.BooksTendFragment;
 import de.danoeh.antennapod.smartplay.app.PodcastsTendFragment;
 import de.danoeh.antennapod.smartplay.app.RadioFragment;
+import de.danoeh.antennapod.smartplay.app.SheetView;
 import de.danoeh.antennapod.smartplay.app.TendRows;
 import de.danoeh.antennapod.smartplay.app.WorldSurface;
 import de.danoeh.antennapod.smartplay.app.MovingFragment;
@@ -100,7 +102,9 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -119,6 +123,8 @@ public class MainActivity extends CastEnabledActivity implements NavigationToolb
     public static final String EXTRA_REFRESH_ON_START = "refresh_on_start";
     public static final String KEY_GENERATED_VIEW_ID = "generated_view_id";
     private static final String KEY_WORLDS_HIDDEN = "worlds_hidden";
+    private static final String KEY_SHEETS = "sheets";
+    private static final String KEY_WORLD = "world";
 
     private @Nullable DrawerLayout drawerLayout;
     private @Nullable ActionBarDrawerToggle drawerToggle;
@@ -130,6 +136,13 @@ public class MainActivity extends CastEnabledActivity implements NavigationToolb
     private int lastTheme = 0;
     private Insets systemBarInsets = Insets.NONE;
     private FrameLayout worldsContainer;
+    private View mainView;
+    private FrameLayout sheetStack;
+    private SheetView mainSheet;
+    private final List<SheetView> childSheets = new ArrayList<>();
+    private SheetView closingSheet;
+    private boolean sheetsOpen;
+    private int currentWorld = WorldSurface.PODCASTS;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -144,11 +157,27 @@ public class MainActivity extends CastEnabledActivity implements NavigationToolb
         worldsContainer = new FrameLayout(this);
         worldsContainer.setId(R.id.worlds_container);
         worldsContainer.setClickable(true);
-        ((ViewGroup) findViewById(android.R.id.content)).addView(worldsContainer,
+        ((ViewGroup) findViewById(android.R.id.content)).addView(worldsContainer, 0,
                 new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        if (savedInstanceState != null && savedInstanceState.getBoolean(KEY_WORLDS_HIDDEN, false)) {
-            worldsContainer.setVisibility(View.GONE);
+        mainView = findViewById(R.id.main_view);
+        sheetStack = findViewById(R.id.sheet_stack);
+        mainSheet = findViewById(R.id.main_sheet);
+        mainSheet.setMoving(mainView);
+        mainSheet.setListener(sheetListener);
+        if (savedInstanceState != null) {
+            currentWorld = savedInstanceState.getInt(KEY_WORLD, WorldSurface.PODCASTS);
+            sheetsOpen = savedInstanceState.getBoolean(KEY_WORLDS_HIDDEN, false);
+            int[] sheets = savedInstanceState.getIntArray(KEY_SHEETS);
+            if (sheets != null) {
+                for (int id : sheets) {
+                    addSheet(SheetView.create(this, id), false);
+                }
+            }
         }
+        mainSheet.setPalette(sheetPalette());
+        mainView.setVisibility(sheetsOpen ? View.VISIBLE : View.INVISIBLE);
+        worldsContainer.setVisibility(sheetsOpen ? View.INVISIBLE : View.VISIBLE);
+        getSupportFragmentManager().registerFragmentLifecycleCallbacks(sheetBinder, false);
         checkFirstLaunch();
 
         drawerLayout = findViewById(R.id.drawer_layout);
@@ -323,6 +352,12 @@ public class MainActivity extends CastEnabledActivity implements NavigationToolb
         super.onSaveInstanceState(outState);
         outState.putInt(KEY_GENERATED_VIEW_ID, View.generateViewId());
         outState.putBoolean(KEY_WORLDS_HIDDEN, worldsHidden());
+        outState.putInt(KEY_WORLD, currentWorld);
+        int[] sheets = new int[childSheets.size()];
+        for (int i = 0; i < sheets.length; i++) {
+            sheets[i] = childSheets.get(i).contentId();
+        }
+        outState.putIntArray(KEY_SHEETS, sheets);
     }
 
     private final BottomSheetBehavior.BottomSheetCallback bottomSheetCallback = new AntennaPodBottomSheetCallback();
@@ -436,10 +471,10 @@ public class MainActivity extends CastEnabledActivity implements NavigationToolb
         bottomPaddingView.setLayoutParams(params);
 
         int externalPlayerHeight = (int) getResources().getDimension(R.dimen.external_player_height);
-        FragmentContainerView mainView = findViewById(R.id.main_content_view);
-        params = (ViewGroup.MarginLayoutParams) mainView.getLayoutParams();
+        View sheets = findViewById(R.id.sheet_stack);
+        params = (ViewGroup.MarginLayoutParams) sheets.getLayoutParams();
         params.setMargins(systemBarInsets.left, 0, systemBarInsets.right, (visible ? externalPlayerHeight : 0));
-        mainView.setLayoutParams(params);
+        sheets.setLayoutParams(params);
         sheetBehavior.setPeekHeight(externalPlayerHeight);
         sheetBehavior.setHideable(true);
         sheetBehavior.setGestureInsetBottomIgnored(true);
@@ -519,7 +554,7 @@ public class MainActivity extends CastEnabledActivity implements NavigationToolb
     }
 
     public void loadFragment(Fragment fragment) {
-        TendRows.statusBar(this, Palette.app(this));
+        TendRows.statusBar(this, sheetPalette());
         FragmentManager fragmentManager = getSupportFragmentManager();
         // Clear all synchronously to avoid conflicting with predictive back gesture cancellation
         fragmentManager.popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
@@ -541,17 +576,134 @@ public class MainActivity extends CastEnabledActivity implements NavigationToolb
 
     public void loadChildFragment(Fragment fragment, String navigationTag) {
         Objects.requireNonNull(fragment);
-        TendRows.statusBar(this, Palette.app(this));
+        TendRows.statusBar(this, sheetPalette());
         if (navigationTag != null && bottomNavigation != null) {
             bottomNavigation.updateSelectedItem(navigationTag);
         }
+        SheetView sheet = SheetView.create(this, View.generateViewId());
+        addSheet(sheet, true);
         getSupportFragmentManager().beginTransaction()
                 .hide(getSupportFragmentManager().findFragmentByTag(MAIN_FRAGMENT_TAG))
-                .add(R.id.main_content_view, fragment, MAIN_FRAGMENT_TAG)
+                .add(sheet.contentId(), fragment, MAIN_FRAGMENT_TAG)
                 .addToBackStack(null)
                 .commit();
         updateMainBackCallbackEnabledState();
     }
+
+    private Palette sheetPalette() {
+        return Palette.forWorld(this, currentWorld);
+    }
+
+    private void addSheet(SheetView sheet, boolean animate) {
+        sheetStack.addView(sheet, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT));
+        childSheets.add(sheet);
+        sheet.setPalette(sheetPalette());
+        sheet.setListener(sheetListener);
+        sheet.setElevation(8 * getResources().getDisplayMetrics().density);
+        sheet.content().setOnHierarchyChangeListener(new ViewGroup.OnHierarchyChangeListener() {
+            @Override
+            public void onChildViewAdded(View parent, View child) {
+            }
+
+            @Override
+            public void onChildViewRemoved(View parent, View child) {
+                if (sheet.content().getChildCount() == 0) {
+                    removeSheet(sheet);
+                }
+            }
+        });
+        ViewCompat.requestApplyInsets(sheet);
+        if (animate) {
+            sheet.slideIn(null);
+        }
+    }
+
+    private void removeSheet(SheetView sheet) {
+        if (!childSheets.remove(sheet)) {
+            return;
+        }
+        if (closingSheet == sheet) {
+            closingSheet = null;
+        }
+        if (sheet.isShowing()) {
+            sheet.slideOut(() -> sheetStack.removeView(sheet));
+        } else {
+            sheetStack.removeView(sheet);
+        }
+    }
+
+    @Nullable
+    private SheetView sheetFor(int containerId) {
+        if (containerId == R.id.main_content_view) {
+            return mainSheet;
+        }
+        for (SheetView sheet : childSheets) {
+            if (sheet.contentId() == containerId) {
+                return sheet;
+            }
+        }
+        return null;
+    }
+
+    private SheetView topSheet() {
+        return childSheets.isEmpty() ? mainSheet : childSheets.get(childSheets.size() - 1);
+    }
+
+    private void revealBelow(SheetView sheet, boolean show) {
+        if (sheet == mainSheet) {
+            worldsContainer.setVisibility(show || !sheetsOpen ? View.VISIBLE : View.INVISIBLE);
+            return;
+        }
+        int index = childSheets.indexOf(sheet);
+        SheetView below = index > 0 ? childSheets.get(index - 1) : mainSheet;
+        Fragment fragment = getSupportFragmentManager().findFragmentById(below.contentId());
+        if (fragment != null && fragment.getView() != null) {
+            fragment.getView().setVisibility(show || !fragment.isHidden() ? View.VISIBLE : View.GONE);
+        }
+    }
+
+    private final FragmentManager.FragmentLifecycleCallbacks sheetBinder =
+            new FragmentManager.FragmentLifecycleCallbacks() {
+        @Override
+        public void onFragmentViewCreated(@NonNull FragmentManager fm, @NonNull Fragment fragment,
+                                          @NonNull View view, @Nullable Bundle state) {
+            SheetView sheet = sheetFor(fragment.getId());
+            if (sheet != null) {
+                sheet.bind(view);
+            }
+        }
+
+        @Override
+        public void onFragmentViewDestroyed(@NonNull FragmentManager fm, @NonNull Fragment fragment) {
+            SheetView sheet = sheetFor(fragment.getId());
+            if (sheet != null) {
+                sheet.unbind(fragment.getView());
+            }
+        }
+    };
+
+    private final SheetView.Listener sheetListener = new SheetView.Listener() {
+        @Override
+        public void onDragStart(SheetView sheet) {
+            revealBelow(sheet, true);
+        }
+
+        @Override
+        public void onDragCancelled(SheetView sheet) {
+            revealBelow(sheet, false);
+        }
+
+        @Override
+        public void onCloseRequested(SheetView sheet) {
+            closingSheet = sheet;
+            getOnBackPressedDispatcher().onBackPressed();
+            if (closingSheet == sheet) {
+                closingSheet = null;
+                sheet.springBack();
+            }
+        }
+    };
 
     public void loadChildFragment(Fragment fragment) {
         loadChildFragment(fragment, null);
@@ -684,10 +836,16 @@ public class MainActivity extends CastEnabledActivity implements NavigationToolb
     }
 
     private boolean worldsHidden() {
-        return worldsContainer != null && worldsContainer.getVisibility() != View.VISIBLE;
+        return sheetsOpen;
     }
 
     public void openWorld(int world) {
+        currentWorld = world;
+        Palette palette = sheetPalette();
+        mainSheet.setPalette(palette);
+        for (SheetView sheet : childSheets) {
+            sheet.setPalette(palette);
+        }
         if (world == WorldSurface.RADIO) {
             loadFragment(RadioFragment.TAG, null);
         } else {
@@ -711,15 +869,16 @@ public class MainActivity extends CastEnabledActivity implements NavigationToolb
         if (worldsHidden()) {
             return;
         }
-        worldsContainer.animate().cancel();
-        worldsContainer.animate().translationY(-worldsContainer.getHeight()).setDuration(250)
-                .withEndAction(() -> {
-                    worldsContainer.setVisibility(View.GONE);
-                    worldsContainer.setTranslationY(0);
-                    updateMainBackCallbackEnabledState();
-                }).start();
+        sheetsOpen = true;
+        TendRows.statusBar(this, sheetPalette());
         worldsContainer.setVisibility(View.VISIBLE);
-        openDefaultPageBackPressedCallback.setEnabled(true);
+        mainView.setVisibility(View.VISIBLE);
+        mainSheet.slideIn(() -> {
+            if (sheetsOpen) {
+                worldsContainer.setVisibility(View.INVISIBLE);
+            }
+        });
+        updateMainBackCallbackEnabledState();
     }
 
     public void refreshWorlds() {
@@ -739,10 +898,14 @@ public class MainActivity extends CastEnabledActivity implements NavigationToolb
         if (worlds instanceof WorldsFragment) {
             ((WorldsFragment) worlds).refreshStatusBar();
         }
-        worldsContainer.animate().cancel();
+        sheetsOpen = false;
         worldsContainer.setVisibility(View.VISIBLE);
-        worldsContainer.setTranslationY(-worldsContainer.getHeight());
-        worldsContainer.animate().translationY(0).setDuration(250).start();
+        mainSheet.slideOut(() -> {
+            if (!sheetsOpen) {
+                mainView.setVisibility(View.INVISIBLE);
+                mainView.setTranslationY(0);
+            }
+        });
         updateMainBackCallbackEnabledState();
     }
 
@@ -752,10 +915,32 @@ public class MainActivity extends CastEnabledActivity implements NavigationToolb
         }
 
         @Override
+        public void handleOnBackStarted(@NonNull BackEventCompat backEvent) {
+            revealBelow(topSheet(), true);
+        }
+
+        @Override
+        public void handleOnBackProgressed(@NonNull BackEventCompat backEvent) {
+            topSheet().follow(backEvent.getProgress());
+        }
+
+        @Override
+        public void handleOnBackCancelled() {
+            topSheet().springBack();
+        }
+
+        @Override
         public void handleOnBackPressed() {
             String defaultPage = UserPreferences.getDefaultPage();
-            if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
-                getSupportFragmentManager().popBackStack();
+            SheetView top = closingSheet != null ? closingSheet : topSheet();
+            closingSheet = null;
+            if (top != mainSheet && getSupportFragmentManager().getBackStackEntryCount() > 0) {
+                revealBelow(top, true);
+                top.slideOut(() -> {
+                    if (!getSupportFragmentManager().isStateSaved()) {
+                        getSupportFragmentManager().popBackStack();
+                    }
+                });
             } else if (worldsHidden()) {
                 showWorlds();
             } else if (!NavDrawerFragment.getLastNavFragment(MainActivity.this).equals(defaultPage)

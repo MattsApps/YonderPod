@@ -142,6 +142,7 @@
         <activity
             android:name=".ui.screen.preferences.PreferenceActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
+            android:theme="@style/Theme.AntennaPod.Splash.Translucent"
             android:exported="false"
             android:label="@string/settings_label">
             <meta-data

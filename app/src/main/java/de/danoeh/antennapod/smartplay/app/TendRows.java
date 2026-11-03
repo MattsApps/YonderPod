@@ -34,13 +34,7 @@ public final class TendRows {
         ((TextView) root.findViewById(R.id.tendWorld)).setText(world);
         ((TextView) root.findViewById(R.id.tendSearchHint)).setText(hint);
         root.findViewById(R.id.tendSearch).setOnClickListener(v -> onSearch.run());
-        Runnable toSurface = () -> {
-            if (fragment.getActivity() instanceof MainActivity) {
-                ((MainActivity) fragment.getActivity()).showWorlds();
-            }
-        };
-        root.findViewById(R.id.tendHandle).setOnClickListener(v -> toSurface.run());
-        ((TendScrollView) root.findViewById(R.id.tendScroll)).setOnPullDown(toSurface);
+        root.findViewById(R.id.tendHandle).setVisibility(View.GONE);
         root.findViewById(R.id.tendHistory).setOnClickListener(v ->
                 open(fragment, new PlaybackHistoryFragment()));
         root.findViewById(R.id.tendDownloads).setOnClickListener(v ->

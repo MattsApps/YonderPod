@@ -1,14 +1,21 @@
 package de.danoeh.antennapod.ui.screen.preferences;
 
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
+import androidx.activity.BackEventCompat;
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -20,6 +27,8 @@ import com.google.android.material.snackbar.Snackbar;
 import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.smartplay.app.ButtonTesterFragment;
 import de.danoeh.antennapod.smartplay.app.ControlsSettingsFragment;
+import de.danoeh.antennapod.smartplay.app.SheetView;
+import de.danoeh.antennapod.smartplay.app.Sheets;
 import de.danoeh.antennapod.smartplay.app.SleepSettingsFragment;
 import de.danoeh.antennapod.smartplay.app.UpdateScheduleFragment;
 import de.danoeh.antennapod.event.MessageEvent;
@@ -51,6 +60,7 @@ public class PreferenceActivity extends ToolbarActivity implements SearchPrefere
     public static final String OPEN_SYNC = "OpenSync";
     public static final String OPEN_ABOUT = "OpenAbout";
     private SettingsActivityBinding binding;
+    private SheetView sheet;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,10 +72,13 @@ public class PreferenceActivity extends ToolbarActivity implements SearchPrefere
         }
 
         binding = SettingsActivityBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
+        sheet = SheetView.create(this, View.generateViewId());
+        sheet.content().addView(binding.getRoot());
+        setContentView(sheet);
         if (ab != null) {
             ab.hide();
         }
+        setUpSheet();
         getSupportFragmentManager().registerFragmentLifecycleCallbacks(
                 new FragmentManager.FragmentLifecycleCallbacks() {
                     @Override
@@ -91,6 +104,64 @@ public class PreferenceActivity extends ToolbarActivity implements SearchPrefere
                     .replace(binding.settingsContainer.getId(), new SleepSettingsFragment())
                     .addToBackStack(getString(R.string.sleep_settings_title))
                     .commit();
+        }
+    }
+
+    private void setUpSheet() {
+        Sheets.skipWindowAnimation(this);
+        getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+        View frame = (View) sheet.getParent().getParent();
+        frame.setFitsSystemWindows(false);
+        frame.setPadding(0, 0, 0, 0);
+        ViewCompat.setOnApplyWindowInsetsListener(binding.getRoot(), (v, insets) -> {
+            v.setPadding(0, 0, 0, insets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom);
+            return insets;
+        });
+        ViewCompat.requestApplyInsets(frame);
+        sheet.bind(binding.getRoot());
+        sheet.setTranslationY(getResources().getDisplayMetrics().heightPixels);
+        sheet.post(() -> sheet.slideIn(null));
+        OnBackPressedCallback back = new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackProgressed(@NonNull BackEventCompat backEvent) {
+                sheet.follow(backEvent.getProgress());
+            }
+
+            @Override
+            public void handleOnBackCancelled() {
+                sheet.springBack();
+            }
+
+            @Override
+            public void handleOnBackPressed() {
+                closeTop();
+            }
+        };
+        getOnBackPressedDispatcher().addCallback(this, back);
+        sheet.setListener(new SheetView.Listener() {
+            @Override
+            public void onDragStart(SheetView view) {
+            }
+
+            @Override
+            public void onDragCancelled(SheetView view) {
+            }
+
+            @Override
+            public void onCloseRequested(SheetView view) {
+                getOnBackPressedDispatcher().onBackPressed();
+            }
+        });
+    }
+
+    private void closeTop() {
+        Keyboard.hide(this);
+        if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
+            sheet.springBack();
+            getSupportFragmentManager().popBackStack();
+        } else {
+            sheet.slideOut(() -> Sheets.finishQuietly(this));
         }
     }
 
@@ -198,12 +269,7 @@ public class PreferenceActivity extends ToolbarActivity implements SearchPrefere
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
-            if (getSupportFragmentManager().getBackStackEntryCount() == 0) {
-                finish();
-            } else {
-                Keyboard.hide(this);
-                getSupportFragmentManager().popBackStack();
-            }
+            closeTop();
             return true;
         }
         return false;

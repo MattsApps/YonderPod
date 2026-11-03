@@ -19,4 +19,31 @@
         android:clipToPadding="false"
         android:overScrollMode="never" />
 
+    <LinearLayout
+        android:id="@+id/shelfEmpty"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginHorizontal="-24dp"
+        android:layout_marginTop="28dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <de.danoeh.antennapod.ui.common.LowercaseTextView
+            style="@style/Widget.WildInk.Fit.PageTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="24dp"
+            android:text="@string/shelf_add_here"
+            android:textAppearance="@style/TextAppearance.WildInk.PageTitle" />
+
+        <include
+            layout="@layout/shelf_picker"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="12dp"
+            android:layout_weight="1" />
+
+    </LinearLayout>
+
 </LinearLayout>

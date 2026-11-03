@@ -69,7 +69,7 @@ public final class AppShelves {
     public static WorldPages pages(Context context) {
         return new WorldPages(UserPreferences.isWorldShown(WorldPages.BOOKS),
                 UserPreferences.isWorldShown(WorldPages.RADIO),
-                installed(context, false).size(), installed(context, true).size());
+                installed(context, false).size(), installed(context, true).size(), true);
     }
 
     public static List<App> installed(Context context, boolean right) {

@@ -1,10 +1,11 @@
 package de.danoeh.antennapod.smartplay.app;
 
+import de.danoeh.antennapod.smartplay.worlds.SwipeFeel;
+
 public final class SwipeDirection {
     public static final int UNDECIDED = 0;
     public static final int VERTICAL = 1;
     public static final int HORIZONTAL = 2;
-    private static final double VERTICAL_DEGREES = 60;
 
     private SwipeDirection() {
     }
@@ -14,6 +15,6 @@ public final class SwipeDirection {
             return UNDECIDED;
         }
         double fromVertical = Math.toDegrees(Math.atan2(Math.abs(dx), Math.abs(dy)));
-        return fromVertical <= VERTICAL_DEGREES ? VERTICAL : HORIZONTAL;
+        return fromVertical <= SwipeFeel.VERTICAL_DEGREES ? VERTICAL : HORIZONTAL;
     }
 }

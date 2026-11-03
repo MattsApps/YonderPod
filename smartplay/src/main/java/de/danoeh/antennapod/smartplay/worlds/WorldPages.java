@@ -17,10 +17,14 @@ public final class WorldPages {
     private final int rightApps;
 
     public WorldPages(boolean showBooks, boolean showRadio, int leftApps, int rightApps) {
+        this(showBooks, showRadio, leftApps, rightApps, false);
+    }
+
+    public WorldPages(boolean showBooks, boolean showRadio, int leftApps, int rightApps, boolean emptyShelves) {
         this.leftApps = leftApps;
         this.rightApps = rightApps;
         List<Integer> list = new ArrayList<>();
-        if (leftApps > 0) {
+        if (leftApps > 0 || emptyShelves) {
             list.add(LEFT_SHELF);
         }
         if (showBooks) {
@@ -30,7 +34,7 @@ public final class WorldPages {
         if (showRadio) {
             list.add(RADIO);
         }
-        if (rightApps > 0) {
+        if (rightApps > 0 || emptyShelves) {
             list.add(RIGHT_SHELF);
         }
         pages = Collections.unmodifiableList(list);

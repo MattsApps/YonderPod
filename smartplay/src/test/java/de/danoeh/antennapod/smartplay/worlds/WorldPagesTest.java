@@ -77,4 +77,15 @@ public class WorldPagesTest {
         assertFalse(new WorldPages(true, true, 2, 0).sameAs(new WorldPages(true, true, 3, 0)));
         assertFalse(new WorldPages(true, true, 0, 0).sameAs(new WorldPages(false, true, 0, 0)));
     }
+
+    @Test
+    public void emptyShelvesStillSitAtTheEnds() {
+        WorldPages pages = new WorldPages(true, true, 0, 0, true);
+        assertEquals(5, pages.size());
+        assertEquals(WorldPages.LEFT_SHELF, pages.pageAt(0));
+        assertEquals(WorldPages.RIGHT_SHELF, pages.pageAt(4));
+        assertEquals(WorldPages.BOOKS, pages.worldBeside(WorldPages.LEFT_SHELF));
+        assertFalse(pages.opensDirectly(WorldPages.LEFT_SHELF));
+        assertEquals(0, pages.appsOn(WorldPages.RIGHT_SHELF));
+    }
 }

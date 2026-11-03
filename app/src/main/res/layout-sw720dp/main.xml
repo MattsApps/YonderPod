@@ -32,13 +32,26 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <androidx.fragment.app.FragmentContainerView
-                android:id="@+id/main_content_view"
+            <FrameLayout
+                android:id="@+id/sheet_stack"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_alignParentTop="true"
-                android:foreground="?android:windowContentOverlay"
-                tools:background="@android:color/holo_red_dark" />
+                android:layout_height="match_parent">
+
+                <de.danoeh.antennapod.smartplay.app.SheetView
+                    android:id="@+id/main_sheet"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <androidx.fragment.app.FragmentContainerView
+                        android:id="@+id/main_content_view"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:foreground="?android:windowContentOverlay"
+                        tools:background="@android:color/holo_red_dark" />
+
+                </de.danoeh.antennapod.smartplay.app.SheetView>
+
+            </FrameLayout>
 
             <androidx.fragment.app.FragmentContainerView
                 android:id="@+id/audioplayerFragment"

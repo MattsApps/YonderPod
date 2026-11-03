@@ -1715,6 +1715,14 @@
     <string name="shelf_reorder">Drag to reorder %1$s</string>
     <string name="shelf_open">Open %1$s</string>
     <string name="shelf_cannot_open">%1$s can\'t be opened.</string>
+    <string name="shelf_add_here">add an app here</string>
+    <string name="shelf_search_hint">Search your apps</string>
+    <string name="shelf_change">Change</string>
+    <string name="shelf_change_title">Change %1$s</string>
+    <string name="shelf_move_earlier">Move earlier</string>
+    <string name="shelf_move_later">Move later</string>
+    <string name="shelf_move_to_left">Move to the left shelf</string>
+    <string name="shelf_move_to_right">Move to the right shelf</string>
     <string name="shelf_tip_title">Getting back</string>
     <string name="shelf_tip_message">Swipe along the bottom bar, or use Back, to return to Yonder.</string>
     <string name="shelf_tip_ok">Got it</string>
@@ -1899,6 +1907,10 @@
     <string name="symbol_none" translatable="false">–</string>
     <string name="symbol_more" translatable="false">›</string>
     <string name="symbol_play" translatable="false">▶</string>
+    <string name="symbol_more_actions" translatable="false">⋯</string>
+    <string name="sheet_more">More options</string>
+    <string name="sheet_close">Close</string>
+    <string name="sheet_to_top">Go to the top</string>
     <string name="symbol_remove" translatable="false">×</string>
     <string name="symbol_drag" translatable="false">≡</string>
     <string name="widget_rewind_seconds">−%1$d</string>
