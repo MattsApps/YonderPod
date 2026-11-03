@@ -1,0 +1,1362 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<issues format="6" by="lint 9.0.1" type="baseline" client="gradle" dependencies="true" name="AGP (9.0.1)" variant="all" version="9.0.1">
+
+    <issue
+        id="WrongViewCast"
+        message="Unexpected cast to `MaterialButton`: layout tag was `Button`"
+        errorLine1="        ((MaterialButton) root.findViewById(R.id.sleep_episode))"
+        errorLine2="         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/de/danoeh/antennapod/smartplay/app/SleepTimerGridDialog.java"
+            line="169"
+            column="10"/>
+        <location
+            file="src/main/java/de/danoeh/antennapod/smartplay/app/SleepTimerGridDialog.java"
+            line="169"
+            column="45"
+            message="Id bound to a `Button` in `sleep_grid_dialog.xml`"/>
+    </issue>
+
+    <issue
+        id="WrongViewCast"
+        message="Unexpected cast to `MaterialButton`: layout tag was `Button`"
+        errorLine1="        ((MaterialButton) root.findViewById(R.id.sleep_off)).setChecked(!active);"
+        errorLine2="         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/de/danoeh/antennapod/smartplay/app/SleepTimerGridDialog.java"
+            line="174"
+            column="10"/>
+        <location
+            file="src/main/java/de/danoeh/antennapod/smartplay/app/SleepTimerGridDialog.java"
+            line="174"
+            column="45"
+            message="Id bound to a `Button` in `sleep_grid_dialog.xml`"/>
+    </issue>
+
+    <issue
+        id="AnnotateVersionCheck"
+        message="This method should be annotated with `@ChecksSdkIntAtLeast(api=Build.VERSION_CODES.R)`"
+        errorLine1="    public static boolean isSupported() {"
+        errorLine2="                          ~~~~~~~~~~~">
+        <location
+            file="src/main/java/de/danoeh/antennapod/ui/common/ColourOverride.java"
+            line="42"
+            column="27"/>
+    </issue>
+
+    <issue
+        id="ApplySharedPref"
+        message="Consider using `apply()` instead; `commit` writes its data to persistent storage immediately, whereas `apply` will handle it in the background"
+        errorLine1="            editor.commit();"
+        errorLine2="                   ~~~~~~~~">
+        <location
+            file="src/main/java/de/danoeh/antennapod/smartplay/app/YonderBackup.java"
+            line="543"
+            column="20"/>
+    </issue>
+
+    <issue
+        id="DefaultLocale"
+        message="Implicitly using the default locale is a common source of bugs: Use `toLowerCase(Locale)` instead. For strings meant to be internal use `Locale.ROOT`, otherwise `Locale.getDefault()`."
+        errorLine1="                    String name = entry.getName().toLowerCase();"
+        errorLine2="                                                  ~~~~~~~~~~~">
+        <location
+            file="src/main/java/de/danoeh/antennapod/smartplay/app/YonderBackup.java"
+            line="192"
+            column="51"/>
+    </issue>
+
+    <issue
+        id="DefaultLocale"
+        message="Implicitly using the default locale is a common source of bugs: Use `toLowerCase(Locale)` instead. For strings meant to be internal use `Locale.ROOT`, otherwise `Locale.getDefault()`."
+        errorLine1="        String text = new String(header, StandardCharsets.UTF_8).trim().toLowerCase();"
+        errorLine2="                                                                        ~~~~~~~~~~~">
+        <location
+            file="src/main/java/de/danoeh/antennapod/smartplay/app/YonderBackup.java"
+            line="202"
+            column="73"/>
+    </issue>
+
+    <issue
+        id="InlinedApi"
+        message="Field requires API level 26 (current min is 24): `android.media.AudioDeviceInfo#TYPE_USB_HEADSET`"
+        errorLine1="                || type == AudioDeviceInfo.TYPE_USB_HEADSET;"
+        errorLine2="                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/de/danoeh/antennapod/playback/service/Media3PlaybackService.java"
+            line="1228"
+            column="28"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Field requires API level 28 (current min is 24): `android.icu.util.TimeZone.SystemTimeZoneType#CANONICAL_LOCATION`"
+        errorLine1="                    android.icu.util.TimeZone.SystemTimeZoneType.CANONICAL_LOCATION,"
+        errorLine2="                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/de/danoeh/antennapod/smartplay/app/RecordShowDialog.java"
+            line="239"
+            column="21"/>
+    </issue>
+
+    <issue
+        id="TextConcatSpace"
+        message="Missing space between &quot;this&quot; on the previous line and &quot;version&quot; here? Resulting string is &quot;thisversion&quot;."
+        errorLine1="                    + &quot;version of AntennaPod CastUtils, curVer=&quot; + FORMAT_VERSION_VALUE"
+        errorLine2="                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/play/java/de/danoeh/antennapod/playback/cast/CastUtils.java"
+            line="83"
+            column="23"/>
+        <location
+            file="src/play/java/de/danoeh/antennapod/playback/cast/CastUtils.java"
+            line="82"
+            column="24"
+            message="Previous text here"/>
+    </issue>
+
+    <issue
+        id="RedundantLabel"
+        message="Redundant label can be removed"
+        errorLine1="            android:label=&quot;@string/app_name&quot; />"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/AndroidManifest.xml"
+            line="311"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="RedundantLabel"
+        message="Redundant label can be removed"
+        errorLine1="            android:label=&quot;@string/app_name&quot;"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/AndroidManifest.xml"
+            line="322"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UseAppTint"
+        message="Must use `app:tint` instead of `android:tint`"
+        errorLine1="            android:tint=&quot;?android:attr/textColorPrimary&quot; />"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/find_fragment.xml"
+            line="48"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UseAppTint"
+        message="Must use `app:tint` instead of `android:tint`"
+        errorLine1="                android:tint=&quot;?android:attr/textColorPrimary&quot; />"
+        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/tend_fragment.xml"
+            line="79"
+            column="17"/>
+    </issue>
+
+    <issue
+        id="UseAppTint"
+        message="Must use `app:tint` instead of `android:tint`"
+        errorLine1="                android:tint=&quot;?attr/colorOnPrimary&quot; />"
+        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/world_books.xml"
+            line="103"
+            column="17"/>
+    </issue>
+
+    <issue
+        id="UseAppTint"
+        message="Must use `app:tint` instead of `android:tint`"
+        errorLine1="                android:tint=&quot;?attr/colorOnPrimary&quot; />"
+        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/world_podcasts.xml"
+            line="45"
+            column="17"/>
+    </issue>
+
+    <issue
+        id="UseAppTint"
+        message="Must use `app:tint` instead of `android:tint`"
+        errorLine1="                android:tint=&quot;?attr/colorOnPrimary&quot; />"
+        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/world_radio.xml"
+            line="35"
+            column="17"/>
+    </issue>
+
+    <issue
+        id="UnsafeProtectedBroadcastReceiver"
+        message="This broadcast receiver declares an intent-filter for a protected broadcast action string, which can only be sent by the system, not third-party applications. However, the receiver&apos;s `onReceive` method does not appear to call `getAction` to ensure that the received Intent&apos;s action string matches the expected value, potentially making it possible for another actor to send a spoofed intent with no action string or a different action string and cause undesired behavior."
+        errorLine1="    public void onReceive(Context context, Intent intent) {"
+        errorLine2="                ~~~~~~~~~">
+        <location
+            file="src/main/java/de/danoeh/antennapod/smartplay/app/ScheduleAlarmReceiver.java"
+            line="9"
+            column="17"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; `SDK_INT` is always >= 24"
+        errorLine1="            tools:targetApi=&quot;24&quot;>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/AndroidManifest.xml"
+            line="52"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="StaticFieldLeak"
+        message="Do not place Android context classes in static fields (static reference to `Listener` which has field `context` pointing to `Context`); this is a memory leak"
+        errorLine1="    private static Listener listener;"
+        errorLine2="            ~~~~~~">
+        <location
+            file="src/main/java/de/danoeh/antennapod/smartplay/app/BookTopUpWorker.java"
+            line="35"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="DisableBaselineAlignment"
+        message="Set `android:baselineAligned=&quot;false&quot;` on this element for better performance"
+        errorLine1="&lt;LinearLayout"
+        errorLine2=" ~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout-land/car_mode_activity.xml"
+            line="2"
+            column="2"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.dimen.widget_inner_radius` appears to be unused"
+        errorLine1="    &lt;dimen name=&quot;widget_inner_radius&quot;>4dp&lt;/dimen>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../ui/widget/src/main/res/values/dimens.xml"
+            line="4"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.dimen.widget_cover_large` appears to be unused"
+        errorLine1="    &lt;dimen name=&quot;widget_cover_large&quot;>72dp&lt;/dimen>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../ui/widget/src/main/res/values/dimens.xml"
+            line="5"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.dimen.audioplayer_playercontrols_length` appears to be unused"
+        errorLine1="    &lt;dimen name=&quot;audioplayer_playercontrols_length&quot;>48dp&lt;/dimen>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../ui/common/src/main/res/values/dimens.xml"
+            line="21"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.dimen.audioplayer_playercontrols_length_big` appears to be unused"
+        errorLine1="    &lt;dimen name=&quot;audioplayer_playercontrols_length_big&quot;>64dp&lt;/dimen>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../ui/common/src/main/res/values/dimens.xml"
+            line="22"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.dimen.audioplayer_playercontrols_margin` appears to be unused"
+        errorLine1="    &lt;dimen name=&quot;audioplayer_playercontrols_margin&quot;>12dp&lt;/dimen>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../ui/common/src/main/res/values/dimens.xml"
+            line="23"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable.grey_border` appears to be unused"
+        errorLine1="&lt;ripple xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;"
+        errorLine2="^">
+        <location
+            file="src/main/res/drawable/grey_border.xml"
+            line="2"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable.ic_widget_fast_forward` appears to be unused"
+        errorLine1="&lt;vector xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;"
+        errorLine2="^">
+        <location
+            file="../ui/widget/src/main/res/drawable/ic_widget_fast_forward.xml"
+            line="1"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable.ic_widget_fast_rewind` appears to be unused"
+        errorLine1="&lt;vector xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;"
+        errorLine2="^">
+        <location
+            file="../ui/widget/src/main/res/drawable/ic_widget_fast_rewind.xml"
+            line="1"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable.ic_widget_pause` appears to be unused"
+        errorLine1="&lt;vector xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;"
+        errorLine2="^">
+        <location
+            file="../ui/widget/src/main/res/drawable/ic_widget_pause.xml"
+            line="1"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable.ic_widget_play` appears to be unused"
+        errorLine1="&lt;vector xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;"
+        errorLine2="^">
+        <location
+            file="../ui/widget/src/main/res/drawable/ic_widget_play.xml"
+            line="1"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable.ic_widget_playback_speed` appears to be unused"
+        errorLine1="&lt;vector xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;"
+        errorLine2="^">
+        <location
+            file="../ui/widget/src/main/res/drawable/ic_widget_playback_speed.xml"
+            line="2"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable.ic_widget_preview` appears to be unused">
+        <location
+            file="src/main/res/drawable-hdpi/ic_widget_preview.png"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable.ic_widget_preview` appears to be unused">
+        <location
+            file="../ui/widget/src/main/res/drawable-hdpi/ic_widget_preview.png"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable.ic_widget_skip` appears to be unused"
+        errorLine1="&lt;vector xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;"
+        errorLine2="^">
+        <location
+            file="../ui/widget/src/main/res/drawable/ic_widget_skip.xml"
+            line="1"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.menu.smartplay_editor` appears to be unused"
+        errorLine1="&lt;menu xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;"
+        errorLine2="^">
+        <location
+            file="src/main/res/menu/smartplay_editor.xml"
+            line="2"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.queue_time_left_label` appears to be unused"
+        errorLine1="    &lt;string name=&quot;queue_time_left_label&quot;>%1$s • %2$s left&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../ui/i18n/src/main/res/values/strings.xml"
+            line="419"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.no_queue_items_inbox_has_items_label` appears to be unused"
+        errorLine1="    &lt;string name=&quot;no_queue_items_inbox_has_items_label&quot;>No episodes lined up, but there are new episodes that await you!&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../ui/i18n/src/main/res/values/strings.xml"
+            line="428"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.theming` appears to be unused"
+        errorLine1="    &lt;string name=&quot;theming&quot;>Theming&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~">
+        <location
+            file="../ui/i18n/src/main/res/values/strings.xml"
+            line="457"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.smartplay_header` appears to be unused"
+        errorLine1="    &lt;string name=&quot;smartplay_header&quot;>%1$s ▾ · %2$s&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../ui/i18n/src/main/res/values/strings.xml"
+            line="641"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.smartplay_banner` appears to be unused"
+        errorLine1="    &lt;string name=&quot;smartplay_banner&quot;>Smart Play builds a fresh playlist from your downloaded episodes using simple rules. Priority shows go first, then each rule in turn.&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../ui/i18n/src/main/res/values/strings.xml"
+            line="657"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.smartplay_rules_header` appears to be unused"
+        errorLine1="    &lt;string name=&quot;smartplay_rules_header&quot;>Rules&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../ui/i18n/src/main/res/values/strings.xml"
+            line="661"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.smartplay_rule_start` appears to be unused"
+        errorLine1="    &lt;string name=&quot;smartplay_rule_start&quot;>%1$d. Start with&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../ui/i18n/src/main/res/values/strings.xml"
+            line="662"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.smartplay_rule_then` appears to be unused"
+        errorLine1="    &lt;string name=&quot;smartplay_rule_then&quot;>%1$d. Then&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../ui/i18n/src/main/res/values/strings.xml"
+            line="663"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.smartplay_source_category` appears to be unused"
+        errorLine1="    &lt;string name=&quot;smartplay_source_category&quot;>Category: %1$s&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../ui/i18n/src/main/res/values/strings.xml"
+            line="674"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.smartplay_add_rule` appears to be unused"
+        errorLine1="    &lt;string name=&quot;smartplay_add_rule&quot;>Add rule&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../ui/i18n/src/main/res/values/strings.xml"
+            line="676"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.smartplay_priority_header` appears to be unused"
+        errorLine1="    &lt;string name=&quot;smartplay_priority_header&quot;>Priority shows&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../ui/i18n/src/main/res/values/strings.xml"
+            line="677"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.smartplay_priority_hint` appears to be unused"
+        errorLine1="    &lt;string name=&quot;smartplay_priority_hint&quot;>New episodes from these shows go straight to the top of the playlist.&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../ui/i18n/src/main/res/values/strings.xml"
+            line="678"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.smartplay_never_hint` appears to be unused"
+        errorLine1="    &lt;string name=&quot;smartplay_never_hint&quot;>Categories and shows chosen here never appear in this Smart Play, not even as priority shows.&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../ui/i18n/src/main/res/values/strings.xml"
+            line="707"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.smartplay_never_none` appears to be unused"
+        errorLine1="    &lt;string name=&quot;smartplay_never_none&quot;>Nothing excluded. Tap to choose.&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../ui/i18n/src/main/res/values/strings.xml"
+            line="708"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.smartplay_category_label` appears to be unused"
+        errorLine1="    &lt;string name=&quot;smartplay_category_label&quot;>Category: %1$s&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../ui/i18n/src/main/res/values/strings.xml"
+            line="709"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.widget_settings` appears to be unused"
+        errorLine1="    &lt;string name=&quot;widget_settings&quot;>Widget settings&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../ui/i18n/src/main/res/values/strings.xml"
+            line="1295"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.widget_create_button` appears to be unused"
+        errorLine1="    &lt;string name=&quot;widget_create_button&quot;>Create widget&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../ui/i18n/src/main/res/values/strings.xml"
+            line="1296"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.widget_opacity` appears to be unused"
+        errorLine1="    &lt;string name=&quot;widget_opacity&quot;>Opacity&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../ui/i18n/src/main/res/values/strings.xml"
+            line="1297"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.cover_as_background` appears to be unused"
+        errorLine1="    &lt;string name=&quot;cover_as_background&quot;>Cover as background&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../ui/i18n/src/main/res/values/strings.xml"
+            line="1302"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.librivox_title` appears to be unused"
+        errorLine1="    &lt;string name=&quot;librivox_title&quot;>Audiobooks from LibriVox&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../ui/i18n/src/main/res/values/strings.xml"
+            line="1388"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.librivox_about` appears to be unused"
+        errorLine1="    &lt;string name=&quot;librivox_about&quot;>Free public-domain audiobooks, read by LibriVox volunteers&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../ui/i18n/src/main/res/values/strings.xml"
+            line="1390"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.librivox_no_results` appears to be unused"
+        errorLine1="    &lt;string name=&quot;librivox_no_results&quot;>No audiobooks found for \&quot;%1$s\&quot;&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../ui/i18n/src/main/res/values/strings.xml"
+            line="1391"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.librivox_error` appears to be unused"
+        errorLine1="    &lt;string name=&quot;librivox_error&quot;>Couldn\&apos;t reach LibriVox. Check your connection and try again.&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../ui/i18n/src/main/res/values/strings.xml"
+            line="1392"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.librivox_read_by` appears to be unused"
+        errorLine1="    &lt;string name=&quot;librivox_read_by&quot;>Read by %1$s&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../ui/i18n/src/main/res/values/strings.xml"
+            line="1393"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.librivox_read_by_many` appears to be unused"
+        errorLine1="    &lt;string name=&quot;librivox_read_by_many&quot;>Read by %1$s and others&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../ui/i18n/src/main/res/values/strings.xml"
+            line="1394"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.radio_add` appears to be unused"
+        errorLine1="    &lt;string name=&quot;radio_add&quot;>Add station&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~">
+        <location
+            file="../ui/i18n/src/main/res/values/strings.xml"
+            line="1439"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.radio_add_search` appears to be unused"
+        errorLine1="    &lt;string name=&quot;radio_add_search&quot;>Search stations&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../ui/i18n/src/main/res/values/strings.xml"
+            line="1440"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.radio_search_title` appears to be unused"
+        errorLine1="    &lt;string name=&quot;radio_search_title&quot;>Search stations&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../ui/i18n/src/main/res/values/strings.xml"
+            line="1466"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.radio_search_about` appears to be unused"
+        errorLine1="    &lt;string name=&quot;radio_search_about&quot;>From Radio Browser, a free, open directory of stations worldwide&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../ui/i18n/src/main/res/values/strings.xml"
+            line="1468"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.radio_no_results` appears to be unused"
+        errorLine1="    &lt;string name=&quot;radio_no_results&quot;>No stations found for \&quot;%1$s\&quot;&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../ui/i18n/src/main/res/values/strings.xml"
+            line="1469"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.radio_search_error` appears to be unused"
+        errorLine1="    &lt;string name=&quot;radio_search_error&quot;>Couldn\&apos;t reach Radio Browser. Check your connection and try again.&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../ui/i18n/src/main/res/values/strings.xml"
+            line="1470"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.recording_method_quick` appears to be unused"
+        errorLine1="    &lt;string name=&quot;recording_method_quick&quot;>Saved quickly after each show&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../ui/i18n/src/main/res/values/strings.xml"
+            line="1480"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.recording_method_live` appears to be unused"
+        errorLine1="    &lt;string name=&quot;recording_method_live&quot;>Recorded live&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../ui/i18n/src/main/res/values/strings.xml"
+            line="1481"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.recording_status_held` appears to be unused"
+        errorLine1="    &lt;string name=&quot;recording_status_held&quot;>Saved %1$s · Ready %2$s&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../ui/i18n/src/main/res/values/strings.xml"
+            line="1512"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.smartplay_hours_header` appears to be unused"
+        errorLine1="    &lt;string name=&quot;smartplay_hours_header&quot;>Active hours&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../ui/i18n/src/main/res/values/strings.xml"
+            line="1528"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.tune_palette_label` appears to be unused"
+        errorLine1="    &lt;string name=&quot;tune_palette_label&quot;>%1$s palette&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../ui/i18n/src/main/res/values/strings.xml"
+            line="1672"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.look_custom_preview_block` appears to be unused"
+        errorLine1="    &lt;string name=&quot;look_custom_preview_block&quot;>stuff&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../ui/i18n/src/main/res/values/strings.xml"
+            line="1698"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.style.Theme_AntennaPod_Dynamic_TrueBlack` appears to be unused"
+        errorLine1="    &lt;style name=&quot;Theme.AntennaPod.Dynamic.TrueBlack&quot; parent=&quot;Theme.AntennaPod.Dynamic.Dark&quot;>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../ui/common/src/main/res/values/styles.xml"
+            line="126"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.style.Theme_AntennaPod_TrueBlack` appears to be unused"
+        errorLine1="    &lt;style name=&quot;Theme.AntennaPod.TrueBlack&quot; parent=&quot;Theme.AntennaPod.Dark&quot;>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../ui/common/src/main/res/values/styles.xml"
+            line="135"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.style.Theme_AntennaPod_Dynamic_Light_NoTitle` appears to be unused"
+        errorLine1="    &lt;style name=&quot;Theme.AntennaPod.Dynamic.Light.NoTitle&quot; parent=&quot;Theme.AntennaPod.Dynamic.Light&quot;>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../ui/common/src/main/res/values/styles.xml"
+            line="146"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.style.Theme_AntennaPod_Light_NoTitle` appears to be unused"
+        errorLine1="    &lt;style name=&quot;Theme.AntennaPod.Light.NoTitle&quot; parent=&quot;Theme.AntennaPod.Light&quot;>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../ui/common/src/main/res/values/styles.xml"
+            line="152"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.style.Theme_AntennaPod_Dynamic_Dark_NoTitle` appears to be unused"
+        errorLine1="    &lt;style name=&quot;Theme.AntennaPod.Dynamic.Dark.NoTitle&quot; parent=&quot;Theme.AntennaPod.Dynamic.Dark&quot;>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../ui/common/src/main/res/values/styles.xml"
+            line="158"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.style.Theme_AntennaPod_TrueBlack_NoTitle` appears to be unused"
+        errorLine1="    &lt;style name=&quot;Theme.AntennaPod.TrueBlack.NoTitle&quot; parent=&quot;Theme.AntennaPod.TrueBlack&quot;>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../ui/common/src/main/res/values/styles.xml"
+            line="170"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.style.Theme_AntennaPod_Dynamic_TrueBlack_NoTitle` appears to be unused"
+        errorLine1="    &lt;style name=&quot;Theme.AntennaPod.Dynamic.TrueBlack.NoTitle&quot; parent=&quot;Theme.AntennaPod.Dynamic.TrueBlack&quot;>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../ui/common/src/main/res/values/styles.xml"
+            line="176"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.style.Theme_AntennaPod_Dynamic_Light_Translucent` appears to be unused"
+        errorLine1="    &lt;style name=&quot;Theme.AntennaPod.Dynamic.Light.Translucent&quot; parent=&quot;Theme.AntennaPod.Dynamic.Light.NoTitle&quot;>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../ui/common/src/main/res/values/styles.xml"
+            line="182"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.style.Theme_AntennaPod_Light_Translucent` appears to be unused"
+        errorLine1="    &lt;style name=&quot;Theme.AntennaPod.Light.Translucent&quot; parent=&quot;Theme.AntennaPod.Light.NoTitle&quot;>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../ui/common/src/main/res/values/styles.xml"
+            line="192"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.style.Theme_AntennaPod_Dynamic_Dark_Translucent` appears to be unused"
+        errorLine1="    &lt;style name=&quot;Theme.AntennaPod.Dynamic.Dark.Translucent&quot; parent=&quot;Theme.AntennaPod.Dynamic.Dark.NoTitle&quot;>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../ui/common/src/main/res/values/styles.xml"
+            line="202"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.style.Theme_AntennaPod_Dark_Translucent` appears to be unused"
+        errorLine1="    &lt;style name=&quot;Theme.AntennaPod.Dark.Translucent&quot; parent=&quot;Theme.AntennaPod.Dark.NoTitle&quot;>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../ui/common/src/main/res/values/styles.xml"
+            line="212"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.style.Theme_AntennaPod_Dynamic_TrueBlack_Translucent` appears to be unused"
+        errorLine1="    &lt;style name=&quot;Theme.AntennaPod.Dynamic.TrueBlack.Translucent&quot; parent=&quot;Theme.AntennaPod.Dynamic.TrueBlack.NoTitle&quot;>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../ui/common/src/main/res/values/styles.xml"
+            line="222"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.style.Theme_AntennaPod_TrueBlack_Translucent` appears to be unused"
+        errorLine1="    &lt;style name=&quot;Theme.AntennaPod.TrueBlack.Translucent&quot; parent=&quot;Theme.AntennaPod.TrueBlack.NoTitle&quot;>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../ui/common/src/main/res/values/styles.xml"
+            line="232"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.array.android_wear_capabilities` appears to be unused"
+        errorLine1="    &lt;string-array name=&quot;android_wear_capabilities&quot;>"
+        errorLine2="                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/play/res/values/wear.xml"
+            line="3"
+            column="19"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.style.Widget_WildInk_Row` appears to be unused"
+        errorLine1="    &lt;style name=&quot;Widget.WildInk.Row&quot; parent=&quot;&quot;>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../ui/common/src/main/res/values/wildink.xml"
+            line="636"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable.wildink_bar` appears to be unused"
+        errorLine1="&lt;shape xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot; android:shape=&quot;rectangle&quot;>"
+        errorLine2="^">
+        <location
+            file="../ui/common/src/main/res/drawable/wildink_bar.xml"
+            line="2"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="IconLauncherShape"
+        message="Launcher icon used as round icon did not have a circular shape">
+        <location
+            file="src/main/res/mipmap-hdpi/ic_launcher.png"/>
+    </issue>
+
+    <issue
+        id="IconLauncherShape"
+        message="Launcher icon used as round icon did not have a circular shape">
+        <location
+            file="src/main/res/mipmap-mdpi/ic_launcher.png"/>
+    </issue>
+
+    <issue
+        id="IconLauncherShape"
+        message="Launcher icon used as round icon did not have a circular shape">
+        <location
+            file="src/main/res/mipmap-xhdpi/ic_launcher.png"/>
+    </issue>
+
+    <issue
+        id="IconLauncherShape"
+        message="Launcher icon used as round icon did not have a circular shape">
+        <location
+            file="src/main/res/mipmap-xxhdpi/ic_launcher.png"/>
+    </issue>
+
+    <issue
+        id="IconLauncherShape"
+        message="Launcher icon used as round icon did not have a circular shape">
+        <location
+            file="src/main/res/mipmap-xxxhdpi/ic_launcher.png"/>
+    </issue>
+
+    <issue
+        id="IconMissingDensityFolder"
+        message="Missing density variation folders in `src/main/res`: drawable-mdpi, drawable-xhdpi, drawable-xxhdpi">
+        <location
+            file="src/main/res"/>
+    </issue>
+
+    <issue
+        id="ButtonCase"
+        message="The standard Android way to capitalize cancel is &quot;Cancel&quot; (tip: use `@android:string/cancel` instead)"
+        errorLine1="    &lt;string name=&quot;smartplay_cancel_lower&quot;>cancel&lt;/string>"
+        errorLine2="                                          ~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="1545"
+            column="43"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        message="Do not concatenate text displayed with `setText`. Use resource string with placeholders."
+        errorLine1="            txtvLength.setText(((remainingTime > 0) ? &quot;-&quot; : &quot;&quot;) + Converter.getDurationStringLong(remainingTime));"
+        errorLine2="                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/de/danoeh/antennapod/ui/screen/playback/audio/AudioPlayerFragment.java"
+            line="486"
+            column="32"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        message="Do not concatenate text displayed with `setText`. Use resource string with placeholders."
+        errorLine1="                txtvSeek.setText(currentMedia.getChapters().get(newChapterIndex).getTitle()"
+        errorLine2="                                 ^">
+        <location
+            file="src/main/java/de/danoeh/antennapod/ui/screen/playback/audio/AudioPlayerFragment.java"
+            line="532"
+            column="34"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        message="String literal in `setText` can not be translated. Use Android resources instead."
+        errorLine1="            holder.title.setText(&quot;Error&quot;);"
+        errorLine2="                                 ~~~~~~~">
+        <location
+            file="src/main/java/de/danoeh/antennapod/ui/screen/chapter/ChaptersListAdapter.java"
+            line="56"
+            column="34"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        message="String literal in `setText` can not be translated. Use Android resources instead."
+        errorLine1="            holder.title.setText(&quot;Error&quot;);"
+        errorLine2="                                 ~~~~~~~">
+        <location
+            file="src/main/java/de/danoeh/antennapod/ui/screen/chapter/ChaptersListAdapter.java"
+            line="61"
+            column="34"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        message="Do not concatenate text displayed with `setText`. Use resource string with placeholders."
+        errorLine1="        viewBinding.txtvPodcastTitle.setText(StringUtils.stripToEmpty(media.getFeedTitle())"
+        errorLine2="                                             ^">
+        <location
+            file="src/main/java/de/danoeh/antennapod/ui/screen/playback/audio/CoverFragment.java"
+            line="149"
+            column="46"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        message="Do not concatenate text displayed with `setText`. Use resource string with placeholders."
+        errorLine1="                duration.setText(((remainingTime > 0) ? &quot;-&quot; : &quot;&quot;) + Converter.getDurationStringLong(remainingTime));"
+        errorLine2="                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/de/danoeh/antennapod/ui/episodeslist/EpisodeItemViewHolder.java"
+            line="167"
+            column="34"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        message="Do not concatenate text displayed with `setText`. Use resource string with placeholders."
+        errorLine1="            duration.setText(((remainingTime > 0) ? &quot;-&quot; : &quot;&quot;) + Converter.getDurationStringLong(remainingTime));"
+        errorLine2="                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/de/danoeh/antennapod/ui/episodeslist/EpisodeItemViewHolder.java"
+            line="239"
+            column="30"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        message="Do not concatenate text displayed with `setText`. Use resource string with placeholders."
+        errorLine1="                item.button.setText(getString(title) + &quot;\u00A0▲&quot;);"
+        errorLine2="                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/de/danoeh/antennapod/ui/screen/feed/ItemSortDialog.java"
+            line="62"
+            column="37"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        message="Do not concatenate text displayed with `setText`. Use resource string with placeholders."
+        errorLine1="                item.button.setText(getString(title) + &quot;\u00A0▼&quot;);"
+        errorLine2="                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/de/danoeh/antennapod/ui/screen/feed/ItemSortDialog.java"
+            line="65"
+            column="37"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        message="String literal in `setText` can not be translated. Use Android resources instead."
+        errorLine1="        sample.setText(&quot;Aa&quot;);"
+        errorLine2="                       ~~~~">
+        <location
+            file="src/main/java/de/danoeh/antennapod/ui/preferences/preference/PalettePreference.java"
+            line="79"
+            column="24"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        message="Do not concatenate text displayed with `setText`. Use resource string with placeholders."
+        errorLine1="                errorText.setText(&quot;Your Android System WebView crashed. Try restarting the phone. If this happens &quot;"
+        errorLine2="                                  ^">
+        <location
+            file="src/main/java/de/danoeh/antennapod/ui/view/ShownotesWebView.java"
+            line="110"
+            column="35"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        message="String literal in `setText` can not be translated. Use Android resources instead."
+        errorLine1="                errorText.setText(&quot;Your Android System WebView crashed. Try restarting the phone. If this happens &quot;"
+        errorLine2="                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/de/danoeh/antennapod/ui/view/ShownotesWebView.java"
+            line="110"
+            column="35"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        message="String literal in `setText` can not be translated. Use Android resources instead."
+        errorLine1="                        + &quot;repeatedly, contact the phone manufacturer or the creator of your custom ROM.&quot;);"
+        errorLine2="                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/de/danoeh/antennapod/ui/view/ShownotesWebView.java"
+            line="111"
+            column="27"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        message="Do not concatenate text displayed with `setText`. Use resource string with placeholders."
+        errorLine1="                holder.viewTimecode.setText(timecode + &quot; • &quot; + seg.getSpeaker());"
+        errorLine2="                                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/de/danoeh/antennapod/ui/screen/playback/TranscriptAdapter.java"
+            line="99"
+            column="45"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        message="Do not concatenate text displayed with `setText`. Use resource string with placeholders."
+        errorLine1="            binding.durationLabel.setText(&quot;-&quot; + Converter.getDurationStringLong(remainingTime));"
+        errorLine2="                                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/de/danoeh/antennapod/ui/screen/playback/video/VideoPlayerControlsView.java"
+            line="220"
+            column="43"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;30&quot;, should use `@string` resource"
+        errorLine1="                    android:text=&quot;30&quot;"
+        errorLine2="                    ~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/audioplayer_fragment.xml"
+            line="186"
+            column="21"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;30&quot;, should use `@string` resource"
+        errorLine1="                    android:text=&quot;30&quot;"
+        errorLine2="                    ~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/audioplayer_fragment.xml"
+            line="216"
+            column="21"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;30&quot;, should use `@string` resource"
+        errorLine1="            android:text=&quot;30&quot; />"
+        errorLine2="            ~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/feed_pref_skip_dialog.xml"
+            line="33"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;30&quot;, should use `@string` resource"
+        errorLine1="            android:text=&quot;30&quot; />"
+        errorLine2="            ~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/feed_pref_skip_dialog.xml"
+            line="69"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;·&quot;, should use `@string` resource"
+        errorLine1="                        android:text=&quot;·&quot;"
+        errorLine2="                        ~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/feeditem_fragment.xml"
+            line="80"
+            column="25"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;·&quot;, should use `@string` resource"
+        errorLine1="                    android:text=&quot;·&quot;"
+        errorLine2="                    ~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/feeditemlist_item.xml"
+            line="149"
+            column="21"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;·&quot;, should use `@string` resource"
+        errorLine1="                    android:text=&quot;·&quot;"
+        errorLine2="                    ~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/feeditemlist_item.xml"
+            line="166"
+            column="21"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;3&quot;, should use `@string` resource"
+        errorLine1="                        android:text=&quot;3&quot;"
+        errorLine2="                        ~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/subscription_grid_item.xml"
+            line="82"
+            column="25"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;3&quot;, should use `@string` resource"
+        errorLine1="        android:text=&quot;3&quot;"
+        errorLine2="        ~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/subscription_list_item.xml"
+            line="103"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;2&quot;, should use `@string` resource"
+        errorLine1="                        android:title=&quot;2&quot;/>"
+        errorLine2="                        ~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/menu/subscriptions.xml"
+            line="43"
+            column="25"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;3&quot;, should use `@string` resource"
+        errorLine1="                        android:title=&quot;3&quot;/>"
+        errorLine2="                        ~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/menu/subscriptions.xml"
+            line="46"
+            column="25"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;4&quot;, should use `@string` resource"
+        errorLine1="                        android:title=&quot;4&quot;/>"
+        errorLine2="                        ~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/menu/subscriptions.xml"
+            line="49"
+            column="25"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;5&quot;, should use `@string` resource"
+        errorLine1="                        android:title=&quot;5&quot;/>"
+        errorLine2="                        ~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/menu/subscriptions.xml"
+            line="52"
+            column="25"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;00:00:00&quot;, should use `@string` resource"
+        errorLine1="                android:text=&quot;00:00:00&quot;"
+        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/time_dialog.xml"
+            line="76"
+            column="17"/>
+    </issue>
+
+    <issue
+        id="RtlSymmetry"
+        message="When you define `paddingStart` you should probably also define `paddingEnd` for right-to-left symmetry"
+        errorLine1="    android:paddingStart=&quot;16dp&quot;>"
+        errorLine2="    ~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/smartplay_list_item.xml"
+            line="9"
+            column="5"/>
+    </issue>
+
+</issues>
