@@ -16,5 +16,5 @@ dependencies {
 
     playImplementation libs.google.play.services.base
     // This version should be updated regularly.
-    freeImplementation libs.conscrypt.android
+    fdroidImplementation libs.conscrypt.android
 }
