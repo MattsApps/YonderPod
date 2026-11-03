@@ -1751,7 +1751,7 @@
     <string name="welcome_ready_title">ready?</string>
     <string name="welcome_ready_body">Bring your shows from another app, or start fresh and find some.</string>
     <string name="welcome_moving_why">Pocket Casts, BeyondPod, AntennaPod, Overcast and more.</string>
-    <string name="yonder_feedback_email" translatable="false"></string>
+    <string name="yonder_feedback_email" translatable="false">matt.ingham.lives@gmail.com</string>
     <string name="yonder_source_url" translatable="false">https://github.com/MattsApps/YonderPod</string>
     <string name="yonder_privacy_url" translatable="false">https://yonderpod.netlify.app/privacy-policy.html</string>
     <string name="backup_title">backup</string>
