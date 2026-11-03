@@ -3,7 +3,7 @@ android {
     enableKotlin false
 
     defaultConfig {
-        minSdk 23
+        minSdk 24
         targetSdk 36
 
         vectorDrawables.useSupportLibrary true

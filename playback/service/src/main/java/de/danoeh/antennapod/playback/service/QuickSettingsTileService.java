@@ -2,19 +2,15 @@ package de.danoeh.antennapod.playback.service;
 
 import android.content.ComponentName;
 import android.content.Intent;
-import android.os.Build;
 import android.os.IBinder;
 import android.service.quicksettings.Tile;
 import android.service.quicksettings.TileService;
 import android.util.Log;
 import android.view.KeyEvent;
 
-import androidx.annotation.RequiresApi;
-
 import de.danoeh.antennapod.storage.preferences.PlaybackPreferences;
 import de.danoeh.antennapod.ui.appstartintent.MediaButtonStarter;
 
-@RequiresApi(api = Build.VERSION_CODES.N)
 public class QuickSettingsTileService extends TileService {
 
     private static final String TAG = "QuickSettingsTileSvc";

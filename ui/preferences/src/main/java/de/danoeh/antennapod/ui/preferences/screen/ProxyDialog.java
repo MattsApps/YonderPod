@@ -3,7 +3,6 @@ package de.danoeh.antennapod.ui.preferences.screen;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.os.Build;
 import androidx.appcompat.app.AlertDialog;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import android.text.Editable;
@@ -96,9 +95,7 @@ public class ProxyDialog {
         List<String> types = new ArrayList<>();
         types.add(Proxy.Type.DIRECT.name());
         types.add(Proxy.Type.HTTP.name());
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            types.add(Proxy.Type.SOCKS.name());
-        }
+        types.add(Proxy.Type.SOCKS.name());
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(context,
                 android.R.layout.simple_list_item_1, types);

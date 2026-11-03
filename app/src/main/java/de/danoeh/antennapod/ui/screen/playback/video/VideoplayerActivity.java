@@ -516,7 +516,7 @@ public class VideoplayerActivity extends CastEnabledActivity
     }
 
     private void compatEnterPictureInPicture() {
-        if (PictureInPictureUtil.supportsPictureInPicture(this) && Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        if (PictureInPictureUtil.supportsPictureInPicture(this)) {
             viewBinding.controlsView.hideControls(false);
             enterPictureInPictureMode();
         }

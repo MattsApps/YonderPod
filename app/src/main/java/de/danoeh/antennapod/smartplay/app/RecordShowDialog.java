@@ -234,7 +234,7 @@ public final class RecordShowDialog {
 
     static List<String> zonesFor(String countryCode) {
         List<String> result = new ArrayList<>();
-        if (countryCode != null && !countryCode.isEmpty() && Build.VERSION.SDK_INT >= 24) {
+        if (countryCode != null && !countryCode.isEmpty()) {
             result.addAll(android.icu.util.TimeZone.getAvailableIDs(
                     android.icu.util.TimeZone.SystemTimeZoneType.CANONICAL_LOCATION,
                     countryCode.toUpperCase(Locale.ROOT), null));
