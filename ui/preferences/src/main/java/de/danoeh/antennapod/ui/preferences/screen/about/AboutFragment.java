@@ -28,7 +28,7 @@ public class AboutFragment extends AnimatedPreferenceFragment {
             e.printStackTrace();
         }
         //noinspection ConstantValue
-        if ("free".equals(BuildConfig.FLAVOR)) {
+        if ("fdroid".equals(BuildConfig.FLAVOR)) {
             versionName += "f";
         }
 
@@ -55,7 +55,7 @@ public class AboutFragment extends AnimatedPreferenceFragment {
             return true;
         });
         findPreference("about_privacy_policy").setOnPreferenceClickListener((preference) -> {
-            IntentUtils.openInBrowser(getContext(), "https://antennapod.org/privacy/");
+            IntentUtils.openInBrowser(getContext(), getString(R.string.yonder_privacy_url));
             return true;
         });
         findPreference("about_licenses").setOnPreferenceClickListener((preference) -> {

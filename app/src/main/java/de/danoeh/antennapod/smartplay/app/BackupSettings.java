@@ -68,11 +68,19 @@ public final class BackupSettings {
 
     @Nullable
     public static String password(Context context) {
-        String password = prefs(context).getString(KEY_PASSWORD, "");
-        return password.isEmpty() ? null : password;
+        String stored = prefs(context).getString(KEY_PASSWORD, "");
+        if (stored.isEmpty()) {
+            return null;
+        }
+        if (!SecretBox.isSealed(stored)) {
+            setPassword(context, stored);
+            return stored;
+        }
+        return SecretBox.open(stored);
     }
 
     public static void setPassword(Context context, @Nullable String password) {
-        prefs(context).edit().putString(KEY_PASSWORD, password == null ? "" : password).apply();
+        String stored = password == null || password.isEmpty() ? "" : SecretBox.seal(password);
+        prefs(context).edit().putString(KEY_PASSWORD, stored == null ? "" : stored).apply();
     }
 }

@@ -104,15 +104,12 @@ public class MainPreferencesFragment extends AnimatedPreferenceFragment {
                 }
         );
         findPreference(PREF_DOCUMENTATION).setOnPreferenceClickListener(preference -> {
-            IntentUtils.openInBrowser(getContext(), "https://antennapod.org/documentation/");
+            IntentUtils.openInBrowser(getContext(), getString(R.string.yonder_source_url));
             return true;
         });
-        findPreference(PREF_VIEW_FORUM).setOnPreferenceClickListener(preference -> {
-            IntentUtils.openInBrowser(getContext(), "https://forum.antennapod.org/");
-            return true;
-        });
+        findPreference(PREF_VIEW_FORUM).setVisible(false);
         findPreference(PREF_CONTRIBUTE).setOnPreferenceClickListener(preference -> {
-            IntentUtils.openInBrowser(getContext(), "https://antennapod.org/contribute/");
+            IntentUtils.openInBrowser(getContext(), getString(R.string.yonder_source_url));
             return true;
         });
         findPreference(PREF_SEND_BUG_REPORT).setOnPreferenceClickListener(preference -> {

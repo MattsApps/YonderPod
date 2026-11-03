@@ -110,7 +110,7 @@ public class QuickFeedDiscoveryFragment extends Fragment implements AdapterView.
             return;
         }
         //noinspection ConstantConditions
-        if (BuildConfig.FLAVOR.equals("free") && prefs.getBoolean(ItunesTopListLoader.PREF_KEY_NEEDS_CONFIRM, true)) {
+        if (BuildConfig.FLAVOR.equals("fdroid") && prefs.getBoolean(ItunesTopListLoader.PREF_KEY_NEEDS_CONFIRM, true)) {
             viewBinding.errorLabel.setText("");
             viewBinding.errorContainer.setVisibility(View.VISIBLE);
             viewBinding.discoverGrid.setVisibility(View.VISIBLE);

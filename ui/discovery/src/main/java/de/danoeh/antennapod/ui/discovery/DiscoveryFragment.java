@@ -167,7 +167,7 @@ public class DiscoveryFragment extends Fragment implements Toolbar.OnMenuItemCli
             return;
         }
         //noinspection ConstantConditions
-        if (BuildConfig.FLAVOR.equals("free") && needsConfirm) {
+        if (BuildConfig.FLAVOR.equals("fdroid") && needsConfirm) {
             txtvError.setVisibility(View.VISIBLE);
             txtvError.setText("");
             butRetry.setVisibility(View.VISIBLE);

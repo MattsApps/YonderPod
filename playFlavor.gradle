@@ -1,7 +1,7 @@
 android {
     flavorDimensions += ["market"]
     productFlavors {
-        free {
+        fdroid {
             dimension "market"
         }
         play {

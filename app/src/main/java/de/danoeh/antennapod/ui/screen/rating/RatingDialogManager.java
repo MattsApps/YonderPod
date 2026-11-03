@@ -34,7 +34,7 @@ public class RatingDialogManager {
 
     public void showIfNeeded() {
         //noinspection ConstantConditions
-        if (isRated() || BuildConfig.DEBUG || "free".equals(BuildConfig.FLAVOR)) {
+        if (isRated() || BuildConfig.DEBUG || "fdroid".equals(BuildConfig.FLAVOR)) {
             return;
         } else if (!enoughTimeSinceInstall()) {
             return;

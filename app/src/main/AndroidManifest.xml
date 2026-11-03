@@ -12,7 +12,6 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
     <uses-permission android:name="android.permission.VIBRATE" />
@@ -305,6 +304,11 @@
             tools:ignore="Deprecated"
             android:name="com.google.android.actions"
             android:resource="@xml/actions" />
+        <activity
+            android:name=".smartplay.app.WelcomeActivity"
+            android:exported="false"
+            android:label="@string/app_name" />
+
         <activity
             android:name=".smartplay.app.CarModeActivity"
             android:exported="false"

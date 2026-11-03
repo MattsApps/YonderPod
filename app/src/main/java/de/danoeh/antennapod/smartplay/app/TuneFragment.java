@@ -145,9 +145,13 @@ public class TuneFragment extends Fragment {
         row(sections, R.string.tune_import_export, "", () -> TendRows.open(this, new BackupFragment()));
         row(sections, R.string.tune_sync, "", () -> openSettings(PreferenceActivity.OPEN_SYNC));
 
+        heading(sections, R.string.tune_help);
+        row(sections, R.string.tune_welcome, "", () -> WelcomeActivity.show(requireActivity()));
+        row(sections, R.string.moving_title, "", () -> TendRows.open(this, new MovingFragment()));
+
         heading(sections, R.string.tune_about);
         row(sections, R.string.tune_about_app, BuildConfig.VERSION_NAME,
-                () -> openSettings(PreferenceActivity.OPEN_ABOUT));
+                () -> TendRows.open(this, new AboutFragment()));
     }
 
     private void openSchedule() {

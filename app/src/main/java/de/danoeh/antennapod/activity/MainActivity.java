@@ -60,7 +60,9 @@ import de.danoeh.antennapod.smartplay.app.PodcastsTendFragment;
 import de.danoeh.antennapod.smartplay.app.RadioFragment;
 import de.danoeh.antennapod.smartplay.app.TendRows;
 import de.danoeh.antennapod.smartplay.app.WorldSurface;
+import de.danoeh.antennapod.smartplay.app.MovingFragment;
 import de.danoeh.antennapod.smartplay.app.WorldsFragment;
+import de.danoeh.antennapod.smartplay.app.WelcomeActivity;
 import de.danoeh.antennapod.smartplay.app.YonderBackupWorker;
 import de.danoeh.antennapod.smartplay.app.CarModeAutoOpener;
 import de.danoeh.antennapod.storage.preferences.ControlsPreferences;
@@ -241,6 +243,9 @@ public class MainActivity extends CastEnabledActivity implements NavigationToolb
         SynchronizationQueue.getInstance().syncIfNotSyncedRecently();
         AutomaticDatabaseExportWorker.enqueueIfNeeded(this, false);
         YonderBackupWorker.schedule(this, false);
+        if (savedInstanceState == null) {
+            WelcomeActivity.maybeShow(this);
+        }
         DatabaseMaintenanceWorker.enqueueIfNeeded(this);
 
         WorkManager.getInstance(this)
@@ -858,6 +863,10 @@ public class MainActivity extends CastEnabledActivity implements NavigationToolb
         }
         if (intent.getBooleanExtra(EXTRA_REFRESH_ON_START, false)) {
             FeedUpdateManager.getInstance().runOnceOrAsk(this);
+        }
+        if (intent.getBooleanExtra(WelcomeActivity.EXTRA_OPEN_MOVING, false)) {
+            hideWorlds();
+            loadChildFragment(new MovingFragment());
         }
         // to avoid handling the intent twice when the configuration changes
         setIntent(new Intent(MainActivity.this, MainActivity.class));

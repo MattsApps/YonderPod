@@ -10,21 +10,24 @@ android {
 
     defaultConfig {
         applicationId "com.mattsapps.yonderpod"
-        // Version code schema:
-        // "1.2.3-beta4"    -> 1020304
-        // "1.2.3"          -> 1020395
-        versionCode 3120395
-        versionName "3.12.3"
+        // Version code schema (kept above AntennaPod's 3120395 so test builds install over it):
+        // "0.9.0" -> 4000900, "0.9.1" -> 4000901, "1.0.0" -> 4010000
+        versionCode 4000900
+        versionName "0.9.0"
     }
 
     signingConfigs {
         releaseConfig {
             enableV1Signing true
             enableV2Signing true
-            storeFile file(project.getProperties().getOrDefault("releaseStoreFile", "keystore"))
-            storePassword project.getProperties().getOrDefault("releaseStorePassword", "password")
-            keyAlias project.getProperties().getOrDefault("releaseKeyAlias", "alias")
-            keyPassword project.getProperties().getOrDefault("releaseKeyPassword", "password")
+            storeFile file(System.getenv("YONDER_UPLOAD_KEYSTORE")
+                    ?: project.getProperties().getOrDefault("releaseStoreFile", "keystore"))
+            storePassword System.getenv("YONDER_UPLOAD_PASSWORD")
+                    ?: project.getProperties().getOrDefault("releaseStorePassword", "password")
+            keyAlias System.getenv("YONDER_UPLOAD_ALIAS")
+                    ?: project.getProperties().getOrDefault("releaseKeyAlias", "alias")
+            keyPassword System.getenv("YONDER_UPLOAD_PASSWORD")
+                    ?: project.getProperties().getOrDefault("releaseKeyPassword", "password")
         }
     }
 

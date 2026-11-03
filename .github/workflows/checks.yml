@@ -67,7 +67,7 @@ jobs:
             base-variant: "Release"
             execute-tests: true
             upload-artifact: false
-          - variant: "FreeRelease"
+          - variant: "FdroidRelease"
             base-variant: "Release"
             execute-tests: false
             upload-artifact: false

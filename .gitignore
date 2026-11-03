@@ -33,3 +33,10 @@ gradle.properties
 .kotlin
 .claude
 .cursor
+*.jks
+*.aab
+*.bpbak
+*.yonder
+upload-key*
+signing.properties
+release-log.txt

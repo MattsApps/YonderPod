@@ -525,7 +525,7 @@
     <string name="pref_tinted_theme_message">Adapt app colors based on the wallpaper</string>
     <string name="bottom_navigation">Bottom navigation</string>
     <string name="bottom_navigation_summary">Access the most important screens from everywhere, in a single tap</string>
-    <string name="bottom_navigation_deprecation_warning">Unfortunately we have to remove side navigation in a future update. AntennaPod is developed by a small group of volunteers, and after maintaining both navigation styles for years, it has become too much overhead. \n\nIf you absolutely rely on side navigation, please disable updates for AntennaPod in your app store.</string>
+    <string name="bottom_navigation_deprecation_warning">Side navigation is going away in a future update.</string>
     <string name="pref_nav_drawer_items_title">Customize navigation</string>
     <string name="pref_nav_drawer_items_sum">Change which items appear in the navigation drawer or bottom navigation</string>
     <string name="pref_nav_drawer_feed_counter_title">Counter</string>
@@ -619,7 +619,7 @@
 
     <!-- Report bug -->
     <string name="report_bug_title">Report bug</string>
-    <string name="report_bug_message">Sorry to hear something isn’t working. We’d love your help to improve AntennaPod. Please check our forum or GitHub to see if the issue has already been reported. If not, let us know and we’ll investigate.</string>
+    <string name="report_bug_message">Sorry to hear something isn’t working. Tune → About → send feedback emails it to me, with the details I need.</string>
     <string name="report_bug_device_info_title">Device</string>
     <string name="report_bug_attrib_app_version">App version</string>
     <string name="report_bug_attrib_android_version">Android version</string>
@@ -797,7 +797,7 @@
     <string name="schedule_battery_warning">Battery optimisation is on for Yonder, so Android may delay or skip scheduled updates.</string>
     <string name="schedule_battery_fix">Fix</string>
     <string name="schedule_battery_dialog_title">Let updates run on time?</string>
-    <string name="schedule_battery_dialog_message">Battery optimisation can stop updates running at the time you chose. Allow Yonder to run in the background?</string>
+    <string name="schedule_battery_dialog_message">Battery optimisation can stop updates running at the time you chose. In Yonder\'s app settings, tap Battery and choose Unrestricted.</string>
     <string name="schedule_status_updated">Updated %s</string>
     <string name="schedule_status_never">Not updated yet</string>
     <string name="schedule_status_next">Next: %s</string>
@@ -939,7 +939,7 @@
     <string name="about_based_on_title">Based on AntennaPod</string>
     <string name="about_based_on_summary">Yonder is based on AntennaPod, licensed under the GPL v3</string>
     <string name="contributors">Contributors</string>
-    <string name="contributors_summary">Everyone can help to make AntennaPod better - with code, translations or by helping users in our forum</string>
+    <string name="contributors_summary">The people who built AntennaPod, which Yonder is built on</string>
     <string name="developers">Developers</string>
     <string name="translators">Translators</string>
     <string name="special_thanks">Special thanks</string>
@@ -1099,8 +1099,8 @@
     <string name="rating_tagline">Since %1$s, you played %2$s%3$d%4$s hours of podcasts.</string>
     <string name="rating_contribute_label">Want to join? Whether you want to translate, support, design or code, we would be happy to have you!</string>
     <string name="rating_contribute_button">Discover ways to contribute</string>
-    <string name="rating_volunteers_label">AntennaPod is developed by volunteers in their free time. Share your appreciation of their work by leaving a nice rating.</string>
-    <string name="rating_rate">Rate AntennaPod</string>
+    <string name="rating_volunteers_label">Yonder is made by one person in their spare time. If you like it, a rating helps other people find it.</string>
+    <string name="rating_rate">Rate Yonder</string>
     <string name="rating_later">Later</string>
 
     <!-- Online feed view -->
@@ -1704,6 +1704,56 @@
     <string name="shelf_tip_message">Swipe along the bottom bar, or use Back, to return to Yonder.</string>
     <string name="shelf_tip_ok">Got it</string>
     <string name="shelf_count">%1$d apps</string>
+    <string name="tune_help">help</string>
+    <string name="tune_welcome">Welcome tour</string>
+    <string name="about_intro">Version %1$s. Podcasts, books and radio, the way you want to hear them.</string>
+    <string name="about_feedback">send feedback</string>
+    <string name="about_thanks_heading">thanks</string>
+    <string name="about_thanks">Yonder is built on AntennaPod, made by volunteers over many years. Thank you to everyone who built it.</string>
+    <string name="about_antennapod">Built on AntennaPod</string>
+    <string name="about_antennapod_value">thank you</string>
+    <string name="about_open_heading">open source</string>
+    <string name="about_licence">Licence</string>
+    <string name="about_licence_value">GNU GPL v3</string>
+    <string name="about_source">Source code</string>
+    <string name="about_source_value">GitHub</string>
+    <string name="about_libraries">Open source licences</string>
+    <string name="about_privacy">Privacy policy</string>
+    <string name="feedback_explain">This opens an email to me. Your version, phone model and Android version are filled in. Nothing is sent until you press send in your email app.</string>
+    <string name="feedback_attach_log">Attach a recent log (private links, passwords and file names are taken out)</string>
+    <string name="feedback_write">Write email</string>
+    <string name="feedback_choose">Send feedback with</string>
+    <string name="feedback_no_email">No email app found.</string>
+    <string name="feedback_subject">Yonder %1$s feedback</string>
+    <string name="feedback_crash_subject">Yonder %1$s crash report</string>
+    <string name="feedback_body">Hi Matt,\n\n</string>
+    <string name="feedback_crash_body">Yonder crashed. What was I doing just before:\n\n</string>
+    <string name="feedback_details">Yonder %1$s (%2$d, %3$s)\nPhone: %4$s\nAndroid %5$s (API %6$d)</string>
+    <string name="crash_prompt_title">Yonder crashed last time</string>
+    <string name="crash_prompt_message">Send a report? It opens an email you can read first. Private links, passwords and file names are taken out.</string>
+    <string name="crash_prompt_send">Send</string>
+    <string name="crash_prompt_later">Not now</string>
+    <string name="crash_prompt_never">Never ask</string>
+    <string name="welcome_step">%1$d of %2$d</string>
+    <string name="welcome_skip">skip</string>
+    <string name="welcome_next">next</string>
+    <string name="welcome_start_fresh">start fresh</string>
+    <string name="welcome_worlds_title">three worlds</string>
+    <string name="welcome_worlds_body">Books, podcasts and radio sit side by side. Swipe sideways to move between them. The big button plays what\'s next.</string>
+    <string name="welcome_tend_title">swipe up to tend</string>
+    <string name="welcome_tend_body">Swipe up from any world to see your shows, books or stations, and your Smart Plays. Pull down from the top to come back.</string>
+    <string name="welcome_tune_title">tune</string>
+    <string name="welcome_tune_body">Settings live in Tune, at the bottom of every Tend.</string>
+    <string name="welcome_notifications">Allow notifications</string>
+    <string name="welcome_notifications_why">So you get playback controls on the lock screen, and see downloads.</string>
+    <string name="welcome_battery">Let overnight downloads run</string>
+    <string name="welcome_battery_why">In Yonder\'s app settings, tap Battery and choose Unrestricted, so the overnight update isn\'t skipped.</string>
+    <string name="welcome_ready_title">ready?</string>
+    <string name="welcome_ready_body">Bring your shows from another app, or start fresh and find some.</string>
+    <string name="welcome_moving_why">Pocket Casts, BeyondPod, AntennaPod, Overcast and more.</string>
+    <string name="yonder_feedback_email" translatable="false"></string>
+    <string name="yonder_source_url" translatable="false">https://github.com/MattsApps/YonderPod</string>
+    <string name="yonder_privacy_url" translatable="false">https://yonder.netlify.app/privacy-policy.html</string>
     <string name="backup_title">backup</string>
     <string name="backup_intro">One file with everything Yonder knows: your shows, what you\'ve played, Smart Plays, categories, schedules, stations, recordings, palettes and settings. Not the audio itself.</string>
     <string name="backup_now">back up now</string>

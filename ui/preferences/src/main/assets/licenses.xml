@@ -7,6 +7,12 @@
         license="GPL-3.0"
         licenseText="LICENSE.txt" />
     <library
+        name="Bricolage Grotesque"
+        author="The Bricolage Grotesque Project Authors"
+        website="https://github.com/ateliertriay/bricolage"
+        license="SIL Open Font License 1.1"
+        licenseText="LICENSE_BRICOLAGE_OFL.txt" />
+    <library
         name="Android Jetpack"
         author="Google"
         website="https://developer.android.com/jetpack"

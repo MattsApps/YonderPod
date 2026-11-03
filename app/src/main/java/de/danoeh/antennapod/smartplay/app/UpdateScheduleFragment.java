@@ -212,7 +212,7 @@ public class UpdateScheduleFragment extends Fragment {
             return;
         }
         try {
-            Intent intent = new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,
+            Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
                     Uri.parse("package:" + context.getPackageName()));
             context.startActivity(intent);
         } catch (ActivityNotFoundException e) {

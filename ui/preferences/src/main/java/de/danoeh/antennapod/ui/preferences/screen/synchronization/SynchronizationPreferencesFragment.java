@@ -168,7 +168,7 @@ public class SynchronizationPreferencesFragment extends AnimatedPreferenceFragme
         DialogSyncProviderChooserBinding viewBinding = DialogSyncProviderChooserBinding.inflate(getLayoutInflater());
         builder.setView(viewBinding.getRoot());
         viewBinding.moreInformation.setOnClickListener(v ->
-                IntentUtils.openInBrowser(getContext(), "https://antennapod.org/s/sync-help"));
+                IntentUtils.openInBrowser(getContext(), getString(R.string.yonder_source_url)));
         Dialog dialog = builder.show();
 
         SynchronizationProvider[] providers = SynchronizationProvider.values();

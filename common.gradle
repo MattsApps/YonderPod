@@ -154,7 +154,7 @@ tasks.register('checkstyle', Checkstyle) {
 
     classpath = files()
     source = fileTree('src/main/java') { include '**/*.java' }
-    if (file("src/free/java").exists()) source += fileTree("src/free/java") { include '**/*.java' }
+    if (file("src/fdroid/java").exists()) source += fileTree("src/fdroid/java") { include '**/*.java' }
     if (file("src/play/java").exists()) source += fileTree("src/play/java") { include '**/*.java' }
 
     exclude '**/gen/**'
