@@ -1744,6 +1744,7 @@
     <string name="about_source">Source code</string>
     <string name="about_source_value">GitHub</string>
     <string name="about_libraries">Open source licences</string>
+    <string name="about_made_by">Made by</string>
     <string name="about_privacy">Privacy policy</string>
     <string name="feedback_explain">This opens an email to me. Your version, phone model and Android version are filled in. Nothing is sent until you press send in your email app.</string>
     <string name="feedback_attach_log">Attach a recent log (private links, passwords and file names are taken out)</string>
@@ -1777,8 +1778,9 @@
     <string name="welcome_ready_title">ready?</string>
     <string name="welcome_ready_body">Bring your shows from another app, or start fresh and find some.</string>
     <string name="welcome_moving_why">Pocket Casts, BeyondPod, AntennaPod, Overcast and more.</string>
-    <string name="yonder_feedback_email" translatable="false">matt.ingham.lives@gmail.com</string>
-    <string name="yonder_source_url" translatable="false">https://github.com/MattsApps/YonderPod</string>
+    <string name="yonder_feedback_email" translatable="false">BetterBuiltApps@gmail.com</string>
+    <string name="yonder_source_url" translatable="false">https://github.com/BetterBuiltApps/YonderPod</string>
+    <string name="yonder_developer_name" translatable="false">BetterBuiltApps</string>
     <string name="yonder_privacy_url" translatable="false">https://yonderpod.netlify.app/privacy-policy.html</string>
     <string name="backup_title">backup</string>
     <string name="backup_intro">One file with everything Yonder knows: your shows, what you\'ve played, Smart Plays, categories, schedules, stations, recordings, palettes and settings. Not the audio itself.</string>

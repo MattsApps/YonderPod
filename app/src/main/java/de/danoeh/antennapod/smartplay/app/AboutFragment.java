@@ -43,6 +43,7 @@ public class AboutFragment extends Fragment {
         root.findViewById(R.id.pageActionNote).setVisibility(View.GONE);
 
         LinearLayout sections = root.findViewById(R.id.pageSections);
+        row(sections, R.string.about_made_by, getString(R.string.yonder_developer_name), this::askFeedback);
         heading(sections, R.string.about_thanks_heading);
         note(sections, getString(R.string.about_thanks));
         row(sections, R.string.about_antennapod, getString(R.string.about_antennapod_value), () ->
