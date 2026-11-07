@@ -67,6 +67,7 @@ import de.danoeh.antennapod.playback.service.internal.PlayableUtils;
 import de.danoeh.antennapod.playback.service.internal.SkipUtils;
 import de.danoeh.antennapod.playback.service.internal.AudioFocusPolicy;
 import de.danoeh.antennapod.playback.service.internal.ButtonPressHandler;
+import de.danoeh.antennapod.playback.service.internal.DuckingFocus;
 import de.danoeh.antennapod.playback.service.internal.SleepTimer;
 import de.danoeh.antennapod.playback.service.internal.ClockSleepTimer;
 import de.danoeh.antennapod.playback.service.internal.EpisodeSleepTimer;
@@ -122,6 +123,9 @@ public class Media3PlaybackService extends MediaLibraryService {
     private AudioDeviceCallback audioDeviceCallback;
     private boolean pausedByDisconnect = false;
     private long suppressionStartedAt = 0;
+    private DuckingFocus duckingFocus;
+    private float duckFactor = 1.0f;
+    private float lastBaseVolume = 1.0f;
     private final Handler fadeInHandler = new Handler(Looper.getMainLooper());
     private float fadeInVolume = 1.0f;
     @Nullable
@@ -144,6 +148,7 @@ public class Media3PlaybackService extends MediaLibraryService {
         setMediaNotificationProvider(notificationProvider);
 
         exoPlayer = ExoPlayerUtils.buildPlayer(this);
+        duckingFocus = new DuckingFocus(this, duckingListener);
         exoPlayer.addListener(new Player.Listener() {
             @Override
             public void onAudioSessionIdChanged(int audioSessionId) {
@@ -570,6 +575,9 @@ public class Media3PlaybackService extends MediaLibraryService {
         if (loudnessEnhancer != null) {
             loudnessEnhancer.release();
             loudnessEnhancer = null;
+        }
+        if (duckingFocus != null) {
+            duckingFocus.abandon();
         }
         if (player != null) {
             player.removeListener(playerListener);
@@ -1157,17 +1165,68 @@ public class Media3PlaybackService extends MediaLibraryService {
 
     @OptIn(markerClass = UnstableApi.class)
     private void applyAudioAttributes() {
+        boolean duck = ControlsPreferences.duckNotifications();
         exoPlayer.setAudioAttributes(new AudioAttributes.Builder()
                 .setUsage(C.USAGE_MEDIA)
-                .setContentType(ControlsPreferences.duckNotifications()
-                        ? C.AUDIO_CONTENT_TYPE_MUSIC : C.AUDIO_CONTENT_TYPE_SPEECH)
-                .build(), true);
+                .setContentType(duck ? C.AUDIO_CONTENT_TYPE_MUSIC : C.AUDIO_CONTENT_TYPE_SPEECH)
+                .build(), !duck);
+        if (duck) {
+            duckingFocus.request();
+        } else {
+            duckingFocus.abandon();
+        }
     }
 
     @OptIn(markerClass = UnstableApi.class)
     private void releaseAudioFocus() {
         exoPlayer.setAudioAttributes(exoPlayer.getAudioAttributes(), false);
+        if (!duckingFocus.keepsFocusWhilePaused()) {
+            duckingFocus.abandon();
+        }
     }
+
+    private final DuckingFocus.Listener duckingListener = new DuckingFocus.Listener() {
+        @Override
+        public void onDuck(boolean ducked) {
+            duckFactor = AudioFocusPolicy.duckVolume(ducked);
+            if (player != null) {
+                applyVolumeAdaption(lastBaseVolume);
+            }
+        }
+
+        @Override
+        public void onInterrupted() {
+            suppressionStartedAt = System.currentTimeMillis();
+            if (exoPlayer.getPlayWhenReady()) {
+                exoPlayer.pause();
+            } else {
+                duckingFocus.abandon();
+            }
+        }
+
+        @Override
+        public void onInterruptionOver() {
+            if (currentPlayable == null || exoPlayer.getPlayWhenReady()) {
+                return;
+            }
+            long away = System.currentTimeMillis() - suppressionStartedAt;
+            long back = Math.max(ControlsPreferences.getInterruptionBackSeconds() * 1000L,
+                    ControlsPreferences.rewindMillisAfter(away));
+            long target = AudioFocusPolicy.seekAfterInterruption(true, true,
+                    exoPlayer.getCurrentPosition(), back);
+            if (target != AudioFocusPolicy.NO_SEEK) {
+                exoPlayer.seekTo(target);
+            }
+            exoPlayer.play();
+        }
+
+        @Override
+        public void onLost() {
+            if (exoPlayer.getPlayWhenReady()) {
+                exoPlayer.pause();
+            }
+        }
+    };
 
     private boolean isMusicActive() {
         AudioManager audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
@@ -1317,7 +1376,8 @@ public class Media3PlaybackService extends MediaLibraryService {
     }
 
     private void applyVolumeAdaption(float baseVolume) {
-        float v = baseVolume * volumeAdaptionFactor;
+        lastBaseVolume = baseVolume;
+        float v = baseVolume * volumeAdaptionFactor * duckFactor;
         if (v > 1) {
             player.setVolume(1.0f);
             try {

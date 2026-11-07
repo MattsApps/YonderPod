@@ -40,6 +40,7 @@ public final class TendRows {
         root.findViewById(R.id.tendDownloads).setOnClickListener(v ->
                 open(fragment, new CompletedDownloadsFragment()));
         root.findViewById(R.id.tendTune).setOnClickListener(v -> open(fragment, new TuneFragment()));
+        root.findViewById(R.id.tendHelp).setOnClickListener(v -> open(fragment, new HelpFragment()));
         return root;
     }
 

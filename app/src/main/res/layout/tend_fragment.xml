@@ -46,6 +46,7 @@
             android:orientation="horizontal">
 
             <TextView
+                android:id="@+id/tendTitle"
                 style="@style/Widget.WildInk.Fit.PageTitle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -58,6 +59,15 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="@style/TextAppearance.WildInk.DetailStrong" />
+
+            <TextView
+                android:id="@+id/tendHelp"
+                style="@style/Widget.WildInk.Link"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:paddingHorizontal="4dp"
+                android:text="@string/tend_help" />
 
         </LinearLayout>
 

@@ -2,6 +2,7 @@ package de.danoeh.antennapod.playback.service.internal;
 
 public final class AudioFocusPolicy {
     public static final long NO_SEEK = -1;
+    public static final float DUCK_VOLUME = 0.2f;
 
     private AudioFocusPolicy() {
     }
@@ -25,6 +26,14 @@ public final class AudioFocusPolicy {
 
     public static boolean pausedByDisconnect(boolean playWhenReady, boolean becomingNoisy) {
         return !playWhenReady && becomingNoisy;
+    }
+
+    public static boolean ducksForInterruption(boolean canDuck, boolean callOrRecording) {
+        return canDuck || !callOrRecording;
+    }
+
+    public static float duckVolume(boolean ducked) {
+        return ducked ? DUCK_VOLUME : 1.0f;
     }
 
     public static long seekAfterInterruption(boolean wasTransientLoss, boolean playWhenReady,

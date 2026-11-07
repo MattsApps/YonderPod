@@ -27,6 +27,7 @@ import com.google.android.material.snackbar.Snackbar;
 import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.smartplay.app.ButtonTesterFragment;
 import de.danoeh.antennapod.smartplay.app.ControlsSettingsFragment;
+import de.danoeh.antennapod.smartplay.app.SettingHighlight;
 import de.danoeh.antennapod.smartplay.app.SheetView;
 import de.danoeh.antennapod.smartplay.app.Sheets;
 import de.danoeh.antennapod.smartplay.app.SleepSettingsFragment;
@@ -59,6 +60,8 @@ public class PreferenceActivity extends ToolbarActivity implements SearchPrefere
     public static final String OPEN_IMPORT_EXPORT = "OpenImportExport";
     public static final String OPEN_SYNC = "OpenSync";
     public static final String OPEN_ABOUT = "OpenAbout";
+    public static final String OPEN_SCREEN = "OpenScreen";
+    public static final String HIGHLIGHT_KEY = "HighlightKey";
     private SettingsActivityBinding binding;
     private SheetView sheet;
 
@@ -88,9 +91,11 @@ public class PreferenceActivity extends ToolbarActivity implements SearchPrefere
                 }, false);
 
         if (getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG) == null) {
+            Fragment first = firstScreen(getIntent());
             getSupportFragmentManager().beginTransaction()
-                    .replace(binding.settingsContainer.getId(), firstScreen(getIntent()), FRAGMENT_TAG)
+                    .replace(binding.settingsContainer.getId(), first, FRAGMENT_TAG)
                     .commit();
+            SettingHighlight.preference(first, getIntent().getStringExtra(HIGHLIGHT_KEY));
         }
         Intent intent = getIntent();
         if (intent.getBooleanExtra(OPEN_AUTO_DOWNLOAD_SETTINGS, false)) {
@@ -179,6 +184,10 @@ public class PreferenceActivity extends ToolbarActivity implements SearchPrefere
     }
 
     private Fragment firstScreen(Intent intent) {
+        PreferenceFragmentCompat chosen = getPreferenceScreen(intent.getIntExtra(OPEN_SCREEN, 0));
+        if (chosen != null) {
+            return chosen;
+        }
         if (intent.getBooleanExtra(OPEN_AUTO_DOWNLOAD_SCREEN, false)) {
             return getPreferenceScreen(R.xml.preferences_autodownload);
         } else if (intent.getBooleanExtra(OPEN_DOWNLOADS_SCREEN, false)) {

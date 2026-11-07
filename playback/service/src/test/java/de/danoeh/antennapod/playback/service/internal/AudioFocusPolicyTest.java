@@ -74,4 +74,22 @@ public class AudioFocusPolicyTest {
         assertEquals(AudioFocusPolicy.NO_SEEK, AudioFocusPolicy.seekAfterInterruption(true, true, 0, 2_000));
         assertEquals(AudioFocusPolicy.NO_SEEK, AudioFocusPolicy.seekAfterInterruption(true, true, 60_000, 0));
     }
+
+    @Test
+    public void notificationSoundsDuckWhenChosen() {
+        assertTrue(AudioFocusPolicy.ducksForInterruption(true, false));
+        assertTrue(AudioFocusPolicy.ducksForInterruption(false, false));
+    }
+
+    @Test
+    public void callsAndRecordingStillPause() {
+        assertFalse(AudioFocusPolicy.ducksForInterruption(false, true));
+    }
+
+    @Test
+    public void duckedVolumeIsLowerAndComesBack() {
+        assertEquals(AudioFocusPolicy.DUCK_VOLUME, AudioFocusPolicy.duckVolume(true), 0.0001f);
+        assertEquals(1.0f, AudioFocusPolicy.duckVolume(false), 0.0001f);
+        assertTrue(AudioFocusPolicy.duckVolume(true) < 1.0f);
+    }
 }

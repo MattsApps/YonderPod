@@ -63,6 +63,7 @@ public class SheetView extends LinearLayout {
     private final View header;
     private final View grab;
     private final TextView name;
+    private final View nameRow;
     private final LinearLayout actions;
     private final TextView more;
     private ViewGroup content;
@@ -93,6 +94,7 @@ public class SheetView extends LinearLayout {
         addView(header, 0);
         grab = header.findViewById(R.id.sheetGrab);
         name = header.findViewById(R.id.sheetName);
+        nameRow = header.findViewById(R.id.sheetNameRow);
         actions = header.findViewById(R.id.sheetActions);
         more = header.findViewById(R.id.sheetMore);
         header.setOnClickListener(v -> scrollToTop());
@@ -204,6 +206,7 @@ public class SheetView extends LinearLayout {
         toolbar = null;
         actionsShown = "";
         name.setText(null);
+        nameRow.setVisibility(View.VISIBLE);
         actions.removeAllViews();
         more.setVisibility(View.GONE);
     }
@@ -234,6 +237,10 @@ public class SheetView extends LinearLayout {
         if (!text.equalsIgnoreCase(name.getText().toString())) {
             name.setText(text);
             header.setContentDescription(text);
+        }
+        int nameShown = fragmentView.findViewById(R.id.tendTitle) != null ? View.GONE : View.VISIBLE;
+        if (nameRow.getVisibility() != nameShown) {
+            nameRow.setVisibility(nameShown);
         }
         showActions();
     }
