@@ -1755,6 +1755,10 @@
     <string name="feedback_write">Write email</string>
     <string name="feedback_choose">Send feedback with</string>
     <string name="feedback_no_email">No email app found.</string>
+    <string name="feedback_copy_title">Send feedback by email</string>
+    <string name="feedback_copy_message">No email app was found on this phone. Copy the address and send your feedback from any email app: %1$s</string>
+    <string name="feedback_copy">Copy address</string>
+    <string name="feedback_copied">Address copied</string>
     <string name="feedback_subject">Yonder %1$s feedback</string>
     <string name="feedback_crash_subject">Yonder %1$s crash report</string>
     <string name="feedback_body">Hi Matt,\n\n</string>

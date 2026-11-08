@@ -41,6 +41,7 @@ import java.util.zip.ZipOutputStream;
 
 import de.danoeh.antennapod.BuildConfig;
 import de.danoeh.antennapod.model.feed.Feed;
+import de.danoeh.antennapod.model.feed.FeedItem;
 import de.danoeh.antennapod.smartplay.backup.BackupCrypto;
 import de.danoeh.antennapod.storage.database.PodDBAdapter;
 import de.danoeh.antennapod.storage.importexport.DatabaseExporter;
@@ -341,7 +342,10 @@ public final class YonderBackup {
                 && version(recordings) > RecordingStore.getInstance(context).getReadableDatabase().getVersion()) {
             throw new TooNewException();
         }
-        forgetMissingDownloads(main);
+        Set<Long> downloadAgain = forgetMissingDownloads(main);
+        if (smartPlays.exists()) {
+            forgetDownloadHistory(smartPlays, downloadAgain);
+        }
         JSONObject preferences = null;
         File preferencesFile = new File(summary.folder, PREFERENCES);
         if (preferencesFile.exists()) {
@@ -380,15 +384,18 @@ public final class YonderBackup {
         }
     }
 
-    private static void forgetMissingDownloads(File main) throws IOException {
+    private static Set<Long> forgetMissingDownloads(File main) throws IOException {
+        Set<Long> downloadAgain = new HashSet<>();
         try (SQLiteDatabase db = SQLiteDatabase.openDatabase(main.getPath(), null,
                 SQLiteDatabase.OPEN_READWRITE)) {
             Map<Long, String> files = new HashMap<>();
+            Map<Long, Long> items = new HashMap<>();
             try (Cursor cursor = db.rawQuery("SELECT " + PodDBAdapter.KEY_ID + ", " + PodDBAdapter.KEY_FILE_URL
-                    + " FROM " + PodDBAdapter.TABLE_NAME_FEED_MEDIA + " WHERE " + PodDBAdapter.KEY_FILE_URL
-                    + " IS NOT NULL", null)) {
+                    + ", " + PodDBAdapter.KEY_FEEDITEM + " FROM " + PodDBAdapter.TABLE_NAME_FEED_MEDIA
+                    + " WHERE " + PodDBAdapter.KEY_FILE_URL + " IS NOT NULL", null)) {
                 while (cursor.moveToNext()) {
                     files.put(cursor.getLong(0), cursor.getString(1));
+                    items.put(cursor.getLong(0), cursor.getLong(2));
                 }
             }
             for (Map.Entry<Long, String> entry : files.entrySet()) {
@@ -399,9 +406,38 @@ public final class YonderBackup {
                 db.execSQL("UPDATE " + PodDBAdapter.TABLE_NAME_FEED_MEDIA + " SET "
                         + PodDBAdapter.KEY_DOWNLOAD_DATE + " = 0, " + PodDBAdapter.KEY_FILE_URL + " = NULL WHERE "
                         + PodDBAdapter.KEY_ID + " = ?", new Object[] {entry.getKey()});
+                Long itemId = items.get(entry.getKey());
+                if (itemId == null) {
+                    continue;
+                }
+                try (Cursor played = db.rawQuery("SELECT " + PodDBAdapter.KEY_READ + " FROM "
+                        + PodDBAdapter.TABLE_NAME_FEED_ITEMS + " WHERE " + PodDBAdapter.KEY_ID + " = ?",
+                        new String[] {String.valueOf(itemId)})) {
+                    if (played.moveToFirst() && played.getInt(0) != FeedItem.PLAYED) {
+                        db.execSQL("UPDATE " + PodDBAdapter.TABLE_NAME_FEED_ITEMS + " SET "
+                                + PodDBAdapter.KEY_AUTO_DOWNLOAD_ENABLED + " = 1 WHERE "
+                                + PodDBAdapter.KEY_ID + " = ?", new Object[] {itemId});
+                        downloadAgain.add(itemId);
+                    }
+                }
             }
         } catch (SQLiteException e) {
             throw new IOException(e);
+        }
+        return downloadAgain;
+    }
+
+    private static void forgetDownloadHistory(File smartPlays, Set<Long> itemIds) {
+        if (itemIds.isEmpty()) {
+            return;
+        }
+        try (SQLiteDatabase db = SQLiteDatabase.openDatabase(smartPlays.getPath(), null,
+                SQLiteDatabase.OPEN_READWRITE)) {
+            for (long itemId : itemIds) {
+                db.delete("download_history", "item_id = ?", new String[] {String.valueOf(itemId)});
+            }
+        } catch (SQLiteException e) {
+            Log.e(TAG, "Could not clear download history", e);
         }
     }
 

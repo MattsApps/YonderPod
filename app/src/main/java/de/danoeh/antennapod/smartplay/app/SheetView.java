@@ -50,6 +50,7 @@ import de.danoeh.antennapod.ui.common.Palette;
 public class SheetView extends LinearLayout {
     private static final int MAX_ICONS = 2;
     private static final float BIG_TITLE_SP = 24;
+    private static final int GRAB_AREA_DP = 48;
 
     public interface Listener {
         void onDragStart(SheetView sheet);
@@ -112,6 +113,7 @@ public class SheetView extends LinearLayout {
             Insets bars = insets.getInsets(WindowInsetsCompat.Type.systemBars()
                     | WindowInsetsCompat.Type.displayCutout());
             header.setPadding(0, bars.top, 0, 0);
+            header.setMinimumHeight(bars.top + (int) (GRAB_AREA_DP * getResources().getDisplayMetrics().density));
             return new WindowInsetsCompat.Builder(insets)
                     .setInsets(WindowInsetsCompat.Type.statusBars(), Insets.NONE)
                     .setInsets(WindowInsetsCompat.Type.displayCutout(), Insets.NONE)

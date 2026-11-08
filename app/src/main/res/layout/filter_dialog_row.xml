@@ -13,13 +13,13 @@
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        style="@style/OutlinedButtonBetterContrast" />
+        style="@style/Widget.WildInk.Choice.Toggle" />
 
     <Button
         android:id="@+id/filterButton2"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        style="@style/OutlinedButtonBetterContrast" />
+        style="@style/Widget.WildInk.Choice.Toggle" />
 
 </com.google.android.material.button.MaterialButtonToggleGroup>

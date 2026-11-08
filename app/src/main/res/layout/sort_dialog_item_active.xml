@@ -7,4 +7,4 @@
     android:layout_height="wrap_content"
     app:layout_gravity="fill_horizontal|center_vertical"
     app:layout_columnWeight="1"
-    style="@style/Widget.Material3.Button.TonalButton" />
+    style="@style/Widget.WildInk.Choice.Chosen" />

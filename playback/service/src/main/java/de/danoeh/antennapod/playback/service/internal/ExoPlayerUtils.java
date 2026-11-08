@@ -41,6 +41,7 @@ import java.util.concurrent.TimeUnit;
 
 @OptIn(markerClass = UnstableApi.class)
 public class ExoPlayerUtils {
+    private static final int STREAM_START_BUFFER_MS = 1000;
     private static volatile SimpleCache simpleCache;
 
     @OptIn(markerClass = UnstableApi.class)
@@ -55,7 +56,7 @@ public class ExoPlayerUtils {
                         .setBufferDurationsMs(
                                 (int) TimeUnit.HOURS.toMillis(1),
                                 (int) TimeUnit.HOURS.toMillis(3),
-                                DefaultLoadControl.DEFAULT_BUFFER_FOR_PLAYBACK_MS,
+                                STREAM_START_BUFFER_MS,
                                 DefaultLoadControl.DEFAULT_BUFFER_FOR_PLAYBACK_AFTER_REBUFFER_MS)
                         .setBackBuffer((int) TimeUnit.MINUTES.toMillis(5), true)
                         .build())

@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.TypedValue;
@@ -187,11 +188,11 @@ public class WelcomeActivity extends AppCompatActivity {
                 body.setText(R.string.welcome_tune_body);
                 if (Build.VERSION.SDK_INT >= 33 && ContextCompat.checkSelfPermission(this,
                         Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-                    action(actions, R.string.welcome_notifications, R.string.welcome_notifications_why, () ->
+                    action(actions, R.string.welcome_notifications, R.string.welcome_notifications_why, true, () ->
                             notificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS));
                 }
                 if (UpdateScheduler.isBatteryOptimised(this)) {
-                    action(actions, R.string.welcome_battery, R.string.welcome_battery_why, () ->
+                    action(actions, R.string.welcome_battery, R.string.welcome_battery_why, true, () ->
                             UpdateScheduleFragment.fixBatteryOptimisation(this));
                 }
                 break;
@@ -199,7 +200,7 @@ public class WelcomeActivity extends AppCompatActivity {
             default:
                 title.setText(R.string.welcome_ready_title);
                 body.setText(R.string.welcome_ready_body);
-                action(actions, R.string.moving_link, R.string.welcome_moving_why, () -> {
+                action(actions, R.string.moving_link, R.string.welcome_moving_why, false, () -> {
                     startActivity(new Intent(this, MainActivity.class).putExtra(EXTRA_OPEN_MOVING, true)
                             .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP));
                     finish();
@@ -208,7 +209,7 @@ public class WelcomeActivity extends AppCompatActivity {
         }
     }
 
-    private void action(LinearLayout parent, int label, int why, Runnable onClick) {
+    private void action(LinearLayout parent, int label, int why, boolean primary, Runnable onClick) {
         TextView button = new TextView(this);
         TextViewCompat.setTextAppearance(button, R.style.TextAppearance_WildInk_ItemTitle);
         button.setBackgroundResource(R.drawable.wildink_block);
@@ -216,6 +217,16 @@ public class WelcomeActivity extends AppCompatActivity {
         button.setPadding(padding, padding / 2, padding, padding / 2);
         button.setMinHeight((int) (52 * getResources().getDisplayMetrics().density));
         button.setGravity(Gravity.CENTER_VERTICAL);
+        if (primary) {
+            button.setBackgroundTintList(ColorStateList.valueOf(
+                    ThemeUtils.getColorFromAttr(this, R.attr.colorPrimary)));
+            button.setTextColor(ThemeUtils.getColorFromAttr(this, R.attr.colorOnPrimary));
+            button.setGravity(Gravity.CENTER);
+            button.setElevation(4 * getResources().getDisplayMetrics().density);
+            TypedValue ripple = new TypedValue();
+            getTheme().resolveAttribute(android.R.attr.selectableItemBackground, ripple, true);
+            button.setForeground(ContextCompat.getDrawable(this, ripple.resourceId));
+        }
         button.setText(label);
         button.setOnClickListener(v -> onClick.run());
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(

@@ -1009,6 +1009,8 @@ public class Media3PlaybackService extends MediaLibraryService {
                             if (player == null || confirmStreamingIfNeeded(nextMedia)) {
                                 return;
                             }
+                            Log.d(TAG, "Next: " + (nextMedia.localFileAvailable() ? "downloaded" : "streaming")
+                                    + ", skipped " + wasSkipped);
                             switchToPlayable(nextMedia);
                             player.setPlayWhenReady(UserPreferences.isFollowQueue());
                             player.setMediaItem(nextMediaItem, resumePosition(nextMedia));

@@ -1,7 +1,11 @@
 package de.danoeh.antennapod.smartplay.app;
 
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkCapabilities;
 import android.util.Log;
+
+import androidx.preference.PreferenceManager;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -54,6 +58,12 @@ public class YonderAutoDownloadManager extends AutoDownloadManager {
         this.context = context.getApplicationContext();
         this.store = SmartPlayStore.getInstance(this.context);
         this.settings = DownloadSettingsRepository.getInstance(this.context);
+        if (UserPreferences.getEpisodeCacheSize() != UserPreferences.EPISODE_CACHE_SIZE_UNLIMITED) {
+            PreferenceManager.getDefaultSharedPreferences(this.context).edit()
+                    .putString(UserPreferences.PREF_EPISODE_CACHE_SIZE,
+                            String.valueOf(UserPreferences.EPISODE_CACHE_SIZE_UNLIMITED))
+                    .apply();
+        }
         EventBus.getDefault().register(this);
     }
 
@@ -123,8 +133,19 @@ public class YonderAutoDownloadManager extends AutoDownloadManager {
     private void run(Set<Long> downloadFeeds, boolean scheduled, boolean allowMobile) {
         try {
             List<FeedItem> planned = planAll(downloadFeeds);
+            boolean manual = !scheduled && downloadFeeds != null;
+            boolean wifi = onWifi();
+            Log.d(TAG, "Run: scheduled " + scheduled + ", manual " + manual + ", shows " + (downloadFeeds != null
+                    ? downloadFeeds.size() : 0) + ", planned " + planned.size() + ", wifi " + wifi
+                    + ", charging " + AutomaticDownloadAlgorithm.deviceCharging(context));
             if (scheduled) {
                 if (!NetworkUtils.networkAvailable() || (!allowMobile && NetworkUtils.isNetworkRestricted())) {
+                    Log.d(TAG, "Scheduled run: no allowed network, nothing downloaded");
+                    return;
+                }
+            } else if (manual) {
+                if (!NetworkUtils.networkAvailable() || (!wifi && !NetworkUtils.isAutoDownloadAllowed())) {
+                    Log.d(TAG, "Update now: no Wi-Fi and mobile downloads not allowed, nothing downloaded");
                     return;
                 }
             } else {
@@ -149,22 +170,12 @@ public class YonderAutoDownloadManager extends AutoDownloadManager {
                     toDownload.add(item);
                 }
             }
+            Log.d(TAG, "Downloading " + toDownload.size() + " episodes");
             if (toDownload.isEmpty()) {
                 return;
             }
-            int cacheSize = UserPreferences.getEpisodeCacheSize();
-            if (cacheSize != UserPreferences.EPISODE_CACHE_SIZE_UNLIMITED) {
-                int downloaded = DBReader.getTotalEpisodeCount(new FeedItemFilter(FeedItemFilter.DOWNLOADED))
-                        + DownloadServiceInterface.get().getNumberOfActiveDownloads(context);
-                int deleted = EpisodeCleanupAlgorithmFactory.build()
-                        .makeRoomForEpisodes(context, toDownload.size());
-                int spaceLeft = Math.max(0, cacheSize - (downloaded - deleted));
-                if (spaceLeft < toDownload.size()) {
-                    toDownload = toDownload.subList(0, spaceLeft);
-                }
-            }
             for (FeedItem item : toDownload) {
-                if (scheduled && allowMobile) {
+                if ((scheduled && allowMobile) || (manual && wifi)) {
                     DownloadServiceInterface.get().downloadNow(context, item, true);
                 } else {
                     DownloadServiceInterface.get().download(context, item);
@@ -218,6 +229,12 @@ public class YonderAutoDownloadManager extends AutoDownloadManager {
             }
             store.addDownloadHistory(feed.getId(), newlyDownloaded);
             DownloadPlan plan = DownloadPlanner.plan(show, episodes, now);
+            if (downloadFeeds != null && downloadFeeds.contains(feed.getId())) {
+                Log.d(TAG, "Show " + feed.getId() + ": mode " + show.getMode() + ", count " + show.getEpisodeCount()
+                        + ", keep " + show.getKeepAtMost() + ", episodes " + episodes.size() + ", downloaded "
+                        + countDownloaded(episodes) + ", to download " + plan.getToDownload().size()
+                        + ", to delete " + plan.getToDelete().size());
+            }
             for (DownloadEpisode episode : plan.getToDelete()) {
                 FeedItem item = byId.get(episode.getId());
                 if (item != null && mayDelete(item)) {
@@ -248,6 +265,26 @@ public class YonderAutoDownloadManager extends AutoDownloadManager {
         return media != null && !media.isDownloaded() && item.isAutoDownloadEnabled()
                 && item.getFeed() != null && !item.getFeed().isLocalFeed()
                 && !DownloadServiceInterface.get().isDownloadingEpisode(media.getDownloadUrl());
+    }
+
+    private boolean onWifi() {
+        ConnectivityManager manager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (manager == null) {
+            return false;
+        }
+        NetworkCapabilities capabilities = manager.getNetworkCapabilities(manager.getActiveNetwork());
+        return capabilities != null && (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)
+                || capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET));
+    }
+
+    private static int countDownloaded(List<DownloadEpisode> episodes) {
+        int count = 0;
+        for (DownloadEpisode episode : episodes) {
+            if (episode.isDownloaded()) {
+                count++;
+            }
+        }
+        return count;
     }
 
     private static boolean containsId(List<FeedItem> items, long id) {

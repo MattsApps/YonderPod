@@ -17,6 +17,7 @@
             android:defaultValue="25"
             android:entries="@array/episode_cache_size_entries"
             android:key="prefEpisodeCacheSize"
+            search:ignore="true"
             android:title="@string/pref_episode_cache_title"
             android:summary="@string/pref_episode_cache_summary"
             android:entryValues="@array/episode_cache_size_values"/>
