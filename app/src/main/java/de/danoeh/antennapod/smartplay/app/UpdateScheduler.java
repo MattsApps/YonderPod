@@ -56,6 +56,7 @@ public final class UpdateScheduler {
 
     public static void init(Context context) {
         Context app = context.getApplicationContext();
+        RecordingSweeper.init(app);
         EXECUTOR.execute(() -> {
             reschedule(app);
             try {

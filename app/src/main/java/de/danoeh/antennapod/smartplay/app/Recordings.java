@@ -5,6 +5,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.MediaDataSource;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.Build;
@@ -20,9 +21,11 @@ import androidx.work.NetworkType;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 
+import org.apache.commons.io.FileUtils;
 import org.greenrobot.eventbus.EventBus;
 
 import java.io.File;
+import java.io.IOException;
 import java.text.DateFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -42,6 +45,9 @@ import de.danoeh.antennapod.model.feed.FeedItem;
 import de.danoeh.antennapod.model.feed.FeedMedia;
 import de.danoeh.antennapod.model.feed.FeedPreferences;
 import de.danoeh.antennapod.model.feed.SortOrder;
+import de.danoeh.antennapod.playback.service.PlaybackService;
+import de.danoeh.antennapod.smartplay.radio.RecordingCipher;
+import de.danoeh.antennapod.smartplay.radio.RecordingKeys;
 import de.danoeh.antennapod.smartplay.radio.RecordingRules;
 import de.danoeh.antennapod.smartplay.radio.RewindWindow;
 import de.danoeh.antennapod.smartplay.radio.ShowTimes;
@@ -49,6 +55,7 @@ import de.danoeh.antennapod.smartplay.schedule.DayRanges;
 import de.danoeh.antennapod.storage.database.DBReader;
 import de.danoeh.antennapod.storage.database.DBWriter;
 import de.danoeh.antennapod.storage.database.FeedDatabaseWriter;
+import de.danoeh.antennapod.storage.preferences.PlaybackPreferences;
 import de.danoeh.antennapod.storage.preferences.RadioPreferences;
 import de.danoeh.antennapod.storage.preferences.UserPreferences;
 
@@ -64,6 +71,9 @@ public final class Recordings {
     private static final String GUID_PREFIX = "yonderpod-recording:";
     private static final String PREFS = "YonderRecordings";
     private static final String KEY_NAMES_UPDATED = "namesUpdated";
+    private static final String KEY_TIME_SHIFT_ONLY = "timeShiftOnly";
+    private static final String FOLDER = "recordings";
+    private static final long SWEEP_MARGIN_MILLIS = 5_000L;
 
     private Recordings() {
     }
@@ -163,6 +173,7 @@ public final class Recordings {
         for (RecordingStore.Pending pending : store.getPending()) {
             enqueuePublish(context, pending);
         }
+        sweep(context);
     }
 
     private static void cancel(Context context, RecordingStore.Show show) {
@@ -256,8 +267,8 @@ public final class Recordings {
         WorkManager.getInstance(context).enqueueUniqueWork(name, ExistingWorkPolicy.REPLACE, request);
     }
 
-    static File folder(RecordingStore.Show show) {
-        File folder = new File(UserPreferences.getDataFolder("Recordings"), String.valueOf(show.id));
+    static File folder(Context context, RecordingStore.Show show) {
+        File folder = new File(new File(context.getNoBackupFilesDir(), FOLDER), String.valueOf(show.id));
         if (!folder.exists() && !folder.mkdirs()) {
             Log.e(TAG, "Could not create " + folder);
         }
@@ -274,13 +285,15 @@ public final class Recordings {
         return RadioPreferences.maxBitrate(show.stationItemId);
     }
 
-    static void saved(Context context, RecordingStore.Show show, Recorder.Saved saved, ShowTimes.Airing airing) {
+    static void saved(Context context, RecordingStore.Show show, Recorder.Saved plain, ShowTimes.Airing airing)
+            throws IOException {
+        Recorder.Saved saved = new Recorder.Saved(encrypt(plain.file), plain.mimeType);
         show.lastSavedAiring = Math.max(show.lastSavedAiring, airing.getStart());
         show.status = "";
         show.preferLiveNext = false;
         RecordingStore.getInstance(context).update(show);
         long availableAt = ShowTimes.availableAt(show.spec(), airing, TimeZone.getDefault(), show.sameLocalTime);
-        if (availableAt > System.currentTimeMillis() + 30_000) {
+        if (RecordingRules.waiting(availableAt, System.currentTimeMillis())) {
             long id = RecordingStore.getInstance(context).addPending(show.id, saved.file.getAbsolutePath(),
                     saved.mimeType, airing.getStart(), airing.getEnd());
             for (RecordingStore.Pending pending : RecordingStore.getInstance(context).getPending()) {
@@ -288,9 +301,27 @@ public final class Recordings {
                     enqueuePublish(context, pending);
                 }
             }
+            sweep(context);
+            EventBus.getDefault().post(new Radio.ChangedEvent());
         } else {
             addRecording(context, show, saved.file, saved.mimeType, airing);
         }
+    }
+
+    private static File encrypt(File plain) throws IOException {
+        String name = plain.getName();
+        int dot = name.lastIndexOf('.');
+        File encrypted = new File(plain.getParentFile(), (dot > 0 ? name.substring(0, dot) : name)
+                + RecordingCipher.EXTENSION);
+        try {
+            RecordingCipher.encrypt(plain, encrypted, RecordingKeys.get());
+        } catch (IOException e) {
+            FileUtils.deleteQuietly(encrypted);
+            throw e;
+        } finally {
+            FileUtils.deleteQuietly(plain);
+        }
+        return encrypted;
     }
 
     static void missed(Context context, RecordingStore.Show show, ShowTimes.Airing airing, int reason,
@@ -332,7 +363,7 @@ public final class Recordings {
             }
             ShowTimes.Airing airing = new ShowTimes.Airing(pending.airingStart, pending.airingEnd);
             long availableAt = ShowTimes.availableAt(show.spec(), airing, TimeZone.getDefault(), show.sameLocalTime);
-            if (availableAt > System.currentTimeMillis() + 60_000) {
+            if (RecordingRules.waiting(availableAt, System.currentTimeMillis())) {
                 enqueuePublish(context, pending);
                 return;
             }
@@ -364,48 +395,210 @@ public final class Recordings {
         item.setMedia(media);
         feed.getItems().add(item);
         FeedDatabaseWriter.updateFeed(context, feed, false);
-        applyKeep(context, show);
+        sweep(context);
         FeedItem added = DBReader.getFeedItemByGuidOrEpisodeUrl(guid, Uri.fromFile(file).toString());
         if (added != null) {
             EventBus.getDefault().post(new FeedItemEvent(Collections.singletonList(added), false));
         }
     }
 
-    static void applyKeep(Context context, RecordingStore.Show show) {
+    public static synchronized void sweep(Context context) {
+        upgradeOnce(context);
+        RecordingStore store = RecordingStore.getInstance(context);
+        long now = System.currentTimeMillis();
+        long next = Long.MAX_VALUE;
+        for (RecordingStore.Show show : store.getShows()) {
+            List<RecordingRules.Recording> recordings = new ArrayList<>();
+            List<FeedItem> items = new ArrayList<>();
+            for (FeedItem item : recordingItems(show)) {
+                FeedMedia media = item.getMedia();
+                if (media == null || media.getLocalFileUrl() == null || !new File(media.getLocalFileUrl()).exists()) {
+                    Log.d(TAG, "Removing " + item.getTitle() + ": its file is gone");
+                    removeItem(context, item);
+                    continue;
+                }
+                long start = startOf(item);
+                recordings.add(new RecordingRules.Recording(item.getId(), start,
+                        start + show.spec().durationMillis(), media.getDownloadDate(), item.isPlayed(),
+                        isPlaying(media)));
+                items.add(item);
+            }
+            List<RecordingStore.Pending> held = new ArrayList<>();
+            for (RecordingStore.Pending pending : pendingFor(context, show.id)) {
+                if (!new File(pending.file).exists()) {
+                    store.deletePending(pending.id);
+                    continue;
+                }
+                recordings.add(new RecordingRules.Recording(-pending.id, pending.airingStart, pending.airingEnd,
+                        playsAt(context, pending), false, false));
+                held.add(pending);
+            }
+            List<Long> going = RecordingRules.toDelete(recordings, now);
+            for (FeedItem item : items) {
+                if (going.contains(item.getId())) {
+                    Log.d(TAG, "Deleting " + item.getTitle() + (item.isPlayed() ? " (played)" : ""));
+                    removeItem(context, item);
+                }
+            }
+            for (RecordingStore.Pending pending : held) {
+                if (going.contains(-pending.id)) {
+                    Log.d(TAG, "Deleting held recording of " + show.name);
+                    FileUtils.deleteQuietly(new File(pending.file));
+                    store.deletePending(pending.id);
+                    WorkManager.getInstance(context).cancelUniqueWork(WORK_PUBLISH + pending.id);
+                }
+            }
+            long deadline = RecordingRules.nextDeadline(recordings, now);
+            if (deadline != Long.MAX_VALUE) {
+                Log.d(TAG, show.name + ": deletes at " + new Date(deadline));
+            }
+            next = Math.min(next, deadline);
+        }
+        scheduleSweep(context, next);
+    }
+
+    public static long deletesAt(Context context, RecordingStore.Show show) {
+        List<RecordingRules.Recording> recordings = new ArrayList<>();
+        for (FeedItem item : recordingItems(show)) {
+            if (item.getMedia() != null) {
+                long start = startOf(item);
+                recordings.add(new RecordingRules.Recording(item.getId(), start,
+                        start + show.spec().durationMillis(), item.getMedia().getDownloadDate(), item.isPlayed(),
+                        false));
+            }
+        }
+        for (RecordingStore.Pending pending : pendingFor(context, show.id)) {
+            recordings.add(new RecordingRules.Recording(-pending.id, pending.airingStart, pending.airingEnd,
+                    playsAt(context, pending), false, false));
+        }
+        return RecordingRules.nextDeadline(recordings, System.currentTimeMillis());
+    }
+
+    private static List<FeedItem> recordingItems(RecordingStore.Show show) {
         Feed feed = DBReader.getFeed(show.feedId, false, 0, Integer.MAX_VALUE);
-        if (feed == null || feed.getItems() == null) {
+        return feed == null || feed.getItems() == null ? new ArrayList<>() : feed.getItems();
+    }
+
+    private static long startOf(FeedItem item) {
+        return item.getPubDate() != null ? item.getPubDate().getTime() : 0;
+    }
+
+    private static boolean isPlaying(FeedMedia media) {
+        return PlaybackService.isRunning && PlaybackPreferences.getCurrentlyPlayingFeedMediaId() == media.getId()
+                && PlaybackPreferences.getCurrentPlayerStatus() == PlaybackPreferences.PLAYER_STATUS_PLAYING;
+    }
+
+    private static void removeItem(Context context, FeedItem item) {
+        if (item.getMedia() != null && item.getMedia().getLocalFileUrl() != null) {
+            FileUtils.deleteQuietly(new File(item.getMedia().getLocalFileUrl()));
+        }
+        try {
+            DBWriter.deleteFeedItems(context, Collections.singletonList(item)).get();
+        } catch (Exception e) {
+            Log.e(TAG, "Could not remove recording", e);
+        }
+    }
+
+    private static void scheduleSweep(Context context, long at) {
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        if (alarmManager == null) {
             return;
         }
-        List<RecordingRules.Recording> recordings = new ArrayList<>();
-        for (FeedItem item : feed.getItems()) {
-            FeedMedia media = item.getMedia();
-            recordings.add(new RecordingRules.Recording(item.getId(),
-                    item.getPubDate() != null ? item.getPubDate().getTime() : 0,
-                    item.isTagged(FeedItem.TAG_FAVORITE),
-                    media != null && media.getPosition() > 0 && !item.isPlayed()));
+        Intent intent = new Intent(context, RecordingSweepReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+        if (at == Long.MAX_VALUE) {
+            alarmManager.cancel(pendingIntent);
+            return;
         }
-        List<Long> delete = RecordingRules.toDelete(recordings, show.keep);
-        for (FeedItem item : feed.getItems()) {
-            if (!delete.contains(item.getId())) {
-                continue;
+        alarmManager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, at + SWEEP_MARGIN_MILLIS, pendingIntent);
+    }
+
+    private static synchronized void upgradeOnce(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
+        if (prefs.getBoolean(KEY_TIME_SHIFT_ONLY, false)) {
+            return;
+        }
+        RecordingStore store = RecordingStore.getInstance(context);
+        boolean done = true;
+        for (RecordingStore.Show show : store.getShows()) {
+            FeedItem keepItem = null;
+            RecordingStore.Pending keepPending = null;
+            long newest = Long.MIN_VALUE;
+            List<FeedItem> items = recordingItems(show);
+            List<RecordingStore.Pending> held = pendingFor(context, show.id);
+            for (FeedItem item : items) {
+                FeedMedia media = item.getMedia();
+                boolean present = media != null && media.getLocalFileUrl() != null
+                        && new File(media.getLocalFileUrl()).exists();
+                if (present && !item.isPlayed() && startOf(item) > newest) {
+                    newest = startOf(item);
+                    keepItem = item;
+                }
             }
-            if (item.getMedia() != null && item.getMedia().getLocalFileUrl() != null) {
-                if (!new File(item.getMedia().getLocalFileUrl()).delete()) {
-                    Log.d(TAG, "Could not delete " + item.getMedia().getLocalFileUrl());
+            for (RecordingStore.Pending pending : held) {
+                if (new File(pending.file).exists() && pending.airingStart > newest) {
+                    newest = pending.airingStart;
+                    keepPending = pending;
+                    keepItem = null;
+                }
+            }
+            for (FeedItem item : items) {
+                if (item != keepItem) {
+                    removeItem(context, item);
+                }
+            }
+            for (RecordingStore.Pending pending : held) {
+                if (pending != keepPending) {
+                    FileUtils.deleteQuietly(new File(pending.file));
+                    store.deletePending(pending.id);
+                    WorkManager.getInstance(context).cancelUniqueWork(WORK_PUBLISH + pending.id);
                 }
             }
             try {
-                DBWriter.deleteFeedItems(context, Collections.singletonList(item)).get();
+                if (keepItem != null && !RecordingCipher.isEncrypted(keepItem.getMedia().getLocalFileUrl())) {
+                    File moved = moveAndEncrypt(context, show, new File(keepItem.getMedia().getLocalFileUrl()));
+                    FeedMedia media = keepItem.getMedia();
+                    media.setLocalFileUrl(moved.getAbsolutePath());
+                    media.setSize(moved.length());
+                    DBWriter.setMediaDownloadInformation(media).get();
+                }
+                if (keepPending != null && !RecordingCipher.isEncrypted(keepPending.file)) {
+                    File moved = moveAndEncrypt(context, show, new File(keepPending.file));
+                    store.setPendingFile(keepPending.id, moved.getAbsolutePath());
+                }
+                FileUtils.deleteQuietly(new File(UserPreferences.getDataFolder("Recordings"), String.valueOf(show.id)));
             } catch (Exception e) {
-                Log.e(TAG, "Could not remove old recording", e);
+                Log.e(TAG, "Could not encrypt the recording of " + show.name + ", trying again next time", e);
+                done = false;
             }
         }
+        if (done) {
+            prefs.edit().putBoolean(KEY_TIME_SHIFT_ONLY, true).apply();
+            Log.d(TAG, "Recordings are now time-shift only");
+        }
+    }
+
+    private static File moveAndEncrypt(Context context, RecordingStore.Show show, File plain) throws IOException {
+        File copy = new File(folder(context, show), plain.getName());
+        if (!plain.getAbsoluteFile().equals(copy.getAbsoluteFile())) {
+            FileUtils.copyFile(plain, copy);
+        }
+        File encrypted = encrypt(copy);
+        FileUtils.deleteQuietly(plain);
+        return encrypted;
     }
 
     private static int durationOf(Context context, File file) {
         MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+        RecordingCipher.Reader reader = null;
         try {
-            retriever.setDataSource(file.getAbsolutePath());
+            if (RecordingCipher.isEncrypted(file.getPath())) {
+                reader = RecordingCipher.open(file, RecordingKeys.get());
+                retriever.setDataSource(new DecryptedSource(reader));
+            } else {
+                retriever.setDataSource(file.getAbsolutePath());
+            }
             String duration = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
             return duration != null ? (int) Long.parseLong(duration) : 0;
         } catch (Exception e) {
@@ -416,6 +609,35 @@ public final class Recordings {
             } catch (Exception ignored) {
                 Log.d(TAG, "Could not release retriever");
             }
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException ignored) {
+                    Log.d(TAG, "Could not close recording");
+                }
+            }
+        }
+    }
+
+    private static final class DecryptedSource extends MediaDataSource {
+        private final RecordingCipher.Reader reader;
+
+        DecryptedSource(RecordingCipher.Reader reader) {
+            this.reader = reader;
+        }
+
+        @Override
+        public int readAt(long position, byte[] buffer, int offset, int size) throws IOException {
+            return reader.read(position, buffer, offset, size);
+        }
+
+        @Override
+        public long getSize() throws IOException {
+            return reader.length();
+        }
+
+        @Override
+        public void close() {
         }
     }
 
@@ -459,6 +681,25 @@ public final class Recordings {
             parts.add(context.getString(R.string.recording_status_next, dayTime(context, next.getStart())));
         }
         return TextUtils.join(context.getString(R.string.detail_separator), parts);
+    }
+
+    public static String pageInfo(Context context, RecordingStore.Show show) {
+        List<String> lines = new ArrayList<>();
+        RecordingStore.Pending held = null;
+        for (RecordingStore.Pending pending : pendingFor(context, show.id)) {
+            if (held == null || pending.airingStart > held.airingStart) {
+                held = pending;
+            }
+        }
+        if (held != null) {
+            lines.add(playsAtText(context, playsAt(context, held)));
+        }
+        long deletesAt = deletesAt(context, show);
+        if (deletesAt != Long.MAX_VALUE) {
+            lines.add(context.getString(R.string.recording_deletes_at, dayTime(context, deletesAt)));
+        }
+        lines.add(context.getString(R.string.recording_time_shift));
+        return TextUtils.join("\n", lines);
     }
 
     public static String playsAtText(Context context, long millis) {

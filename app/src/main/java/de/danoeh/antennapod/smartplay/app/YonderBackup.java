@@ -119,6 +119,7 @@ public final class YonderBackup {
                 databases);
         copyHelperDatabase(context, RecordingStore.getInstance(context).getWritableDatabase(), RECORDINGS_DB,
                 databases);
+        leaveOutRecordings(databases);
         Summary counts = new Summary();
         count(databases, counts);
         try {
@@ -147,6 +148,34 @@ public final class YonderBackup {
                     addToZip(out, file, DATABASES + name);
                 }
             }
+        }
+    }
+
+    private static void leaveOutRecordings(File databases) throws IOException {
+        String recordingItems = "SELECT " + PodDBAdapter.KEY_ID + " FROM " + PodDBAdapter.TABLE_NAME_FEED_ITEMS
+                + " WHERE " + PodDBAdapter.KEY_FEED + " IN (SELECT " + PodDBAdapter.KEY_ID + " FROM "
+                + PodDBAdapter.TABLE_NAME_FEEDS + " WHERE " + PodDBAdapter.KEY_DOWNLOAD_URL + " LIKE ?)";
+        String[] prefix = {Feed.RECORDINGS_URL_PREFIX + "%"};
+        try (SQLiteDatabase db = SQLiteDatabase.openDatabase(new File(databases, PodDBAdapter.DATABASE_NAME).getPath(),
+                null, SQLiteDatabase.OPEN_READWRITE)) {
+            db.execSQL("DELETE FROM " + PodDBAdapter.TABLE_NAME_FEED_MEDIA + " WHERE " + PodDBAdapter.KEY_FEEDITEM
+                    + " IN (" + recordingItems + ")", prefix);
+            db.execSQL("DELETE FROM " + PodDBAdapter.TABLE_NAME_QUEUE + " WHERE " + PodDBAdapter.KEY_FEEDITEM
+                    + " IN (" + recordingItems + ")", prefix);
+            db.execSQL("DELETE FROM " + PodDBAdapter.TABLE_NAME_FEED_ITEMS + " WHERE " + PodDBAdapter.KEY_ID
+                    + " IN (" + recordingItems + ")", prefix);
+        } catch (SQLiteException e) {
+            throw new IOException(e);
+        }
+        File recordings = new File(databases, RECORDINGS_DB);
+        if (!recordings.exists()) {
+            return;
+        }
+        try (SQLiteDatabase db = SQLiteDatabase.openDatabase(recordings.getPath(), null,
+                SQLiteDatabase.OPEN_READWRITE)) {
+            db.execSQL("DELETE FROM pending");
+        } catch (SQLiteException e) {
+            throw new IOException(e);
         }
     }
 

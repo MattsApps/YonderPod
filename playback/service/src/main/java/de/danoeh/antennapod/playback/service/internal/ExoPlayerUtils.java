@@ -32,6 +32,7 @@ import de.danoeh.antennapod.net.common.NetworkUtils;
 import de.danoeh.antennapod.net.common.UserAgentInterceptor;
 import de.danoeh.antennapod.playback.base.MediaItemAdapter;
 import de.danoeh.antennapod.playback.service.R;
+import de.danoeh.antennapod.smartplay.radio.RecordingCipher;
 import de.danoeh.antennapod.storage.preferences.UserPreferences;
 
 import java.io.File;
@@ -149,6 +150,10 @@ public class ExoPlayerUtils {
         }
 
         private DataSource.Factory buildDataSourceFactory(MediaItem mediaItem) {
+            if (mediaItem.localConfiguration != null
+                    && RecordingCipher.isEncrypted(mediaItem.localConfiguration.uri.getPath())) {
+                return RecordingDataSource::new;
+            }
             DefaultHttpDataSource.Factory httpDataSourceFactory =
                     new DefaultHttpDataSource.Factory();
             httpDataSourceFactory.setUserAgent(UserAgentInterceptor.USER_AGENT);

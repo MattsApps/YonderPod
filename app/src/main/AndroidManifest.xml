@@ -354,6 +354,10 @@
             android:exported="false" />
 
         <receiver
+            android:name=".smartplay.app.RecordingSweepReceiver"
+            android:exported="false" />
+
+        <receiver
             android:name=".smartplay.app.SmartPlayHoursReceiver"
             android:exported="false" />
 

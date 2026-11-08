@@ -82,13 +82,8 @@
             android:id="@+id/record_mobile"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
             android:text="@string/record_mobile" />
-
-        <Spinner
-            android:id="@+id/record_keep"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp" />
 
     </LinearLayout>
 

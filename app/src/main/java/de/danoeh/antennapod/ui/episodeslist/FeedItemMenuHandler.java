@@ -238,6 +238,9 @@ public class FeedItemMenuHandler {
                     .setNegativeButton(R.string.cancel_label, null)
                     .show();
         } else if (menuItemId == R.id.share_item) {
+            if (selectedItem.getFeed() != null && selectedItem.getFeed().isLocalFeed()) {
+                return true;
+            }
             ShareDialog shareDialog = ShareDialog.newInstance(selectedItem);
             shareDialog.show((fragment.getActivity().getSupportFragmentManager()), "ShareEpisodeDialog");
         } else {

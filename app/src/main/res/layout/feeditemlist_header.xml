@@ -223,6 +223,15 @@
             android:visibility="gone" />
 
         <TextView
+            android:id="@+id/recordingInfo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="4dp"
+            android:textColor="?android:attr/textColorSecondary"
+            android:visibility="gone" />
+
+        <TextView
             android:id="@+id/recordingListenNow"
             style="@style/Widget.WildInk.Link"
             android:layout_width="wrap_content"

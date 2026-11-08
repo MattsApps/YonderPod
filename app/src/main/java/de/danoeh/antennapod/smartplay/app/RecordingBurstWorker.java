@@ -44,7 +44,7 @@ public class RecordingBurstWorker extends Worker {
         }
         try {
             Recorder.Saved saved = Recorder.burst(show.sourceUrl, Recordings.maxBitrate(show), airing,
-                    Recordings.folder(show), Recordings.fileName(show, airing));
+                    Recordings.folder(context, show), Recordings.fileName(show, airing));
             Recordings.saved(context, show, saved, airing);
         } catch (Recorder.NotYetException e) {
             if (System.currentTimeMillis() < airing.getEnd() + GIVE_UP_AFTER_END) {

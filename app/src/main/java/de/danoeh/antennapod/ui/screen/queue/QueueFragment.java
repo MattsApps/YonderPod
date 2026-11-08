@@ -554,6 +554,7 @@ public class QueueFragment extends Fragment implements MaterialToolbar.OnMenuIte
         menu.getMenu().findItem(R.id.remove_item).setVisible(downloaded);
         menu.getMenu().findItem(R.id.add_to_favorites_item).setVisible(!favourite);
         menu.getMenu().findItem(R.id.remove_from_favorites_item).setVisible(favourite);
+        menu.getMenu().findItem(R.id.share_item).setVisible(item.getFeed() == null || !item.getFeed().isLocalFeed());
         menu.setOnMenuItemClickListener(menuItem -> {
             int id = menuItem.getItemId();
             if (id == R.id.playlist_notes_item) {

@@ -16,6 +16,7 @@ import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.model.feed.Feed;
 import de.danoeh.antennapod.model.feed.FeedItem;
 import de.danoeh.antennapod.model.feed.FeedMedia;
+import de.danoeh.antennapod.smartplay.radio.RecordingCipher;
 
 /** Utility methods for sharing data */
 public class ShareUtils {
@@ -88,6 +89,9 @@ public class ShareUtils {
     }
 
     public static void shareFeedItemFile(Context context, FeedMedia media) {
+        if (RecordingCipher.isEncrypted(media.getLocalFileUrl())) {
+            return;
+        }
         Uri fileUri = FileProvider.getUriForFile(context, context.getString(R.string.provider_authority),
                 new File(media.getLocalFileUrl()));
 

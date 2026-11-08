@@ -42,7 +42,6 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public final class RecordShowDialog {
     private static final String TAG = "RecordShowDialog";
-    private static final int MAX_KEEP = 10;
 
     private RecordShowDialog() {
     }
@@ -91,7 +90,6 @@ public final class RecordShowDialog {
         Button end = view.findViewById(R.id.record_end);
         RadioGroup available = view.findViewById(R.id.record_available);
         MaterialSwitch mobile = view.findViewById(R.id.record_mobile);
-        Spinner keep = view.findViewById(R.id.record_keep);
 
         name.setText(show.name);
         String[] autoName = {Recordings.defaultName(context, station.getTitle(), show)};
@@ -164,15 +162,6 @@ public final class RecordShowDialog {
         });
 
         mobile.setChecked(show.allowMobile);
-        List<String> keepLabels = new ArrayList<>();
-        for (int i = 1; i <= MAX_KEEP; i++) {
-            keepLabels.add(context.getResources().getQuantityString(R.plurals.record_keep, i, i));
-        }
-        ArrayAdapter<String> keepAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item,
-                keepLabels);
-        keepAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        keep.setAdapter(keepAdapter);
-        keep.setSelection(Math.max(0, Math.min(MAX_KEEP, show.keep) - 1));
 
         Context app = context.getApplicationContext();
         new MaterialAlertDialogBuilder(context)
@@ -186,7 +175,6 @@ public final class RecordShowDialog {
                     show.zoneId = zones.get(Math.max(0, zone.getSelectedItemPosition()));
                     show.sameLocalTime = available.getCheckedRadioButtonId() == R.id.record_available_same_time;
                     show.allowMobile = mobile.isChecked();
-                    show.keep = keep.getSelectedItemPosition() + 1;
                     if (show.weekdays == 0 || show.startMinute == show.endMinute) {
                         Toast.makeText(app, R.string.record_needs_times, Toast.LENGTH_LONG).show();
                         return;
@@ -197,7 +185,7 @@ public final class RecordShowDialog {
                             Recordings.create(app, station, show);
                         } else {
                             Recordings.update(app, show);
-                            Recordings.applyKeep(app, show);
+                            Recordings.sweep(app);
                         }
                         return show;
                     })

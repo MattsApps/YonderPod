@@ -804,7 +804,9 @@ public class Media3PlaybackService extends MediaLibraryService {
         almostEnded = almostEnded && !skipped;
         SynchronizationQueue.getInstance().enqueueEpisodePlayed(media, startPosition, ended || almostEnded);
         if (item != null) {
-            if (ended || almostEnded) {
+            boolean recording = item.getFeed() != null && item.getFeed().getDownloadUrl() != null
+                    && item.getFeed().getDownloadUrl().startsWith(Feed.RECORDINGS_URL_PREFIX);
+            if (ended || almostEnded || (skipped && recording)) {
                 DBWriter.markItemsPlayed(FeedItem.PLAYED, true, Collections.singletonList(item));
             }
             if (ended || almostEnded || (skipped && !UserPreferences.shouldSkipKeepEpisode())) {

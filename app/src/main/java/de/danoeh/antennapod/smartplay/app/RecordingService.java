@@ -98,7 +98,7 @@ public class RecordingService extends Service {
             }
             long until = airing.getEnd() + RecordingRules.LIVE_PADDING_MILLIS;
             Recorder.Saved saved = Recorder.recordLive(station.getMedia().getDownloadUrl(),
-                    station.getMedia().getMimeType(), until, Recordings.folder(show),
+                    station.getMedia().getMimeType(), until, Recordings.folder(context, show),
                     Recordings.fileName(show, airing), () -> destroyed);
             Recordings.saved(context, show, saved, airing);
         } catch (Recorder.UnsupportedException e) {

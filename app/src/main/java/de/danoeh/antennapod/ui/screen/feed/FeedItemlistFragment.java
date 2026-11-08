@@ -112,6 +112,7 @@ public class FeedItemlistFragment extends Fragment implements AdapterView.OnItem
     private boolean displayUpArrow;
     private boolean localFolderRefreshed = false;
     private boolean isBook = false;
+    private volatile String recordingInfo = "";
     private long feedID;
     private Feed feed;
     private Disposable disposable;
@@ -647,12 +648,16 @@ public class FeedItemlistFragment extends Fragment implements AdapterView.OnItem
                     ? RecordingStore.getInstance(appContext).showForFeed(shownFeed.getId()) : null;
             List<RecordingStore.Pending> waiting = show != null
                     ? Recordings.pendingFor(appContext, show.id) : new ArrayList<>();
+            recordingInfo = show != null ? Recordings.pageInfo(appContext, show) : "";
             return waiting.isEmpty() ? -1L : waiting.get(0).id;
         })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(pendingId -> {
                     if (viewBinding != null) {
+                        viewBinding.header.recordingInfo.setText(recordingInfo);
+                        viewBinding.header.recordingInfo.setVisibility(recordingInfo.isEmpty() ? View.GONE
+                                : View.VISIBLE);
                         viewBinding.header.recordingListenNow.setVisibility(pendingId >= 0 ? View.VISIBLE : View.GONE);
                         viewBinding.header.recordingListenNow.setOnClickListener(v -> {
                             v.setVisibility(View.GONE);

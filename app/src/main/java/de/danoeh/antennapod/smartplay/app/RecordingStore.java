@@ -165,6 +165,12 @@ public class RecordingStore extends SQLiteOpenHelper {
         return result;
     }
 
+    public synchronized void setPendingFile(long id, String file) {
+        ContentValues values = new ContentValues();
+        values.put("file", file);
+        getWritableDatabase().update(PENDING, values, "id = ?", new String[] {String.valueOf(id)});
+    }
+
     public synchronized void deletePending(long id) {
         getWritableDatabase().delete(PENDING, "id = ?", new String[] {String.valueOf(id)});
     }
