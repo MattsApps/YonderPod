@@ -43,6 +43,7 @@ import de.danoeh.antennapod.BuildConfig;
 import de.danoeh.antennapod.model.feed.Feed;
 import de.danoeh.antennapod.model.feed.FeedItem;
 import de.danoeh.antennapod.smartplay.backup.BackupCrypto;
+import de.danoeh.antennapod.smartplay.download.DownloadMode;
 import de.danoeh.antennapod.storage.database.PodDBAdapter;
 import de.danoeh.antennapod.storage.importexport.DatabaseExporter;
 
@@ -373,6 +374,7 @@ public final class YonderBackup {
         }
         Set<Long> downloadAgain = forgetMissingDownloads(main);
         if (smartPlays.exists()) {
+            downloadAgain.addAll(forgetPastDownloads(main, downloadingShows(smartPlays)));
             forgetDownloadHistory(smartPlays, downloadAgain);
         }
         JSONObject preferences = null;
@@ -453,6 +455,58 @@ public final class YonderBackup {
         } catch (SQLiteException e) {
             throw new IOException(e);
         }
+        return downloadAgain;
+    }
+
+    private static Set<Long> downloadingShows(File smartPlays) {
+        Set<Long> feeds = new HashSet<>();
+        try (SQLiteDatabase db = SQLiteDatabase.openDatabase(smartPlays.getPath(), null,
+                SQLiteDatabase.OPEN_READONLY);
+             Cursor cursor = db.rawQuery("SELECT feed_id, mode FROM feed_download_settings", null)) {
+            while (cursor.moveToNext()) {
+                try {
+                    if (DownloadMode.valueOf(cursor.getString(1)).downloads()) {
+                        feeds.add(cursor.getLong(0));
+                    }
+                } catch (IllegalArgumentException e) {
+                    Log.d(TAG, "Unknown download mode " + cursor.getString(1));
+                }
+            }
+        } catch (SQLiteException e) {
+            Log.e(TAG, "Could not read download settings", e);
+        }
+        return feeds;
+    }
+
+    private static Set<Long> forgetPastDownloads(File main, Set<Long> feeds) throws IOException {
+        Set<Long> downloadAgain = new HashSet<>();
+        if (feeds.isEmpty()) {
+            return downloadAgain;
+        }
+        try (SQLiteDatabase db = SQLiteDatabase.openDatabase(main.getPath(), null,
+                SQLiteDatabase.OPEN_READWRITE)) {
+            for (long feedId : feeds) {
+                try (Cursor cursor = db.rawQuery("SELECT i." + PodDBAdapter.KEY_ID + " FROM "
+                        + PodDBAdapter.TABLE_NAME_FEED_ITEMS + " i JOIN " + PodDBAdapter.TABLE_NAME_FEED_MEDIA
+                        + " m ON m." + PodDBAdapter.KEY_FEEDITEM + " = i." + PodDBAdapter.KEY_ID
+                        + " WHERE i." + PodDBAdapter.KEY_FEED + " = ? AND i." + PodDBAdapter.KEY_READ + " != "
+                        + FeedItem.PLAYED + " AND m." + PodDBAdapter.KEY_FILE_URL + " IS NULL",
+                        new String[] {String.valueOf(feedId)})) {
+                    while (cursor.moveToNext()) {
+                        downloadAgain.add(cursor.getLong(0));
+                    }
+                }
+            }
+            for (long itemId : downloadAgain) {
+                db.execSQL("UPDATE " + PodDBAdapter.TABLE_NAME_FEED_ITEMS + " SET "
+                        + PodDBAdapter.KEY_AUTO_DOWNLOAD_ENABLED + " = 1 WHERE " + PodDBAdapter.KEY_ID + " = ?",
+                        new Object[] {itemId});
+            }
+        } catch (SQLiteException e) {
+            throw new IOException(e);
+        }
+        Log.d(TAG, "Restore: " + downloadAgain.size()
+                + " unplayed episodes in shows set to download can download again");
         return downloadAgain;
     }
 
