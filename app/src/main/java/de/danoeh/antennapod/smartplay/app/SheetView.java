@@ -208,6 +208,7 @@ public class SheetView extends LinearLayout {
         toolbar = null;
         actionsShown = "";
         name.setText(null);
+        name.setVisibility(View.VISIBLE);
         nameRow.setVisibility(View.VISIBLE);
         actions.removeAllViews();
         more.setVisibility(View.GONE);
@@ -242,11 +243,17 @@ public class SheetView extends LinearLayout {
             name.setText(text);
             header.setContentDescription(text);
         }
-        int nameShown = ownBigTitle || fragmentView.findViewById(R.id.tendTitle) != null ? View.GONE : View.VISIBLE;
-        if (nameRow.getVisibility() != nameShown) {
-            nameRow.setVisibility(nameShown);
+        int nameShown = ownBigTitle || fragmentView.findViewById(R.id.tendTitle) != null
+                ? View.INVISIBLE : View.VISIBLE;
+        if (name.getVisibility() != nameShown) {
+            name.setVisibility(nameShown);
         }
         showActions();
+        int rowShown = nameShown == View.VISIBLE || actions.getChildCount() > 0
+                || more.getVisibility() == View.VISIBLE ? View.VISIBLE : View.GONE;
+        if (nameRow.getVisibility() != rowShown) {
+            nameRow.setVisibility(rowShown);
+        }
     }
 
     private static boolean keepToolbar(Toolbar toolbar) {
