@@ -176,6 +176,24 @@ public final class UpdateScheduler {
         reschedule(context);
     }
 
+    public static synchronized void forgetUnusedCategories(Context context) {
+        Set<String> used = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+        for (Feed feed : DBReader.getFeedList()) {
+            if (feed.getPreferences() != null) {
+                used.addAll(feed.getPreferences().getTags());
+            }
+        }
+        SmartPlayStore store = SmartPlayStore.getInstance(context);
+        for (String key : store.getAllSchedules().keySet()) {
+            if (!DEFAULT_KEY.equals(key) && !used.contains(key)) {
+                Log.d(TAG, "Forgetting the update schedule of " + key + ": no show uses it");
+                store.deleteSchedule(key);
+                WorkManager.getInstance(context).cancelUniqueWork(WORK_JOB_PREFIX + key);
+                WorkManager.getInstance(context).cancelUniqueWork(WORK_RUN_PREFIX + key);
+            }
+        }
+    }
+
     public static List<String> getCategories() {
         Set<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         for (Set<String> categories : feedCategories().values()) {

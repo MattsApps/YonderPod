@@ -49,7 +49,7 @@ public final class RecordingSweeper {
         }
         waiting = executor.schedule(() -> {
             try {
-                if (!RecordingStore.getInstance(context).getShows().isEmpty()) {
+                if (Recordings.worthSweeping(context)) {
                     Recordings.sweep(context);
                 }
             } catch (Exception e) {

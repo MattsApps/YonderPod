@@ -1757,7 +1757,7 @@
     <string name="feedback_copied">Address copied</string>
     <string name="feedback_subject">Yonder %1$s feedback</string>
     <string name="feedback_crash_subject">Yonder %1$s crash report</string>
-    <string name="feedback_body">Hi Matt,\n\n</string>
+    <string name="feedback_body">Hi,\n\n</string>
     <string name="feedback_crash_body">Yonder crashed. What was I doing just before:\n\n</string>
     <string name="feedback_details">Yonder %1$s (%2$d, %3$s)\nPhone: %4$s\nAndroid %5$s (API %6$d)</string>
     <string name="crash_prompt_title">Yonder crashed last time</string>
@@ -1781,6 +1781,7 @@
     <string name="welcome_battery_why">In Yonder\'s app settings, tap Battery and choose Unrestricted, so the overnight update isn\'t skipped.</string>
     <string name="welcome_ready_title">ready?</string>
     <string name="welcome_ready_body">Bring your shows from another app, or start fresh and find some.</string>
+    <string name="welcome_moving">Move from another app</string>
     <string name="welcome_moving_why">Pocket Casts, BeyondPod, AntennaPod, Overcast and more.</string>
     <string name="yonder_feedback_email" translatable="false">BetterBuiltApps@gmail.com</string>
     <string name="yonder_source_url" translatable="false">https://github.com/MattsApps/YonderPod</string>

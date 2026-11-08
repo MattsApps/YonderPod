@@ -1,0 +1,6 @@
+PLACEHOLDER: Matt's Google Play full description goes here, word for word.
+
+Website: https://mattsapps.github.io/yonder/
+Privacy policy: https://mattsapps.github.io/yonder/privacy-policy.html
+Source code: https://github.com/MattsApps/YonderPod
+Contact: BetterBuiltApps@gmail.com

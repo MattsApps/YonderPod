@@ -200,7 +200,7 @@ public class WelcomeActivity extends AppCompatActivity {
             default:
                 title.setText(R.string.welcome_ready_title);
                 body.setText(R.string.welcome_ready_body);
-                action(actions, R.string.moving_link, R.string.welcome_moving_why, false, () -> {
+                action(actions, R.string.welcome_moving, R.string.welcome_moving_why, true, () -> {
                     startActivity(new Intent(this, MainActivity.class).putExtra(EXTRA_OPEN_MOVING, true)
                             .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP));
                     finish();

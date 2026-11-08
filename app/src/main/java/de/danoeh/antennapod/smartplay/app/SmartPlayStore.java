@@ -335,6 +335,10 @@ public class SmartPlayStore extends SQLiteOpenHelper {
         getWritableDatabase().insertWithOnConflict(TABLE_SCHEDULES, null, values, SQLiteDatabase.CONFLICT_REPLACE);
     }
 
+    public synchronized void deleteSchedule(String key) {
+        getWritableDatabase().delete(TABLE_SCHEDULES, KEY_SCHEDULE_KEY + " = ?", new String[] {key});
+    }
+
     public static final class StoredSchedule {
         private final String key;
         private final CategoryScheduleMode mode;

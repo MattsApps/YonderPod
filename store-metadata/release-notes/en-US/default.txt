@@ -1,0 +1,1 @@
+PLACEHOLDER: release notes for the first F-Droid release go here.

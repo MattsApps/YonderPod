@@ -32,8 +32,10 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import java.util.TimeZone;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -72,8 +74,11 @@ public final class Recordings {
     private static final String PREFS = "YonderRecordings";
     private static final String KEY_NAMES_UPDATED = "namesUpdated";
     private static final String KEY_TIME_SHIFT_ONLY = "timeShiftOnly";
+    private static final String KEY_CATEGORIES_TIDIED = "categoriesTidied";
     private static final String FOLDER = "recordings";
     private static final long SWEEP_MARGIN_MILLIS = 5_000L;
+    private static final Set<Long> CREATING = Collections.synchronizedSet(new HashSet<>());
+    private static volatile boolean leftovers = true;
 
     private Recordings() {
     }
@@ -90,6 +95,7 @@ public final class Recordings {
         feed.setImageUrl(station.getImageUrl());
         feed.setSortOrder(SortOrder.DATE_NEW_OLD);
         Feed saved = FeedDatabaseWriter.updateFeed(context, feed, false);
+        CREATING.add(saved.getId());
         FeedPreferences preferences = saved.getPreferences();
         if (preferences != null) {
             preferences.setKeepUpdated(false);
@@ -105,6 +111,7 @@ public final class Recordings {
         show.feedId = saved.getId();
         checkMethod(context, show);
         RecordingStore.getInstance(context).insert(show);
+        CREATING.remove(saved.getId());
         EventBus.getDefault().post(new Radio.ChangedEvent());
         schedule(context, show);
         tryNow(context, show);
@@ -127,8 +134,80 @@ public final class Recordings {
 
     public static void stop(Context context, RecordingStore.Show show) {
         cancel(context, show);
+        for (RecordingStore.Pending pending : pendingFor(context, show.id)) {
+            if (releaseNow(context, pending.id) == null) {
+                FileUtils.deleteQuietly(new File(pending.file));
+            }
+        }
         RecordingStore.getInstance(context).delete(show.id);
+        sweep(context);
+        UpdateScheduler.forgetUnusedCategories(context);
         EventBus.getDefault().post(new Radio.ChangedEvent());
+    }
+
+    static boolean worthSweeping(Context context) {
+        return leftovers || !RecordingStore.getInstance(context).getShows().isEmpty();
+    }
+
+    private static long sweepLeftovers(Context context, RecordingStore store, long now) {
+        long next = Long.MAX_VALUE;
+        boolean removed = false;
+        boolean remaining = false;
+        for (Feed listed : DBReader.getFeedList()) {
+            if (!isRecordingsFeed(listed) || CREATING.contains(listed.getId())
+                    || store.showForFeed(listed.getId()) != null) {
+                continue;
+            }
+            Feed feed = DBReader.getFeed(listed.getId(), false, 0, Integer.MAX_VALUE);
+            if (feed == null) {
+                continue;
+            }
+            List<RecordingRules.Recording> recordings = new ArrayList<>();
+            List<FeedItem> items = new ArrayList<>();
+            for (FeedItem item : feed.getItems() != null ? feed.getItems() : new ArrayList<FeedItem>()) {
+                FeedMedia media = item.getMedia();
+                if (media == null || media.getLocalFileUrl() == null || !new File(media.getLocalFileUrl()).exists()) {
+                    removeItem(context, item);
+                    continue;
+                }
+                long start = startOf(item);
+                recordings.add(new RecordingRules.Recording(item.getId(), start, start + media.getDuration(),
+                        media.getDownloadDate(), item.isPlayed(), isPlaying(media)));
+                items.add(item);
+            }
+            List<Long> going = RecordingRules.toDelete(recordings, now);
+            int kept = 0;
+            for (FeedItem item : items) {
+                if (going.contains(item.getId())) {
+                    Log.d(TAG, "Deleting " + item.getTitle() + (item.isPlayed() ? " (played)" : ""));
+                    removeItem(context, item);
+                } else {
+                    kept++;
+                }
+            }
+            if (kept > 0) {
+                remaining = true;
+                next = Math.min(next, RecordingRules.nextDeadline(recordings, now));
+                continue;
+            }
+            Log.d(TAG, "Removing " + feed.getTitle() + ": not recorded any more and nothing left to hear");
+            try {
+                DBWriter.deleteFeed(context, feed.getId()).get();
+                removed = true;
+            } catch (Exception e) {
+                Log.e(TAG, "Could not remove " + feed.getTitle(), e);
+            }
+        }
+        leftovers = remaining;
+        SharedPreferences prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
+        if (removed || !prefs.getBoolean(KEY_CATEGORIES_TIDIED, false)) {
+            UpdateScheduler.forgetUnusedCategories(context);
+            prefs.edit().putBoolean(KEY_CATEGORIES_TIDIED, true).apply();
+        }
+        if (removed) {
+            EventBus.getDefault().post(new Radio.ChangedEvent());
+        }
+        return next;
     }
 
     static void checkMethod(Context context, RecordingStore.Show show) {
@@ -454,6 +533,7 @@ public final class Recordings {
             }
             next = Math.min(next, deadline);
         }
+        next = Math.min(next, sweepLeftovers(context, store, now));
         scheduleSweep(context, next);
     }
 
