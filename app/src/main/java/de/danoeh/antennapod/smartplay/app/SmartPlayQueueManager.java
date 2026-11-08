@@ -120,6 +120,7 @@ public class SmartPlayQueueManager {
 
     private void disableConflictingQueueSettings() {
         UserPreferences.setQueueKeepSorted(false);
+        UserPreferences.setEnqueueLocation(UserPreferences.EnqueueLocation.AFTER_CURRENTLY_PLAYING);
         if (!state.getBoolean(KEY_COUNTER_SET, false)) {
             UserPreferences.setFeedCounterSetting(FeedCounter.SHOW_DOWNLOADED);
             state.edit().putBoolean(KEY_COUNTER_SET, true).apply();
@@ -297,6 +298,24 @@ public class SmartPlayQueueManager {
         });
     }
 
+    public void addToEnd(FeedItem item) {
+        executor.execute(() -> {
+            try {
+                List<FeedItem> queue = DBReader.getQueue();
+                for (int i = 0; i < queue.size(); i++) {
+                    if (queue.get(i).getId() == item.getId()) {
+                        editStore.markHandAdded(item.getId());
+                        DBWriter.moveQueueItem(i, queue.size() - 1, true).get();
+                        return;
+                    }
+                }
+                DBWriter.addQueueItemAt(context, item.getId(), queue.size()).get();
+            } catch (Exception e) {
+                Log.e(TAG, "Add to playlist failed", e);
+            }
+        });
+    }
+
     private SmartPlayDefinition activeSmartPlay() {
         List<SmartPlayStore.StoredSmartPlay> all = store.getAll();
         if (all.isEmpty()) {
@@ -381,7 +400,9 @@ public class SmartPlayQueueManager {
             Map<Long, FeedItem> itemsById = loadCandidates(queue, streamFeeds);
             boolean streamingAllowed = NetworkUtils.isStreamingAllowed();
             Map<Long, Long> playOrderDates = localPlayOrderDates(itemsById);
-            Books.detectNewBooks(context, DBReader.getFeedList());
+            List<Feed> allFeeds = DBReader.getFeedList();
+            Books.fixListOrderOnce(context, allFeeds);
+            Books.detectNewBooks(context, allFeeds);
             Set<Long> books = Books.bookIds(context);
             Map<Long, Long> bookLastPlayed = Books.lastPlayedPerBook(context, books);
             Set<Long> notInAllFeeds = new HashSet<>(books);

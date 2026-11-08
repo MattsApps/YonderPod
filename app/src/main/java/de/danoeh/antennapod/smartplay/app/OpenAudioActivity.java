@@ -13,7 +13,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.playback.service.PlaybackServiceStarter;
-import de.danoeh.antennapod.storage.database.DBWriter;
 import de.danoeh.antennapod.ui.common.ThemeSwitcher;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Single;
@@ -69,7 +68,7 @@ public class OpenAudioActivity extends AppCompatActivity {
                     } else if (action == PLAY_NEXT) {
                         SmartPlayQueueManager.getInstance().playNext(result.item);
                     } else if (action == ADD) {
-                        DBWriter.addQueueItem(getApplicationContext(), result.item);
+                        SmartPlayQueueManager.getInstance().addToEnd(result.item);
                     }
                     String message = result.copied
                             ? getString(R.string.open_file_copied, Formatter.formatShortFileSize(this, result.size))

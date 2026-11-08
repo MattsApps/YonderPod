@@ -208,7 +208,7 @@ public class FeedItemMenuHandler {
         } else if (menuItemId == R.id.play_next_item) {
             SmartPlayQueueManager.getInstance().playNext(selectedItem);
         } else if (menuItemId == R.id.add_to_queue_item) {
-            DBWriter.addQueueItem(context, selectedItem);
+            SmartPlayQueueManager.getInstance().addToEnd(selectedItem);
         } else if (menuItemId == R.id.remove_from_queue_item) {
             DBWriter.removeQueueItem(context, true, selectedItem);
         } else if (menuItemId == R.id.add_to_favorites_item) {

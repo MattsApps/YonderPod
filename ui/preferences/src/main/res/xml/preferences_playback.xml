@@ -81,6 +81,7 @@
                 android:entries="@array/enqueue_location_options"
                 android:entryValues="@array/enqueue_location_values"
                 android:key="prefEnqueueLocation"
+                search:ignore="true"
                 android:title="@string/pref_enqueue_location_title"/>
         <SwitchPreferenceCompat
                 android:defaultValue="true"

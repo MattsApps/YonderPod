@@ -48,6 +48,7 @@ public class PlaybackPreferencesFragment extends AnimatedPreferenceFragment {
         findPreference(UserPreferences.PREF_UNPAUSE_ON_BLUETOOTH_RECONNECT).setVisible(false);
         findPreference("prefEnqueueDownloaded").setVisible(false);
         findPreference("prefSkipKeepsEpisode").setVisible(false);
+        findPreference(UserPreferences.PREF_ENQUEUE_LOCATION).setVisible(false);
     }
 
     @Override

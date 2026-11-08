@@ -245,7 +245,10 @@ public class WelcomeActivity extends AppCompatActivity {
                     TypedValue.COMPLEX_UNIT_SP);
             row.addView(world, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1));
         }
-        picture.addView(row);
+        LinearLayout.LayoutParams rowParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT);
+        rowParams.setMarginEnd((int) (24 * density));
+        picture.addView(row, rowParams);
         FrameLayout play = new FrameLayout(this);
         play.setBackgroundResource(R.drawable.wildink_play_circle);
         ImageView icon = new ImageView(this);
@@ -253,11 +256,15 @@ public class WelcomeActivity extends AppCompatActivity {
         icon.setColorFilter(ThemeUtils.getColorFromAttr(this, R.attr.colorOnPrimary));
         icon.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
         int iconSize = (int) (64 * density);
-        play.addView(icon, new FrameLayout.LayoutParams(iconSize, iconSize, Gravity.CENTER));
+        FrameLayout.LayoutParams iconParams = new FrameLayout.LayoutParams(iconSize, iconSize,
+                Gravity.CENTER_VERTICAL | Gravity.START);
+        iconParams.setMarginStart((int) (18 * density));
+        play.addView(icon, iconParams);
         int size = (int) (150 * density);
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(size, size);
         params.topMargin = (int) (24 * density);
-        params.gravity = Gravity.CENTER_HORIZONTAL;
+        params.gravity = Gravity.END;
+        params.setMarginEnd(-size / 3);
         picture.addView(play, params);
     }
 }

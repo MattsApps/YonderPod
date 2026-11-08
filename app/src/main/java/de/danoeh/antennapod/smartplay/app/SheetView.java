@@ -226,8 +226,10 @@ public class SheetView extends LinearLayout {
             }
             title = toolbar.getTitle();
         }
+        boolean ownBigTitle = false;
         if (title == null || title.length() == 0) {
             title = bigTitle(fragmentView);
+            ownBigTitle = title != null && title.length() > 0;
         }
         if (title == null || title.length() == 0) {
             View named = fragmentView.findViewById(R.id.txtvTitle);
@@ -238,7 +240,7 @@ public class SheetView extends LinearLayout {
             name.setText(text);
             header.setContentDescription(text);
         }
-        int nameShown = fragmentView.findViewById(R.id.tendTitle) != null ? View.GONE : View.VISIBLE;
+        int nameShown = ownBigTitle || fragmentView.findViewById(R.id.tendTitle) != null ? View.GONE : View.VISIBLE;
         if (nameRow.getVisibility() != nameShown) {
             nameRow.setVisibility(nameShown);
         }

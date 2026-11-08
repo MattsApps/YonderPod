@@ -1,6 +1,7 @@
 package de.danoeh.antennapod.smartplay.app;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -10,6 +11,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import androidx.preference.PreferenceManager;
 
 import de.danoeh.antennapod.model.feed.Feed;
 import de.danoeh.antennapod.model.feed.FeedItem;
@@ -29,6 +31,7 @@ import de.danoeh.antennapod.storage.database.DBReader;
 import de.danoeh.antennapod.storage.database.DBWriter;
 
 public final class Books {
+    private static final String PREF_LIST_ORDER_FIXED = "yonderListOrderNewestFixed";
     private static final String TAG = "Books";
     public static final String CATEGORY = "Audiobooks";
     public static final int CHAPTERS_IN_LIST = 3;
@@ -101,6 +104,22 @@ public final class Books {
         }
     }
 
+    public static void fixListOrderOnce(Context context, List<Feed> feeds) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        if (prefs.getBoolean(PREF_LIST_ORDER_FIXED, false)) {
+            return;
+        }
+        Map<Long, SmartPlayStore.BookState> states = SmartPlayStore.getInstance(context).getBookStates();
+        for (Feed feed : feeds) {
+            SmartPlayStore.BookState state = states.get(feed.getId());
+            if (state != null && !state.isBook && !feed.isLocalFeed()
+                    && feed.getSortOrder() == SortOrder.DATE_OLD_NEW) {
+                DBWriter.setFeedItemSortOrder(feed.getId(), null);
+            }
+        }
+        prefs.edit().putBoolean(PREF_LIST_ORDER_FIXED, true).apply();
+    }
+
     public static void setBook(Context context, Feed feed, boolean book) {
         SmartPlayStore store = SmartPlayStore.getInstance(context);
         store.setBookState(feed.getId(), book, false);
@@ -113,6 +132,9 @@ public final class Books {
                     preferences.getTags().remove(CATEGORY);
                 }
                 DBWriter.setFeedPreferences(preferences).get();
+            }
+            if (!book && !feed.isLocalFeed()) {
+                DBWriter.setFeedItemSortOrder(feed.getId(), null).get();
             }
             if (book && !feed.isLocalFeed()) {
                 DBWriter.setFeedItemSortOrder(feed.getId(), SortOrder.DATE_OLD_NEW).get();

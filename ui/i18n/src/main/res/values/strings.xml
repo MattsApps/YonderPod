@@ -70,7 +70,7 @@
     <string name="home_new_title">See what\'s new</string>
     <string name="home_downloads_title">Manage downloads</string>
     <string name="home_no_recent_unplayed_episodes_text">You already played all recent episodes. Nothing to be surprised here ;)</string>
-    <string name="home_continue_empty_text">You can add episodes by downloading them or long-pressing them and selecting \"Add to queue\".</string>
+    <string name="home_continue_empty_text">You can add episodes by downloading them or long-pressing them and selecting \"Play next\".</string>
     <string name="home_new_empty_text">New episodes will show up here. You can then decide whether you are interested in them.</string>
     <string name="home_downloads_empty_text">You can download any episode to listen to it offline.</string>
     <string name="home_welcome_title">Welcome to Yonder!</string>
@@ -154,7 +154,7 @@
     <string name="feed_auto_download_always">Always</string>
     <string name="feed_auto_download_never">Never</string>
     <string name="feed_new_episodes_action_add_to_inbox">Add to inbox</string>
-    <string name="feed_new_episodes_action_add_to_queue">Add to queue</string>
+    <string name="feed_new_episodes_action_add_to_queue">Play next</string>
     <string name="feed_new_episodes_action_nothing">Nothing</string>
     <string name="feed_new_episodes_action_summary_autodownload">Automatic download enabled. Episodes are added to the inbox and then moved to the queue once downloaded.</string>
     <string name="feed_new_episodes_action_snackbar">Cannot be changed when automatic download is enabled.</string>
@@ -273,7 +273,8 @@
         <item quantity="one">%d episode marked as unplayed.</item>
         <item quantity="other">%d episodes marked as unplayed.</item>
     </plurals>
-    <string name="add_to_queue_label">Add to queue</string>
+    <string name="add_to_queue_label">Play next</string>
+    <string name="add_to_playlist_label">Add to playlist</string>
     <plurals name="added_to_queue_message">
         <item quantity="one">%d episode added to queue.</item>
         <item quantity="other">%d episodes added to queue.</item>
@@ -424,7 +425,7 @@
 
     <!-- Empty list labels -->
     <string name="no_items_header_label">No queued episodes</string>
-    <string name="no_items_label">Add an episode by downloading it, or long press an episode and select \"Add to queue\".</string>
+    <string name="no_items_label">Add an episode by downloading it, or long press an episode and select \"Play next\".</string>
     <string name="no_queue_items_inbox_has_items_label">No episodes lined up, but there are new episodes that await you!</string>
     <string name="no_queue_items_inbox_has_items_button_label">Go to inbox</string>
     <string name="no_shownotes_label">This episode has no shownotes.</string>
@@ -728,6 +729,9 @@
     <string name="download_defaults_title">Defaults for new shows</string>
     <string name="download_defaults_link">Change the defaults for new shows</string>
     <string name="download_mode_label">Download mode</string>
+    <string name="download_list_order_label">List episodes</string>
+    <string name="download_list_newest">Newest first</string>
+    <string name="download_list_oldest">Oldest first</string>
     <string name="download_mode_manual">Manually download</string>
     <string name="download_mode_latest">Download latest</string>
     <string name="download_mode_stream_latest">Stream latest</string>
@@ -1458,10 +1462,10 @@
     <string name="radio_quality_standard">Standard (about 128 kbps)</string>
     <string name="radio_quality_high">High (best available)</string>
     <string name="radio_rewind_checking">Checking how far back this stream can be rewound…</string>
-    <string name="radio_rewind_window">Can be rewound about %1$s</string>
-    <string name="radio_rewind_none">Live only: this stream can\'t be rewound</string>
-    <string name="radio_rewind_not_live">This link isn\'t a live stream</string>
-    <string name="radio_rewind_unknown">Couldn\'t tell how far back this stream can be rewound</string>
+    <string name="radio_rewind_window">This stream can be rewound about %1$s.</string>
+    <string name="radio_rewind_none">Live only: this stream can\'t be rewound.</string>
+    <string name="radio_rewind_not_live">This link isn\'t a live stream.</string>
+    <string name="radio_rewind_unknown">Couldn\'t tell how far back this stream can be rewound.</string>
     <string name="radio_live">LIVE</string>
     <string name="radio_search_title">Search stations</string>
     <string name="radio_search_hint">Station name, place or style</string>
@@ -2116,7 +2120,7 @@
     <string name="help_topic_find_station">Finding a radio station</string>
     <string name="help_about_find_station">Search the station directory or paste a stream link. Some stations are offline or only play in their own country.</string>
     <string name="help_topic_subscriptions">How following a show works</string>
-    <string name="help_about_subscriptions">What following means, and the new and downloaded counts beside each show.</string>
+    <string name="help_about_subscriptions">What following means, the new and downloaded counts beside each show, and why episodes list newest first (change it in Tune → Defaults for new shows, or with Sort on a show\'s page).</string>
     <string name="help_topic_categories">Categories</string>
     <string name="help_about_categories">Tag shows with categories, sort several at once, and use categories in Smart Play.</string>
     <string name="help_topic_download_modes">Download modes</string>
@@ -2134,7 +2138,7 @@
     <string name="help_topic_smart_play_priority">Priority shows and exclusions</string>
     <string name="help_about_smart_play_priority">Shows that always go first, shows that never play, and the most episodes from one show.</string>
     <string name="help_topic_playlist">The playlist</string>
-    <string name="help_about_playlist">Tap “from” or “then” on the surface. Drag to reorder, play next, remove, skip, rebuild or clear.</string>
+    <string name="help_about_playlist">Tap “from” or “then” on the surface. Drag to reorder, play next, add to the end, remove, skip, rebuild or clear. An episode you play from a show page goes first; when it ends, Yonder goes back to what you were listening to. At the end of the playlist, the Smart Play fills it again and keeps going.</string>
     <string name="help_topic_coverage">Coverage warnings</string>
     <string name="help_about_coverage">Shows that no rule covers, and “Included in” on a show\'s page.</string>
     <string name="help_topic_smart_play_hours">Switching Smart Plays by time of day</string>
@@ -2152,7 +2156,7 @@
     <string name="help_topic_radio_waiting">Recordings waiting for their time</string>
     <string name="help_about_radio_waiting">A saved recording waits for your local release time. “listen now anyway” plays it straight away.</string>
     <string name="help_topic_radio_short_names">Short station names</string>
-    <string name="help_about_radio_short_names">Edit station → Short name sets what Radio shows big.</string>
+    <string name="help_about_radio_short_names">The short name is what Radio shows in big letters.</string>
     <string name="help_topic_book_pages">Book pages</string>
     <string name="help_about_book_pages">How far through you are, the chapters, and Continue listening.</string>
     <string name="help_topic_book_extras">Bookmarks and a speed for each book</string>

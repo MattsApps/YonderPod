@@ -14,6 +14,21 @@
         android:paddingBottom="8dp">
 
         <TextView
+            android:id="@+id/download_list_order_label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/download_list_order_label"
+            android:textAppearance="@style/TextAppearance.WildInk.Label"
+            android:visibility="gone" />
+
+        <Spinner
+            android:id="@+id/download_list_order"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginBottom="8dp"
+            android:visibility="gone" />
+
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/download_mode_label"

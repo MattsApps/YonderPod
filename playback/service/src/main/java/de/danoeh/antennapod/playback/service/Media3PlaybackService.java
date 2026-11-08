@@ -51,6 +51,7 @@ import de.danoeh.antennapod.event.playback.RebuildSmartPlayEvent;
 import de.danoeh.antennapod.event.playback.SleepTimerUpdatedEvent;
 import de.danoeh.antennapod.event.playback.SpeedChangedEvent;
 import de.danoeh.antennapod.model.feed.Chapter;
+import de.danoeh.antennapod.model.feed.Feed;
 import de.danoeh.antennapod.model.feed.FeedItem;
 import de.danoeh.antennapod.model.feed.FeedMedia;
 import de.danoeh.antennapod.model.feed.FeedPreferences;
@@ -104,6 +105,9 @@ import java.util.concurrent.TimeUnit;
 public class Media3PlaybackService extends MediaLibraryService {
     private static final String TAG = "M3PlaybackService";
     private static final long POSITION_SAVE_INTERVAL_MS = 5000;
+    private static final String BOOK_CATEGORY = "Audiobooks";
+    private static final int REBUILD_WAIT_TRIES = 20;
+    private static final long REBUILD_WAIT_MS = 500;
     private ExoPlayer exoPlayer;
     private Player player;
     private MediaLibrarySession mediaSession;
@@ -686,7 +690,7 @@ public class Media3PlaybackService extends MediaLibraryService {
                             }
                             media.setPosition((int) player.getCurrentPosition());
                             if (media.getItem() != null && !media.getItem().isTagged(FeedItem.TAG_QUEUE)) {
-                                DBWriter.addQueueItem(this, media.getItem());
+                                addPlayedToQueue(media);
                             }
                             switchToPlayable(media);
                         },
@@ -920,6 +924,18 @@ public class Media3PlaybackService extends MediaLibraryService {
         return !media.localFileAvailable() && !URLUtil.isContentUrl(media.getStreamUrl());
     }
 
+    private void addPlayedToQueue(FeedMedia media) {
+        FeedItem item = media.getItem();
+        boolean radio = media.isLiveRadio();
+        Schedulers.io().scheduleDirect(() -> {
+            Feed feed = item.getFeed() != null ? item.getFeed() : DBReader.getFeed(item.getFeedId(), false, 0, 0);
+            boolean book = feed != null && feed.getPreferences() != null
+                    && feed.getPreferences().getTags().contains(BOOK_CATEGORY);
+            int index = radio || book ? DBReader.getQueueIDList().size() : 0;
+            DBWriter.addQueueItemAt(this, item.getId(), index);
+        });
+    }
+
     @UnstableApi
     private void handlePlaybackEnded() {
         if (currentPlayable != null && currentPlayable.isLiveRadio()) {
@@ -971,7 +987,13 @@ public class Media3PlaybackService extends MediaLibraryService {
                 nextItem = getFirstOtherInQueue(item);
             }
             boolean hasNext = nextItem != null && nextItem.getMedia() != null;
+            boolean lastInPlaylist = !hasNext && ended && !wasSkipped && !media.isLiveRadio()
+                    && DBReader.getQueueIDList().contains(item.getId());
             updateDatabaseAfterPlayback(media, startPosition, ended, wasSkipped, hasNext);
+            if (lastInPlaylist) {
+                nextItem = firstAfterRebuild(item);
+                hasNext = nextItem != null;
+            }
             if (hasNext) {
                 return new Pair<>(nextItem.getMedia(),
                         MediaItemAdapter.fromPlayable(Media3PlaybackService.this, nextItem.getMedia(), false));
@@ -989,7 +1011,7 @@ public class Media3PlaybackService extends MediaLibraryService {
                             }
                             switchToPlayable(nextMedia);
                             player.setPlayWhenReady(UserPreferences.isFollowQueue());
-                            player.setMediaItem(nextMediaItem, SkipUtils.skipIntroIfNecessary(this, nextMedia));
+                            player.setMediaItem(nextMediaItem, resumePosition(nextMedia));
                             player.prepare();
                         },
                         error -> Log.e(TAG, "Failed to load next queue item", error),
@@ -1008,6 +1030,33 @@ public class Media3PlaybackService extends MediaLibraryService {
                                 EventBus.getDefault().post(new MessageEvent(getString(R.string.no_following_in_queue)));
                             }
                         });
+    }
+
+    private long resumePosition(FeedMedia media) {
+        long start = SkipUtils.skipIntroIfNecessary(this, media);
+        if (media.getPosition() > 0 && start == media.getPosition() && !media.isLiveRadio()) {
+            start = ControlsPreferences.positionWithRewind(media.getId(), media.getPosition(),
+                    media.getLastPlayedTimeStatistics());
+        }
+        return start;
+    }
+
+    private static FeedItem firstAfterRebuild(FeedItem ended) {
+        EventBus.getDefault().post(new RebuildSmartPlayEvent());
+        for (int attempt = 0; attempt < REBUILD_WAIT_TRIES; attempt++) {
+            try {
+                Thread.sleep(REBUILD_WAIT_MS);
+            } catch (InterruptedException e) {
+                return null;
+            }
+            for (FeedItem queueItem : DBReader.getQueue()) {
+                if (queueItem.getId() != ended.getId() && queueItem.getMedia() != null
+                        && !queueItem.getMedia().isLiveRadio()) {
+                    return queueItem;
+                }
+            }
+        }
+        return null;
     }
 
     private static FeedItem getFirstOtherInQueue(FeedItem item) {

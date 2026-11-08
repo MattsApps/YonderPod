@@ -20,8 +20,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.danoeh.antennapod.R;
+import de.danoeh.antennapod.model.feed.SortOrder;
 import de.danoeh.antennapod.smartplay.download.DownloadMode;
 import de.danoeh.antennapod.smartplay.download.ShowDownloadSettings;
+import de.danoeh.antennapod.storage.preferences.UserPreferences;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Completable;
 import io.reactivex.rxjava3.core.Single;
@@ -122,6 +124,20 @@ public final class DownloadSettingsDialog {
         EditText keep = view.findViewById(R.id.download_keep);
         EditText age = view.findViewById(R.id.download_age);
         MaterialSwitch allowDeletions = view.findViewById(R.id.download_allow_deletions);
+        Spinner listOrder = view.findViewById(R.id.download_list_order);
+        int listOrderShown = UserPreferences.getPrefGlobalSortedOrder() == SortOrder.DATE_OLD_NEW ? 1 : 0;
+        if (feedId == DEFAULTS) {
+            List<String> orders = new ArrayList<>();
+            orders.add(context.getString(R.string.download_list_newest));
+            orders.add(context.getString(R.string.download_list_oldest));
+            ArrayAdapter<String> orderAdapter = new ArrayAdapter<>(context,
+                    android.R.layout.simple_spinner_item, orders);
+            orderAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            listOrder.setAdapter(orderAdapter);
+            listOrder.setSelection(listOrderShown);
+            listOrder.setVisibility(View.VISIBLE);
+            view.findViewById(R.id.download_list_order_label).setVisibility(View.VISIBLE);
+        }
 
         List<String> labels = new ArrayList<>();
         for (DownloadMode downloadMode : MODES) {
@@ -177,6 +193,10 @@ public final class DownloadSettingsDialog {
                     if (feedId == BULK) {
                         confirmBulk(context, bulkFeedIds, updated);
                         return;
+                    }
+                    if (feedId == DEFAULTS && listOrder.getSelectedItemPosition() != listOrderShown) {
+                        UserPreferences.setPrefGlobalSortedOrder(listOrder.getSelectedItemPosition() == 1
+                                ? SortOrder.DATE_OLD_NEW : SortOrder.DATE_NEW_OLD);
                     }
                     Completable.fromAction(() -> {
                         if (feedId == DEFAULTS) {

@@ -5,48 +5,23 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?android:attr/colorBackground"
+    android:clipToPadding="false"
     android:orientation="vertical"
     android:paddingHorizontal="24dp">
 
     <include layout="@layout/world_names" />
 
-    <TextView
-        android:id="@+id/worldShow"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:ellipsize="end"
-        android:maxLines="1"
-        android:textAppearance="@style/TextAppearance.WildInk.DetailStrong" />
-
-    <TextView
-        android:id="@+id/worldTitle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:ellipsize="end"
-        android:lineSpacingMultiplier="0.95"
-        android:maxLines="3"
-        android:textAppearance="@style/TextAppearance.WildInk.Hero" />
-
-    <TextView
-        android:id="@+id/worldHint"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:textAppearance="@style/TextAppearance.WildInk.Detail"
-        android:visibility="gone" />
-
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp">
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="@dimen/world_play_to_edge">
 
         <LinearLayout
             android:id="@+id/worldChapterBox"
             android:layout_width="120dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="22dp"
+            android:layout_marginTop="16dp"
             android:orientation="vertical">
 
             <LinearLayout
@@ -85,19 +60,20 @@
 
         <FrameLayout
             android:id="@+id/worldPlay"
-            android:layout_width="@dimen/world_play_medium"
-            android:layout_height="@dimen/world_play_medium"
+            android:layout_width="@dimen/world_play_large"
+            android:layout_height="@dimen/world_play_large"
             android:layout_gravity="end"
-            android:layout_marginEnd="-4dp"
+            android:layout_marginEnd="@dimen/world_play_overhang"
             android:background="@drawable/wildink_play_circle"
             android:contentDescription="@string/play_label"
             android:foreground="?android:attr/selectableItemBackgroundBorderless">
 
             <ImageView
                 android:id="@+id/worldPlayIcon"
-                android:layout_width="80dp"
-                android:layout_height="80dp"
-                android:layout_gravity="center"
+                android:layout_width="92dp"
+                android:layout_height="92dp"
+                android:layout_gravity="center_vertical|start"
+                android:layout_marginStart="38dp"
                 android:importantForAccessibility="no"
                 android:src="@drawable/wildink_play"
                 android:tint="?attr/colorOnPrimary" />
@@ -105,6 +81,33 @@
         </FrameLayout>
 
     </FrameLayout>
+
+    <TextView
+        android:id="@+id/worldShow"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="28dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textAppearance="@style/TextAppearance.WildInk.DetailStrong" />
+
+    <TextView
+        android:id="@+id/worldTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:ellipsize="end"
+        android:lineSpacingMultiplier="0.95"
+        android:maxLines="2"
+        android:textAppearance="@style/TextAppearance.WildInk.Hero" />
+
+    <TextView
+        android:id="@+id/worldHint"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:textAppearance="@style/TextAppearance.WildInk.Detail"
+        android:visibility="gone" />
 
     <Space
         android:layout_width="match_parent"
