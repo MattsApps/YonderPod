@@ -1781,7 +1781,7 @@
     <string name="yonder_feedback_email" translatable="false">BetterBuiltApps@gmail.com</string>
     <string name="yonder_source_url" translatable="false">https://github.com/MattsApps/YonderPod</string>
     <string name="yonder_developer_name" translatable="false">BetterBuiltApps</string>
-    <string name="yonder_privacy_url" translatable="false">https://yonderpod.netlify.app/privacy-policy.html</string>
+    <string name="yonder_privacy_url" translatable="false">https://mattsapps.github.io/yonder/privacy-policy.html</string>
     <string name="backup_title">backup</string>
     <string name="backup_intro">One file with everything Yonder knows: your shows, what you\'ve played, Smart Plays, categories, schedules, stations, recordings, palettes and settings. Not the audio itself.</string>
     <string name="backup_now">back up now</string>
