@@ -25,6 +25,7 @@ public final class HelpIndex {
     private static final String TAG = "HelpIndex";
     private static final String ANDROID_NS = "http://schemas.android.com/apk/res/android";
     private static final String APP_NS = "http://schemas.android.com/apk/res-auto";
+    private static final String SEARCH_NS = "http://schemas.android.com/apk/com.bytehamster.lib.preferencesearch";
     private static final int MAX_RESULTS = 40;
 
     public static final int OPEN_TUNE = 1;
@@ -306,8 +307,7 @@ public final class HelpIndex {
             return;
         }
         String key = parser.getAttributeValue(ANDROID_NS, "key");
-        if (key == null || hidden(key) || parser.getAttributeBooleanValue(APP_NS, "ignore", false)
-                || "true".equalsIgnoreCase(parser.getAttributeValue(APP_NS, "ignore"))) {
+        if (key == null || hidden(key) || ignored(parser, APP_NS) || ignored(parser, SEARCH_NS)) {
             return;
         }
         String title = text(parser, ANDROID_NS, "title");
@@ -323,6 +323,11 @@ public final class HelpIndex {
     }
 
     @Nullable
+    private boolean ignored(XmlResourceParser parser, String namespace) {
+        return parser.getAttributeBooleanValue(namespace, "ignore", false)
+                || "true".equalsIgnoreCase(parser.getAttributeValue(namespace, "ignore"));
+    }
+
     private String text(XmlResourceParser parser, String namespace, String name) {
         int id = parser.getAttributeResourceValue(namespace, name, 0);
         if (id != 0) {
