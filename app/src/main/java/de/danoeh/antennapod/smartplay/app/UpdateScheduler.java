@@ -32,6 +32,7 @@ import de.danoeh.antennapod.model.feed.Feed;
 import de.danoeh.antennapod.model.feed.FeedPreferences;
 import de.danoeh.antennapod.net.download.service.feed.FeedUpdateManagerImpl;
 import de.danoeh.antennapod.net.download.service.feed.FeedUpdateWorker;
+import de.danoeh.antennapod.net.download.serviceinterface.FeedUpdateManager;
 import de.danoeh.antennapod.smartplay.schedule.CategoryScheduleMode;
 import de.danoeh.antennapod.smartplay.schedule.ScheduleJobs;
 import de.danoeh.antennapod.smartplay.schedule.ScheduleRunPlanner;
@@ -59,6 +60,10 @@ public final class UpdateScheduler {
         RecordingSweeper.init(app);
         EXECUTOR.execute(() -> {
             reschedule(app);
+            if (YonderBackup.takeUpdateAfterRestore(app)) {
+                Log.d(TAG, "Updating after a restore");
+                FeedUpdateManager.getInstance().runOnce(app);
+            }
             try {
                 Recordings.rescheduleAll(app);
             } catch (Exception e) {

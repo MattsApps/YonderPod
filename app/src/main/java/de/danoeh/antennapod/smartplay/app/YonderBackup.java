@@ -53,6 +53,7 @@ public final class YonderBackup {
     public static final String BACKUP_PREFS = "YonderBackup";
     private static final String MANIFEST = "manifest.json";
     private static final String PREFERENCES = "preferences.json";
+    private static final String UPDATE_AFTER_RESTORE = "update-after-restore";
     private static final String DATABASES = "databases/";
     private static final String SMART_PLAY_DB = "smartplay.db";
     private static final String RECORDINGS_DB = "recordings.db";
@@ -399,6 +400,12 @@ public final class YonderBackup {
             restorePreferences(context, preferences);
         }
         FileUtils.deleteQuietly(summary.folder);
+        FileUtils.touch(new File(context.getFilesDir(), UPDATE_AFTER_RESTORE));
+    }
+
+    static boolean takeUpdateAfterRestore(Context context) {
+        File marker = new File(context.getFilesDir(), UPDATE_AFTER_RESTORE);
+        return marker.exists() && marker.delete();
     }
 
     public static void discard(@Nullable Summary summary) {
