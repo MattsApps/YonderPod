@@ -100,6 +100,17 @@ public class RecordingRulesTest {
     }
 
     @Test
+    public void evenAPlayingRecordingGoesFortyEightHoursAfterItEnded() {
+        long start = 10 * HOUR;
+        long ended = start + HOUR;
+        List<RecordingRules.Recording> playing = Collections.singletonList(recording(1, start, false, true));
+        assertTrue(RecordingRules.toDelete(playing, ended + 48 * HOUR - 1).isEmpty());
+        assertEquals(Collections.singletonList(1L), RecordingRules.toDelete(playing, ended + 48 * HOUR));
+        assertEquals(ended + 48 * HOUR, RecordingRules.nextDeadline(playing, ended + 30 * HOUR));
+        assertEquals(ended + 25 * HOUR, RecordingRules.nextDeadline(playing, ended));
+    }
+
+    @Test
     public void favouritesNoLongerProtectRecordings() {
         long start = 10 * HOUR;
         assertEquals(Collections.singletonList(1L), RecordingRules.toDelete(Arrays.asList(

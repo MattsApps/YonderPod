@@ -9,6 +9,7 @@ public final class RecordingRules {
     public static final long BURST_DELAY_MILLIS = 2 * 60_000L;
     public static final int DEFAULT_KEEP = 5;
     public static final long KEEP_AFTER_RECORDING_MILLIS = 25 * 3600_000L;
+    public static final long PLAYING_LIMIT_MILLIS = 48 * 3600_000L;
     public static final long RELEASE_SLACK_MILLIS = 30_000L;
 
     public enum Method {
@@ -54,6 +55,10 @@ public final class RecordingRules {
         return recordingEnded + KEEP_AFTER_RECORDING_MILLIS;
     }
 
+    public static long playingLimit(long recordingEnded) {
+        return recordingEnded + PLAYING_LIMIT_MILLIS;
+    }
+
     public static boolean waiting(long availableAt, long now) {
         return availableAt > now + RELEASE_SLACK_MILLIS;
     }
@@ -67,7 +72,8 @@ public final class RecordingRules {
         for (Recording recording : recordings) {
             boolean replaced = recording.airingStart < newest;
             boolean expired = now >= deletesAt(recording.recordingEnded, recording.released);
-            if ((recording.played || replaced || expired) && !recording.playing) {
+            boolean overLimit = now >= playingLimit(recording.recordingEnded);
+            if (((recording.played || replaced || expired) && !recording.playing) || overLimit) {
                 result.add(recording.id);
             }
         }
@@ -79,7 +85,8 @@ public final class RecordingRules {
         long next = Long.MAX_VALUE;
         for (Recording recording : recordings) {
             if (!going.contains(recording.id)) {
-                next = Math.min(next, deletesAt(recording.recordingEnded, recording.released));
+                long deadline = deletesAt(recording.recordingEnded, recording.released);
+                next = Math.min(next, deadline > now ? deadline : playingLimit(recording.recordingEnded));
             }
         }
         return next;
