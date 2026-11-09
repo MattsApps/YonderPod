@@ -368,7 +368,7 @@
             android:foregroundServiceType="specialUse">
             <property
                 android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
-                android:value="Records radio shows the listener has scheduled, so they can listen later. A live stream can only be recorded while it is broadcast, so recording runs for the whole show while the app is in the background, with a notification showing." />
+                android:value="Records radio shows the listener has scheduled, for their own later listening. A live stream can only be recorded while it is broadcast, so recording runs for the whole show in the background, with a notification showing. Recordings are encrypted, can't be shared or exported, and delete themselves after playing or within 25–48 hours." />
         </service>
 
         <service
@@ -377,7 +377,7 @@
             tools:node="merge">
             <property
                 android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
-                android:value="Records radio shows the listener has scheduled, so they can listen later. A live stream can only be recorded while it is broadcast, so recording runs for the whole show while the app is in the background, with a notification showing." />
+                android:value="Records radio shows the listener has scheduled, for their own later listening. A live stream can only be recorded while it is broadcast, so recording runs for the whole show in the background, with a notification showing. Recordings are encrypted, can't be shared or exported, and delete themselves after playing or within 25–48 hours." />
         </service>
 
     </application>
