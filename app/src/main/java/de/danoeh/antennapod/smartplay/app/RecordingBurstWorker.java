@@ -35,6 +35,10 @@ public class RecordingBurstWorker extends Worker {
         if (show == null) {
             return Result.success();
         }
+        if (Recordings.isLeftOver(show)) {
+            Recordings.stop(context, show);
+            return Result.success();
+        }
         ShowTimes.Airing airing = new ShowTimes.Airing(getInputData().getLong(Recordings.KEY_START, 0),
                 getInputData().getLong(Recordings.KEY_END, 0));
         try {
@@ -81,7 +85,8 @@ public class RecordingBurstWorker extends Worker {
                 .build();
         int id = (int) (2000 + show.id);
         if (Build.VERSION.SDK_INT >= 29) {
-            return new ForegroundInfo(id, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC);
+            return new ForegroundInfo(id, notification, Build.VERSION.SDK_INT >= 34
+                    ? ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE : ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC);
         }
         return new ForegroundInfo(id, notification);
     }

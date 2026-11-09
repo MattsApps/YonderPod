@@ -226,12 +226,19 @@ public final class Recordings {
         show.method = RecordingRules.chooseMethod(window, show.spec().durationMillis()).name();
     }
 
+    static boolean isLeftOver(RecordingStore.Show show) {
+        Feed feed = DBReader.getFeed(show.feedId, false, 0, 0);
+        return feed == null || feed.getState() != Feed.STATE_SUBSCRIBED
+                || DBReader.getFeedItem(show.stationItemId) == null;
+    }
+
     public static void rescheduleAll(Context context) {
         RecordingStore store = RecordingStore.getInstance(context);
         SharedPreferences prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
         boolean renameDefaults = !prefs.getBoolean(KEY_NAMES_UPDATED, false);
         for (RecordingStore.Show show : store.getShows()) {
-            if (DBReader.getFeed(show.feedId, false, 0, 0) == null) {
+            if (isLeftOver(show)) {
+                Log.d(TAG, "Stopping " + show.name + ": its show or station is gone");
                 stop(context, show);
                 continue;
             }

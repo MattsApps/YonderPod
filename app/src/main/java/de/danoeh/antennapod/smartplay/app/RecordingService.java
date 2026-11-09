@@ -31,6 +31,7 @@ public class RecordingService extends Service {
 
     private final Set<Long> running = new HashSet<>();
     private volatile boolean destroyed = false;
+    private volatile boolean cutShort = false;
 
     public static void start(Context context, long showId, long start, long end) {
         if (showId < 0) {
@@ -57,13 +58,19 @@ public class RecordingService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         long showId = intent != null ? intent.getLongExtra(Recordings.KEY_SHOW, -1) : -1;
         RecordingStore.Show show = showId >= 0 ? RecordingStore.getInstance(this).getShow(showId) : null;
-        startInForeground(show != null ? show.name : "");
+        boolean foreground = startInForeground(show != null ? show.name : "");
         if (show == null) {
             stopIfIdle();
             return START_NOT_STICKY;
         }
         ShowTimes.Airing airing = new ShowTimes.Airing(intent.getLongExtra(Recordings.KEY_START, 0),
                 intent.getLongExtra(Recordings.KEY_END, 0));
+        if (!foreground) {
+            Recordings.missed(this, show, airing, R.string.recording_missed_android, false);
+            Recordings.scheduleAfter(this, show, airing.getEnd());
+            stopIfIdle();
+            return START_NOT_STICKY;
+        }
         synchronized (running) {
             if (!running.add(showId)) {
                 return START_NOT_STICKY;
@@ -73,15 +80,21 @@ public class RecordingService extends Service {
         return START_NOT_STICKY;
     }
 
-    private void startInForeground(String name) {
+    private boolean startInForeground(String name) {
         Notification notification = new NotificationCompat.Builder(this, NotificationUtils.CHANNEL_ID_DOWNLOADING)
                 .setContentTitle(getString(R.string.recording_live_notification, name))
                 .setSmallIcon(R.drawable.ic_notification_sync)
                 .setOngoing(true)
                 .setSilent(true)
                 .build();
-        ServiceCompat.startForeground(this, NOTIFICATION_ID, notification,
-                Build.VERSION.SDK_INT >= 29 ? ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC : 0);
+        try {
+            ServiceCompat.startForeground(this, NOTIFICATION_ID, notification,
+                    Build.VERSION.SDK_INT >= 34 ? ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE : 0);
+            return true;
+        } catch (Exception e) {
+            Log.e(TAG, "Android didn't let the recording run in the background", e);
+            return false;
+        }
     }
 
     private void record(RecordingStore.Show show, ShowTimes.Airing airing) {
@@ -101,6 +114,9 @@ public class RecordingService extends Service {
                     station.getMedia().getMimeType(), until, Recordings.folder(context, show),
                     Recordings.fileName(show, airing), () -> destroyed);
             Recordings.saved(context, show, saved, airing);
+            if (cutShort) {
+                Recordings.missed(context, show, airing, R.string.recording_cut_short, false);
+            }
         } catch (Recorder.UnsupportedException e) {
             Recordings.missed(context, show, airing, R.string.recording_missed_unsupported, false);
         } catch (Exception e) {
@@ -127,6 +143,15 @@ public class RecordingService extends Service {
                 stopSelf();
             }
         }
+    }
+
+    @Override
+    public void onTimeout(int startId, int fgsType) {
+        Log.w(TAG, "Android stopped the recording early");
+        cutShort = true;
+        destroyed = true;
+        ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE);
+        stopSelf();
     }
 
     @Override

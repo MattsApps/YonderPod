@@ -138,6 +138,9 @@ public final class Radio {
         try {
             DBWriter.deleteFeedItems(context, Collections.singletonList(station)).get();
             RadioPreferences.remove(station.getId());
+            for (RecordingStore.Show show : Recordings.showsFor(context, station.getId())) {
+                Recordings.stop(context, show);
+            }
         } catch (Exception e) {
             Log.e(TAG, "Could not delete station", e);
         }

@@ -1488,6 +1488,8 @@
     <string name="recording_missed_unsupported">Missed %1$s – this stream can\'t be recorded</string>
     <string name="recording_missed_connection">Missed %1$s – no connection</string>
     <string name="recording_missed_wifi">Missed %1$s – not on Wi-Fi</string>
+    <string name="recording_missed_android">Missed %1$s – Android didn\'t let Yonder record in the background</string>
+    <string name="recording_cut_short">Part of %1$s – Android stopped the recording early</string>
     <string name="recording_saving">Saving %1$s</string>
     <string name="recording_live_notification">Recording %1$s</string>
     <string name="recording_station_missing">That station has been deleted.</string>
