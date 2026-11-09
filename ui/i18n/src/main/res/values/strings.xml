@@ -2034,7 +2034,7 @@
     </string-array>
     <string name="recording_plays_at">Saved · plays here at %1$s</string>
     <string name="recording_listen_now">listen now anyway</string>
-    <string name="recording_time_shift">Recordings are for listening later, not keeping: each one plays once, and goes when the next airs or after 25 hours.</string>
+    <string name="recording_time_shift">Recordings are for listening later, not keeping: each one goes when the next airs or after 25 hours.</string>
     <string name="recording_deletes_at">Deletes at %1$s</string>
     <string name="radio_short_name_hint">Short name, shown big on the Radio screen</string>
     <!-- Yonder help in Tend -->
@@ -2161,7 +2161,7 @@
     <string name="help_topic_radio_waiting">Recordings waiting for their time</string>
     <string name="help_about_radio_waiting">A saved recording waits for your local release time. “listen now anyway” plays it straight away.</string>
     <string name="help_topic_radio_keeping">Recordings are for listening later</string>
-    <string name="help_about_radio_keeping">Recordings are for listening later, not keeping: each one plays once, and goes when the next airs or after 25 hours.</string>
+    <string name="help_about_radio_keeping">Recordings are for listening later, not keeping: each one goes when the next airs or after 25 hours.</string>
     <string name="help_topic_radio_short_names">Short station names</string>
     <string name="help_about_radio_short_names">The short name is what Radio shows in big letters.</string>
     <string name="help_topic_book_pages">Book pages</string>

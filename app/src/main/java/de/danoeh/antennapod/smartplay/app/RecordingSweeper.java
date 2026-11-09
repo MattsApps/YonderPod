@@ -12,6 +12,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import de.danoeh.antennapod.event.FeedItemEvent;
+import de.danoeh.antennapod.event.FeedListUpdateEvent;
 import de.danoeh.antennapod.event.PlayerStatusEvent;
 
 public final class RecordingSweeper {
@@ -43,6 +44,11 @@ public final class RecordingSweeper {
         later();
     }
 
+    @Subscribe
+    public void onFeedListUpdate(FeedListUpdateEvent event) {
+        later();
+    }
+
     private synchronized void later() {
         if (waiting != null && !waiting.isDone()) {
             waiting.cancel(false);
@@ -50,6 +56,7 @@ public final class RecordingSweeper {
         waiting = executor.schedule(() -> {
             try {
                 if (Recordings.worthSweeping(context)) {
+                    Recordings.stopLeftovers(context);
                     Recordings.sweep(context);
                 }
             } catch (Exception e) {

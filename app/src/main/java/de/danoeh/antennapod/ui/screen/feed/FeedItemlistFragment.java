@@ -27,6 +27,7 @@ import de.danoeh.antennapod.smartplay.app.BookDialogs;
 import de.danoeh.antennapod.smartplay.app.BookPanel;
 import de.danoeh.antennapod.smartplay.app.LocalFolders;
 import de.danoeh.antennapod.smartplay.app.PlayInDialog;
+import de.danoeh.antennapod.smartplay.app.Radio;
 import de.danoeh.antennapod.smartplay.app.RadioSurface;
 import de.danoeh.antennapod.smartplay.app.RecordShowDialog;
 import de.danoeh.antennapod.smartplay.app.RecordingStore;
@@ -457,6 +458,13 @@ public class FeedItemlistFragment extends Fragment implements AdapterView.OnItem
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onRadioChanged(Radio.ChangedEvent event) {
+        if (viewBinding != null && feed != null && Recordings.isRecordingsFeed(feed)) {
+            refreshSmartPlayInfo();
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(FeedEvent event) {
         Log.d(TAG, "onEvent() called with: " + "event = [" + event + "]");
         if (event.feedId == feedID) {
@@ -648,7 +656,7 @@ public class FeedItemlistFragment extends Fragment implements AdapterView.OnItem
                     ? RecordingStore.getInstance(appContext).showForFeed(shownFeed.getId()) : null;
             List<RecordingStore.Pending> waiting = show != null
                     ? Recordings.pendingFor(appContext, show.id) : new ArrayList<>();
-            recordingInfo = show != null ? Recordings.pageInfo(appContext, show) : "";
+            recordingInfo = Recordings.isRecordingsFeed(shownFeed) ? Recordings.pageInfo(appContext, show) : "";
             return waiting.isEmpty() ? -1L : waiting.get(0).id;
         })
                 .subscribeOn(Schedulers.io())

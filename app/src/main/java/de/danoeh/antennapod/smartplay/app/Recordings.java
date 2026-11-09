@@ -48,6 +48,9 @@ import de.danoeh.antennapod.model.feed.FeedMedia;
 import de.danoeh.antennapod.model.feed.FeedPreferences;
 import de.danoeh.antennapod.model.feed.SortOrder;
 import de.danoeh.antennapod.playback.service.PlaybackService;
+import de.danoeh.antennapod.smartplay.EpisodeSource;
+import de.danoeh.antennapod.smartplay.SmartPlayDefinition;
+import de.danoeh.antennapod.smartplay.SmartPlayRule;
 import de.danoeh.antennapod.smartplay.radio.RecordingCipher;
 import de.danoeh.antennapod.smartplay.radio.RecordingKeys;
 import de.danoeh.antennapod.smartplay.radio.RecordingRules;
@@ -75,6 +78,7 @@ public final class Recordings {
     private static final String KEY_NAMES_UPDATED = "namesUpdated";
     private static final String KEY_TIME_SHIFT_ONLY = "timeShiftOnly";
     private static final String KEY_CATEGORIES_TIDIED = "categoriesTidied";
+    private static final String KEY_SMART_PLAYS_TIDIED = "smartPlaysTidied";
     private static final String FOLDER = "recordings";
     private static final long SWEEP_MARGIN_MILLIS = 5_000L;
     private static final Set<Long> CREATING = Collections.synchronizedSet(new HashSet<>());
@@ -140,9 +144,47 @@ public final class Recordings {
             }
         }
         RecordingStore.getInstance(context).delete(show.id);
+        Books.removeFromSmartPlays(context, show.feedId);
         sweep(context);
         UpdateScheduler.forgetUnusedCategories(context);
         EventBus.getDefault().post(new Radio.ChangedEvent());
+    }
+
+    static void stopLeftovers(Context context) {
+        for (RecordingStore.Show show : RecordingStore.getInstance(context).getShows()) {
+            if (isLeftOver(show)) {
+                Log.d(TAG, "Stopping " + show.name + ": its show or station is gone");
+                stop(context, show);
+            }
+        }
+    }
+
+    private static void forgetGoneShowsInSmartPlays(Context context, RecordingStore store) {
+        Set<Long> existing = new HashSet<>();
+        for (Feed feed : DBReader.getFeedList()) {
+            if (!isRecordingsFeed(feed) || store.showForFeed(feed.getId()) != null) {
+                existing.add(feed.getId());
+            }
+        }
+        Set<Long> gone = new HashSet<>();
+        for (SmartPlayStore.StoredSmartPlay stored : SmartPlayStore.getInstance(context).getAll()) {
+            SmartPlayDefinition definition = stored.getDefinition();
+            for (SmartPlayDefinition.PriorityFeed priority : definition.getPriorityFeeds()) {
+                if (!existing.contains(priority.getFeedId())) {
+                    gone.add(priority.getFeedId());
+                }
+            }
+            for (SmartPlayRule rule : definition.getRules()) {
+                if (rule.getSource().getType() == EpisodeSource.Type.FEED
+                        && !existing.contains(rule.getSource().getFeedId())) {
+                    gone.add(rule.getSource().getFeedId());
+                }
+            }
+        }
+        for (long feedId : gone) {
+            Log.d(TAG, "Removing show " + feedId + " from Smart Plays: it no longer exists");
+            Books.removeFromSmartPlays(context, feedId);
+        }
     }
 
     static boolean worthSweeping(Context context) {
@@ -200,6 +242,10 @@ public final class Recordings {
         }
         leftovers = remaining;
         SharedPreferences prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
+        if (!prefs.getBoolean(KEY_SMART_PLAYS_TIDIED, false)) {
+            forgetGoneShowsInSmartPlays(context, store);
+            prefs.edit().putBoolean(KEY_SMART_PLAYS_TIDIED, true).apply();
+        }
         if (removed || !prefs.getBoolean(KEY_CATEGORIES_TIDIED, false)) {
             UpdateScheduler.forgetUnusedCategories(context);
             prefs.edit().putBoolean(KEY_CATEGORIES_TIDIED, true).apply();
@@ -773,7 +819,8 @@ public final class Recordings {
     public static String pageInfo(Context context, RecordingStore.Show show) {
         List<String> lines = new ArrayList<>();
         RecordingStore.Pending held = null;
-        for (RecordingStore.Pending pending : pendingFor(context, show.id)) {
+        for (RecordingStore.Pending pending : show != null ? pendingFor(context, show.id)
+                : new ArrayList<RecordingStore.Pending>()) {
             if (held == null || pending.airingStart > held.airingStart) {
                 held = pending;
             }
@@ -781,7 +828,7 @@ public final class Recordings {
         if (held != null) {
             lines.add(playsAtText(context, playsAt(context, held)));
         }
-        long deletesAt = deletesAt(context, show);
+        long deletesAt = show != null ? deletesAt(context, show) : Long.MAX_VALUE;
         if (deletesAt != Long.MAX_VALUE) {
             lines.add(context.getString(R.string.recording_deletes_at, dayTime(context, deletesAt)));
         }
