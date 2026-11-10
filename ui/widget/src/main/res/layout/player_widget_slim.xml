@@ -18,26 +18,31 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center_vertical"
+        android:clipToPadding="false"
         android:orientation="horizontal"
         android:paddingHorizontal="10dp">
 
         <FrameLayout
             android:id="@+id/playBox"
-            android:layout_width="52dp"
-            android:layout_height="52dp">
+            android:layout_width="39dp"
+            android:layout_height="39dp"
+            android:layout_gravity="top"
+            android:layout_marginStart="-10dp">
 
             <ImageView
                 android:id="@+id/butPlayCircle"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:contentDescription="@string/play_label"
-                android:src="@drawable/widget_wildink_circle" />
+                android:src="@drawable/widget_wildink_corner_circle_slim" />
 
             <ImageView
                 android:id="@+id/butPlay"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:layout_gravity="center"
+                android:layout_gravity="top|start"
+                android:layout_marginStart="1dp"
+                android:layout_marginTop="1dp"
                 android:importantForAccessibility="no"
                 android:src="@drawable/wildink_play_centred" />
 
