@@ -40,3 +40,4 @@ gradle.properties
 upload-key*
 signing.properties
 release-log.txt
+widget-size.txt
