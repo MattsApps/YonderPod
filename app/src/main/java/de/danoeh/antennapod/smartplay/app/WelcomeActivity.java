@@ -275,7 +275,7 @@ public class WelcomeActivity extends AppCompatActivity {
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(size, size);
         params.topMargin = (int) (24 * density);
         params.gravity = Gravity.END;
-        params.setMarginEnd(-size / 3);
+        params.setMarginEnd(getResources().getDimensionPixelSize(R.dimen.welcome_play_overhang));
         picture.addView(play, params);
     }
 }

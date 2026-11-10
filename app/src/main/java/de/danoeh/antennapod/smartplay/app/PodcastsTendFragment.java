@@ -350,7 +350,7 @@ public class PodcastsTendFragment extends Fragment {
         new MaterialAlertDialogBuilder(requireContext())
                 .setTitle(getString(R.string.tend_smart_play_delete_question, smartPlay.getDefinition().getName()))
                 .setMessage(R.string.tend_smart_play_delete_message)
-                .setPositiveButton(R.string.tend_smart_play_delete, (dialog, which) ->
+                .setPositiveButton(R.string.yonder_button_delete, (dialog, which) ->
                         disposables.add(Completable.fromAction(() -> {
                             if (SmartPlayStore.getInstance(app).getAll().size() <= 1) {
                                 return;
@@ -364,7 +364,7 @@ public class PodcastsTendFragment extends Fragment {
                                 .observeOn(AndroidSchedulers.mainThread())
                                 .subscribe(() -> root.postDelayed(this::load, 300),
                                         error -> Log.e(TAG, Log.getStackTraceString(error)))))
-                .setNegativeButton(R.string.cancel_label, null)
+                .setNegativeButton(R.string.yonder_button_cancel, null)
                 .show();
     }
 

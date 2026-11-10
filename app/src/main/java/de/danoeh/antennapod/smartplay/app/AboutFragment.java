@@ -73,7 +73,7 @@ public class AboutFragment extends Fragment {
                 .setView(holder)
                 .setPositiveButton(R.string.feedback_write, (dialog, which) ->
                         Feedback.send(requireActivity(), attachLog.isChecked(), false))
-                .setNegativeButton(R.string.cancel_label, null)
+                .setNegativeButton(R.string.yonder_button_cancel, null)
                 .show();
     }
 
@@ -95,7 +95,7 @@ public class AboutFragment extends Fragment {
         new MaterialAlertDialogBuilder(requireContext())
                 .setTitle(R.string.about_licence_value)
                 .setView(scroll)
-                .setPositiveButton(android.R.string.ok, null)
+                .setPositiveButton(R.string.yonder_button_ok, null)
                 .show();
     }
 

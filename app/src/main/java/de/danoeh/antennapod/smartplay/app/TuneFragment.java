@@ -216,7 +216,7 @@ public class TuneFragment extends Fragment {
         new MaterialAlertDialogBuilder(requireContext())
                 .setTitle(R.string.tune_language)
                 .setMessage(R.string.tune_language_older)
-                .setPositiveButton(android.R.string.ok, null)
+                .setPositiveButton(R.string.yonder_button_ok, null)
                 .show();
     }
 

@@ -21,9 +21,8 @@ public final class CustomColours {
         accent = opaque(accent);
         int text = contrast(background, DARK_INK) >= contrast(background, LIGHT_INK) ? DARK_INK : LIGHT_INK;
         background = nudgeAway(background, text, TEXT_CONTRAST);
-        int secondary = towards(text, background, 0.35);
-        secondary = nudgeAway(secondary, background, TEXT_CONTRAST);
         int raised = towards(background, text, 0.08);
+        int secondary = readable(towards(text, background, 0.35), text, background, raised);
         accent = nudgeEitherWay(accent, background, ACCENT_CONTRAST);
         int onAccent = contrast(accent, DARK_INK) >= contrast(accent, LIGHT_INK) ? DARK_INK : LIGHT_INK;
         return new int[] {background, text, secondary, accent, onAccent, raised};
@@ -47,6 +46,17 @@ public final class CustomColours {
     private static double channel(int value) {
         double c = value / 255.0;
         return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+    }
+
+    private static int readable(int colour, int text, int background, int raised) {
+        int result = colour;
+        for (int step = 0; step <= 20; step++) {
+            result = towards(colour, text, step * 0.05);
+            if (contrast(result, background) >= TEXT_CONTRAST && contrast(result, raised) >= TEXT_CONTRAST) {
+                return result;
+            }
+        }
+        return result;
     }
 
     private static int nudgeAway(int colour, int other, double target) {

@@ -201,7 +201,7 @@ public class HelpFragment extends Fragment {
                 new MaterialAlertDialogBuilder(requireContext())
                         .setTitle(item.title)
                         .setMessage(item.about)
-                        .setPositiveButton(android.R.string.ok, null)
+                        .setPositiveButton(R.string.yonder_button_ok, null)
                         .show();
                 break;
         }

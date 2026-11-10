@@ -70,7 +70,7 @@ public final class RadioStationDialog {
         new MaterialAlertDialogBuilder(context)
                 .setTitle(R.string.radio_edit)
                 .setView(view)
-                .setPositiveButton(R.string.confirm_label, (dialog, which) -> {
+                .setPositiveButton(R.string.yonder_button_save, (dialog, which) -> {
                     String newName = name.getText().toString().trim();
                     String newLogo = logo.getText().toString().trim();
                     String newStream = stream.getText().toString().trim();
@@ -90,7 +90,7 @@ public final class RadioStationDialog {
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(onSaved::run, error -> Log.e(TAG, Log.getStackTraceString(error)));
                 })
-                .setNegativeButton(R.string.cancel_label, null)
+                .setNegativeButton(R.string.yonder_button_cancel, null)
                 .setOnDismissListener(dialog -> {
                     if (check != null) {
                         check.dispose();

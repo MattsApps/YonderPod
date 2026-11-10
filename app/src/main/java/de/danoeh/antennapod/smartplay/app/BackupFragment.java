@@ -269,7 +269,7 @@ public class BackupFragment extends Fragment {
                     BackupSettings.setPassword(requireContext(), password);
                     show();
                 })
-                .setNegativeButton(R.string.cancel_label, null);
+                .setNegativeButton(R.string.yonder_button_cancel, null);
         if (BackupSettings.password(requireContext()) != null) {
             builder.setNeutralButton(R.string.backup_password_remove, (dialog, which) -> {
                 BackupSettings.setPassword(requireContext(), null);

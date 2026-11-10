@@ -134,8 +134,8 @@ public class SmartPlaysFragment extends Fragment {
         }
         new MaterialAlertDialogBuilder(requireContext())
                 .setMessage(getString(R.string.smartplay_delete_confirm, smartPlay.getDefinition().getName()))
-                .setPositiveButton(R.string.smartplay_delete, (dialog, which) -> delete(smartPlay))
-                .setNegativeButton(android.R.string.cancel, null)
+                .setPositiveButton(R.string.yonder_button_delete, (dialog, which) -> delete(smartPlay))
+                .setNegativeButton(R.string.yonder_button_cancel, null)
                 .show();
     }
 

@@ -3,6 +3,7 @@ package de.danoeh.antennapod.smartplay.app;
 import android.content.Context;
 import android.content.res.XmlResourceParser;
 import android.os.Build;
+import android.os.UserManager;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
@@ -17,7 +18,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
+import de.danoeh.antennapod.BuildConfig;
 import de.danoeh.antennapod.R;
+import de.danoeh.antennapod.storage.preferences.UserPreferences;
 import de.danoeh.antennapod.ui.common.Palette;
 import de.danoeh.antennapod.ui.screen.preferences.PreferenceActivity;
 
@@ -43,7 +46,7 @@ public final class HelpIndex {
     public static final int OPEN_TOPIC = 13;
 
     private static final Set<String> HIDDEN_ADVANCED = new HashSet<>(Arrays.asList("searchPreference",
-            "prefDocumentation", "prefViewForum", "prefContribute", "prefSendBugReport", "prefScreenParentalControl"));
+            "prefDocumentation", "prefViewForum", "prefContribute", "prefSendBugReport"));
 
     public static final class Item {
         public final String title;
@@ -282,6 +285,11 @@ public final class HelpIndex {
         }
         if ("prefPersistNotify".equals(key)) {
             return Build.VERSION.SDK_INT >= Build.VERSION_CODES.R;
+        }
+        if ("prefScreenParentalControl".equals(key)) {
+            UserManager users = context.getSystemService(UserManager.class);
+            return !(users.hasUserRestriction(UserManager.DISALLOW_FACTORY_RESET) || BuildConfig.DEBUG
+                    || UserPreferences.isParentalControlPasswordSet());
         }
         return false;
     }

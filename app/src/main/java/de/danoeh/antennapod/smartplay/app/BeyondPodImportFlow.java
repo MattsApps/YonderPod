@@ -102,7 +102,7 @@ public final class BeyondPodImportFlow {
                 .setTitle(R.string.beyondpod_title)
                 .setMessage(describe(fragment.requireContext(), summary))
                 .setPositiveButton(R.string.beyondpod_import, (dialog, which) -> apply(fragment, summary))
-                .setNegativeButton(R.string.cancel_label, null)
+                .setNegativeButton(R.string.yonder_button_cancel, null)
                 .show();
     }
 
@@ -121,7 +121,7 @@ public final class BeyondPodImportFlow {
                         new MaterialAlertDialogBuilder(fragment.requireContext())
                                 .setTitle(R.string.beyondpod_done_title)
                                 .setMessage(R.string.beyondpod_done)
-                                .setPositiveButton(android.R.string.ok, null)
+                                .setPositiveButton(R.string.yonder_button_ok, null)
                                 .show();
                     }
                 }, error -> {

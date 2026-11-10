@@ -286,7 +286,7 @@ public class SmartPlayEditorFragment extends Fragment {
         new MaterialAlertDialogBuilder(requireContext())
                 .setTitle(R.string.smartplay_unsaved_title)
                 .setMessage(R.string.smartplay_unsaved_message)
-                .setPositiveButton(R.string.smartplay_save, (dialog, which) -> save())
+                .setPositiveButton(R.string.yonder_button_save, (dialog, which) -> save())
                 .setNegativeButton(R.string.smartplay_discard, (dialog, which) -> {
                     clearDraft();
                     leave();
@@ -653,7 +653,7 @@ public class SmartPlayEditorFragment extends Fragment {
                 .setTitle(title)
                 .setMultiChoiceItems(labels.toArray(new String[0]), checked,
                         (dialog, which, isChecked) -> checked[which] = isChecked)
-                .setPositiveButton(android.R.string.ok, (dialog, which) -> {
+                .setPositiveButton(R.string.yonder_button_ok, (dialog, which) -> {
                     List<String> categories = new ArrayList<>();
                     List<Long> feedIds = new ArrayList<>();
                     for (int i = 0; i < checked.length; i++) {
@@ -678,7 +678,7 @@ public class SmartPlayEditorFragment extends Fragment {
                     }
                     callback.onChosen(new Exclusions(categories, feedIds));
                 })
-                .setNegativeButton(android.R.string.cancel, null)
+                .setNegativeButton(R.string.yonder_button_cancel, null)
                 .show();
     }
 
@@ -961,7 +961,7 @@ public class SmartPlayEditorFragment extends Fragment {
                     showPriorities();
                     updateCoverageWarning();
                 })
-                .setNegativeButton(android.R.string.cancel, null)
+                .setNegativeButton(R.string.yonder_button_cancel, null)
                 .show();
     }
 
@@ -988,7 +988,7 @@ public class SmartPlayEditorFragment extends Fragment {
                     showPriorities();
                     updateCoverageWarning();
                 })
-                .setNegativeButton(android.R.string.cancel, null)
+                .setNegativeButton(R.string.yonder_button_cancel, null)
                 .show();
     }
 
@@ -1042,7 +1042,7 @@ public class SmartPlayEditorFragment extends Fragment {
         new MaterialAlertDialogBuilder(requireContext())
                 .setTitle(R.string.smartplay_rebuild_question)
                 .setMessage(R.string.smartplay_rebuild_question_message)
-                .setPositiveButton(R.string.smartplay_rebuild_now, (dialog, which) ->
+                .setPositiveButton(R.string.yonder_button_rebuild_now, (dialog, which) ->
                         SmartPlayQueueManager.getInstance().rebuildNow())
                 .setNegativeButton(R.string.smartplay_later, null)
                 .setOnDismissListener(dialog -> leave())
@@ -1169,7 +1169,7 @@ public class SmartPlayEditorFragment extends Fragment {
                         updateCoverageWarning();
                         dialog.dismiss();
                     })
-                    .setNegativeButton(android.R.string.cancel, null)
+                    .setNegativeButton(R.string.yonder_button_cancel, null)
                     .show());
         }
 

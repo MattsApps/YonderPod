@@ -138,7 +138,7 @@ public final class LocalFolderDialog {
                         offNote.setVisibility(View.GONE);
                         limits.setVisibility(View.VISIBLE);
                     })
-                    .setNegativeButton(R.string.cancel_label, (d, which) -> allowDelete.setChecked(false))
+                    .setNegativeButton(R.string.yonder_button_cancel, (d, which) -> allowDelete.setChecked(false))
                     .setOnCancelListener(d -> allowDelete.setChecked(false))
                     .show();
         });
@@ -146,7 +146,7 @@ public final class LocalFolderDialog {
         new MaterialAlertDialogBuilder(context)
                 .setTitle(R.string.local_files_title)
                 .setView(view)
-                .setPositiveButton(R.string.confirm_label, (d, which) -> {
+                .setPositiveButton(R.string.yonder_button_save, (d, which) -> {
                     LocalFolders.PlayOrder chosen = ORDERS[order.getSelectedItemPosition()];
                     boolean allowed = allowDelete.isChecked();
                     ShowDownloadSettings updated = new ShowDownloadSettings(DownloadMode.MANUAL, 1,
@@ -165,7 +165,7 @@ public final class LocalFolderDialog {
                                 }
                             }, error -> Log.e(TAG, Log.getStackTraceString(error)));
                 })
-                .setNegativeButton(R.string.cancel_label, null)
+                .setNegativeButton(R.string.yonder_button_cancel, null)
                 .show();
     }
 

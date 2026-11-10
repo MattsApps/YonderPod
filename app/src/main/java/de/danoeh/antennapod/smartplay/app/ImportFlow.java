@@ -99,7 +99,7 @@ public final class ImportFlow {
                 .setView(content)
                 .setPositiveButton(R.string.restore_password_open, (dialog, which) ->
                         inspect(fragment, uri, field.getText().toString()))
-                .setNegativeButton(R.string.cancel_label, null)
+                .setNegativeButton(R.string.yonder_button_cancel, null)
                 .show();
     }
 
@@ -134,7 +134,7 @@ public final class ImportFlow {
                 .setMessage(message)
                 .setPositiveButton(antennaPod ? R.string.restore_antennapod_button : R.string.restore_button,
                         (dialog, which) -> restore(fragment, summary))
-                .setNegativeButton(R.string.cancel_label, (dialog, which) -> YonderBackup.discard(summary))
+                .setNegativeButton(R.string.yonder_button_cancel, (dialog, which) -> YonderBackup.discard(summary))
                 .setOnCancelListener(dialog -> YonderBackup.discard(summary))
                 .show();
     }

@@ -27,7 +27,7 @@ final class PlaylistRow {
         View row = holder.itemView;
         Context context = row.getContext();
         TextView show = row.findViewById(R.id.txtvShow);
-        show.setText(item.getFeed().getTitle());
+        show.setText(item.getFeed().getDisplayTitle());
         show.setVisibility(View.VISIBLE);
         TextView title = row.findViewById(R.id.txtvTitle);
         title.setTypeface(ResourcesCompat.getFont(context, R.font.bricolage_extrabold));

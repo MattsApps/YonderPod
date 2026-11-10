@@ -37,6 +37,8 @@ public final class ShelfPicker {
         Context context = picker.getContext();
         EditText search = picker.findViewById(R.id.shelfSearch);
         RecyclerView list = picker.findViewById(R.id.shelfChoices);
+        TextView showAll = picker.findViewById(R.id.shelfShowAll);
+        boolean[] everything = {false};
         List<AppShelves.App> all = new ArrayList<>();
         List<AppShelves.App> shown = new ArrayList<>();
         RecyclerView.Adapter<RecyclerView.ViewHolder> adapter = new RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -68,13 +70,21 @@ public final class ShelfPicker {
         Runnable filter = () -> {
             String query = search.getText().toString().trim().toLowerCase(Locale.getDefault());
             shown.clear();
+            boolean hidden = false;
             for (AppShelves.App app : all) {
-                if (query.isEmpty() || app.label.toString().toLowerCase(Locale.getDefault()).contains(query)) {
+                if (!everything[0] && !app.media) {
+                    hidden = true;
+                } else if (query.isEmpty() || app.label.toString().toLowerCase(Locale.getDefault()).contains(query)) {
                     shown.add(app);
                 }
             }
+            showAll.setVisibility(hidden ? View.VISIBLE : View.GONE);
             adapter.notifyDataSetChanged();
         };
+        showAll.setOnClickListener(v -> {
+            everything[0] = true;
+            filter.run();
+        });
         search.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence text, int start, int count, int after) {
@@ -107,7 +117,10 @@ public final class ShelfPicker {
     public static void dialog(Context context, CharSequence title, Set<String> leaveOut,
                               Consumer<AppShelves.App> onPick) {
         View picker = LayoutInflater.from(context).inflate(R.layout.shelf_picker, null, false);
-        int height = (int) (context.getResources().getDisplayMetrics().heightPixels * 0.6f);
+        int room = context.getResources().getDisplayMetrics().heightPixels
+                - context.getResources().getDimensionPixelSize(R.dimen.wildink_picker_screen_gap);
+        int height = Math.max(context.getResources().getDimensionPixelSize(R.dimen.wildink_picker_min_height),
+                Math.min(context.getResources().getDimensionPixelSize(R.dimen.wildink_picker_max_height), room));
         picker.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height));
         AlertDialog[] shown = new AlertDialog[1];
         Disposable loading = fill(picker, leaveOut, app -> {
@@ -119,7 +132,7 @@ public final class ShelfPicker {
         shown[0] = new MaterialAlertDialogBuilder(context)
                 .setTitle(title)
                 .setView(picker)
-                .setNegativeButton(R.string.cancel_label, null)
+                .setNegativeButton(R.string.yonder_button_cancel, null)
                 .setOnDismissListener(dialog -> loading.dispose())
                 .show();
         picker.getLayoutParams().height = height;

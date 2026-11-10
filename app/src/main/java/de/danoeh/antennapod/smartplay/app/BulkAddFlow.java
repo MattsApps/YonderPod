@@ -76,7 +76,7 @@ public final class BulkAddFlow {
             new MaterialAlertDialogBuilder(context)
                     .setTitle(R.string.moving_bulk_none)
                     .setMessage(notes)
-                    .setPositiveButton(android.R.string.ok, null)
+                    .setPositiveButton(R.string.yonder_button_ok, null)
                     .show();
             return;
         }
@@ -101,7 +101,7 @@ public final class BulkAddFlow {
                     }
                     subscribe(fragment, chosen, notes, onSubscribed);
                 })
-                .setNegativeButton(R.string.cancel_label, null)
+                .setNegativeButton(R.string.yonder_button_cancel, null)
                 .show();
     }
 
@@ -141,7 +141,7 @@ public final class BulkAddFlow {
                     new MaterialAlertDialogBuilder(fragment.requireContext())
                             .setTitle(done)
                             .setMessage(notes.isEmpty() ? null : notes)
-                            .setPositiveButton(android.R.string.ok, null)
+                            .setPositiveButton(R.string.yonder_button_ok, null)
                             .show();
                 }, error -> ImportFlow.toast(fragment,
                         fragment.getString(R.string.import_failed, error.getMessage())));

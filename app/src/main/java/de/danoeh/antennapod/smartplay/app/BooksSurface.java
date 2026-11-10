@@ -107,7 +107,7 @@ public class BooksSurface extends WorldSurface {
         String bookAuthor = book.getAuthor();
         author.setText(bookAuthor);
         author.setVisibility(bookAuthor == null || bookAuthor.isEmpty() ? View.GONE : View.VISIBLE);
-        title.setText(book.getTitle() != null ? book.getTitle().toLowerCase(Locale.getDefault()) : "");
+        title.setText(book.getTitle() != null ? book.getDisplayTitle().toLowerCase(Locale.getDefault()) : "");
         hint.setVisibility(View.GONE);
         chapterBox.setVisibility(View.VISIBLE);
         progressRow.setVisibility(View.VISIBLE);

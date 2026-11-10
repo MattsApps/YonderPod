@@ -19,7 +19,7 @@
 
     <Preference
             android:key="prefScreenPlayback"
-            android:title="@string/playback_pref"
+            android:title="@string/tune_playback"
             android:summary="@string/playback_pref_sum"
             android:icon="@drawable/ic_play_24dp" />
 

@@ -149,7 +149,7 @@ public class FindPodcastsFragment extends FindFragment {
                         startActivity(new OnlineFeedviewActivityStarter(requireContext(), link).getIntent());
                     }
                 })
-                .setNegativeButton(R.string.cancel_label, null)
+                .setNegativeButton(R.string.yonder_button_cancel, null)
                 .show();
     }
 }

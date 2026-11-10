@@ -4,6 +4,9 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.os.Bundle;
 import android.os.UserManager;
+import android.view.View;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.Preference;
 
@@ -61,6 +64,15 @@ public class MainPreferencesFragment extends AnimatedPreferenceFragment {
             debugNotice.setOrder(-1);
             debugNotice.setSummary("This is a development version of AntennaPod and not meant for daily use");
             findPreference(PREF_CATEGORY_PROJECT).getParent().addPreference(debugNotice);
+        }
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        if (savedInstanceState == null
+                && requireActivity().getIntent().getStringExtra(PreferenceActivity.HIGHLIGHT_KEY) == null) {
+            getListView().post(() -> getListView().scrollToPosition(0));
         }
     }
 

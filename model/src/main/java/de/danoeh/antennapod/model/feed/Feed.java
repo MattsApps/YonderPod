@@ -289,6 +289,33 @@ public class Feed implements Serializable {
         return this.feedTitle;
     }
 
+    public String getDisplayTitle() {
+        return displayTitle(getTitle(), getAuthor());
+    }
+
+    public static String displayTitle(String title, String author) {
+        if (title == null) {
+            return null;
+        }
+        String shown = title.trim();
+        if (author != null && !author.trim().isEmpty()) {
+            String by = " by " + author.trim();
+            if (shown.length() > by.length()
+                    && shown.regionMatches(true, shown.length() - by.length(), by, 0, by.length())) {
+                shown = shown.substring(0, shown.length() - by.length()).trim();
+            }
+        }
+        for (String article : new String[] {"The", "An", "A"}) {
+            String tail = ", " + article;
+            if (shown.length() > tail.length()
+                    && shown.regionMatches(true, shown.length() - tail.length(), tail, 0, tail.length())) {
+                String word = shown.substring(shown.length() - article.length());
+                return word + " " + shown.substring(0, shown.length() - tail.length()).trim();
+            }
+        }
+        return shown;
+    }
+
     @Nullable
     public String getCustomTitle() {
         return this.customTitle;

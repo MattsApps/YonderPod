@@ -186,7 +186,7 @@ public final class DownloadSettingsDialog {
                 .setTitle(feedId == DEFAULTS ? R.string.download_defaults_title
                         : feedId == BULK ? R.string.download_bulk_title : R.string.download_settings_title)
                 .setView(view)
-                .setPositiveButton(R.string.confirm_label, (d, which) -> {
+                .setPositiveButton(R.string.yonder_button_save, (d, which) -> {
                     ShowDownloadSettings updated = new ShowDownloadSettings(MODES[mode.getSelectedItemPosition()],
                             parse(count, 1), parse(keep, ShowDownloadSettings.NO_LIMIT),
                             parse(age, ShowDownloadSettings.NO_LIMIT), allowDeletions.isChecked());
@@ -213,7 +213,7 @@ public final class DownloadSettingsDialog {
                                 }
                             }, error -> Log.e(TAG, Log.getStackTraceString(error)));
                 })
-                .setNegativeButton(R.string.cancel_label, null)
+                .setNegativeButton(R.string.yonder_button_cancel, null)
                 .create();
 
         view.findViewById(R.id.download_mark_all).setOnClickListener(v ->
@@ -251,9 +251,9 @@ public final class DownloadSettingsDialog {
                             .setTitle(R.string.download_bulk_title)
                             .setMessage(context.getResources().getQuantityString(R.plurals.download_bulk_confirm,
                                     feedIds.size(), changed.size(), feedIds.size()))
-                            .setPositiveButton(R.string.confirm_label, (d, which) ->
+                            .setPositiveButton(R.string.yonder_button_apply, (d, which) ->
                                     applyBulk(context, changed, chosen))
-                            .setNegativeButton(R.string.cancel_label, null)
+                            .setNegativeButton(R.string.yonder_button_cancel, null)
                             .show();
                 }, error -> Log.e(TAG, Log.getStackTraceString(error)));
     }

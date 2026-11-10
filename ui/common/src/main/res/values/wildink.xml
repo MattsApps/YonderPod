@@ -168,13 +168,13 @@
         <item name="colorOnBackground">@color/wildink_paper_111111</item>
         <item name="android:textColorPrimary">@color/wildink_paper_111111</item>
         <item name="action_icon_color">@color/wildink_paper_111111</item>
-        <item name="colorOnSurfaceVariant">@color/wildink_paper_555049</item>
-        <item name="android:textColorSecondary">@color/wildink_paper_555049</item>
-        <item name="android:textColorTertiary">@color/wildink_paper_555049</item>
-        <item name="android:textColorHint">@color/wildink_paper_555049</item>
-        <item name="colorOutline">@color/wildink_paper_555049</item>
+        <item name="colorOnSurfaceVariant">@color/wildink_paper_524d47</item>
+        <item name="android:textColorSecondary">@color/wildink_paper_524d47</item>
+        <item name="android:textColorTertiary">@color/wildink_paper_524d47</item>
+        <item name="android:textColorHint">@color/wildink_paper_524d47</item>
+        <item name="colorOutline">@color/wildink_paper_524d47</item>
         <item name="colorOutlineVariant">@color/wildink_paper_e4ded2</item>
-        <item name="icon_gray">@color/wildink_paper_555049</item>
+        <item name="icon_gray">@color/wildink_paper_524d47</item>
     </style>
 
     <style name="Theme.WildInk.Paper.NoTitle" parent="Theme.WildInk.Paper">
@@ -333,13 +333,13 @@
         <item name="colorOnBackground">@color/wildink_kraft_1a1712</item>
         <item name="android:textColorPrimary">@color/wildink_kraft_1a1712</item>
         <item name="action_icon_color">@color/wildink_kraft_1a1712</item>
-        <item name="colorOnSurfaceVariant">@color/wildink_kraft_4e4436</item>
-        <item name="android:textColorSecondary">@color/wildink_kraft_4e4436</item>
-        <item name="android:textColorTertiary">@color/wildink_kraft_4e4436</item>
-        <item name="android:textColorHint">@color/wildink_kraft_4e4436</item>
-        <item name="colorOutline">@color/wildink_kraft_4e4436</item>
+        <item name="colorOnSurfaceVariant">@color/wildink_kraft_3f372c</item>
+        <item name="android:textColorSecondary">@color/wildink_kraft_3f372c</item>
+        <item name="android:textColorTertiary">@color/wildink_kraft_3f372c</item>
+        <item name="android:textColorHint">@color/wildink_kraft_3f372c</item>
+        <item name="colorOutline">@color/wildink_kraft_3f372c</item>
         <item name="colorOutlineVariant">@color/wildink_kraft_c9b897</item>
-        <item name="icon_gray">@color/wildink_kraft_4e4436</item>
+        <item name="icon_gray">@color/wildink_kraft_3f372c</item>
     </style>
 
     <style name="Theme.WildInk.Kraft.NoTitle" parent="Theme.WildInk.Kraft">

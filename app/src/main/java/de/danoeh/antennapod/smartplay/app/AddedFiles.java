@@ -128,7 +128,7 @@ public final class AddedFiles {
         new MaterialAlertDialogBuilder(context)
                 .setTitle(R.string.added_files_remove)
                 .setMessage(message)
-                .setPositiveButton(R.string.added_files_remove, (dialog, which) -> Completable.fromAction(() -> {
+                .setPositiveButton(R.string.yonder_button_remove, (dialog, which) -> Completable.fromAction(() -> {
                     if (copy && !new File(media.getLocalFileUrl()).delete()) {
                         Log.d(TAG, "Could not delete copy " + media.getLocalFileUrl());
                     }
@@ -136,7 +136,7 @@ public final class AddedFiles {
                 })
                         .subscribeOn(Schedulers.io())
                         .subscribe(() -> { }, error -> Log.e(TAG, Log.getStackTraceString(error))))
-                .setNegativeButton(R.string.cancel_label, null)
+                .setNegativeButton(R.string.yonder_button_cancel, null)
                 .show();
     }
 

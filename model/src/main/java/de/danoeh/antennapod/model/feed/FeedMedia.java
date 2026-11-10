@@ -335,7 +335,7 @@ public class FeedMedia implements Playable {
         if (item == null || item.getFeed() == null) {
             return null;
         }
-        return item.getFeed().getTitle();
+        return item.getFeed().getDisplayTitle();
     }
 
     @Override

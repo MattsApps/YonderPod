@@ -164,7 +164,7 @@ public class BooksTendFragment extends Fragment {
         LinearLayout list = root.findViewById(R.id.tendList);
         list.removeAllViews();
         for (BookRow book : state.books) {
-            View row = TendRows.row(this, list, book.feed.getTitle(), book.progress, book.feed.getImageUrl(),
+            View row = TendRows.row(this, list, book.feed.getDisplayTitle(), book.progress, book.feed.getImageUrl(),
                     "", "", v -> TendRows.open(this, FeedItemlistFragment.newInstance(book.feed.getId())));
             row.setOnLongClickListener(v -> {
                 offerDelete(v, book.feed, true);
@@ -223,9 +223,10 @@ public class BooksTendFragment extends Fragment {
         Context app = requireContext().getApplicationContext();
         new MaterialAlertDialogBuilder(requireContext())
                 .setTitle(getString(book ? R.string.tend_delete_book_question : R.string.tend_remove_folder_question,
-                        feed.getTitle()))
+                        feed.getDisplayTitle()))
                 .setMessage(book ? R.string.tend_delete_book_message : R.string.tend_remove_folder_message)
-                .setPositiveButton(book ? R.string.tend_delete_book : R.string.tend_remove_folder, (dialog, which) ->
+                .setPositiveButton(book ? R.string.yonder_button_delete_book : R.string.yonder_button_remove_folder,
+                        (dialog, which) ->
                         disposables.add(Completable.fromAction(() -> {
                             Books.removeFromSmartPlays(app, feed.getId());
                             DBWriter.deleteFeed(app, feed.getId()).get();
@@ -233,7 +234,7 @@ public class BooksTendFragment extends Fragment {
                                 .subscribeOn(Schedulers.io())
                                 .observeOn(AndroidSchedulers.mainThread())
                                 .subscribe(this::load, error -> Log.e(TAG, Log.getStackTraceString(error)))))
-                .setNegativeButton(R.string.cancel_label, null)
+                .setNegativeButton(R.string.yonder_button_cancel, null)
                 .show();
     }
 

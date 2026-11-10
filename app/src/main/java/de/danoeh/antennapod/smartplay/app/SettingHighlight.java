@@ -163,7 +163,8 @@ public final class SettingHighlight {
                 Rect rect = new Rect();
                 target.getDrawingRect(rect);
                 ((ViewGroup) parent).offsetDescendantRectToMyCoords(target, rect);
-                int top = Math.max(0, rect.top - parent.getHeight() / 4);
+                int top = Math.max(0, rect.top
+                        - parent.getResources().getDimensionPixelSize(R.dimen.wildink_highlight_from_top));
                 if (parent instanceof ScrollView) {
                     ((ScrollView) parent).smoothScrollTo(0, top);
                 } else {

@@ -132,7 +132,7 @@ public class PodcastsSurface extends WorldSurface {
             }
         });
         if (state.next != null && state.next.getFeed() != null) {
-            next.setText(getString(R.string.world_then, state.next.getFeed().getTitle()));
+            next.setText(getString(R.string.world_then, state.next.getFeed().getDisplayTitle()));
             next.setVisibility(View.VISIBLE);
         } else if (shown == null) {
             next.setText(R.string.moving_link);

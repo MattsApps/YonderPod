@@ -133,7 +133,7 @@ public final class Feedback {
                         Toast.makeText(activity, R.string.feedback_copied, Toast.LENGTH_SHORT).show();
                     }
                 })
-                .setNegativeButton(R.string.cancel_label, null)
+                .setNegativeButton(R.string.yonder_button_cancel, null)
                 .show();
     }
 

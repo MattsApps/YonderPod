@@ -187,14 +187,14 @@ public class UpdateScheduleFragment extends Fragment {
         new MaterialAlertDialogBuilder(requireContext())
                 .setTitle(row.name)
                 .setView(view)
-                .setPositiveButton(R.string.confirm_label, (dialog, which) -> {
+                .setPositiveButton(R.string.yonder_button_save, (dialog, which) -> {
                     int id = mode.getCheckedRadioButtonId();
                     CategoryScheduleMode chosen = id == R.id.category_mode_own ? CategoryScheduleMode.OWN
                             : id == R.id.category_mode_manual ? CategoryScheduleMode.MANUAL
                             : CategoryScheduleMode.DEFAULT;
                     save(row.name, chosen, editor.getSchedule());
                 })
-                .setNegativeButton(R.string.cancel_label, null)
+                .setNegativeButton(R.string.yonder_button_cancel, null)
                 .show();
     }
 
@@ -204,7 +204,7 @@ public class UpdateScheduleFragment extends Fragment {
                 .setMessage(R.string.schedule_battery_dialog_message)
                 .setPositiveButton(R.string.schedule_battery_fix, (dialog, which) ->
                         fixBatteryOptimisation(getContext()))
-                .setNegativeButton(R.string.cancel_label, null)
+                .setNegativeButton(R.string.yonder_button_cancel, null)
                 .show();
     }
 

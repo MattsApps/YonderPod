@@ -1,37 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?android:attr/colorBackground"
-    android:fitsSystemWindows="true"
-    android:orientation="vertical"
-    android:paddingHorizontal="24dp"
-    android:paddingBottom="24dp">
+    android:fitsSystemWindows="true">
 
-    <de.danoeh.antennapod.ui.common.LowercaseTextView
-        style="@style/Widget.WildInk.PageTitle"
-        android:text="@string/button_tester_title" />
-
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/button_tester_hint"
-        android:textAppearance="@style/TextAppearance.WildInk.Detail" />
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:paddingHorizontal="24dp"
+        android:paddingBottom="24dp">
 
-    <Button
-        android:id="@+id/button_tester_clear"
-        style="?attr/borderlessButtonStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/button_tester_clear" />
+        <de.danoeh.antennapod.ui.common.LowercaseTextView
+            style="@style/Widget.WildInk.PageTitle"
+            android:text="@string/button_tester_title" />
 
-    <TextView
-        android:id="@+id/button_tester_log"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:scrollbars="vertical"
-        android:textAppearance="@style/TextAppearance.WildInk.Detail" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/button_tester_hint"
+            android:textAppearance="@style/TextAppearance.WildInk.Detail" />
 
-</LinearLayout>
+        <Button
+            android:id="@+id/button_tester_clear"
+            style="?attr/borderlessButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/button_tester_clear" />
+
+        <TextView
+            android:id="@+id/button_tester_log"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:scrollbars="vertical"
+            android:textAppearance="@style/TextAppearance.WildInk.Detail" />
+
+    </LinearLayout>
+
+</FrameLayout>

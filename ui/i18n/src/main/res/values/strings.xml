@@ -449,11 +449,11 @@
 
     <!-- Preferences -->
     <string name="project_pref">Project</string>
-    <string name="synchronization_pref">Synchronization</string>
-    <string name="synchronization_sum">Synchronize with other devices</string>
+    <string name="synchronization_pref">Sync</string>
+    <string name="synchronization_sum">Sync with your other devices</string>
     <string name="automation">Automation</string>
     <string name="download_pref_details">Details</string>
-    <string name="import_export_pref">Backup &amp; restore</string>
+    <string name="import_export_pref">Back up and restore</string>
     <string name="import_export_search_keywords">import, export</string>
     <string name="theming">Theming</string>
     <string name="external_elements">External elements</string>
@@ -493,9 +493,9 @@
     <string name="pref_favorite_keeps_episodes_sum">Keep episodes when they are marked favorite</string>
     <string name="pref_favorite_keeps_episodes_title">Keep favorite episodes</string>
     <string name="playback_pref">Playback</string>
-    <string name="playback_pref_sum">Headphone controls, Skip intervals, Queue</string>
+    <string name="playback_pref_sum">Headphone controls, skip intervals, playlist</string>
     <string name="downloads_pref">Downloads</string>
-    <string name="downloads_pref_sum">Update interval, Mobile data, Automatic download, Automatic deletion</string>
+    <string name="downloads_pref_sum">Update interval, mobile data, automatic download, automatic deletion</string>
     <string name="feed_refresh_title">Refresh podcasts</string>
     <string name="feed_refresh_sum">Specify an interval at which Yonder looks for new episodes automatically</string>
     <string name="feed_refresh_never">Never</string>
@@ -519,7 +519,7 @@
     <string name="pref_mobileUpdate_episode_download">Episode download</string>
     <string name="pref_mobileUpdate_streaming">Streaming</string>
     <string name="user_interface_label">User interface</string>
-    <string name="user_interface_sum">Appearance, subscriptions, lockscreen</string>
+    <string name="user_interface_sum">Appearance, subscriptions, lock screen</string>
     <string name="pref_black_theme_title">Full black</string>
     <string name="pref_black_theme_message">Use full black for the dark theme</string>
     <string name="pref_tinted_theme_title">Dynamic colors</string>
@@ -683,7 +683,7 @@
     <string name="smartplay_save">Save</string>
     <string name="smartplay_rebuild_question">Rebuild now?</string>
     <string name="smartplay_rebuild_question_message">Your changes take effect the next time this Smart Play rebuilds.</string>
-    <string name="smartplay_later">Later</string>
+    <string name="smartplay_later">later</string>
     <string name="smartplay_remove">Remove</string>
     <string name="smartplay_reorder">Drag to reorder</string>
     <string name="smartplay_group_by_category">Group by category</string>
@@ -719,11 +719,11 @@
     <string name="smartplay_max_per_show">No more than %1$d per show</string>
     <string name="smartplay_unsaved_title">Unsaved changes</string>
     <string name="smartplay_unsaved_message">Save your changes to this Smart Play before leaving?</string>
-    <string name="smartplay_discard">Discard</string>
-    <string name="smartplay_keep_editing">Keep editing</string>
+    <string name="smartplay_discard">discard</string>
+    <string name="smartplay_keep_editing">keep editing</string>
     <string name="smartplay_draft_title">Restore draft?</string>
     <string name="smartplay_draft_message">You have unsaved changes to this Smart Play from last time.</string>
-    <string name="smartplay_restore_draft">Restore draft</string>
+    <string name="smartplay_restore_draft">restore draft</string>
     <string name="download_settings_title">Downloads</string>
     <string name="download_settings_edit">Edit download settings</string>
     <string name="download_defaults_title">Defaults for new shows</string>
@@ -809,7 +809,7 @@
         <item quantity="other">Download settings for all %d shows</item>
     </plurals>
     <string name="schedule_battery_warning">Battery optimisation is on for Yonder, so Android may delay or skip scheduled updates.</string>
-    <string name="schedule_battery_fix">Fix</string>
+    <string name="schedule_battery_fix">fix</string>
     <string name="schedule_battery_dialog_title">Let updates run on time?</string>
     <string name="schedule_battery_dialog_message">Battery optimisation can stop updates running at the time you chose. In Yonder\'s app settings, tap Battery and choose Unrestricted.</string>
     <string name="schedule_status_updated">Updated %s</string>
@@ -827,7 +827,7 @@
     <string name="local_allow_delete_off">Off: Yonder never deletes these files, whatever the cleanup, keep or delete-after-playing settings say.</string>
     <string name="local_allow_delete_warning_title">Delete files from your phone?</string>
     <string name="local_allow_delete_warning">With this on, cleanup, keep limits, age limits and delete-after-playing will delete the actual files in this folder from your phone. Deleted files can\'t be recovered.</string>
-    <string name="local_allow_delete_confirm">Allow deleting</string>
+    <string name="local_allow_delete_confirm">allow deleting</string>
     <string name="local_summary_file_name">Plays in file name order</string>
     <string name="local_summary_track">Plays in track number order</string>
     <string name="local_summary_oldest">Plays oldest first</string>
@@ -841,11 +841,11 @@
     <string name="open_file_copied">Copied into Yonder (%1$s)</string>
     <string name="open_file_linked">Added. Yonder plays it from where it is.</string>
     <string name="open_file_failed">Couldn\'t add this file</string>
-    <string name="sleep_grid_episode">This episode ends</string>
+    <string name="sleep_grid_episode">this episode ends</string>
     <string name="sleep_grid_minutes">%d min</string>
-    <string name="sleep_grid_off">Off</string>
+    <string name="sleep_grid_off">off</string>
     <string name="sleep_grid_custom_hint">Custom minutes</string>
-    <string name="sleep_grid_custom_start">Start</string>
+    <string name="sleep_grid_custom_start">start</string>
     <string name="sleep_status_off">Sleep timer is off</string>
     <string name="sleep_status_episode">Stops when this episode ends</string>
     <plurals name="sleep_status_episodes">
@@ -936,7 +936,7 @@
     <string name="tester_bluetooth_connected">Bluetooth connected: %1$s</string>
     <string name="tester_headphones_connected">Headphones connected: %1$s</string>
     <string name="car_mode_title">Car mode</string>
-    <string name="car_mode_exit">Exit car mode</string>
+    <string name="car_mode_exit">exit car mode</string>
     <string name="car_mode_nothing">Nothing playing</string>
     <string name="car_mode_auto">Open car mode when a chosen Bluetooth device connects</string>
     <string name="car_mode_auto_summary">Works while Yonder is on screen, or the next time you open it.</string>
@@ -945,7 +945,7 @@
     <string name="button_tester_title">Button tester</string>
     <string name="button_tester_hint">Press buttons on your headset or in the car. While this screen is open, Yonder only shows what it receives and doesn\'t act on it. Play something first so the buttons reach Yonder.</string>
     <string name="button_tester_empty">Nothing received yet</string>
-    <string name="button_tester_clear">Clear</string>
+    <string name="button_tester_clear">clear</string>
     <plurals name="download_summary_episodes">
         <item quantity="one">%d episode</item>
         <item quantity="other">%d episodes</item>
@@ -1320,7 +1320,7 @@
     <string name="pref_parental_control_confirm_password">Confirm password</string>
     <string name="pref_parental_control_passwords_dont_match">Passwords don\'t match</string>
     <string name="pref_parental_control_password_empty">Password cannot be empty</string>
-    <string name="pref_parental_control_title">Parental Controls</string>
+    <string name="pref_parental_control_title">Parental controls</string>
     <string name="pref_parental_control_sum">Restrict features with a password</string>
     <string name="pref_parental_control_enabled_title">Enable</string>
     <string name="pref_parental_control_require_subscribe_title">Restrict subscribing</string>
@@ -1421,11 +1421,11 @@
     <string name="book_mark_finished">Mark book finished</string>
     <string name="book_finished_question">Mark %1$s finished?</string>
     <string name="book_finished_message">Every chapter will be marked as played.</string>
-    <string name="book_finished_confirm">Mark finished</string>
+    <string name="book_finished_confirm">mark finished</string>
     <string name="book_delete_smartplay_question">Delete the Smart Play \"%1$s\" too?</string>
     <string name="book_delete_smartplay_message">Your other Smart Plays stay as they are.</string>
-    <string name="book_delete">Delete</string>
-    <string name="book_keep">Keep</string>
+    <string name="book_delete">delete</string>
+    <string name="book_keep">keep</string>
     <string name="bookmark_add">Add bookmark</string>
     <string name="bookmark_note_hint">Note (optional)</string>
     <string name="bookmark_added">Bookmark added</string>
@@ -1443,7 +1443,7 @@
     <string name="radio_add">Add station</string>
     <string name="radio_add_search">Search stations</string>
     <string name="radio_add_link">Paste a stream link</string>
-    <string name="radio_add_button">Add</string>
+    <string name="radio_add_button">add</string>
     <string name="radio_link_hint">Stream link (Icecast, Shoutcast, HLS or DASH)</string>
     <string name="radio_name_optional_hint">Name (optional)</string>
     <string name="radio_name_hint">Name</string>
@@ -1494,6 +1494,7 @@
     <string name="recording_live_notification">Recording %1$s</string>
     <string name="recording_station_missing">That station has been deleted.</string>
     <string name="record_a_show">Record a show</string>
+    <string name="station_record_button">record a show</string>
     <string name="record_title">Record a show on %1$s</string>
     <string name="record_edit">Edit recording</string>
     <string name="record_stop">Stop recording</string>
@@ -1509,8 +1510,8 @@
     <string name="record_needs_times">Pick at least one day, and a start and end time.</string>
     <string name="record_alarm_title">Allow exact start times?</string>
     <string name="record_alarm_message">This station can only be recorded live, so Yonder needs to start on time. Android asks for permission to use Alarms &amp; reminders for this. Without it, recordings may start a few minutes late.</string>
-    <string name="record_alarm_allow">Allow</string>
-    <string name="record_alarm_later">Not now</string>
+    <string name="record_alarm_allow">allow</string>
+    <string name="record_alarm_later">not now</string>
     <string name="recording_status_held">Saved %1$s · Ready %2$s</string>
     <string name="recording_status_saving_soon">%1$s not saved yet, saving soon</string>
     <string name="recording_status_waiting_wifi">%1$s not saved yet, waiting for Wi-Fi</string>
@@ -1520,7 +1521,20 @@
     <string name="recording_status_next">Next: %1$s</string>
     <string name="recording_default_name">%1$s · %2$s %3$s</string>
     <string name="recording_times_line">%1$s %2$s–%3$s, %4$s time</string>
-    <string name="station_listen_live">Listen live</string>
+    <string name="yonder_button_cancel">cancel</string>
+    <string name="yonder_button_save">save</string>
+    <string name="yonder_button_ok">ok</string>
+    <string name="yonder_button_close">close</string>
+    <string name="yonder_button_apply">apply</string>
+    <string name="yonder_button_done">done</string>
+    <string name="yonder_button_delete">delete</string>
+    <string name="yonder_button_remove">remove</string>
+    <string name="yonder_button_delete_book">delete book</string>
+    <string name="yonder_button_remove_folder">remove folder</string>
+    <string name="yonder_button_delete_station">delete station</string>
+    <string name="yonder_button_add_bookmark">add bookmark</string>
+    <string name="yonder_button_rebuild_now">rebuild now</string>
+    <string name="station_listen_live">listen live</string>
     <string name="station_recorded_shows">Recorded shows</string>
     <string name="station_no_shows">No recorded shows yet.</string>
     <string name="station_no_recordings">No recordings yet</string>
@@ -1535,7 +1549,7 @@
     <string name="smartplay_hours_text">%1$s %2$s–%3$s</string>
     <string name="smartplay_never_tag_label">never include</string>
     <string name="smartplay_first_tag_label">first, when new</string>
-    <string name="smartplay_never_nothing">nothing</string>
+    <string name="smartplay_never_nothing">none</string>
     <string name="smartplay_priority_oldest_lower">oldest first</string>
     <string name="smartplay_priority_newest_lower">newest first</string>
     <string name="smartplay_priority_tag">%1$s · %2$s</string>
@@ -1558,7 +1572,7 @@
     </plurals>
     <string name="smartplay_hours_overlap">Overlaps %1$s. Where hours overlap, the one higher in your Smart Plays list wins.</string>
     <string name="smartplay_with_hours">%1$s · %2$s</string>
-    <string name="sleep_grid_show">This show ends</string>
+    <string name="sleep_grid_show">this show ends</string>
     <string name="palette_charcoal">Charcoal</string>
     <string name="palette_paper">Paper</string>
     <string name="palette_forest">Forest</string>
@@ -1686,11 +1700,11 @@
     <string name="look_delete_message">Any world using it goes back to its usual palette.</string>
     <string name="look_new_custom">New palette</string>
     <string name="look_edit_custom">Edit palette</string>
-    <string name="look_custom_save_edit">Save</string>
+    <string name="look_custom_save_edit">save</string>
     <string name="look_custom_name">Name</string>
     <string name="look_custom_name_pattern">custom %1$d</string>
     <string name="look_custom_preview_title">Team Calm vs Team Panic</string>
-    <string name="look_custom_save">Save and use</string>
+    <string name="look_custom_save">save and use</string>
     <string name="look_custom_background">Background</string>
     <string name="look_custom_accent">Accent</string>
     <string name="look_hue">Colour</string>
@@ -1711,7 +1725,7 @@
     <string name="shelf_one_hint">With one app here, the swipe opens it straight away.</string>
     <string name="shelf_add">+ add an app</string>
     <string name="shelf_pick_title">Add an app</string>
-    <string name="shelf_pick_ok">OK</string>
+    <string name="shelf_pick_ok">ok</string>
     <string name="shelf_no_apps">No other apps to add.</string>
     <string name="shelf_remove">Remove %1$s</string>
     <string name="shelf_reorder">Drag to reorder %1$s</string>
@@ -1719,6 +1733,7 @@
     <string name="shelf_cannot_open">%1$s can\'t be opened.</string>
     <string name="shelf_add_here">add an app here</string>
     <string name="shelf_search_hint">Search your apps</string>
+    <string name="shelf_show_all">show all apps</string>
     <string name="shelf_change">Change</string>
     <string name="shelf_change_title">Change %1$s</string>
     <string name="shelf_move_earlier">Move earlier</string>
@@ -1727,7 +1742,7 @@
     <string name="shelf_move_to_right">Move to the right shelf</string>
     <string name="shelf_tip_title">Getting back</string>
     <string name="shelf_tip_message">Swipe along the bottom bar, or use Back, to return to Yonder.</string>
-    <string name="shelf_tip_ok">Got it</string>
+    <string name="shelf_tip_ok">got it</string>
     <plurals name="shelf_count">
         <item quantity="one">%1$d app</item>
         <item quantity="other">%1$d apps</item>
@@ -1750,12 +1765,12 @@
     <string name="about_privacy">Privacy policy</string>
     <string name="feedback_explain">This opens an email to me. Your version, phone model and Android version are filled in. Nothing is sent until you press send in your email app.</string>
     <string name="feedback_attach_log">Attach a recent log (private links, passwords and file names are taken out)</string>
-    <string name="feedback_write">Write email</string>
+    <string name="feedback_write">write email</string>
     <string name="feedback_choose">Send feedback with</string>
     <string name="feedback_no_email">No email app found.</string>
     <string name="feedback_copy_title">Send feedback by email</string>
     <string name="feedback_copy_message">No email app was found on this phone. Copy the address and send your feedback from any email app: %1$s</string>
-    <string name="feedback_copy">Copy address</string>
+    <string name="feedback_copy">copy address</string>
     <string name="feedback_copied">Address copied</string>
     <string name="feedback_subject">Yonder %1$s feedback</string>
     <string name="feedback_crash_subject">Yonder %1$s crash report</string>
@@ -1764,9 +1779,9 @@
     <string name="feedback_details">Yonder %1$s (%2$d, %3$s)\nPhone: %4$s\nAndroid %5$s (API %6$d)</string>
     <string name="crash_prompt_title">Yonder crashed last time</string>
     <string name="crash_prompt_message">Send a report? It opens an email you can read first. Private links, passwords and file names are taken out.</string>
-    <string name="crash_prompt_send">Send</string>
-    <string name="crash_prompt_later">Not now</string>
-    <string name="crash_prompt_never">Never ask</string>
+    <string name="crash_prompt_send">send</string>
+    <string name="crash_prompt_later">not now</string>
+    <string name="crash_prompt_never">never ask</string>
     <string name="welcome_step">%1$d of %2$d</string>
     <string name="welcome_skip">skip</string>
     <string name="welcome_next">next</string>
@@ -1819,8 +1834,8 @@
     <string name="backup_password_message">Used for every backup from now on, manual and automatic. You\'ll need it to restore. If you forget it, the backup can\'t be opened.</string>
     <string name="backup_password_hint">Password</string>
     <string name="backup_password_again">Password again</string>
-    <string name="backup_password_save">Save</string>
-    <string name="backup_password_remove">Remove password</string>
+    <string name="backup_password_save">save</string>
+    <string name="backup_password_remove">remove password</string>
     <string name="backup_password_mismatch">The two passwords don\'t match.</string>
     <string name="backup_moving_heading">other apps</string>
     <string name="backup_opml">OPML and other exports</string>
@@ -1828,16 +1843,16 @@
     <string name="import_unknown_file">Yonder can\'t read this file. Pick a Yonder or AntennaPod backup, a BeyondPod .bpbak or an OPML file.</string>
     <string name="restore_title">Restore this backup?</string>
     <string name="restore_message">Yonder backup from %1$s (Yonder %2$s)\n\n%3$s\n\nThis replaces everything in Yonder on this phone, then Yonder restarts. Downloaded episodes aren\'t in backups; they download again as usual.</string>
-    <string name="restore_button">Restore</string>
+    <string name="restore_button">restore</string>
     <string name="restore_antennapod_title">Import this AntennaPod backup?</string>
     <string name="restore_antennapod_message">%1$s, with played episodes, positions and favourites.\n\nThis replaces the shows in Yonder on this phone, then Yonder restarts. Your Smart Plays and settings stay.</string>
-    <string name="restore_antennapod_button">Import</string>
+    <string name="restore_antennapod_button">import</string>
     <string name="restore_working">Restoring…</string>
     <string name="restore_too_new">This backup was made by a newer Yonder. Update Yonder, then try again.</string>
     <string name="restore_password_title">This backup is locked</string>
     <string name="restore_password_message">Type the password it was made with.</string>
     <string name="restore_password_wrong">That password doesn\'t open it. Try again.</string>
-    <string name="restore_password_open">Open</string>
+    <string name="restore_password_open">open</string>
     <plurals name="restore_shows">
         <item quantity="one">%d show</item>
         <item quantity="other">%d shows</item>
@@ -1873,7 +1888,7 @@
         <item quantity="one">%d show you already follow stays as it is.</item>
         <item quantity="other">%d shows you already follow stay as they are.</item>
     </plurals>
-    <string name="beyondpod_import">Import</string>
+    <string name="beyondpod_import">import</string>
     <string name="beyondpod_working">Importing…</string>
     <string name="beyondpod_done_title">Imported</string>
     <string name="beyondpod_done">Your shows are updating now. Episodes download by each show\'s mode, and your Smart Play fills as they arrive.</string>
@@ -1933,7 +1948,7 @@
     <string name="moving_bulk_confirm">Follow these shows?</string>
     <string name="moving_bulk_by">%1$s · %2$s</string>
     <string name="moving_bulk_closest">%1$s (closest match for \"%2$s\")</string>
-    <string name="moving_bulk_subscribe">Follow</string>
+    <string name="moving_bulk_subscribe">follow</string>
     <string name="moving_bulk_none">No shows found</string>
     <string name="moving_bulk_spotify_only">Only on Spotify, so Yonder can\'t play them: %1$s</string>
     <string name="moving_bulk_missing">Not found: %1$s</string>
@@ -1977,7 +1992,7 @@
     <string name="find_feed_link_hint">Feed link</string>
     <string name="find_following_toast">Following %1$s. Its episodes will appear shortly.</string>
     <string name="find_on_shelf_toast">%1$s is on your shelf. Its chapters will appear shortly.</string>
-    <string name="find_open">Open</string>
+    <string name="find_open">open</string>
     <string-array name="find_podcast_categories">
         <item>comedy</item>
         <item>news</item>

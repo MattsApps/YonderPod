@@ -217,7 +217,7 @@ public class AppShelfFragment extends Fragment {
                         save();
                     }
                 })
-                .setNegativeButton(R.string.cancel_label, null)
+                .setNegativeButton(R.string.yonder_button_cancel, null)
                 .show();
     }
 }

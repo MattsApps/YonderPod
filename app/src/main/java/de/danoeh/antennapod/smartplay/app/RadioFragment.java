@@ -169,7 +169,7 @@ public class RadioFragment extends Fragment {
                 .setView(view)
                 .setPositiveButton(R.string.radio_add_button, (dialog, which) ->
                         addLink(context, url.getText().toString().trim(), name.getText().toString().trim(), onAdded))
-                .setNegativeButton(R.string.cancel_label, null)
+                .setNegativeButton(R.string.yonder_button_cancel, null)
                 .show();
     }
 
@@ -219,7 +219,7 @@ public class RadioFragment extends Fragment {
         Context app = requireContext().getApplicationContext();
         new MaterialAlertDialogBuilder(requireContext())
                 .setTitle(getString(R.string.radio_delete_question, station.getTitle()))
-                .setPositiveButton(R.string.radio_delete, (dialog, which) ->
+                .setPositiveButton(R.string.yonder_button_delete_station, (dialog, which) ->
                         disposables.add(Single.fromCallable(() -> Radio.delete(app, station))
                                 .subscribeOn(Schedulers.io())
                                 .observeOn(AndroidSchedulers.mainThread())
@@ -229,7 +229,7 @@ public class RadioFragment extends Fragment {
                                     }
                                     load();
                                 }, error -> Log.e(TAG, Log.getStackTraceString(error)))))
-                .setNegativeButton(R.string.cancel_label, null)
+                .setNegativeButton(R.string.yonder_button_cancel, null)
                 .show();
     }
 

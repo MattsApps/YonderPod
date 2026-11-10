@@ -32,6 +32,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import com.google.android.material.materialswitch.MaterialSwitch;
@@ -201,7 +202,7 @@ public class ControlsSettingsFragment extends Fragment {
         new MaterialAlertDialogBuilder(requireContext())
                 .setTitle(R.string.car_mode_choose_devices)
                 .setMultiChoiceItems(items, checked, (dialog, which, isChecked) -> checked[which] = isChecked)
-                .setPositiveButton(R.string.confirm_label, (dialog, which) -> {
+                .setPositiveButton(R.string.yonder_button_save, (dialog, which) -> {
                     Set<String> selected = new TreeSet<>();
                     for (int i = 0; i < items.length; i++) {
                         if (checked[i]) {
@@ -211,7 +212,7 @@ public class ControlsSettingsFragment extends Fragment {
                     ControlsPreferences.setCarModeDevices(selected);
                     showCarModeDevices();
                 })
-                .setNegativeButton(R.string.cancel_label, null)
+                .setNegativeButton(R.string.yonder_button_cancel, null)
                 .show();
     }
 
@@ -259,27 +260,33 @@ public class ControlsSettingsFragment extends Fragment {
         }
         for (int tier = 0; tier < ControlsPreferences.TIERS; tier++) {
             int tierIndex = tier;
-            LinearLayout row = new LinearLayout(requireContext());
-            row.setOrientation(LinearLayout.HORIZONTAL);
-            row.setGravity(Gravity.CENTER_VERTICAL);
+            ChipGroup row = new ChipGroup(requireContext());
+            row.setChipSpacingHorizontal(getResources().getDimensionPixelSize(R.dimen.wildink_row_gap));
+            row.setChipSpacingVertical(0);
             TextView after = new TextView(requireContext());
             after.setText(R.string.controls_rewind_after);
+            after.setGravity(Gravity.CENTER_VERTICAL);
+            after.setMinHeight(getResources().getDimensionPixelSize(R.dimen.wildink_touch));
             row.addView(after);
             Spinner threshold = new Spinner(requireContext());
             threshold.setAdapter(adapter(thresholds));
             threshold.setSelection(indexOf(THRESHOLD_MINUTES, ControlsPreferences.getRewindThresholdMinutes(tier)));
             threshold.setOnItemSelectedListener(listener(position ->
                     ControlsPreferences.setRewindThresholdMinutes(tierIndex, THRESHOLD_MINUTES[position])));
-            row.addView(threshold, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1));
+            threshold.setMinimumWidth(getResources().getDimensionPixelSize(R.dimen.wildink_spinner_min_width));
+            row.addView(threshold);
             TextView back = new TextView(requireContext());
             back.setText(R.string.controls_rewind_back);
+            back.setGravity(Gravity.CENTER_VERTICAL);
+            back.setMinHeight(getResources().getDimensionPixelSize(R.dimen.wildink_touch));
             row.addView(back);
             Spinner amount = new Spinner(requireContext());
             amount.setAdapter(adapter(amounts));
             amount.setSelection(indexOf(REWIND_SECONDS, ControlsPreferences.getRewindSeconds(tier)));
             amount.setOnItemSelectedListener(listener(position ->
                     ControlsPreferences.setRewindSeconds(tierIndex, REWIND_SECONDS[position])));
-            row.addView(amount, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1));
+            amount.setMinimumWidth(getResources().getDimensionPixelSize(R.dimen.wildink_spinner_min_width));
+            row.addView(amount);
             tiers.addView(row);
         }
         List<String> interruption = new ArrayList<>();
@@ -301,7 +308,8 @@ public class ControlsSettingsFragment extends Fragment {
         text.setText(label);
         row.addView(text, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1));
         Spinner spinner = new Spinner(requireContext());
-        row.addView(spinner, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1));
+        spinner.setMinimumWidth(getResources().getDimensionPixelSize(R.dimen.wildink_spinner_min_width));
+        row.addView(spinner);
         list.addView(row);
         return spinner;
     }

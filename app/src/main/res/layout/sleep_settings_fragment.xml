@@ -142,9 +142,9 @@
 
                 <Spinner
                     android:id="@+id/sleep_bedtime_from"
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="48dp"
-                    android:layout_weight="1" />
+                    android:minWidth="@dimen/wildink_spinner_min_width" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -155,9 +155,9 @@
 
                 <Spinner
                     android:id="@+id/sleep_bedtime_to"
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="48dp"
-                    android:layout_weight="1" />
+                    android:minWidth="@dimen/wildink_spinner_min_width" />
 
             </LinearLayout>
 

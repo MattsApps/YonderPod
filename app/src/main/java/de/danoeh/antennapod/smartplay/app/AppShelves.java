@@ -44,12 +44,15 @@ public final class AppShelves {
             "com.clearchannel.iheartradio.controller",
             "tunein.player",
             "com.bandcamp.android"));
+    private static final String[] MEDIA_SERVICES = {"android.media.browse.MediaBrowserService",
+        "androidx.media3.session.MediaLibraryService", "androidx.media3.session.MediaSessionService"};
 
     public static final class App {
         public final String packageName;
         public final CharSequence label;
         public final Drawable icon;
         final boolean suggested;
+        boolean media;
 
         App(String packageName, CharSequence label, Drawable icon, boolean suggested) {
             this.packageName = packageName;
@@ -96,6 +99,7 @@ public final class AppShelves {
         PackageManager packageManager = context.getPackageManager();
         Intent launcher = new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LAUNCHER);
         Set<String> seen = new HashSet<>();
+        Set<String> media = mediaPackages(packageManager);
         List<App> apps = new ArrayList<>();
         for (ResolveInfo info : packageManager.queryIntentActivities(launcher, 0)) {
             String packageName = info.activityInfo.packageName;
@@ -104,6 +108,7 @@ public final class AppShelves {
             }
             App app = load(packageManager, packageName);
             if (app != null) {
+                app.media = app.suggested || media.contains(packageName);
                 apps.add(app);
             }
         }
@@ -115,6 +120,24 @@ public final class AppShelves {
             return collator.compare(a.label.toString(), b.label.toString());
         });
         return apps;
+    }
+
+    private static Set<String> mediaPackages(PackageManager packageManager) {
+        Set<String> packages = new HashSet<>();
+        for (String action : MEDIA_SERVICES) {
+            for (ResolveInfo info : packageManager.queryIntentServices(new Intent(action), 0)) {
+                packages.add(info.serviceInfo.packageName);
+            }
+        }
+        Intent music = new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_APP_MUSIC);
+        for (ResolveInfo info : packageManager.queryIntentActivities(music, 0)) {
+            packages.add(info.activityInfo.packageName);
+        }
+        Intent audio = new Intent(Intent.ACTION_VIEW).setType("audio/*");
+        for (ResolveInfo info : packageManager.queryIntentActivities(audio, 0)) {
+            packages.add(info.activityInfo.packageName);
+        }
+        return packages;
     }
 
     @Nullable

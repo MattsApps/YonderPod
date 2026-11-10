@@ -80,7 +80,7 @@ public final class BookDialogs {
         new MaterialAlertDialogBuilder(context)
                 .setTitle(R.string.playback_speed)
                 .setView(binding.getRoot())
-                .setPositiveButton(android.R.string.ok, (dialog, which) -> {
+                .setPositiveButton(R.string.yonder_button_ok, (dialog, which) -> {
                     boolean global = binding.useGlobalCheckbox.isChecked();
                     preferences.setFeedPlaybackSpeed(global
                             ? FeedPreferences.SPEED_USE_GLOBAL : binding.seekBar.getCurrentSpeed());
@@ -98,7 +98,7 @@ public final class BookDialogs {
                             feed.getId(), preferences.getFeedSkipSilence()));
                     onSaved.run();
                 })
-                .setNegativeButton(R.string.cancel_label, null)
+                .setNegativeButton(R.string.yonder_button_cancel, null)
                 .show();
     }
 
@@ -116,7 +116,7 @@ public final class BookDialogs {
                 .setTitle(context.getString(R.string.bookmark_entry, item.getTitle(),
                         Converter.getDurationStringLong(position)))
                 .setView(note)
-                .setPositiveButton(R.string.bookmark_add, (dialog, which) -> {
+                .setPositiveButton(R.string.yonder_button_add_bookmark, (dialog, which) -> {
                     String text = note.getText().toString().trim();
                     Completable.fromAction(() -> SmartPlayStore.getInstance(app)
                                     .addBookmark(item.getFeedId(), item.getId(), position, text))
@@ -125,7 +125,7 @@ public final class BookDialogs {
                             .subscribe(() -> Toast.makeText(app, R.string.bookmark_added, Toast.LENGTH_SHORT).show(),
                                     error -> Log.e(TAG, Log.getStackTraceString(error)));
                 })
-                .setNegativeButton(R.string.cancel_label, null)
+                .setNegativeButton(R.string.yonder_button_cancel, null)
                 .show();
     }
 
@@ -164,7 +164,7 @@ public final class BookDialogs {
     private static void showBookmarkList(Context context, Feed feed, List<BookmarkRow> rows) {
         MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context)
                 .setTitle(R.string.book_bookmarks)
-                .setNegativeButton(R.string.close_label, null);
+                .setNegativeButton(R.string.yonder_button_close, null);
         if (rows.isEmpty()) {
             builder.setMessage(R.string.bookmarks_empty).show();
             return;
@@ -200,7 +200,7 @@ public final class BookDialogs {
                                 .observeOn(AndroidSchedulers.mainThread())
                                 .subscribe(() -> showBookmarks(context, feed),
                                         error -> Log.e(TAG, Log.getStackTraceString(error))))
-                .setNegativeButton(R.string.cancel_label, null)
+                .setNegativeButton(R.string.yonder_button_cancel, null)
                 .show();
     }
 
@@ -235,7 +235,7 @@ public final class BookDialogs {
     public static void confirmFinished(Context context, Feed feed, Runnable onDone) {
         Context app = context.getApplicationContext();
         new MaterialAlertDialogBuilder(context)
-                .setTitle(context.getString(R.string.book_finished_question, feed.getTitle()))
+                .setTitle(context.getString(R.string.book_finished_question, feed.getDisplayTitle()))
                 .setMessage(R.string.book_finished_message)
                 .setPositiveButton(R.string.book_finished_confirm, (dialog, which) ->
                         Single.fromCallable(() -> {
@@ -250,14 +250,14 @@ public final class BookDialogs {
                                         offerDeleteSmartPlay(context, feed, smartPlayId);
                                     }
                                 }, error -> Log.e(TAG, Log.getStackTraceString(error))))
-                .setNegativeButton(R.string.cancel_label, null)
+                .setNegativeButton(R.string.yonder_button_cancel, null)
                 .show();
     }
 
     private static void offerDeleteSmartPlay(Context context, Feed feed, long smartPlayId) {
         Context app = context.getApplicationContext();
         new MaterialAlertDialogBuilder(context)
-                .setTitle(context.getString(R.string.book_delete_smartplay_question, feed.getTitle()))
+                .setTitle(context.getString(R.string.book_delete_smartplay_question, feed.getDisplayTitle()))
                 .setMessage(R.string.book_delete_smartplay_message)
                 .setPositiveButton(R.string.book_delete, (dialog, which) ->
                         Completable.fromAction(() -> Books.deleteBookSmartPlay(app, smartPlayId))

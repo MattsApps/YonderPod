@@ -19,6 +19,8 @@ import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import androidx.appcompat.content.res.AppCompatResources;
+
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -113,6 +115,10 @@ public final class RecordShowDialog {
         for (int day : ScheduleText.DAYS_FROM_MONDAY) {
             Chip chip = new Chip(context);
             chip.setCheckable(true);
+            chip.setChipStrokeWidth(0);
+            chip.setChipBackgroundColor(AppCompatResources.getColorStateList(context,
+                    R.color.wildink_day_chip_background));
+            chip.setTextColor(AppCompatResources.getColorStateList(context, R.color.wildink_day_chip_text));
             chip.setText(ScheduleText.shortDay(day));
             int bit = ShowTimes.dayBit(day);
             chip.setChecked((show.weekdays & bit) != 0);
@@ -168,7 +174,7 @@ public final class RecordShowDialog {
                 .setTitle(isNew ? context.getString(R.string.record_title, station.getTitle())
                         : context.getString(R.string.record_edit))
                 .setView(view)
-                .setPositiveButton(R.string.confirm_label, (dialog, which) -> {
+                .setPositiveButton(R.string.yonder_button_save, (dialog, which) -> {
                     String newName = name.getText().toString().trim();
                     show.name = newName.isEmpty() ? Recordings.defaultName(context, station.getTitle(), show)
                             : newName;
@@ -194,7 +200,7 @@ public final class RecordShowDialog {
                             .subscribe(saved -> afterSave(context, saved, isNew),
                                     error -> Log.e(TAG, Log.getStackTraceString(error)));
                 })
-                .setNegativeButton(R.string.cancel_label, null)
+                .setNegativeButton(R.string.yonder_button_cancel, null)
                 .show();
     }
 

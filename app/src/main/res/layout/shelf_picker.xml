@@ -25,4 +25,14 @@
         android:layout_marginTop="8dp"
         android:layout_weight="1" />
 
+    <TextView
+        android:id="@+id/shelfShowAll"
+        style="@style/Widget.WildInk.Link"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="24dp"
+        android:text="@string/shelf_show_all"
+        android:textColor="?android:attr/textColorSecondary"
+        android:visibility="gone" />
+
 </LinearLayout>

@@ -198,13 +198,13 @@ public final class LookDialogs {
         new MaterialAlertDialogBuilder(activity)
                 .setTitle(R.string.look_rename)
                 .setView(frame)
-                .setPositiveButton(R.string.confirm_label, (dialog, which) -> {
+                .setPositiveButton(R.string.yonder_button_save, (dialog, which) -> {
                     String chosen = name.getText().toString().trim();
                     CustomPalettes.update(entry.key(), chosen.isEmpty() ? entry.name : chosen,
                             entry.background, entry.accent);
                     changed(activity);
                 })
-                .setNegativeButton(R.string.cancel_label, null)
+                .setNegativeButton(R.string.yonder_button_cancel, null)
                 .show();
     }
 
@@ -212,7 +212,7 @@ public final class LookDialogs {
         new MaterialAlertDialogBuilder(activity)
                 .setTitle(activity.getString(R.string.look_delete_question, entry.name))
                 .setMessage(R.string.look_delete_message)
-                .setPositiveButton(R.string.look_delete, (dialog, which) -> {
+                .setPositiveButton(R.string.yonder_button_delete, (dialog, which) -> {
                     String key = entry.key();
                     CustomPalettes.delete(key);
                     if (key.equals(UserPreferences.getPalette())) {
@@ -228,7 +228,7 @@ public final class LookDialogs {
                     }
                     changed(activity);
                 })
-                .setNegativeButton(R.string.cancel_label, null)
+                .setNegativeButton(R.string.yonder_button_cancel, null)
                 .show();
     }
 
@@ -256,7 +256,7 @@ public final class LookDialogs {
         new MaterialAlertDialogBuilder(activity)
                 .setTitle(R.string.look_night)
                 .setView(content)
-                .setPositiveButton(R.string.confirm_label, null)
+                .setPositiveButton(R.string.yonder_button_done, null)
                 .show();
     }
 
@@ -326,7 +326,7 @@ public final class LookDialogs {
                                 choose(activity, target, night, key);
                             }
                         })
-                .setNegativeButton(R.string.cancel_label, null)
+                .setNegativeButton(R.string.yonder_button_cancel, null)
                 .show();
     }
 

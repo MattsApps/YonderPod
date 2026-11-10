@@ -45,13 +45,13 @@ public final class PlayInDialog {
         new MaterialAlertDialogBuilder(context)
                 .setTitle(context.getString(R.string.play_in_title, showName))
                 .setMultiChoiceItems(labels, chosen, (dialog, which, isChecked) -> chosen[which] = isChecked)
-                .setPositiveButton(R.string.confirm_label, (dialog, which) ->
+                .setPositiveButton(R.string.yonder_button_save, (dialog, which) ->
                         Completable.fromAction(() -> save(app, smartPlays, ticked, chosen, feedId, showName))
                                 .subscribeOn(Schedulers.io())
                                 .observeOn(AndroidSchedulers.mainThread())
                                 .subscribe(() -> SmartPlayQueueManager.getInstance().onSmartPlaysChanged(),
                                         error -> Log.e(TAG, Log.getStackTraceString(error))))
-                .setNegativeButton(R.string.cancel_label, null)
+                .setNegativeButton(R.string.yonder_button_cancel, null)
                 .show();
     }
 
