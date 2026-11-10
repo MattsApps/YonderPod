@@ -9,7 +9,7 @@ import de.danoeh.antennapod.R;
 
 final class PlayCircleFit {
     private static final float WIDTH_SHARE = 0.656f;
-    private static final float OVERHANG_SHARE = 1 / 3f;
+    private static final float OVERHANG_SHARE = 0.268f;
     private static final float ICON_SHARE = 92 / 252f;
     private static final float ICON_START_SHARE = 80 / 252f;
 

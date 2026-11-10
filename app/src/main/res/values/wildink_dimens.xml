@@ -2,6 +2,6 @@
 <resources>
     <dimen name="world_play_large">252dp</dimen>
     <dimen name="world_play_medium">216dp</dimen>
-    <dimen name="world_play_overhang">-84dp</dimen>
+    <dimen name="world_play_overhang">-68dp</dimen>
     <dimen name="world_play_to_edge">-24dp</dimen>
 </resources>

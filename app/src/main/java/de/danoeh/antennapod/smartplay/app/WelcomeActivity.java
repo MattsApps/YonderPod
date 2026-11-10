@@ -266,13 +266,13 @@ public class WelcomeActivity extends AppCompatActivity {
         icon.setImageResource(R.drawable.wildink_play_centred);
         icon.setColorFilter(ThemeUtils.getColorFromAttr(this, R.attr.colorOnPrimary));
         icon.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
-        int iconSize = (int) (64 * density);
+        int iconSize = (int) (62 * density);
         play.addView(icon, new FrameLayout.LayoutParams(iconSize, iconSize, Gravity.CENTER));
         int size = (int) (150 * density);
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(size, size);
         params.topMargin = (int) (24 * density);
         params.gravity = Gravity.END;
-        params.setMarginEnd(-size / 3);
+        params.setMarginEnd(-size / 4);
         picture.addView(play, params);
     }
 }
