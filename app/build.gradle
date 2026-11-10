@@ -12,8 +12,8 @@ android {
         applicationId "com.mattsapps.yonderpod"
         // Version code schema (kept above AntennaPod's 3120395 so test builds install over it):
         // "0.9.0" -> 4000900, "0.9.1" -> 4000901, "1.0.0" -> 4010000
-        versionCode 4000905
-        versionName "0.9.3"
+        versionCode 4000906
+        versionName "0.9.4"
     }
 
     signingConfigs {

@@ -32,7 +32,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
-import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import com.google.android.material.materialswitch.MaterialSwitch;
@@ -260,33 +259,27 @@ public class ControlsSettingsFragment extends Fragment {
         }
         for (int tier = 0; tier < ControlsPreferences.TIERS; tier++) {
             int tierIndex = tier;
-            ChipGroup row = new ChipGroup(requireContext());
-            row.setChipSpacingHorizontal(getResources().getDimensionPixelSize(R.dimen.wildink_row_gap));
-            row.setChipSpacingVertical(0);
+            LinearLayout row = new LinearLayout(requireContext());
+            row.setOrientation(LinearLayout.HORIZONTAL);
+            row.setGravity(Gravity.CENTER_VERTICAL);
             TextView after = new TextView(requireContext());
             after.setText(R.string.controls_rewind_after);
-            after.setGravity(Gravity.CENTER_VERTICAL);
-            after.setMinHeight(getResources().getDimensionPixelSize(R.dimen.wildink_touch));
             row.addView(after);
             Spinner threshold = new Spinner(requireContext());
             threshold.setAdapter(adapter(thresholds));
             threshold.setSelection(indexOf(THRESHOLD_MINUTES, ControlsPreferences.getRewindThresholdMinutes(tier)));
             threshold.setOnItemSelectedListener(listener(position ->
                     ControlsPreferences.setRewindThresholdMinutes(tierIndex, THRESHOLD_MINUTES[position])));
-            threshold.setMinimumWidth(getResources().getDimensionPixelSize(R.dimen.wildink_spinner_min_width));
-            row.addView(threshold);
+            row.addView(threshold, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1));
             TextView back = new TextView(requireContext());
             back.setText(R.string.controls_rewind_back);
-            back.setGravity(Gravity.CENTER_VERTICAL);
-            back.setMinHeight(getResources().getDimensionPixelSize(R.dimen.wildink_touch));
             row.addView(back);
             Spinner amount = new Spinner(requireContext());
             amount.setAdapter(adapter(amounts));
             amount.setSelection(indexOf(REWIND_SECONDS, ControlsPreferences.getRewindSeconds(tier)));
             amount.setOnItemSelectedListener(listener(position ->
                     ControlsPreferences.setRewindSeconds(tierIndex, REWIND_SECONDS[position])));
-            amount.setMinimumWidth(getResources().getDimensionPixelSize(R.dimen.wildink_spinner_min_width));
-            row.addView(amount);
+            row.addView(amount, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1));
             tiers.addView(row);
         }
         List<String> interruption = new ArrayList<>();
@@ -308,8 +301,7 @@ public class ControlsSettingsFragment extends Fragment {
         text.setText(label);
         row.addView(text, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1));
         Spinner spinner = new Spinner(requireContext());
-        spinner.setMinimumWidth(getResources().getDimensionPixelSize(R.dimen.wildink_spinner_min_width));
-        row.addView(spinner);
+        row.addView(spinner, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1));
         list.addView(row);
         return spinner;
     }

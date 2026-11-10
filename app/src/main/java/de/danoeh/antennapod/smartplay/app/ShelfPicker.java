@@ -1,6 +1,8 @@
 package de.danoeh.antennapod.smartplay.app;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -12,7 +14,10 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.graphics.Insets;
 import androidx.core.util.Consumer;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -30,7 +35,25 @@ import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public final class ShelfPicker {
+    private static final float HEIGHT_SHARE = 0.6f;
+
     private ShelfPicker() {
+    }
+
+    private static int availableHeight(Context context) {
+        Context current = context;
+        while (current instanceof ContextWrapper && !(current instanceof Activity)) {
+            current = ((ContextWrapper) current).getBaseContext();
+        }
+        if (current instanceof Activity) {
+            View decor = ((Activity) current).getWindow().getDecorView();
+            WindowInsetsCompat insets = ViewCompat.getRootWindowInsets(decor);
+            if (insets != null && decor.getHeight() > 0) {
+                Insets bars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+                return decor.getHeight() - bars.top - bars.bottom;
+            }
+        }
+        return context.getResources().getDisplayMetrics().heightPixels;
     }
 
     public static Disposable fill(View picker, Set<String> leaveOut, Consumer<AppShelves.App> onPick) {
@@ -117,10 +140,7 @@ public final class ShelfPicker {
     public static void dialog(Context context, CharSequence title, Set<String> leaveOut,
                               Consumer<AppShelves.App> onPick) {
         View picker = LayoutInflater.from(context).inflate(R.layout.shelf_picker, null, false);
-        int room = context.getResources().getDisplayMetrics().heightPixels
-                - context.getResources().getDimensionPixelSize(R.dimen.wildink_picker_screen_gap);
-        int height = Math.max(context.getResources().getDimensionPixelSize(R.dimen.wildink_picker_min_height),
-                Math.min(context.getResources().getDimensionPixelSize(R.dimen.wildink_picker_max_height), room));
+        int height = Math.round(availableHeight(context) * HEIGHT_SHARE);
         picker.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height));
         AlertDialog[] shown = new AlertDialog[1];
         Disposable loading = fill(picker, leaveOut, app -> {

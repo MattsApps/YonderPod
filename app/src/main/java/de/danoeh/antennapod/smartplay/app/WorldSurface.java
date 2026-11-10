@@ -59,6 +59,7 @@ public abstract class WorldSurface extends Fragment {
         ((TextView) root.findViewById(R.id.worldName)).setText(fullNames[world()]);
         neighbours(this, root, AppShelves.pages(requireContext()), world());
         TipMark.bind(this, root);
+        PlayCircleFit.bind(root);
         root.findViewById(R.id.worldHandle).setOnClickListener(v -> openTend());
         for (int id : new int[] {R.id.worldFrom, R.id.worldNext}) {
             View link = root.findViewById(id);
