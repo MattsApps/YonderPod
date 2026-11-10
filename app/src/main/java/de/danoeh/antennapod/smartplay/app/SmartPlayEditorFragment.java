@@ -414,10 +414,11 @@ public class SmartPlayEditorFragment extends Fragment {
             }
             result.recordings = new HashSet<>();
             result.mixedIn = new ArrayList<>();
-            Set<Long> mixedIn = Recordings.mixedInFeedIds(requireContext());
+            Map<Long, Set<Long>> playsIn = Recordings.playsInByFeed(requireContext());
             for (Feed feed : subscribed) {
                 if (Recordings.isRecordingsFeed(feed)) {
-                    if (mixedIn.contains(feed.getId())) {
+                    Set<Long> chosen = playsIn.get(feed.getId());
+                    if (smartPlayId >= 0 && chosen != null && chosen.contains(smartPlayId)) {
                         result.mixedIn.add(title(feed));
                     } else {
                         result.recordings.add(feed.getId());
@@ -916,7 +917,7 @@ public class SmartPlayEditorFragment extends Fragment {
         boolean allFeeds = draft.source.getType() == EpisodeSource.Type.ALL_FEEDS;
         String note = getString(R.string.smartplay_books_not_in_all);
         if (!mixedInNames.isEmpty()) {
-            note += " " + getString(R.string.smartplay_recordings_mixed_in,
+            note += " " + getString(R.string.smartplay_recordings_chosen,
                     TextUtils.join(getString(R.string.list_separator), mixedInNames));
         }
         holder.note.setText(note);

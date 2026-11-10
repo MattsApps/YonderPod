@@ -36,6 +36,18 @@ public class ManualEditStore {
         write(handAdded, removed);
     }
 
+    public synchronized void forget(Collection<Long> episodeIds) {
+        if (episodeIds.isEmpty()) {
+            return;
+        }
+        Set<String> handAdded = read(KEY_HAND_ADDED);
+        Set<String> removed = read(KEY_REMOVED);
+        Set<String> ids = toStrings(episodeIds);
+        handAdded.removeAll(ids);
+        removed.removeAll(ids);
+        write(handAdded, removed);
+    }
+
     public synchronized void clearHandAdded() {
         write(new HashSet<>(), read(KEY_REMOVED));
     }

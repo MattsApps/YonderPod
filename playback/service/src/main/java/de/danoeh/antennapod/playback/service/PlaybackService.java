@@ -1870,7 +1870,7 @@ public class PlaybackService extends MediaBrowserServiceCompat {
     }
 
     private void addPlayableToQueue(Playable playable) {
-        if (playable instanceof FeedMedia) {
+        if (playable instanceof FeedMedia && !((FeedMedia) playable).isLiveRadio()) {
             DBWriter.addQueueItem(this, ((FeedMedia) playable).getItem());
             notifyChildrenChanged(getString(R.string.queue_label));
         }

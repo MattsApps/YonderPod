@@ -92,18 +92,25 @@
             android:layout_marginBottom="8dp"
             android:text="@string/record_mobile" />
 
-        <com.google.android.material.materialswitch.MaterialSwitch
-            android:id="@+id/record_mix_in"
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/record_mix_in" />
+            android:layout_marginTop="8dp"
+            android:text="@string/record_plays_in"
+            android:textAppearance="@style/TextAppearance.WildInk.Label" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:text="@string/record_mix_in_detail"
+            android:text="@string/record_plays_in_detail"
             android:textAppearance="@style/TextAppearance.WildInk.Detail" />
+
+        <LinearLayout
+            android:id="@+id/record_plays_in"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:orientation="vertical" />
 
     </LinearLayout>
 

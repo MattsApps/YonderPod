@@ -141,6 +141,7 @@ public final class Radio {
             for (RecordingStore.Show show : Recordings.showsFor(context, station.getId())) {
                 Recordings.stop(context, show);
             }
+            Recordings.dropDeadEntries();
         } catch (Exception e) {
             Log.e(TAG, "Could not delete station", e);
         }

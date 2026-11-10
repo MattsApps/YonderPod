@@ -18,23 +18,29 @@ public final class SmartPlayCoverage {
 
     public static String describe(Context context, Feed feed) {
         String status = "";
-        boolean mixIn = false;
-        if (Recordings.isRecordingsFeed(feed)) {
+        boolean recording = Recordings.isRecordingsFeed(feed);
+        Set<Long> chosen = new HashSet<>();
+        if (recording) {
             RecordingStore.Show show = RecordingStore.getInstance(context).showForFeed(feed.getId());
-            mixIn = show != null && show.mixIn;
+            if (show != null) {
+                chosen.addAll(Recordings.playsIn(context, show));
+            }
             status = (show != null ? Recordings.summary(context, show)
                     : context.getString(R.string.recording_stopped)) + "\n";
         }
         Set<String> categories = new HashSet<>(CategoryChips.categoriesOf(feed));
         List<String> names = new ArrayList<>();
-        boolean book = Books.isBook(context, feed.getId()) || (Recordings.isRecordingsFeed(feed) && !mixIn);
+        boolean book = !recording && Books.isBook(context, feed.getId());
         for (SmartPlayStore.StoredSmartPlay stored : SmartPlayStore.getInstance(context).getAll()) {
+            if (recording && !chosen.contains(stored.getId())) {
+                continue;
+            }
             if (stored.getDefinition().coversFeed(feed.getId(), categories, book)) {
                 names.add(stored.getDefinition().getName());
             }
         }
         if (names.isEmpty()) {
-            return status + context.getString(book && !Recordings.isRecordingsFeed(feed)
+            return status + context.getString(book
                     ? R.string.book_not_included : R.string.smartplay_not_included);
         }
         return status + context.getString(R.string.smartplay_included_in,

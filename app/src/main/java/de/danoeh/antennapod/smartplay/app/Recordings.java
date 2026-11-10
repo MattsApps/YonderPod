@@ -32,9 +32,12 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.UUID;
@@ -92,14 +95,78 @@ public final class Recordings {
                 && feed.getDownloadUrl().startsWith(Feed.RECORDINGS_URL_PREFIX);
     }
 
-    public static Set<Long> mixedInFeedIds(Context context) {
-        Set<Long> result = new HashSet<>();
+    public static Map<Long, Set<Long>> playsInByFeed(Context context) {
+        Map<Long, Set<Long>> result = new HashMap<>();
         for (RecordingStore.Show show : RecordingStore.getInstance(context).getShows()) {
-            if (show.mixIn) {
-                result.add(show.feedId);
-            }
+            result.put(show.feedId, playsIn(context, show));
         }
         return result;
+    }
+
+    public static synchronized Set<Long> playsIn(Context context, RecordingStore.Show show) {
+        if (show.playsIn != null) {
+            return show.playsIn;
+        }
+        Set<Long> chosen = new LinkedHashSet<>();
+        for (SmartPlayStore.StoredSmartPlay stored : SmartPlayStore.getInstance(context).getAll()) {
+            for (SmartPlayRule rule : stored.getDefinition().getRules()) {
+                EpisodeSource source = rule.getSource();
+                if ((source.getType() == EpisodeSource.Type.FEED && source.getFeedId() == show.feedId)
+                        || (show.mixIn && source.getType() == EpisodeSource.Type.ALL_FEEDS)) {
+                    chosen.add(stored.getId());
+                }
+            }
+        }
+        show.playsIn = chosen;
+        RecordingStore.getInstance(context).update(show);
+        Log.d(TAG, "Carried over " + show.name + ": plays in " + chosen);
+        return chosen;
+    }
+
+    public static SmartPlayStore.StoredSmartPlay ownSmartPlay(Context context, long feedId) {
+        for (SmartPlayStore.StoredSmartPlay stored : SmartPlayStore.getInstance(context).getAll()) {
+            SmartPlayDefinition definition = stored.getDefinition();
+            if (definition.getRules().isEmpty() || !definition.getPriorityFeeds().isEmpty()) {
+                continue;
+            }
+            boolean own = true;
+            for (SmartPlayRule rule : definition.getRules()) {
+                if (rule.getSource().getType() != EpisodeSource.Type.FEED
+                        || rule.getSource().getFeedId() != feedId) {
+                    own = false;
+                }
+            }
+            if (own) {
+                return stored;
+            }
+        }
+        return null;
+    }
+
+    public static void setPlaysIn(Context context, RecordingStore.Show show, boolean own, Set<Long> others) {
+        SmartPlayStore store = SmartPlayStore.getInstance(context);
+        SmartPlayQueueManager manager = SmartPlayQueueManager.getInstance();
+        Set<Long> chosen = new LinkedHashSet<>(others);
+        SmartPlayStore.StoredSmartPlay existing = ownSmartPlay(context, show.feedId);
+        if (own && existing == null) {
+            chosen.add(store.insert(SmartPlayDefinition.builder(show.name)
+                    .rule(SmartPlayRule.of(SmartPlayRule.Order.LATEST, 1, EpisodeSource.feed(show.feedId)))
+                    .build()));
+        } else if (own) {
+            chosen.add(existing.getId());
+        }
+        show.playsIn = chosen;
+        RecordingStore.getInstance(context).update(show);
+        if (!own && existing != null) {
+            store.delete(existing.getId());
+            SmartPlayHours.set(context, existing.getId(), null);
+            SmartPlayHours.reschedule(context);
+            manager.onSmartPlayDeleted(existing.getId());
+        } else {
+            manager.onSmartPlaysChanged();
+        }
+        manager.rebuildNow();
+        EventBus.getDefault().post(new Radio.ChangedEvent());
     }
 
     public static RecordingStore.Show create(Context context, FeedItem station, RecordingStore.Show show) {
@@ -156,6 +223,7 @@ public final class Recordings {
         RecordingStore.getInstance(context).delete(show.id);
         Books.removeFromSmartPlays(context, show.feedId);
         sweep(context);
+        dropDeadEntries();
         UpdateScheduler.forgetUnusedCategories(context);
         EventBus.getDefault().post(new Radio.ChangedEvent());
     }
@@ -246,6 +314,7 @@ public final class Recordings {
             try {
                 DBWriter.deleteFeed(context, feed.getId()).get();
                 removed = true;
+                dropDeadEntries();
             } catch (Exception e) {
                 Log.e(TAG, "Could not remove " + feed.getTitle(), e);
             }
@@ -639,6 +708,14 @@ public final class Recordings {
             DBWriter.deleteFeedItems(context, Collections.singletonList(item)).get();
         } catch (Exception e) {
             Log.e(TAG, "Could not remove recording", e);
+        }
+        dropDeadEntries();
+    }
+
+    static void dropDeadEntries() {
+        SmartPlayQueueManager manager = SmartPlayQueueManager.getInstance();
+        if (manager != null) {
+            manager.purgeDeadEntries();
         }
     }
 

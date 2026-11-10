@@ -13,7 +13,9 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
@@ -29,8 +31,11 @@ import com.google.android.material.materialswitch.MaterialSwitch;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import java.util.TimeZone;
 
 import de.danoeh.antennapod.R;
@@ -40,6 +45,7 @@ import de.danoeh.antennapod.storage.database.DBReader;
 import de.danoeh.antennapod.storage.preferences.RadioPreferences;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Single;
+import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public final class RecordShowDialog {
@@ -92,7 +98,7 @@ public final class RecordShowDialog {
         Button end = view.findViewById(R.id.record_end);
         RadioGroup available = view.findViewById(R.id.record_available);
         MaterialSwitch mobile = view.findViewById(R.id.record_mobile);
-        MaterialSwitch mixIn = view.findViewById(R.id.record_mix_in);
+        LinearLayout playsIn = view.findViewById(R.id.record_plays_in);
 
         name.setText(show.name);
         String[] autoName = {Recordings.defaultName(context, station.getTitle(), show)};
@@ -169,7 +175,28 @@ public final class RecordShowDialog {
         });
 
         mobile.setChecked(show.allowMobile);
-        mixIn.setChecked(show.mixIn);
+        CheckBox ownBox = new CheckBox(context);
+        ownBox.setText(R.string.record_plays_in_own);
+        ownBox.setChecked(isNew);
+        playsIn.addView(ownBox);
+        List<SmartPlayStore.StoredSmartPlay> others = new ArrayList<>();
+        List<CheckBox> otherBoxes = new ArrayList<>();
+        boolean[] loaded = {false};
+        Disposable ignored = Single.fromCallable(() -> loadChoices(context.getApplicationContext(), show, isNew))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(choices -> {
+                    ownBox.setChecked(isNew || choices.ownId >= 0);
+                    for (SmartPlayStore.StoredSmartPlay other : choices.others) {
+                        CheckBox box = new CheckBox(context);
+                        box.setText(other.getDefinition().getName());
+                        box.setChecked(choices.chosen.contains(other.getId()));
+                        playsIn.addView(box);
+                        others.add(other);
+                        otherBoxes.add(box);
+                    }
+                    loaded[0] = true;
+                }, error -> Log.e(TAG, Log.getStackTraceString(error)));
 
         Context app = context.getApplicationContext();
         new MaterialAlertDialogBuilder(context)
@@ -183,10 +210,20 @@ public final class RecordShowDialog {
                     show.zoneId = zones.get(Math.max(0, zone.getSelectedItemPosition()));
                     show.sameLocalTime = available.getCheckedRadioButtonId() == R.id.record_available_same_time;
                     show.allowMobile = mobile.isChecked();
-                    boolean mixChanged = show.mixIn != mixIn.isChecked();
-                    show.mixIn = mixIn.isChecked();
+                    boolean own = ownBox.isChecked();
+                    Set<Long> otherIds = new LinkedHashSet<>();
+                    for (int i = 0; i < otherBoxes.size(); i++) {
+                        if (otherBoxes.get(i).isChecked()) {
+                            otherIds.add(others.get(i).getId());
+                        }
+                    }
+                    boolean choose = loaded[0] || isNew;
                     if (show.weekdays == 0 || show.startMinute == show.endMinute) {
                         Toast.makeText(app, R.string.record_needs_times, Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                    if (loaded[0] && !own && otherIds.isEmpty()) {
+                        Toast.makeText(app, R.string.record_plays_in_none, Toast.LENGTH_LONG).show();
                         return;
                     }
                     Toast.makeText(app, R.string.radio_checking, Toast.LENGTH_SHORT).show();
@@ -197,26 +234,42 @@ public final class RecordShowDialog {
                             Recordings.update(app, show);
                             Recordings.sweep(app);
                         }
+                        if (choose) {
+                            Recordings.setPlaysIn(app, show, own || !loaded[0], otherIds);
+                        }
                         return show;
                     })
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(saved -> {
-                                if (mixChanged && !isNew) {
-                                    SmartPlayQueueManager.getInstance().rebuildNow();
-                                }
-                                afterSave(context, saved, isNew);
-                            },
+                            .subscribe(saved -> afterSave(context, saved),
                                     error -> Log.e(TAG, Log.getStackTraceString(error)));
                 })
                 .setNegativeButton(R.string.yonder_button_cancel, null)
                 .show();
     }
 
-    private static void afterSave(Context context, RecordingStore.Show show, boolean isNew) {
-        if (isNew) {
-            PlayInDialog.show(context, show.feedId, show.name);
+    private static final class Choices {
+        long ownId = -1;
+        final List<SmartPlayStore.StoredSmartPlay> others = new ArrayList<>();
+        final Set<Long> chosen = new HashSet<>();
+    }
+
+    private static Choices loadChoices(Context context, RecordingStore.Show show, boolean isNew) {
+        Choices choices = new Choices();
+        if (!isNew) {
+            SmartPlayStore.StoredSmartPlay own = Recordings.ownSmartPlay(context, show.feedId);
+            choices.ownId = own != null ? own.getId() : -1;
+            choices.chosen.addAll(Recordings.playsIn(context, show));
         }
+        for (SmartPlayStore.StoredSmartPlay stored : SmartPlayStore.getInstance(context).getAll()) {
+            if (stored.getId() != choices.ownId) {
+                choices.others.add(stored);
+            }
+        }
+        return choices;
+    }
+
+    private static void afterSave(Context context, RecordingStore.Show show) {
         if (Recordings.usesLive(show) && !Recordings.canScheduleExact(context) && Build.VERSION.SDK_INT >= 31) {
             new MaterialAlertDialogBuilder(context)
                     .setTitle(R.string.record_alarm_title)

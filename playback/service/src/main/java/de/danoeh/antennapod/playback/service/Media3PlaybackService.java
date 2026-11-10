@@ -697,7 +697,8 @@ public class Media3PlaybackService extends MediaLibraryService {
                                 return;
                             }
                             media.setPosition((int) player.getCurrentPosition());
-                            if (media.getItem() != null && !media.getItem().isTagged(FeedItem.TAG_QUEUE)) {
+                            if (media.getItem() != null && !media.getItem().isTagged(FeedItem.TAG_QUEUE)
+                                    && !media.isLiveRadio()) {
                                 addPlayedToQueue(media);
                             }
                             switchToPlayable(media);

@@ -13,6 +13,7 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -95,6 +96,7 @@ public class SmartPlayQueueManager {
         disableConflictingQueueSettings();
         EventBus.getDefault().register(this);
         executor.execute(this::activeSmartPlay);
+        executor.execute(this::purge);
         executor.execute(this::clearPerFeedQueueActionOnce);
         scheduleUpdate();
     }
@@ -391,6 +393,7 @@ public class SmartPlayQueueManager {
         if (fullRebuild) {
             state.edit().putBoolean(KEY_PAUSED, false).apply();
         } else if (isPaused()) {
+            purge();
             return;
         }
         try {
@@ -398,6 +401,11 @@ public class SmartPlayQueueManager {
             List<FeedItem> queue = DBReader.getQueue();
             Set<Long> streamFeeds = new HashSet<>();
             Map<Long, FeedItem> itemsById = loadCandidates(queue, streamFeeds);
+            long playingItemId = playingItemId(itemsById);
+            Map<Long, Set<Long>> playsIn = Recordings.playsInByFeed(context);
+            Set<Long> dead = deadIds(itemsById.values(), playingItemId, playsIn);
+            itemsById.keySet().removeAll(dead);
+            editStore.forget(dead);
             boolean streamingAllowed = NetworkUtils.isStreamingAllowed();
             Map<Long, Long> playOrderDates = localPlayOrderDates(itemsById);
             List<Feed> allFeeds = DBReader.getFeedList();
@@ -406,12 +414,9 @@ public class SmartPlayQueueManager {
             Set<Long> books = Books.bookIds(context);
             Map<Long, Long> bookLastPlayed = Books.lastPlayedPerBook(context, books);
             Set<Long> notInAllFeeds = new HashSet<>(books);
-            Set<Long> mixedIn = Recordings.mixedInFeedIds(context);
-            Set<Long> keptOutRecordings = new HashSet<>();
             for (FeedItem item : itemsById.values()) {
-                if (Recordings.isRecordingsFeed(item.getFeed()) && !mixedIn.contains(item.getFeedId())) {
+                if (Recordings.isRecordingsFeed(item.getFeed()) && !chosenHere(playsIn, item.getFeedId())) {
                     notInAllFeeds.add(item.getFeedId());
-                    keptOutRecordings.add(item.getFeedId());
                 }
             }
 
@@ -426,6 +431,9 @@ public class SmartPlayQueueManager {
             }
             List<SmartPlayEpisode> current = new ArrayList<>();
             for (FeedItem item : queue) {
+                if (dead.contains(item.getId())) {
+                    continue;
+                }
                 SmartPlayEpisode episode = SmartPlayEpisodeConverter.convert(item,
                         streamFeeds.contains(item.getFeedId()), streamingAllowed, playOrderDates.get(item.getId()),
                         notInAllFeeds.contains(item.getFeedId()), lastPlayed(bookLastPlayed, item.getFeedId()));
@@ -434,8 +442,7 @@ public class SmartPlayQueueManager {
                 }
             }
 
-            ManualEdits edits = withoutStrayRecordings(editStore.load(), definition, candidates,
-                    keptOutRecordings, playingItemId(itemsById));
+            ManualEdits edits = editStore.load();
             List<SmartPlayEpisode> result = fullRebuild
                     ? engine.rebuild(definition, candidates, current, edits)
                     : engine.onNewDownloads(definition, candidates, current, edits);
@@ -463,17 +470,75 @@ public class SmartPlayQueueManager {
         }
     }
 
-    private static ManualEdits withoutStrayRecordings(ManualEdits edits, SmartPlayDefinition definition,
-                                                      List<SmartPlayEpisode> candidates,
-                                                      Set<Long> keptOutRecordings, long playingItemId) {
-        Set<Long> handAdded = new HashSet<>(edits.getHandAddedIds());
-        for (SmartPlayEpisode episode : candidates) {
-            if (keptOutRecordings.contains(episode.getFeedId()) && episode.getId() != playingItemId
-                    && !definition.covers(episode)) {
-                handAdded.remove(episode.getId());
+    public void purgeDeadEntries() {
+        executor.execute(this::purge);
+    }
+
+    private void purge() {
+        try {
+            activeSmartPlay();
+            List<FeedItem> queue = DBReader.getQueue();
+            Map<Long, FeedItem> inQueue = new LinkedHashMap<>();
+            for (FeedItem item : queue) {
+                inQueue.put(item.getId(), item);
+            }
+            long playingItemId = playingItemId(inQueue);
+            Map<Long, Set<Long>> playsIn = Recordings.playsInByFeed(context);
+            Set<Long> dead = deadIds(queue, playingItemId, playsIn);
+            Set<Long> forget = new HashSet<>(dead);
+            List<FeedItem> remembered = new ArrayList<>();
+            for (long id : editStore.load().getHandAddedIds()) {
+                if (!inQueue.containsKey(id)) {
+                    FeedItem item = DBReader.getFeedItem(id);
+                    if (item == null) {
+                        forget.add(id);
+                    } else {
+                        remembered.add(item);
+                    }
+                }
+            }
+            forget.addAll(deadIds(remembered, playingItemId, playsIn));
+            editStore.forget(forget);
+            if (!dead.isEmpty()) {
+                List<FeedItem> kept = new ArrayList<>();
+                for (FeedItem item : queue) {
+                    if (!dead.contains(item.getId())) {
+                        kept.add(item);
+                    }
+                }
+                Log.d(TAG, "Dropping " + dead.size() + " dead entries from the list");
+                DBWriter.setQueue(kept).get();
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Could not drop dead entries", e);
+        }
+    }
+
+    private Set<Long> deadIds(Collection<FeedItem> items, long playingItemId, Map<Long, Set<Long>> playsIn) {
+        Set<Long> feedIds = new HashSet<>();
+        for (Feed feed : DBReader.getFeedList()) {
+            feedIds.add(feed.getId());
+        }
+        Set<Long> dead = new HashSet<>();
+        for (FeedItem item : items) {
+            FeedMedia media = item.getMedia();
+            Feed feed = item.getFeed();
+            boolean gone = media == null || !feedIds.contains(item.getFeedId()) || media.isLiveRadio()
+                    || Radio.isRadioFeed(feed);
+            if (!gone && Recordings.isRecordingsFeed(feed)) {
+                gone = !media.localFileAvailable() || !media.fileExists()
+                        || (item.getId() != playingItemId && !chosenHere(playsIn, item.getFeedId()));
+            }
+            if (gone) {
+                dead.add(item.getId());
             }
         }
-        return new ManualEdits(handAdded, edits.getRemovedIds());
+        return dead;
+    }
+
+    private boolean chosenHere(Map<Long, Set<Long>> playsIn, long feedId) {
+        Set<Long> chosen = playsIn.get(feedId);
+        return chosen != null && chosen.contains(state.getLong(KEY_ACTIVE_ID, -1));
     }
 
     private static long playingItemId(Map<Long, FeedItem> itemsById) {

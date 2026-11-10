@@ -7,14 +7,16 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import de.danoeh.antennapod.smartplay.radio.RecordingRules;
 import de.danoeh.antennapod.smartplay.radio.ShowTimes;
 
 public class RecordingStore extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "recordings.db";
-    private static final int DATABASE_VERSION = 3;
+    private static final int DATABASE_VERSION = 4;
     private static final String SHOWS = "shows";
     private static final String PENDING = "pending";
 
@@ -40,6 +42,7 @@ public class RecordingStore extends SQLiteOpenHelper {
         public long lastSavedAiring;
         public long lastMissedAiring;
         public boolean mixIn;
+        public Set<Long> playsIn;
 
         public ShowTimes.Spec spec() {
             return new ShowTimes.Spec(zoneId, weekdays, startMinute, endMinute);
@@ -90,7 +93,7 @@ public class RecordingStore extends SQLiteOpenHelper {
                 + "end_minute INTEGER NOT NULL, same_local INTEGER NOT NULL, mobile INTEGER NOT NULL, keep INTEGER NOT NULL, "
                 + "feed INTEGER NOT NULL, source TEXT NOT NULL, method TEXT NOT NULL, rewind INTEGER NOT NULL, "
                 + "status TEXT NOT NULL, prefer_live INTEGER NOT NULL, last_saved INTEGER NOT NULL, "
-                + "last_missed INTEGER NOT NULL DEFAULT 0, mix_in INTEGER NOT NULL DEFAULT 0)");
+                + "last_missed INTEGER NOT NULL DEFAULT 0, mix_in INTEGER NOT NULL DEFAULT 0, plays_in TEXT)");
         db.execSQL("CREATE TABLE " + PENDING + " (id INTEGER PRIMARY KEY AUTOINCREMENT, show INTEGER NOT NULL, "
                 + "file TEXT NOT NULL, mime TEXT, airing_start INTEGER NOT NULL, airing_end INTEGER NOT NULL)");
     }
@@ -103,6 +106,9 @@ public class RecordingStore extends SQLiteOpenHelper {
         }
         if (oldVersion < 3) {
             db.execSQL("ALTER TABLE " + SHOWS + " ADD COLUMN mix_in INTEGER NOT NULL DEFAULT 0");
+        }
+        if (oldVersion < 4) {
+            db.execSQL("ALTER TABLE " + SHOWS + " ADD COLUMN plays_in TEXT");
         }
     }
 
@@ -199,6 +205,15 @@ public class RecordingStore extends SQLiteOpenHelper {
         values.put("last_saved", show.lastSavedAiring);
         values.put("last_missed", show.lastMissedAiring);
         values.put("mix_in", show.mixIn ? 1 : 0);
+        if (show.playsIn == null) {
+            values.putNull("plays_in");
+        } else {
+            StringBuilder ids = new StringBuilder();
+            for (long id : show.playsIn) {
+                ids.append(ids.length() > 0 ? "," : "").append(id);
+            }
+            values.put("plays_in", ids.toString());
+        }
         return values;
     }
 
@@ -223,6 +238,17 @@ public class RecordingStore extends SQLiteOpenHelper {
         show.lastSavedAiring = cursor.getLong(cursor.getColumnIndexOrThrow("last_saved"));
         show.lastMissedAiring = cursor.getLong(cursor.getColumnIndexOrThrow("last_missed"));
         show.mixIn = cursor.getInt(cursor.getColumnIndexOrThrow("mix_in")) != 0;
+        int playsIn = cursor.getColumnIndexOrThrow("plays_in");
+        if (!cursor.isNull(playsIn)) {
+            show.playsIn = new LinkedHashSet<>();
+            for (String id : cursor.getString(playsIn).split(",")) {
+                try {
+                    show.playsIn.add(Long.parseLong(id.trim()));
+                } catch (NumberFormatException ignored) {
+                    // skip
+                }
+            }
+        }
         return show;
     }
 }
