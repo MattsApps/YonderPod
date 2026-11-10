@@ -194,7 +194,7 @@ public class Media3PlaybackService extends MediaLibraryService {
                     return;
                 }
 
-                if (currentPlayable != null && currentPlayable.isLiveRadio()) {
+                if (isLiveStationLoaded()) {
                     if (getPlaybackState() == Player.STATE_IDLE) {
                         prepare();
                     } else if (!getPlayWhenReady()) {
@@ -244,7 +244,7 @@ public class Media3PlaybackService extends MediaLibraryService {
             public void seekForward() {
                 long duration = getDuration();
                 long target = getCurrentPosition() + UserPreferences.getFastForwardSecs() * 1000L;
-                if (currentPlayable != null && currentPlayable.isLiveRadio()) {
+                if (isLiveStationLoaded()) {
                     if (isCurrentMediaItemSeekable() && duration > 0) {
                         seekTo(Math.min(target, duration));
                     }
@@ -304,6 +304,14 @@ public class Media3PlaybackService extends MediaLibraryService {
             keepServiceRunningWhileCasting();
             loadCurrentMediaWhileCasting();
         }
+    }
+
+    private boolean isLiveStationLoaded() {
+        if (currentPlayable == null || !currentPlayable.isLiveRadio() || player == null) {
+            return false;
+        }
+        MediaItem item = player.getCurrentMediaItem();
+        return item != null && String.valueOf(currentPlayable.getId()).equals(item.mediaId);
     }
 
     @UnstableApi
