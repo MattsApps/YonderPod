@@ -1509,6 +1509,8 @@
     <string name="record_available_saved">Available as soon as it\'s saved</string>
     <string name="record_mobile">Use mobile data to save</string>
     <string name="record_plays_in">plays in</string>
+    <string name="radio_tell_stations">Tell stations when Yonder records</string>
+    <string name="radio_tell_stations_sum">Lets stations count your recordings as listening. Each recording uses its own random tag, never linked to you.</string>
     <string name="record_plays_in_detail">Its own Smart Play, any of your others, or both. It never turns up anywhere else.</string>
     <string name="record_plays_in_own">its own Smart Play</string>
     <string name="record_plays_in_none">Choose at least one Smart Play for it to play in.</string>

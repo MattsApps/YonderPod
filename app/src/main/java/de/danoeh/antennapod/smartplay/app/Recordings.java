@@ -13,6 +13,7 @@ import android.text.TextUtils;
 import android.text.format.DateFormat;
 import android.util.Log;
 
+import androidx.preference.PreferenceManager;
 import androidx.work.BackoffPolicy;
 import androidx.work.Constraints;
 import androidx.work.Data;
@@ -26,6 +27,7 @@ import org.greenrobot.eventbus.EventBus;
 
 import java.io.File;
 import java.io.IOException;
+import java.security.SecureRandom;
 import java.text.DateFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -51,6 +53,7 @@ import de.danoeh.antennapod.model.feed.FeedMedia;
 import de.danoeh.antennapod.model.feed.FeedPreferences;
 import de.danoeh.antennapod.model.feed.SortOrder;
 import de.danoeh.antennapod.playback.service.PlaybackService;
+import de.danoeh.antennapod.net.common.UserAgentInterceptor;
 import de.danoeh.antennapod.smartplay.EpisodeSource;
 import de.danoeh.antennapod.smartplay.SmartPlayDefinition;
 import de.danoeh.antennapod.smartplay.SmartPlayRule;
@@ -83,6 +86,7 @@ public final class Recordings {
     private static final String KEY_CATEGORIES_TIDIED = "categoriesTidied";
     private static final String KEY_SMART_PLAYS_TIDIED = "smartPlaysTidied";
     private static final String FOLDER = "recordings";
+    static final String PREF_TELL_STATIONS = "prefRadioTellStations";
     private static final long SWEEP_MARGIN_MILLIS = 5_000L;
     private static final Set<Long> CREATING = Collections.synchronizedSet(new HashSet<>());
     private static volatile boolean leftovers = true;
@@ -169,7 +173,37 @@ public final class Recordings {
         EventBus.getDefault().post(new Radio.ChangedEvent());
     }
 
+    static String userAgent(Context context, RecordingStore.Show show) {
+        String yonder = "Yonder/" + UserAgentInterceptor.YONDER_VERSION;
+        if (!PreferenceManager.getDefaultSharedPreferences(context).getBoolean(PREF_TELL_STATIONS, true)) {
+            return yonder;
+        }
+        return yonder + " (radio recording; +https://mattsapps.github.io/yonder/; listener "
+                + listenerTag(context, show) + ")";
+    }
+
+    static String listenerTag(Context context, RecordingStore.Show show) {
+        if (show.listenerTag == null || show.listenerTag.isEmpty()) {
+            show.listenerTag = newListenerTag();
+            if (show.id > 0) {
+                RecordingStore.getInstance(context).setListenerTag(show.id, show.listenerTag);
+            }
+        }
+        return show.listenerTag;
+    }
+
+    static String newListenerTag() {
+        byte[] bytes = new byte[4];
+        new SecureRandom().nextBytes(bytes);
+        StringBuilder tag = new StringBuilder();
+        for (byte b : bytes) {
+            tag.append(String.format(Locale.ROOT, "%02x", b & 0xff));
+        }
+        return tag.toString();
+    }
+
     public static RecordingStore.Show create(Context context, FeedItem station, RecordingStore.Show show) {
+        show.listenerTag = newListenerTag();
         Feed feed = new Feed(Feed.RECORDINGS_URL_PREFIX + UUID.randomUUID(), null, show.name);
         feed.setAuthor(timesLine(context, show));
         feed.setItems(new ArrayList<>());
@@ -345,7 +379,13 @@ public final class Recordings {
         candidates.add(url);
         candidates.addAll(RecordingRules.rewindableVersions(url));
         String[] chosen = {url};
-        RewindWindow window = Recorder.bestWindow(candidates, chosen);
+        RewindWindow window;
+        RecordingHttp.begin(userAgent(context, show));
+        try {
+            window = Recorder.bestWindow(candidates, chosen);
+        } finally {
+            RecordingHttp.end();
+        }
         show.sourceUrl = chosen[0];
         show.rewindSeconds = window != null && window.getKind() == RewindWindow.Kind.REWIND ? window.getSeconds() : 0;
         show.method = RecordingRules.chooseMethod(window, show.spec().durationMillis()).name();

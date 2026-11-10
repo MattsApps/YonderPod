@@ -19,7 +19,6 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import de.danoeh.antennapod.net.common.AntennapodHttpClient;
 import de.danoeh.antennapod.smartplay.radio.HlsSegments;
 import de.danoeh.antennapod.smartplay.radio.RecordingRules;
 import de.danoeh.antennapod.smartplay.radio.RewindWindow;
@@ -167,7 +166,7 @@ public final class Recorder {
         try (OutputStream out = new FileOutputStream(raw)) {
             while (System.currentTimeMillis() < until && !stop.shouldStop()) {
                 Request request = new Request.Builder().url(url).build();
-                try (Response response = AntennapodHttpClient.getHttpClient().newBuilder()
+                try (Response response = RecordingHttp.client().newBuilder()
                         .readTimeout(30, TimeUnit.SECONDS).build().newCall(request).execute()) {
                     ResponseBody body = response.body();
                     if (!response.isSuccessful() || body == null) {
@@ -312,7 +311,7 @@ public final class Recorder {
 
     private static String text(String url) throws IOException {
         Request request = new Request.Builder().url(url).build();
-        try (Response response = AntennapodHttpClient.getHttpClient().newCall(request).execute()) {
+        try (Response response = RecordingHttp.client().newCall(request).execute()) {
             if (!response.isSuccessful() || response.body() == null) {
                 throw new IOException("HTTP " + response.code());
             }
@@ -322,7 +321,7 @@ public final class Recorder {
 
     private static void copy(String url, OutputStream out) throws IOException {
         Request request = new Request.Builder().url(url).build();
-        try (Response response = AntennapodHttpClient.getHttpClient().newCall(request).execute()) {
+        try (Response response = RecordingHttp.client().newCall(request).execute()) {
             if (!response.isSuccessful() || response.body() == null) {
                 throw new IOException("HTTP " + response.code() + " for " + url);
             }

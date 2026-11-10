@@ -47,8 +47,14 @@ public class RecordingBurstWorker extends Worker {
             Log.d(TAG, "Could not run in the foreground: " + e.getMessage());
         }
         try {
-            Recorder.Saved saved = Recorder.burst(show.sourceUrl, Recordings.maxBitrate(show), airing,
-                    Recordings.folder(context, show), Recordings.fileName(show, airing));
+            Recorder.Saved saved;
+            RecordingHttp.begin(Recordings.userAgent(context, show));
+            try {
+                saved = Recorder.burst(show.sourceUrl, Recordings.maxBitrate(show), airing,
+                        Recordings.folder(context, show), Recordings.fileName(show, airing));
+            } finally {
+                RecordingHttp.end();
+            }
             Recordings.saved(context, show, saved, airing);
         } catch (Recorder.NotYetException e) {
             if (System.currentTimeMillis() < airing.getEnd() + GIVE_UP_AFTER_END) {

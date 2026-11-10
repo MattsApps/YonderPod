@@ -156,7 +156,10 @@ public class ExoPlayerUtils {
             }
             DefaultHttpDataSource.Factory httpDataSourceFactory =
                     new DefaultHttpDataSource.Factory();
-            httpDataSourceFactory.setUserAgent(UserAgentInterceptor.USER_AGENT);
+            boolean live = mediaItem.requestMetadata.extras != null
+                    && mediaItem.requestMetadata.extras.getBoolean(MediaItemAdapter.KEY_LIVE, false);
+            httpDataSourceFactory.setUserAgent(live ? UserAgentInterceptor.liveRadioUserAgent()
+                    : UserAgentInterceptor.USER_AGENT);
             httpDataSourceFactory.setAllowCrossProtocolRedirects(true);
             httpDataSourceFactory.setKeepPostFor302Redirects(true);
             String authHeader = mediaItem.requestMetadata.extras != null

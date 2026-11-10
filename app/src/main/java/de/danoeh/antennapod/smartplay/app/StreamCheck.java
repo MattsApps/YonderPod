@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 
-import de.danoeh.antennapod.net.common.AntennapodHttpClient;
 import de.danoeh.antennapod.playback.base.MediaItemAdapter;
 import de.danoeh.antennapod.smartplay.radio.RewindWindow;
 import de.danoeh.antennapod.smartplay.radio.StreamLinks;
@@ -74,7 +73,7 @@ public final class StreamCheck {
 
     private static Fetched fetch(String url) throws IOException {
         Request request = new Request.Builder().url(url).build();
-        try (Response response = AntennapodHttpClient.getHttpClient().newCall(request).execute()) {
+        try (Response response = RecordingHttp.client().newCall(request).execute()) {
             if (!response.isSuccessful()) {
                 throw new IOException("HTTP " + response.code());
             }

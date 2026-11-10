@@ -16,7 +16,7 @@ import de.danoeh.antennapod.smartplay.radio.ShowTimes;
 
 public class RecordingStore extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "recordings.db";
-    private static final int DATABASE_VERSION = 4;
+    private static final int DATABASE_VERSION = 5;
     private static final String SHOWS = "shows";
     private static final String PENDING = "pending";
 
@@ -43,6 +43,7 @@ public class RecordingStore extends SQLiteOpenHelper {
         public long lastMissedAiring;
         public boolean mixIn;
         public Set<Long> playsIn;
+        public String listenerTag;
 
         public ShowTimes.Spec spec() {
             return new ShowTimes.Spec(zoneId, weekdays, startMinute, endMinute);
@@ -93,7 +94,8 @@ public class RecordingStore extends SQLiteOpenHelper {
                 + "end_minute INTEGER NOT NULL, same_local INTEGER NOT NULL, mobile INTEGER NOT NULL, keep INTEGER NOT NULL, "
                 + "feed INTEGER NOT NULL, source TEXT NOT NULL, method TEXT NOT NULL, rewind INTEGER NOT NULL, "
                 + "status TEXT NOT NULL, prefer_live INTEGER NOT NULL, last_saved INTEGER NOT NULL, "
-                + "last_missed INTEGER NOT NULL DEFAULT 0, mix_in INTEGER NOT NULL DEFAULT 0, plays_in TEXT)");
+                + "last_missed INTEGER NOT NULL DEFAULT 0, mix_in INTEGER NOT NULL DEFAULT 0, plays_in TEXT, "
+                + "listener_tag TEXT)");
         db.execSQL("CREATE TABLE " + PENDING + " (id INTEGER PRIMARY KEY AUTOINCREMENT, show INTEGER NOT NULL, "
                 + "file TEXT NOT NULL, mime TEXT, airing_start INTEGER NOT NULL, airing_end INTEGER NOT NULL)");
     }
@@ -109,6 +111,9 @@ public class RecordingStore extends SQLiteOpenHelper {
         }
         if (oldVersion < 4) {
             db.execSQL("ALTER TABLE " + SHOWS + " ADD COLUMN plays_in TEXT");
+        }
+        if (oldVersion < 5) {
+            db.execSQL("ALTER TABLE " + SHOWS + " ADD COLUMN listener_tag TEXT");
         }
     }
 
@@ -143,6 +148,12 @@ public class RecordingStore extends SQLiteOpenHelper {
 
     public synchronized void update(Show show) {
         getWritableDatabase().update(SHOWS, values(show), "id = ?", new String[] {String.valueOf(show.id)});
+    }
+
+    public synchronized void setListenerTag(long id, String tag) {
+        ContentValues values = new ContentValues();
+        values.put("listener_tag", tag);
+        getWritableDatabase().update(SHOWS, values, "id = ?", new String[] {String.valueOf(id)});
     }
 
     public synchronized void delete(long id) {
@@ -205,6 +216,9 @@ public class RecordingStore extends SQLiteOpenHelper {
         values.put("last_saved", show.lastSavedAiring);
         values.put("last_missed", show.lastMissedAiring);
         values.put("mix_in", show.mixIn ? 1 : 0);
+        if (show.listenerTag != null) {
+            values.put("listener_tag", show.listenerTag);
+        }
         if (show.playsIn == null) {
             values.putNull("plays_in");
         } else {
@@ -238,6 +252,7 @@ public class RecordingStore extends SQLiteOpenHelper {
         show.lastSavedAiring = cursor.getLong(cursor.getColumnIndexOrThrow("last_saved"));
         show.lastMissedAiring = cursor.getLong(cursor.getColumnIndexOrThrow("last_missed"));
         show.mixIn = cursor.getInt(cursor.getColumnIndexOrThrow("mix_in")) != 0;
+        show.listenerTag = cursor.getString(cursor.getColumnIndexOrThrow("listener_tag"));
         int playsIn = cursor.getColumnIndexOrThrow("plays_in");
         if (!cursor.isNull(playsIn)) {
             show.playsIn = new LinkedHashSet<>();

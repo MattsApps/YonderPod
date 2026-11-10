@@ -110,9 +110,15 @@ public class RecordingService extends Service {
                 return;
             }
             long until = airing.getEnd() + RecordingRules.LIVE_PADDING_MILLIS;
-            Recorder.Saved saved = Recorder.recordLive(station.getMedia().getDownloadUrl(),
-                    station.getMedia().getMimeType(), until, Recordings.folder(context, show),
-                    Recordings.fileName(show, airing), () -> destroyed);
+            Recorder.Saved saved;
+            RecordingHttp.begin(Recordings.userAgent(context, show));
+            try {
+                saved = Recorder.recordLive(station.getMedia().getDownloadUrl(),
+                        station.getMedia().getMimeType(), until, Recordings.folder(context, show),
+                        Recordings.fileName(show, airing), () -> destroyed);
+            } finally {
+                RecordingHttp.end();
+            }
             Recordings.saved(context, show, saved, airing);
             if (cutShort) {
                 Recordings.missed(context, show, airing, R.string.recording_cut_short, false);
