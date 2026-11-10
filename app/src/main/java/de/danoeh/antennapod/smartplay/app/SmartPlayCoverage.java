@@ -18,14 +18,16 @@ public final class SmartPlayCoverage {
 
     public static String describe(Context context, Feed feed) {
         String status = "";
+        boolean mixIn = false;
         if (Recordings.isRecordingsFeed(feed)) {
             RecordingStore.Show show = RecordingStore.getInstance(context).showForFeed(feed.getId());
+            mixIn = show != null && show.mixIn;
             status = (show != null ? Recordings.summary(context, show)
                     : context.getString(R.string.recording_stopped)) + "\n";
         }
         Set<String> categories = new HashSet<>(CategoryChips.categoriesOf(feed));
         List<String> names = new ArrayList<>();
-        boolean book = Books.isBook(context, feed.getId()) || Recordings.isRecordingsFeed(feed);
+        boolean book = Books.isBook(context, feed.getId()) || (Recordings.isRecordingsFeed(feed) && !mixIn);
         for (SmartPlayStore.StoredSmartPlay stored : SmartPlayStore.getInstance(context).getAll()) {
             if (stored.getDefinition().coversFeed(feed.getId(), categories, book)) {
                 names.add(stored.getDefinition().getName());

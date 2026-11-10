@@ -225,4 +225,40 @@ public class SmartPlayExclusionsTest {
         assertFalse(definition.coversFeed(SAVED, new HashSet<>(Collections.singletonList("Saved"))));
         assertFalse(definition.coversFeed(DRAMA, Collections.emptySet()));
     }
+
+    @Test
+    public void allFeedsWithOrWithoutExceptionsLeavesRecordingsAndBooksOut() {
+        long recording = 7;
+        SmartPlayEpisode recorded = SmartPlayEpisode.builder(70, recording).category("BBC Radio 4")
+                .pubDate(10 * DAY).downloaded(true).book(true).build();
+        List<SmartPlayEpisode> candidates = Arrays.asList(recorded, downloaded(1, SAVED, 9), downloaded(2, NEWS, 8));
+        SmartPlayDefinition stuff = SmartPlayDefinition.builder("Stuff")
+                .rule(rule(SmartPlayRule.Order.LATEST, 5, EpisodeSource.allFeeds(), categories("Saved"), 0))
+                .build();
+        assertEquals(Collections.singletonList(2L), ids(engine.rebuild(stuff, candidates)));
+        SmartPlayDefinition plain = SmartPlayDefinition.builder("Plain")
+                .rule(SmartPlayRule.of(SmartPlayRule.Order.LATEST, 5, EpisodeSource.allFeeds())).build();
+        assertEquals(Arrays.asList(1L, 2L), ids(engine.rebuild(plain, candidates)));
+        SmartPlayDefinition byCategory = SmartPlayDefinition.builder("Radio 4")
+                .rule(SmartPlayRule.of(SmartPlayRule.Order.LATEST, 5, EpisodeSource.category("BBC Radio 4"))).build();
+        assertEquals(Collections.singletonList(70L), ids(engine.rebuild(byCategory, candidates)));
+        SmartPlayDefinition byShow = SmartPlayDefinition.builder("Show")
+                .rule(SmartPlayRule.of(SmartPlayRule.Order.LATEST, 5, EpisodeSource.feed(recording))).build();
+        assertEquals(Collections.singletonList(70L), ids(engine.rebuild(byShow, candidates)));
+    }
+
+    @Test
+    public void handAddedRecordingStaysUnlessItsEditIsDropped() {
+        long recording = 7;
+        SmartPlayEpisode recorded = SmartPlayEpisode.builder(70, recording).pubDate(10 * DAY)
+                .downloaded(true).book(true).build();
+        List<SmartPlayEpisode> candidates = Arrays.asList(recorded, downloaded(2, NEWS, 8));
+        SmartPlayDefinition stuff = SmartPlayDefinition.builder("Stuff")
+                .rule(rule(SmartPlayRule.Order.LATEST, 5, EpisodeSource.allFeeds(), categories("Saved"), 0))
+                .build();
+        ManualEdits added = new ManualEdits(Collections.singletonList(70L), Collections.emptyList());
+        assertEquals(Arrays.asList(70L, 2L), ids(engine.rebuild(stuff, candidates, candidates, added)));
+        assertEquals(Collections.singletonList(2L),
+                ids(engine.rebuild(stuff, candidates, candidates, ManualEdits.none())));
+    }
 }

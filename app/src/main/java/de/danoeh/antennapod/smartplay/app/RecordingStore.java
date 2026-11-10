@@ -14,7 +14,7 @@ import de.danoeh.antennapod.smartplay.radio.ShowTimes;
 
 public class RecordingStore extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "recordings.db";
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3;
     private static final String SHOWS = "shows";
     private static final String PENDING = "pending";
 
@@ -39,6 +39,7 @@ public class RecordingStore extends SQLiteOpenHelper {
         public boolean preferLiveNext;
         public long lastSavedAiring;
         public long lastMissedAiring;
+        public boolean mixIn;
 
         public ShowTimes.Spec spec() {
             return new ShowTimes.Spec(zoneId, weekdays, startMinute, endMinute);
@@ -89,7 +90,7 @@ public class RecordingStore extends SQLiteOpenHelper {
                 + "end_minute INTEGER NOT NULL, same_local INTEGER NOT NULL, mobile INTEGER NOT NULL, keep INTEGER NOT NULL, "
                 + "feed INTEGER NOT NULL, source TEXT NOT NULL, method TEXT NOT NULL, rewind INTEGER NOT NULL, "
                 + "status TEXT NOT NULL, prefer_live INTEGER NOT NULL, last_saved INTEGER NOT NULL, "
-                + "last_missed INTEGER NOT NULL DEFAULT 0)");
+                + "last_missed INTEGER NOT NULL DEFAULT 0, mix_in INTEGER NOT NULL DEFAULT 0)");
         db.execSQL("CREATE TABLE " + PENDING + " (id INTEGER PRIMARY KEY AUTOINCREMENT, show INTEGER NOT NULL, "
                 + "file TEXT NOT NULL, mime TEXT, airing_start INTEGER NOT NULL, airing_end INTEGER NOT NULL)");
     }
@@ -99,6 +100,9 @@ public class RecordingStore extends SQLiteOpenHelper {
         if (oldVersion < 2) {
             db.execSQL("ALTER TABLE " + SHOWS + " ADD COLUMN last_missed INTEGER NOT NULL DEFAULT 0");
             db.execSQL("UPDATE " + SHOWS + " SET last_missed = last_saved + 1 WHERE status != ''");
+        }
+        if (oldVersion < 3) {
+            db.execSQL("ALTER TABLE " + SHOWS + " ADD COLUMN mix_in INTEGER NOT NULL DEFAULT 0");
         }
     }
 
@@ -194,6 +198,7 @@ public class RecordingStore extends SQLiteOpenHelper {
         values.put("prefer_live", show.preferLiveNext ? 1 : 0);
         values.put("last_saved", show.lastSavedAiring);
         values.put("last_missed", show.lastMissedAiring);
+        values.put("mix_in", show.mixIn ? 1 : 0);
         return values;
     }
 
@@ -217,6 +222,7 @@ public class RecordingStore extends SQLiteOpenHelper {
         show.preferLiveNext = cursor.getInt(cursor.getColumnIndexOrThrow("prefer_live")) != 0;
         show.lastSavedAiring = cursor.getLong(cursor.getColumnIndexOrThrow("last_saved"));
         show.lastMissedAiring = cursor.getLong(cursor.getColumnIndexOrThrow("last_missed"));
+        show.mixIn = cursor.getInt(cursor.getColumnIndexOrThrow("mix_in")) != 0;
         return show;
     }
 }

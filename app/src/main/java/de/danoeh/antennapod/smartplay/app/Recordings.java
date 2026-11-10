@@ -92,6 +92,16 @@ public final class Recordings {
                 && feed.getDownloadUrl().startsWith(Feed.RECORDINGS_URL_PREFIX);
     }
 
+    public static Set<Long> mixedInFeedIds(Context context) {
+        Set<Long> result = new HashSet<>();
+        for (RecordingStore.Show show : RecordingStore.getInstance(context).getShows()) {
+            if (show.mixIn) {
+                result.add(show.feedId);
+            }
+        }
+        return result;
+    }
+
     public static RecordingStore.Show create(Context context, FeedItem station, RecordingStore.Show show) {
         Feed feed = new Feed(Feed.RECORDINGS_URL_PREFIX + UUID.randomUUID(), null, show.name);
         feed.setAuthor(timesLine(context, show));

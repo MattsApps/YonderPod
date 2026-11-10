@@ -406,9 +406,12 @@ public class SmartPlayQueueManager {
             Set<Long> books = Books.bookIds(context);
             Map<Long, Long> bookLastPlayed = Books.lastPlayedPerBook(context, books);
             Set<Long> notInAllFeeds = new HashSet<>(books);
+            Set<Long> mixedIn = Recordings.mixedInFeedIds(context);
+            Set<Long> keptOutRecordings = new HashSet<>();
             for (FeedItem item : itemsById.values()) {
-                if (Recordings.isRecordingsFeed(item.getFeed())) {
+                if (Recordings.isRecordingsFeed(item.getFeed()) && !mixedIn.contains(item.getFeedId())) {
                     notInAllFeeds.add(item.getFeedId());
+                    keptOutRecordings.add(item.getFeedId());
                 }
             }
 
@@ -431,7 +434,8 @@ public class SmartPlayQueueManager {
                 }
             }
 
-            ManualEdits edits = editStore.load();
+            ManualEdits edits = withoutStrayRecordings(editStore.load(), definition, candidates,
+                    keptOutRecordings, playingItemId(itemsById));
             List<SmartPlayEpisode> result = fullRebuild
                     ? engine.rebuild(definition, candidates, current, edits)
                     : engine.onNewDownloads(definition, candidates, current, edits);
@@ -457,6 +461,32 @@ public class SmartPlayQueueManager {
         } catch (Exception e) {
             Log.e(TAG, "Smart Play update failed", e);
         }
+    }
+
+    private static ManualEdits withoutStrayRecordings(ManualEdits edits, SmartPlayDefinition definition,
+                                                      List<SmartPlayEpisode> candidates,
+                                                      Set<Long> keptOutRecordings, long playingItemId) {
+        Set<Long> handAdded = new HashSet<>(edits.getHandAddedIds());
+        for (SmartPlayEpisode episode : candidates) {
+            if (keptOutRecordings.contains(episode.getFeedId()) && episode.getId() != playingItemId
+                    && !definition.covers(episode)) {
+                handAdded.remove(episode.getId());
+            }
+        }
+        return new ManualEdits(handAdded, edits.getRemovedIds());
+    }
+
+    private static long playingItemId(Map<Long, FeedItem> itemsById) {
+        if (PlaybackPreferences.getCurrentPlayerStatus() != PlaybackPreferences.PLAYER_STATUS_PLAYING) {
+            return -1;
+        }
+        long playingMediaId = PlaybackPreferences.getCurrentlyPlayingFeedMediaId();
+        for (FeedItem item : itemsById.values()) {
+            if (item.getMedia() != null && item.getMedia().getId() == playingMediaId) {
+                return item.getId();
+            }
+        }
+        return -1;
     }
 
     private static long lastPlayed(Map<Long, Long> bookLastPlayed, long feedId) {

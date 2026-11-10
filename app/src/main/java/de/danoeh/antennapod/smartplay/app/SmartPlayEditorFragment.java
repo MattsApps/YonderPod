@@ -79,6 +79,7 @@ public class SmartPlayEditorFragment extends Fragment {
     private final List<String> allCategories = new ArrayList<>();
     private final Set<Long> bookIds = new HashSet<>();
     private final Set<Long> notInAllIds = new HashSet<>();
+    private final List<String> mixedInNames = new ArrayList<>();
     private final List<String> otherNames = new ArrayList<>();
     private final List<ActiveHours.Window> otherWindows = new ArrayList<>();
     private final CompositeDisposable disposables = new CompositeDisposable();
@@ -152,6 +153,7 @@ public class SmartPlayEditorFragment extends Fragment {
         Map<Long, String> allTitles;
         Set<Long> books;
         Set<Long> recordings;
+        List<String> mixedIn;
         ActiveHours.Window hours;
         List<String> otherNames;
         List<ActiveHours.Window> otherWindows;
@@ -411,11 +413,18 @@ public class SmartPlayEditorFragment extends Fragment {
                 }
             }
             result.recordings = new HashSet<>();
+            result.mixedIn = new ArrayList<>();
+            Set<Long> mixedIn = Recordings.mixedInFeedIds(requireContext());
             for (Feed feed : subscribed) {
                 if (Recordings.isRecordingsFeed(feed)) {
-                    result.recordings.add(feed.getId());
+                    if (mixedIn.contains(feed.getId())) {
+                        result.mixedIn.add(title(feed));
+                    } else {
+                        result.recordings.add(feed.getId());
+                    }
                 }
             }
+            Collections.sort(result.mixedIn, String.CASE_INSENSITIVE_ORDER);
             result.hours = smartPlayId >= 0 ? SmartPlayHours.get(requireContext(), smartPlayId) : null;
             result.otherNames = new ArrayList<>();
             result.otherWindows = new ArrayList<>();
@@ -447,6 +456,8 @@ public class SmartPlayEditorFragment extends Fragment {
         notInAllIds.clear();
         notInAllIds.addAll(result.books);
         notInAllIds.addAll(result.recordings);
+        mixedInNames.clear();
+        mixedInNames.addAll(result.mixedIn);
         otherNames.clear();
         otherNames.addAll(result.otherNames);
         otherWindows.clear();
@@ -903,7 +914,14 @@ public class SmartPlayEditorFragment extends Fragment {
                 draft.count = selected + 1));
 
         boolean allFeeds = draft.source.getType() == EpisodeSource.Type.ALL_FEEDS;
-        holder.note.setVisibility(allFeeds && !notInAllIds.isEmpty() ? View.VISIBLE : View.GONE);
+        String note = getString(R.string.smartplay_books_not_in_all);
+        if (!mixedInNames.isEmpty()) {
+            note += " " + getString(R.string.smartplay_recordings_mixed_in,
+                    TextUtils.join(getString(R.string.list_separator), mixedInNames));
+        }
+        holder.note.setText(note);
+        holder.note.setVisibility(allFeeds && (!notInAllIds.isEmpty() || !mixedInNames.isEmpty())
+                ? View.VISIBLE : View.GONE);
     }
 
     private List<String> countLabels(boolean book) {

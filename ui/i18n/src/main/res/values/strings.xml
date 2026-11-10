@@ -1406,6 +1406,7 @@
         <item quantity="other">%1$s · %2$d books</item>
     </plurals>
     <string name="smartplay_books_not_in_all">Audiobooks and recorded radio shows aren\'t in All feeds. To add them, pick the book or show, or its category.</string>
+    <string name="smartplay_recordings_mixed_in">Mixed in: %1$s.</string>
     <string name="book_not_included">Not in any Smart Play. Books only play through rules that name them.</string>
     <string name="book_progress">Chapter %1$d of %2$d · %3$s left</string>
     <plurals name="book_progress_finished">
@@ -1507,6 +1508,8 @@
     <string name="record_available_same_time">Available at %1$s here</string>
     <string name="record_available_saved">Available as soon as it\'s saved</string>
     <string name="record_mobile">Use mobile data to save</string>
+    <string name="record_mix_in">mix into other Smart Plays</string>
+    <string name="record_mix_in_detail">Off: only Smart Plays that name this show or its category play it. On: All feeds rules pick it up too.</string>
     <string name="record_needs_times">Pick at least one day, and a start and end time.</string>
     <string name="record_alarm_title">Allow exact start times?</string>
     <string name="record_alarm_message">This station can only be recorded live, so Yonder needs to start on time. Android asks for permission to use Alarms &amp; reminders for this. Without it, recordings may start a few minutes late.</string>
@@ -2179,6 +2182,8 @@
     <string name="help_about_radio_keeping">Recordings are for listening later, not keeping: each one goes when the next airs or after 25 hours.</string>
     <string name="help_topic_radio_short_names">Short station names</string>
     <string name="help_about_radio_short_names">The short name is what Radio shows in big letters.</string>
+    <string name="help_topic_radio_mix_in">Recordings in other Smart Plays</string>
+    <string name="help_about_radio_mix_in">A recorded show only plays in Smart Plays with a rule that names it or its category. To mix it into other Smart Plays too, switch on “mix into other Smart Plays” in Edit recording, and All feeds rules pick it up.</string>
     <string name="help_topic_book_pages">Book pages</string>
     <string name="help_about_book_pages">How far through you are, the chapters, and Continue listening.</string>
     <string name="help_topic_book_extras">Bookmarks and a speed for each book</string>

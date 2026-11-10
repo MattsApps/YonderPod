@@ -92,6 +92,7 @@ public final class RecordShowDialog {
         Button end = view.findViewById(R.id.record_end);
         RadioGroup available = view.findViewById(R.id.record_available);
         MaterialSwitch mobile = view.findViewById(R.id.record_mobile);
+        MaterialSwitch mixIn = view.findViewById(R.id.record_mix_in);
 
         name.setText(show.name);
         String[] autoName = {Recordings.defaultName(context, station.getTitle(), show)};
@@ -168,6 +169,7 @@ public final class RecordShowDialog {
         });
 
         mobile.setChecked(show.allowMobile);
+        mixIn.setChecked(show.mixIn);
 
         Context app = context.getApplicationContext();
         new MaterialAlertDialogBuilder(context)
@@ -181,6 +183,8 @@ public final class RecordShowDialog {
                     show.zoneId = zones.get(Math.max(0, zone.getSelectedItemPosition()));
                     show.sameLocalTime = available.getCheckedRadioButtonId() == R.id.record_available_same_time;
                     show.allowMobile = mobile.isChecked();
+                    boolean mixChanged = show.mixIn != mixIn.isChecked();
+                    show.mixIn = mixIn.isChecked();
                     if (show.weekdays == 0 || show.startMinute == show.endMinute) {
                         Toast.makeText(app, R.string.record_needs_times, Toast.LENGTH_LONG).show();
                         return;
@@ -197,7 +201,12 @@ public final class RecordShowDialog {
                     })
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(saved -> afterSave(context, saved, isNew),
+                            .subscribe(saved -> {
+                                if (mixChanged && !isNew) {
+                                    SmartPlayQueueManager.getInstance().rebuildNow();
+                                }
+                                afterSave(context, saved, isNew);
+                            },
                                     error -> Log.e(TAG, Log.getStackTraceString(error)));
                 })
                 .setNegativeButton(R.string.yonder_button_cancel, null)
