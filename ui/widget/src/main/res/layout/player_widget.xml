@@ -41,9 +41,9 @@
                 android:layout_width="44dp"
                 android:layout_height="44dp"
                 android:layout_gravity="center_vertical|start"
-                android:layout_marginStart="12dp"
+                android:layout_marginStart="30dp"
                 android:importantForAccessibility="no"
-                android:src="@drawable/wildink_play" />
+                android:src="@drawable/wildink_play_centred" />
 
         </FrameLayout>
 

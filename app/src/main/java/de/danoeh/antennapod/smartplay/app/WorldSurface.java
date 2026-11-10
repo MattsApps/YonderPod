@@ -177,7 +177,7 @@ public abstract class WorldSurface extends Fragment {
 
     protected void showPlaying(boolean playing) {
         ImageView icon = root.findViewById(R.id.worldPlayIcon);
-        icon.setImageResource(playing ? R.drawable.wildink_pause : R.drawable.wildink_play);
+        icon.setImageResource(playing ? R.drawable.wildink_pause : R.drawable.wildink_play_centred);
         root.findViewById(R.id.worldPlay).setContentDescription(
                 getString(playing ? R.string.pause_label : R.string.play_label));
     }

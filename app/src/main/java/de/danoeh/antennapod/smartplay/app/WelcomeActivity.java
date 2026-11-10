@@ -263,14 +263,11 @@ public class WelcomeActivity extends AppCompatActivity {
         FrameLayout play = new FrameLayout(this);
         play.setBackgroundResource(R.drawable.wildink_play_circle);
         ImageView icon = new ImageView(this);
-        icon.setImageResource(R.drawable.wildink_play);
+        icon.setImageResource(R.drawable.wildink_play_centred);
         icon.setColorFilter(ThemeUtils.getColorFromAttr(this, R.attr.colorOnPrimary));
         icon.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
         int iconSize = (int) (64 * density);
-        FrameLayout.LayoutParams iconParams = new FrameLayout.LayoutParams(iconSize, iconSize,
-                Gravity.CENTER_VERTICAL | Gravity.START);
-        iconParams.setMarginStart((int) (18 * density));
-        play.addView(icon, iconParams);
+        play.addView(icon, new FrameLayout.LayoutParams(iconSize, iconSize, Gravity.CENTER));
         int size = (int) (150 * density);
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(size, size);
         params.topMargin = (int) (24 * density);

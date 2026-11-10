@@ -81,7 +81,7 @@ public abstract class WidgetUpdater {
             views.setInt(R.id.butSkip, "setColorFilter", palette.text);
             views.setTextColor(R.id.txtvTitle, palette.text);
             boolean playing = widgetState.status == PlayerStatus.PLAYING;
-            views.setImageViewResource(R.id.butPlay, playing ? R.drawable.wildink_pause : R.drawable.wildink_play);
+            views.setImageViewResource(R.id.butPlay, playing ? R.drawable.wildink_pause : R.drawable.wildink_play_centred);
             views.setContentDescription(R.id.butPlayCircle,
                     context.getString(playing ? R.string.pause_label : R.string.play_label));
             if (widgetState.media != null) {
