@@ -1,4 +1,8 @@
 <resources>
+    <!-- Tip me wordmark: its original look, and the pending switch back after "thank you" -->
+    <item name="tip_mark_look" type="id"/>
+    <item name="tip_mark_back" type="id"/>
+
     <!-- Menu items -->
     <item name="select_all_item" type="id"/>
     <item name="deselect_all_item" type="id"/>

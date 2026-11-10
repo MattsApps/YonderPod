@@ -2212,4 +2212,38 @@
     <string name="help_about_wont_play">Dead links, stations blocked outside their country, and mobile data settings.</string>
     <string name="help_topic_storage">Running out of storage</string>
     <string name="help_about_storage">How many to keep, deleting played episodes, and copies of added files.</string>
+
+    <!-- Tip me (decided 3 Nov, built 10 Nov) -->
+    <!-- F-Droid build only: the web page "tip me" opens. While this is empty, the F-Droid build never shows "tip me". -->
+    <string name="yonder_tip_link" translatable="false"></string>
+    <string name="tip_me_mark">tip me</string>
+    <string name="tip_me_description">Tip me: ways to say thanks for Yonder</string>
+    <string name="tip_thank_you_mark">thank you</string>
+    <string name="tip_dismissed">Back to “yonder” until tomorrow</string>
+    <string name="tip_title">tip me</string>
+    <!-- PLACEHOLDER: Matt to rewrite this line in his own words. -->
+    <string name="tip_line">Hi, I'm Matt. I made Yonder because I missed BeyondPod. It's free, and nothing in it will ever be locked. If it's earned a place on your phone, a small tip once a year keeps it going.</string>
+    <string name="tip_explain">Any tip brings back “yonder” at the top for a year. It doesn't unlock anything: everything already works.</string>
+    <string name="tip_explain_again">Tipping again adds another year.</string>
+    <string name="tip_supporter_until">You're a supporter until %1$s. Thank you!</string>
+    <string name="tip_supporter">You're a supporter. Thank you!</string>
+    <string name="tip_loading">Asking Google Play for prices…</string>
+    <string name="tip_unavailable">Google Play isn't reachable right now. Try again later.</string>
+    <string name="tip_pending">Thank you! Google Play is waiting for the payment to go through.</string>
+    <string name="tip_problem">That didn't go through: %1$s</string>
+    <string name="tip_not_today">not today</string>
+    <string name="tip_thanks_title">thank you</string>
+    <string name="tune_tip">Tip</string>
+    <string name="tune_supporter">Supporter</string>
+    <string name="tune_supporter_until">until %1$s</string>
+    <string name="tip_test_title">Tip testing</string>
+    <string name="tip_test_jump">Pretend 2 weeks have passed</string>
+    <string name="tip_test_forget">Forget my tip on this phone</string>
+    <string name="tip_test_normal">Back to normal</string>
+    <string-array name="tip_amounts" translatable="false">
+        <item>NZ$3</item>
+        <item>NZ$6</item>
+        <item>NZ$12</item>
+        <item>NZ$24</item>
+    </string-array>
 </resources>

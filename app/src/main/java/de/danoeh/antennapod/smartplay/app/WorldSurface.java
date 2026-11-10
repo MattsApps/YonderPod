@@ -58,6 +58,7 @@ public abstract class WorldSurface extends Fragment {
         int[] fullNames = {R.string.world_books, R.string.world_podcasts, R.string.world_radio};
         ((TextView) root.findViewById(R.id.worldName)).setText(fullNames[world()]);
         neighbours(this, root, AppShelves.pages(requireContext()), world());
+        TipMark.bind(this, root);
         root.findViewById(R.id.worldHandle).setOnClickListener(v -> openTend());
         for (int id : new int[] {R.id.worldFrom, R.id.worldNext}) {
             View link = root.findViewById(id);
@@ -101,6 +102,7 @@ public abstract class WorldSurface extends Fragment {
         super.onStart();
         EventBus.getDefault().register(this);
         load();
+        TipMark.bind(this, root);
     }
 
     @Override
@@ -130,6 +132,11 @@ public abstract class WorldSurface extends Fragment {
         if (!event.isFeedUpdateRunning) {
             load();
         }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onTipChanged(Tip.ChangedEvent event) {
+        TipMark.bind(this, root);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

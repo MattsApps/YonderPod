@@ -564,7 +564,7 @@ public final class YonderBackup {
 
     private static boolean skippedFile(String name) {
         return name.startsWith("androidx.") || name.startsWith("WorkManager") || name.startsWith("com.google")
-                || name.equals(BACKUP_PREFS);
+                || name.equals(BACKUP_PREFS) || name.equals(Tip.LOCAL_PREFS);
     }
 
     private static String defaultPreferencesName(Context context) {

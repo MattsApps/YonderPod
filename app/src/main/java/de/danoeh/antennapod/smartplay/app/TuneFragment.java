@@ -160,6 +160,42 @@ public class TuneFragment extends Fragment {
         heading(sections, R.string.tune_about);
         row(sections, R.string.tune_about_app, BuildConfig.VERSION_NAME,
                 () -> TendRows.open(this, new AboutFragment()));
+        tip(sections);
+    }
+
+    /** "tip", or "supporter until …" after a tip, so the tip sheet can always be reached. */
+    private void tip(LinearLayout sections) {
+        if (!TipShop.canTip(requireContext())) {
+            return;
+        }
+        Tip.checkOnce(requireContext());
+        String until = Tip.isSupporter(requireContext()) ? Tip.supporterUntilText(requireContext()) : null;
+        TextView value = row(sections, Tip.isSupporter(requireContext()) ? R.string.tune_supporter : R.string.tune_tip,
+                until != null ? getString(R.string.tune_supporter_until, until) : "", () -> TipShop.open(this));
+        ((View) value.getParent()).setOnLongClickListener(v -> {
+            tipTesting();
+            return true;
+        });
+    }
+
+    /** Hidden switches for testing tip me. They only change what the wordmark shows, never unlock anything. */
+    private void tipTesting() {
+        Context context = requireContext();
+        CharSequence[] choices = {getString(R.string.tip_test_jump), getString(R.string.tip_test_forget),
+            getString(R.string.tip_test_normal)};
+        new MaterialAlertDialogBuilder(context)
+                .setTitle(R.string.tip_test_title)
+                .setItems(choices, (dialog, which) -> {
+                    if (which == 0) {
+                        Tip.testJumpTwoWeeks(context);
+                    } else if (which == 1) {
+                        Tip.testForgetTip(context);
+                    } else {
+                        Tip.testBackToNormal(context);
+                    }
+                    load();
+                })
+                .show();
     }
 
     private String language() {
