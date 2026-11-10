@@ -2237,15 +2237,15 @@
     <string name="tip_dismissed">Back to “yonder” until tomorrow</string>
     <string name="tip_title">tip me</string>
     <!-- PLACEHOLDER: Matt to rewrite this line in his own words. -->
-    <string name="tip_line">Hi, I'm Matt. I made Yonder because I missed BeyondPod. It's free, and nothing in it will ever be locked. If it's earned a place on your phone, a small tip once a year keeps it going.</string>
-    <string name="tip_explain">Any tip brings back “yonder” at the top for a year. It doesn't unlock anything: everything already works.</string>
+    <string name="tip_line">Hi, I\'m Matt. I made Yonder because I missed BeyondPod. It\'s free, and nothing in it will ever be locked. If it\'s earned a place on your phone, a small tip once a year keeps it going.</string>
+    <string name="tip_explain">Any tip brings back “yonder” at the top for a year. It doesn\'t unlock anything: everything already works.</string>
     <string name="tip_explain_again">Tipping again adds another year.</string>
-    <string name="tip_supporter_until">You're a supporter until %1$s. Thank you!</string>
-    <string name="tip_supporter">You're a supporter. Thank you!</string>
+    <string name="tip_supporter_until">You\'re a supporter until %1$s. Thank you!</string>
+    <string name="tip_supporter">You\'re a supporter. Thank you!</string>
     <string name="tip_loading">Asking Google Play for prices…</string>
-    <string name="tip_unavailable">Google Play isn't reachable right now. Try again later.</string>
+    <string name="tip_unavailable">Google Play isn\'t reachable right now. Try again later.</string>
     <string name="tip_pending">Thank you! Google Play is waiting for the payment to go through.</string>
-    <string name="tip_problem">That didn't go through: %1$s</string>
+    <string name="tip_problem">That didn\'t go through: %1$s</string>
     <string name="tip_not_today">not today</string>
     <string name="tip_thanks_title">thank you</string>
     <string name="tune_tip">Tip</string>
