@@ -3,37 +3,106 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Yonder</title>
+<title>Yonder · podcasts, books &amp; radio</title>
+<meta name="description" content="Yonder is a free podcast, audiobook and radio app for Android. Radio stations: here's what Yonder's listener tag means.">
 <style>
-  body { margin: 0; background: #1c1b19; color: #f3efe6; font: 17px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif; }
-  main { max-width: 640px; margin: 0 auto; padding: 40px 24px 64px; }
-  h1 { font-size: 64px; letter-spacing: -0.04em; margin: 0 0 8px; text-transform: lowercase; }
-  h2 { font-size: 22px; letter-spacing: -0.02em; margin: 36px 0 8px; text-transform: lowercase; }
-  p, li { color: #e4ded2; }
-  .quiet { color: #b9b2a5; font-size: 15px; }
-  a { color: #ff7a4d; }
+  @font-face { font-family: "Bricolage"; src: url("fonts/bricolage-extrabold.ttf") format("truetype"); font-weight: 800; font-display: swap; }
+  @font-face { font-family: "Bricolage"; src: url("fonts/bricolage-regular.ttf") format("truetype"); font-weight: 400; font-display: swap; }
+
+  :root { --ink: #1c1b19; --cream: #f1ece2; --soft: #cfc8bb; --quiet: #9d968a; --orange: #ff5a2b; --line: #34322e; }
+  * { box-sizing: border-box; }
+  html { background: var(--ink); }
+  body { margin: 0; background: var(--ink); color: var(--cream); font: 18px/1.6 "Bricolage", system-ui, -apple-system, "Segoe UI", sans-serif; }
+  a { color: var(--orange); text-underline-offset: 3px; }
+
+  /* top: the feature graphic, as a page */
+  .hero { position: relative; overflow: hidden; min-height: min(92vh, 860px); display: flex; align-items: center; padding: 64px 7vw; }
+  .hero-text { position: relative; z-index: 1; max-width: 900px; }
+  .wordmark { font-weight: 800; font-size: clamp(88px, 19vw, 260px); line-height: 0.9; letter-spacing: -0.045em; margin: 0; }
+  .tagline { font-weight: 800; color: var(--orange); font-size: clamp(24px, 4.4vw, 58px); letter-spacing: -0.02em; margin: 0.35em 0 0; }
+  .lede { color: var(--soft); max-width: 30em; margin: 1.6em 0 0; font-size: clamp(18px, 1.6vw, 21px); }
+  .soon { display: inline-block; margin-top: 1.4em; color: var(--quiet); font-size: 15px; border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px; }
+  .disc { position: absolute; right: max(-14vmin, -126px); bottom: max(-14vmin, -126px); width: min(62vmin, 560px); height: min(62vmin, 560px); border-radius: 50%; background: var(--orange); }
+  .disc::after { content: ""; position: absolute; left: 47%; top: 34%; border-style: solid; border-color: transparent; border-left-color: var(--ink);
+                 border-width: min(9vmin, 81px) 0 min(9vmin, 81px) min(15vmin, 135px); }
+
+  main { max-width: 720px; margin: 0 auto; padding: 72px 24px 40px; }
+  .kicker { color: var(--orange); font-weight: 800; letter-spacing: 0.02em; margin: 0 0 6px; font-size: 16px; }
+  h2 { font-weight: 800; font-size: clamp(40px, 6vw, 64px); line-height: 1; letter-spacing: -0.035em; margin: 0 0 20px; }
+  h3 { font-weight: 800; font-size: 26px; letter-spacing: -0.02em; margin: 52px 0 10px; }
+  p, li { color: var(--soft); }
+  strong { color: var(--cream); font-weight: 800; }
+  .big { font-size: 22px; color: var(--cream); }
+  code { font: 15px/1.5 ui-monospace, "SF Mono", Menlo, Consolas, monospace; color: var(--cream); background: #26241f; border: 1px solid var(--line);
+         border-radius: 10px; padding: 12px 14px; display: block; white-space: pre-wrap; overflow-wrap: anywhere; margin: 6px 0 18px; }
+  .label { color: var(--quiet); font-size: 15px; margin: 18px 0 0; }
+  .pull { border-left: 4px solid var(--orange); padding: 4px 0 4px 20px; margin: 18px 0; }
+  .pull p { color: var(--cream); font-size: 22px; margin: 0 0 8px; }
   ul { padding-left: 20px; }
-  @media (prefers-color-scheme: light) {
-    body { background: #f6f2ea; color: #1c1b19; }
-    p, li { color: #2b2925; }
-    .quiet { color: #5f5a52; }
-    a { color: #c2410c; }
-  }
+
+  footer { max-width: 720px; margin: 0 auto; padding: 32px 24px 72px; border-top: 1px solid var(--line); }
+  .links { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 10px 28px; margin: 0 0 18px; }
+  .links a { font-weight: 800; text-decoration: none; }
+  .small { color: var(--quiet); font-size: 15px; margin: 0; }
 </style>
 </head>
 <body>
+
+<header class="hero">
+  <div class="hero-text">
+    <h1 class="wordmark">yonder</h1>
+    <p class="tagline">podcasts, books &amp; radio</p>
+    <p class="lede">A free podcast, audiobook and radio app for Android. Smart Play mixes your shows the way you like them, and Yonder can record a radio show and play it to you later, at the same time of day, wherever you are.</p>
+    <span class="soon">Coming soon to Google Play and F-Droid</span>
+  </div>
+  <div class="disc" aria-hidden="true"></div>
+</header>
+
 <main>
-<h1>yonder</h1>
-<p>Yonder is a podcast, audiobook and radio app for Android.</p>
+  <p class="kicker">for radio stations</p>
+  <h2>Hello. That was Yonder.</h2>
+  <p class="big">If you followed a link in your server logs, you've found the right page. Here's what Yonder is doing when it plays or records your station.</p>
 
-<h2>links</h2>
-<ul>
-  <li><a href="privacy-policy.html">Privacy policy</a></li>
-  <li><a href="https://github.com/MattsApps/YonderPod">Source code</a></li>
-  <li>Email <a href="mailto:BetterBuiltApps@gmail.com">BetterBuiltApps@gmail.com</a></li>
-</ul>
+  <h3>what you'll see</h3>
+  <p class="label">When someone listens live:</p>
+  <code>Yonder/0.9.13 (+https://mattsapps.github.io/yonder/)</code>
+  <p class="label">When someone records one of your shows:</p>
+  <code>Yonder/0.9.13 (radio recording; +https://mattsapps.github.io/yonder/; listener 3fk9q2xa)</code>
+  <p>A recording is one listener asking Yonder to save your show so they can hear it later, for example at the same local time in another time zone. Each recording is that one person's own listening.</p>
 
-<p class="quiet">Yonder is made by BetterBuiltApps. It's open source under the GNU GPL v3, built on AntennaPod.</p>
+  <h3>the listener tag is there for you</h3>
+  <div class="pull">
+    <p>We put the listener tag there expressly for your convenience. We want you to have accurate figures for your listenership. We want Yonder to help your shows grow.</p>
+  </div>
+  <p>Lots of listeners can share one internet address, especially on mobile networks, so without the tag many Yonder listeners could look like one. With it, you can count them properly:</p>
+  <ul>
+    <li>Every recording schedule gets its own random tag.</li>
+    <li>The next airing of the same show carries the same tag, so a regular listener shows up as one regular listener.</li>
+    <li>The tag isn't linked to the person, their phone or anything else they listen to. Another station never sees the same tag.</li>
+  </ul>
+
+  <h3>recordings stay with the listener</h3>
+  <p>Recordings are encrypted so that they can only be played through the phone that recorded them. <strong>They can't be shared and they can't be copied.</strong></p>
+  <ul>
+    <li>Each recording plays once, then deletes itself.</li>
+    <li>If it hasn't been played, it deletes itself when the next airing is recorded, or 25 hours after recording finished, whichever comes first.</li>
+  </ul>
+
+  <h3>why we do it this way</h3>
+  <p>It's the same reason Yonder doesn't skip the adverts in podcasts, even though it could. We want radio stations and podcasts to stay profitable. We love them.</p>
+
+  <h3>get in touch</h3>
+  <p>Questions or worries about Yonder and your station? Email <a href="mailto:BetterBuiltApps@gmail.com">BetterBuiltApps@gmail.com</a>.</p>
 </main>
+
+<footer>
+  <ul class="links">
+    <li><a href="privacy-policy.html">Privacy policy</a></li>
+    <li><a href="https://github.com/MattsApps/YonderPod">Source code</a></li>
+    <li><a href="mailto:BetterBuiltApps@gmail.com">Email</a></li>
+  </ul>
+  <p class="small">Yonder is made by BetterBuiltApps. It's open source under the GNU GPL v3, built on AntennaPod. Set in Bricolage Grotesque (<a href="fonts/OFL.txt">SIL Open Font License</a>).</p>
+</footer>
+
 </body>
 </html>

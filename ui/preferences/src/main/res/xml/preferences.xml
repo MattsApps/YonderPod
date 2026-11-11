@@ -53,16 +53,6 @@
             android:icon="@drawable/ic_supervisor_account"/>
 
     <PreferenceCategory
-            android:key="radio"
-            android:title="@string/world_radio">
-        <SwitchPreferenceCompat
-            android:key="prefRadioTellStations"
-            android:defaultValue="true"
-            android:title="@string/radio_tell_stations"
-            android:summary="@string/radio_tell_stations_sum" />
-    </PreferenceCategory>
-
-    <PreferenceCategory
             android:key="project"
             android:title="@string/project_pref">
         <Preference

@@ -13,7 +13,6 @@ import android.text.TextUtils;
 import android.text.format.DateFormat;
 import android.util.Log;
 
-import androidx.preference.PreferenceManager;
 import androidx.work.BackoffPolicy;
 import androidx.work.Constraints;
 import androidx.work.Data;
@@ -86,7 +85,6 @@ public final class Recordings {
     private static final String KEY_CATEGORIES_TIDIED = "categoriesTidied";
     private static final String KEY_SMART_PLAYS_TIDIED = "smartPlaysTidied";
     private static final String FOLDER = "recordings";
-    static final String PREF_TELL_STATIONS = "prefRadioTellStations";
     private static final long SWEEP_MARGIN_MILLIS = 5_000L;
     private static final Set<Long> CREATING = Collections.synchronizedSet(new HashSet<>());
     private static volatile boolean leftovers = true;
@@ -173,12 +171,11 @@ public final class Recordings {
         EventBus.getDefault().post(new Radio.ChangedEvent());
     }
 
+    // The listener tag is always sent: it's there so stations get accurate listener figures.
+    // An old "prefRadioTellStations" setting left on a phone from 0.9.13 is ignored.
     static String userAgent(Context context, RecordingStore.Show show) {
-        String yonder = "Yonder/" + UserAgentInterceptor.YONDER_VERSION;
-        if (!PreferenceManager.getDefaultSharedPreferences(context).getBoolean(PREF_TELL_STATIONS, true)) {
-            return yonder;
-        }
-        return yonder + " (radio recording; +https://mattsapps.github.io/yonder/; listener "
+        return "Yonder/" + UserAgentInterceptor.YONDER_VERSION
+                + " (radio recording; +https://mattsapps.github.io/yonder/; listener "
                 + listenerTag(context, show) + ")";
     }
 
