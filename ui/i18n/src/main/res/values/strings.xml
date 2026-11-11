@@ -639,7 +639,6 @@
     <string name="smartplay_rebuild_button">Rebuild Smart Play</string>
     <string name="smartplay_paused_message">The playlist was cleared, so Smart Play is paused. Tap Rebuild Smart Play to fill it again.</string>
     <string name="smartplay_play_next">Play next</string>
-    <string name="smartplay_header">%1$s ▾ · %2$s</string>
     <string name="smartplay_switch_title">Smart Play</string>
     <string name="smartplay_manage">Manage Smart Plays</string>
     <string name="smartplay_list_title">Smart Plays</string>
@@ -655,13 +654,9 @@
     <string name="smartplay_copy_name">%1$s (copy)</string>
     <string name="smartplay_new_name">New Smart Play</string>
     <string name="smartplay_editor_title">Smart Play</string>
-    <string name="smartplay_banner">Smart Play builds a fresh playlist from your downloaded episodes using simple rules. Priority shows go first, then each rule in turn.</string>
     <string name="smartplay_name_hint">Name</string>
     <string name="smartplay_name_missing">Please give this Smart Play a name.</string>
     <string name="smartplay_needs_rule">Add at least one rule or priority show.</string>
-    <string name="smartplay_rules_header">Rules</string>
-    <string name="smartplay_rule_start">%1$d. Start with</string>
-    <string name="smartplay_rule_then">%1$d. Then</string>
     <string name="smartplay_order_latest">Latest</string>
     <string name="smartplay_order_oldest">Oldest</string>
     <string name="smartplay_order_random">Random</string>
@@ -672,11 +667,7 @@
     <string name="smartplay_source_all">All feeds</string>
     <string name="smartplay_source_except_option">Everything except…</string>
     <string name="smartplay_source_all_except">All feeds except %1$s</string>
-    <string name="smartplay_source_category">Category: %1$s</string>
     <string name="smartplay_unknown_show">Unknown show</string>
-    <string name="smartplay_add_rule">Add rule</string>
-    <string name="smartplay_priority_header">Priority shows</string>
-    <string name="smartplay_priority_hint">New episodes from these shows go straight to the top of the playlist.</string>
     <string name="smartplay_priority_oldest">Oldest first</string>
     <string name="smartplay_priority_newest">Newest first</string>
     <string name="smartplay_add_priority">Add priority show</string>
@@ -705,9 +696,6 @@
     <string name="smartplay_unsubscribed_show">⚠ %1$s (no longer subscribed)</string>
     <string name="smartplay_rule_unsubscribed">Some rules point at shows you\'re no longer subscribed to.</string>
     <string name="smartplay_never_header">Never include</string>
-    <string name="smartplay_never_hint">Categories and shows chosen here never appear in this Smart Play, not even as priority shows.</string>
-    <string name="smartplay_never_none">Nothing excluded. Tap to choose.</string>
-    <string name="smartplay_category_label">Category: %1$s</string>
     <string name="smartplay_except_title">Leave out</string>
     <string name="smartplay_except_add">Except… · %1$s</string>
     <string name="smartplay_except_summary">%1$s except %2$s · %3$s</string>
@@ -1389,13 +1377,7 @@
     <string name="wearos_open_on_phone" tools:ignore="UnusedResources">Open on phone</string>
     <!-- Yonder audiobooks -->
     <string name="search_audiobooks_label">Search audiobooks (LibriVox)</string>
-    <string name="librivox_title">Audiobooks from LibriVox</string>
     <string name="librivox_hint">Title, author or genre</string>
-    <string name="librivox_about">Free public-domain audiobooks, read by LibriVox volunteers</string>
-    <string name="librivox_no_results">No audiobooks found for \"%1$s\"</string>
-    <string name="librivox_error">Couldn\'t reach LibriVox. Check your connection and try again.</string>
-    <string name="librivox_read_by">Read by %1$s</string>
-    <string name="librivox_read_by_many">Read by %1$s and others</string>
     <string name="smartplay_order_next_chapter">Next chapter</string>
     <plurals name="smartplay_chapter_count">
         <item quantity="one">%d chapter</item>
@@ -1441,8 +1423,6 @@
     <!-- Yonder radio -->
     <string name="radio_title">Radio</string>
     <string name="radio_empty">No stations yet. Find one above, or paste a stream link below.</string>
-    <string name="radio_add">Add station</string>
-    <string name="radio_add_search">Search stations</string>
     <string name="radio_add_link">Paste a stream link</string>
     <string name="radio_add_button">add</string>
     <string name="radio_link_hint">Stream link (Icecast, Shoutcast, HLS or DASH)</string>
@@ -1468,11 +1448,7 @@
     <string name="radio_rewind_not_live">This link isn\'t a live stream.</string>
     <string name="radio_rewind_unknown">Couldn\'t tell how far back this stream can be rewound.</string>
     <string name="radio_live">LIVE</string>
-    <string name="radio_search_title">Search stations</string>
     <string name="radio_search_hint">Station name, place or style</string>
-    <string name="radio_search_about">From Radio Browser, a free, open directory of stations worldwide</string>
-    <string name="radio_no_results">No stations found for \"%1$s\"</string>
-    <string name="radio_search_error">Couldn\'t reach Radio Browser. Check your connection and try again.</string>
     <string name="radio_adding">Adding %1$s…</string>
     <!-- Yonder radio recordings -->
     <string name="radio_stream_hint">Stream link</string>
@@ -1482,8 +1458,6 @@
     <string name="radio_rewind_short_not_live">not a live stream</string>
     <string name="radio_rewind_short_unknown">couldn\'t tell</string>
     <string name="recording_title">%1$s · %2$s</string>
-    <string name="recording_method_quick">Saved quickly after each show</string>
-    <string name="recording_method_live">Recorded live</string>
     <string name="recording_stopped">This show isn\'t being recorded any more.</string>
     <string name="recording_missed_window">Missed %1$s – couldn\'t save it before the stream moved on</string>
     <string name="recording_missed_unsupported">Missed %1$s – this stream can\'t be recorded</string>
@@ -1517,7 +1491,6 @@
     <string name="record_alarm_message">This station can only be recorded live, so Yonder needs to start on time. Android asks for permission to use Alarms &amp; reminders for this. Without it, recordings may start a few minutes late.</string>
     <string name="record_alarm_allow">allow</string>
     <string name="record_alarm_later">not now</string>
-    <string name="recording_status_held">Saved %1$s · Ready %2$s</string>
     <string name="recording_status_saving_soon">%1$s not saved yet, saving soon</string>
     <string name="recording_status_waiting_wifi">%1$s not saved yet, waiting for Wi-Fi</string>
     <string name="recording_status_last_saved">Last saved %1$s</string>
@@ -1545,7 +1518,6 @@
     <string name="station_no_recordings">No recordings yet</string>
     <string name="record_play_in">Play in…</string>
     <string name="play_in_title">Play %1$s in</string>
-    <string name="smartplay_hours_header">Active hours</string>
     <string name="smartplay_hours_hint">Switch to this Smart Play by itself at these times, in the phone\'s time zone. What\'s playing finishes first.</string>
     <string name="smartplay_hours_switch">Switch automatically</string>
     <string name="smartplay_hours_from">From %1$s</string>
@@ -1689,7 +1661,6 @@
     <string name="tune_look">look</string>
     <string name="tune_language">language</string>
     <string name="tune_language_older">Yonder speaks English for now. On Android 13 and newer, this opens your phone\'s language setting for Yonder. More languages are coming.</string>
-    <string name="tune_palette_label">%1$s palette</string>
     <string name="look_on">on</string>
     <string name="look_everywhere">One palette everywhere</string>
     <string name="look_advanced">advanced</string>
@@ -1715,7 +1686,6 @@
     <string name="look_saturation">Strength</string>
     <string name="look_lightness">Lightness</string>
     <string name="look_custom_preview_show">The News Quiz</string>
-    <string name="look_custom_preview_block">stuff</string>
     <string name="look_custom_nudged">Adjusted slightly so text stays easy to read.</string>
     <string name="look_wallpaper">Match my wallpaper</string>
     <string name="look_wallpaper_unavailable">Your phone doesn\'t share its wallpaper colours.</string>
@@ -1771,7 +1741,6 @@
     <string name="feedback_attach_log">Attach a recent log (private links, passwords and file names are taken out)</string>
     <string name="feedback_write">write email</string>
     <string name="feedback_choose">Send feedback with</string>
-    <string name="feedback_no_email">No email app found.</string>
     <string name="feedback_copy_title">Send feedback by email</string>
     <string name="feedback_copy_message">No email app was found on this phone. Copy the address and send your feedback from any email app: %1$s</string>
     <string name="feedback_copy">copy address</string>

@@ -32,7 +32,6 @@ public class RecordingStore extends SQLiteOpenHelper {
         public int endMinute;
         public boolean sameLocalTime = true;
         public boolean allowMobile;
-        public int keep = RecordingRules.DEFAULT_KEEP;
         public long feedId = -1;
         public String sourceUrl = "";
         public String method = RecordingRules.Method.LIVE.name();
@@ -206,7 +205,7 @@ public class RecordingStore extends SQLiteOpenHelper {
         values.put("end_minute", show.endMinute);
         values.put("same_local", show.sameLocalTime ? 1 : 0);
         values.put("mobile", show.allowMobile ? 1 : 0);
-        values.put("keep", show.keep);
+        values.put("keep", 0);
         values.put("feed", show.feedId);
         values.put("source", show.sourceUrl);
         values.put("method", show.method);
@@ -242,7 +241,6 @@ public class RecordingStore extends SQLiteOpenHelper {
         show.endMinute = cursor.getInt(cursor.getColumnIndexOrThrow("end_minute"));
         show.sameLocalTime = cursor.getInt(cursor.getColumnIndexOrThrow("same_local")) != 0;
         show.allowMobile = cursor.getInt(cursor.getColumnIndexOrThrow("mobile")) != 0;
-        show.keep = cursor.getInt(cursor.getColumnIndexOrThrow("keep"));
         show.feedId = cursor.getLong(cursor.getColumnIndexOrThrow("feed"));
         show.sourceUrl = cursor.getString(cursor.getColumnIndexOrThrow("source"));
         show.method = cursor.getString(cursor.getColumnIndexOrThrow("method"));

@@ -1,5 +1,0 @@
---------- beginning of main
-11-11 22:45:47.463 D/Recordings(32397): Stopping George FM · Mon–Fri 9:00 am: its show or station is gone
-11-11 22:46:25.808 D/Recordings(32397): Recording requests send User-Agent: Yonder/0.9.14 (radio recording; +https://mattsapps.github.io/yonder/; listener 3dd8a56b)
-11-11 22:46:26.845 D/Recordings(32397): Recording requests send User-Agent: Yonder/0.9.14 (radio recording; +https://mattsapps.github.io/yonder/; listener 3dd8a56b)
-11-11 22:53:01.269 D/Recordings(32397): George FM · Mon–Fri 10:47 pm: deletes at Thu Nov 12 23:52:00 GMT+13:00 2026

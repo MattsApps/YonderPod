@@ -7,7 +7,6 @@ public final class RecordingRules {
     public static final long BURST_MARGIN_MILLIS = 30 * 60_000L;
     public static final long LIVE_PADDING_MILLIS = 60_000L;
     public static final long BURST_DELAY_MILLIS = 2 * 60_000L;
-    public static final int DEFAULT_KEEP = 5;
     public static final long KEEP_AFTER_RECORDING_MILLIS = 25 * 3600_000L;
     public static final long PLAYING_LIMIT_MILLIS = 48 * 3600_000L;
     public static final long RELEASE_SLACK_MILLIS = 30_000L;

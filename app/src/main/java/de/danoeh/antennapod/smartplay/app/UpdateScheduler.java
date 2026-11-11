@@ -215,10 +215,6 @@ public final class UpdateScheduler {
         return ScheduleRunPlanner.feedsForCategory(category, feedCategories());
     }
 
-    public static void checkDue(Context context) {
-        reschedule(context);
-    }
-
     public static long nextRun(Context context) {
         long now = System.currentTimeMillis();
         long next = ScheduleTimes.NONE;

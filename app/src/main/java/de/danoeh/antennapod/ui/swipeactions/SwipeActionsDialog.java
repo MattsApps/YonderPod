@@ -26,7 +26,6 @@ import de.danoeh.antennapod.ui.screen.AllEpisodesFragment;
 import de.danoeh.antennapod.ui.screen.download.CompletedDownloadsFragment;
 import de.danoeh.antennapod.ui.screen.FavoritesFragment;
 import de.danoeh.antennapod.ui.screen.feed.FeedItemlistFragment;
-import de.danoeh.antennapod.ui.screen.InboxFragment;
 import de.danoeh.antennapod.ui.screen.PlaybackHistoryFragment;
 import de.danoeh.antennapod.ui.screen.queue.QueueFragment;
 import de.danoeh.antennapod.ui.common.ThemeUtils;
@@ -70,7 +69,7 @@ public class SwipeActionsDialog {
                 && !tag.equals(PlaybackHistoryFragment.TAG)) {
             keys.add(new RemoveFromInboxSwipeAction());
         }
-        if (!tag.equals(InboxFragment.TAG)) {
+        if (!tag.equals("NewEpisodesFragment")) {
             keys.add(new DeleteSwipeAction());
         }
         if (tag.equals(FavoritesFragment.TAG)) {
@@ -81,14 +80,14 @@ public class SwipeActionsDialog {
         if (tag.equals(PlaybackHistoryFragment.TAG)) {
             keys.add(new RemoveFromHistorySwipeAction());
         }
-        if (!tag.equals(InboxFragment.TAG)) {
+        if (!tag.equals("NewEpisodesFragment")) {
             keys.add(new TogglePlaybackStateSwipeAction());
         }
         keys.add(new ShareSwipeAction());
 
         String forFragment = "";
         switch (tag) {
-            case InboxFragment.TAG:
+            case "NewEpisodesFragment":
                 forFragment = context.getString(R.string.inbox_label);
                 break;
             case AllEpisodesFragment.TAG:

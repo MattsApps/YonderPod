@@ -26,7 +26,6 @@ import de.danoeh.antennapod.ui.screen.SearchFragment;
 import de.danoeh.antennapod.ui.screen.home.sections.DownloadsSection;
 import de.danoeh.antennapod.ui.screen.home.sections.EchoSection;
 import de.danoeh.antennapod.ui.screen.home.sections.EpisodesSurpriseSection;
-import de.danoeh.antennapod.ui.screen.home.sections.InboxSection;
 import de.danoeh.antennapod.ui.screen.home.sections.QueueSection;
 import de.danoeh.antennapod.ui.screen.home.sections.SubscriptionsSection;
 import de.danoeh.antennapod.ui.screen.home.settingsdialog.HomePreferences;
@@ -105,7 +104,7 @@ public class HomeFragment extends Fragment implements Toolbar.OnMenuItemClickLis
     private int getSectionContainerId(String sectionTag) {
         return switch (sectionTag) {
             case QueueSection.TAG -> R.id.home_section_queue;
-            case InboxSection.TAG -> R.id.home_section_inbox;
+            case "InboxSection" -> R.id.home_section_inbox;
             case EpisodesSurpriseSection.TAG -> R.id.home_section_surprise;
             case SubscriptionsSection.TAG -> R.id.home_section_subscriptions;
             case DownloadsSection.TAG -> R.id.home_section_downloads;
@@ -116,7 +115,7 @@ public class HomeFragment extends Fragment implements Toolbar.OnMenuItemClickLis
     private Fragment getSection(String tag) {
         return switch (tag) {
             case QueueSection.TAG -> new QueueSection();
-            case InboxSection.TAG -> null;
+            case "InboxSection" -> null;
             case EpisodesSurpriseSection.TAG -> new EpisodesSurpriseSection();
             case SubscriptionsSection.TAG -> new SubscriptionsSection();
             case DownloadsSection.TAG -> new DownloadsSection();
