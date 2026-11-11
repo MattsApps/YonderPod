@@ -50,6 +50,7 @@ dependencies {
     implementation libs.eventbus
     implementation libs.glide
     implementation libs.commons.lang3
+    implementation libs.okhttp
 
     testImplementation libs.junit
     testImplementation libs.mockito.core
