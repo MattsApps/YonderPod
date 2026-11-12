@@ -1097,14 +1097,6 @@
     <string name="choose_data_directory_message">Please choose the base of your data folder. Yonder will create the appropriate subdirectories.</string>
     <string name="choose_data_directory_available_space">%1$s of %2$s free</string>
 
-    <!-- Rating dialog -->
-    <string name="rating_tagline">Since %1$s, you played %2$s%3$d%4$s hours of podcasts.</string>
-    <string name="rating_contribute_label">Want to join? Whether you want to translate, support, design or code, we would be happy to have you!</string>
-    <string name="rating_contribute_button">Discover ways to contribute</string>
-    <string name="rating_volunteers_label">Yonder is made by one person in their spare time. If you like it, a rating helps other people find it.</string>
-    <string name="rating_rate">Rate Yonder</string>
-    <string name="rating_later">Later</string>
-
     <!-- Online feed view -->
     <string name="subscribe_label">Subscribe</string>
     <string name="preview_episodes">Episodes preview</string>
@@ -2227,7 +2219,7 @@
     <string name="tune_supporter">Supporter</string>
     <string name="tune_supporter_until">until %1$s</string>
     <string name="tip_test_title">Tip testing</string>
-    <string name="tip_test_jump">Pretend 2 weeks have passed</string>
+    <string name="tip_test_jump">Pretend a month has passed</string>
     <string name="tip_test_forget">Forget my tip on this phone</string>
     <string name="tip_test_normal">Back to normal</string>
     <string-array name="tip_amounts" translatable="false">

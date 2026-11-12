@@ -18,7 +18,7 @@ import de.danoeh.antennapod.R;
 
 /**
  * The "tip me" support model: free and fully working, nothing ever locked.
- * For the first 2 weeks after install the wordmark says "yonder"; after that it becomes "tip me"
+ * For the first calendar month after install the wordmark says "yonder"; after that it becomes "tip me"
  * (dismissible for the day). A tip brings "yonder" back for a year.
  *
  * <p>Two preference files. {@link #PREFS} holds the first-install date and today's dismissal, and is
@@ -26,11 +26,9 @@ import de.danoeh.antennapod.R;
  * Play last said and the hidden test switches; it is left out of backups (see YonderBackup).
  */
 public final class Tip {
-    static final int FREE_DAYS = 14;
     static final String PREFS = "YonderTip";
     static final String LOCAL_PREFS = "YonderTipLocal";
 
-    private static final long DAY = 24L * 60 * 60 * 1000;
     private static final long THANKS_MILLIS = 8000;
 
     private static final String KEY_FIRST_SEEN = "firstSeen";
@@ -41,6 +39,7 @@ public final class Tip {
     private static final String KEY_TOKEN = "token";
     private static final String KEY_THANKS_AT = "thanksAt";
     private static final String KEY_TEST_DAYS = "testDays";
+    private static final String KEY_TEST_MONTH_PASSED = "testMonthPassed";
     private static final String KEY_TEST_IGNORE = "testIgnoreToken";
 
     private static boolean checkedThisRun;
@@ -65,7 +64,8 @@ public final class Tip {
         if (!TipShop.canTip(context) || isSupporter(context)) {
             return false;
         }
-        if (now(context) - firstSeen(context) < FREE_DAYS * DAY) {
+        if (!local(context).getBoolean(KEY_TEST_MONTH_PASSED, false)
+                && System.currentTimeMillis() < addMonth(firstSeen(context))) {
             return false;
         }
         return !today().equals(prefs(context).getString(KEY_DISMISSED_DAY, ""));
@@ -152,8 +152,8 @@ public final class Tip {
 
     // Hidden test switches (Tune → long-press the tip row). They only change what the wordmark shows.
 
-    static void testJumpTwoWeeks(Context context) {
-        local(context).edit().putInt(KEY_TEST_DAYS, FREE_DAYS + 1).apply();
+    static void testJumpMonth(Context context) {
+        local(context).edit().putBoolean(KEY_TEST_MONTH_PASSED, true).remove(KEY_TEST_DAYS).apply();
         prefs(context).edit().remove(KEY_DISMISSED_DAY).apply();
         changed();
     }
@@ -167,17 +167,20 @@ public final class Tip {
     }
 
     static void testBackToNormal(Context context) {
-        local(context).edit().remove(KEY_TEST_DAYS).remove(KEY_TEST_IGNORE).apply();
+        local(context).edit().remove(KEY_TEST_DAYS).remove(KEY_TEST_MONTH_PASSED).remove(KEY_TEST_IGNORE).apply();
         changed();
         TipShop.refresh(context.getApplicationContext());
     }
 
-    private static long now(Context context) {
-        return System.currentTimeMillis() + local(context).getInt(KEY_TEST_DAYS, 0) * DAY;
-    }
-
     private static String today() {
         return new SimpleDateFormat("yyyy-MM-dd", Locale.US).format(new Date());
+    }
+
+    private static long addMonth(long time) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(time);
+        calendar.add(Calendar.MONTH, 1);
+        return calendar.getTimeInMillis();
     }
 
     private static long addYear(long time) {

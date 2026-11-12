@@ -187,7 +187,7 @@ public class TuneFragment extends Fragment {
                 .setTitle(R.string.tip_test_title)
                 .setItems(choices, (dialog, which) -> {
                     if (which == 0) {
-                        Tip.testJumpTwoWeeks(context);
+                        Tip.testJumpMonth(context);
                     } else if (which == 1) {
                         Tip.testForgetTip(context);
                     } else {

@@ -92,7 +92,6 @@ import de.danoeh.antennapod.ui.screen.home.HomeFragment;
 import de.danoeh.antennapod.ui.screen.playback.audio.AudioPlayerFragment;
 import de.danoeh.antennapod.ui.screen.preferences.PreferenceActivity;
 import de.danoeh.antennapod.ui.screen.queue.QueueFragment;
-import de.danoeh.antennapod.ui.screen.rating.RatingDialogManager;
 import de.danoeh.antennapod.ui.screen.subscriptions.SubscriptionFragment;
 import de.danoeh.antennapod.ui.statistics.StatisticsFragment;
 import de.danoeh.antennapod.ui.common.BottomSheetBackPressedCallback;
@@ -766,7 +765,6 @@ public class MainActivity extends CastEnabledActivity implements NavigationToolb
     public void onStart() {
         super.onStart();
         EventBus.getDefault().register(this);
-        new RatingDialogManager(this).showIfNeeded();
         getOnBackPressedDispatcher().addCallback(this, openDefaultPageBackPressedCallback);
         getOnBackPressedDispatcher().addCallback(this, bottomSheetBackPressedCallback);
     }
