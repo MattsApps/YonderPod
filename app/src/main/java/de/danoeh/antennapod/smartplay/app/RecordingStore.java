@@ -16,10 +16,11 @@ import de.danoeh.antennapod.smartplay.radio.ShowTimes;
 
 public class RecordingStore extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "recordings.db";
-    private static final int DATABASE_VERSION = 6;
+    private static final int DATABASE_VERSION = 7;
     private static final String SHOWS = "shows";
     private static final String PENDING = "pending";
     private static final String FINISHED = "finished";
+    private static final String UNFINISHED = "unfinished";
 
     private static RecordingStore instance;
 
@@ -48,6 +49,8 @@ public class RecordingStore extends SQLiteOpenHelper {
         public boolean stopped;
         /** Start of an airing the listener stopped part-way ("stop today's recording"); it isn't recorded again. */
         public long skipAiring;
+        /** When the show was set up (0 for a show set up before 0.9.21). Airings before this were never due. */
+        public long created;
 
         public ShowTimes.Spec spec() {
             return new ShowTimes.Spec(zoneId, weekdays, startMinute, endMinute);
@@ -71,9 +74,14 @@ public class RecordingStore extends SQLiteOpenHelper {
         public final long airingEnd;
         /** When it actually finished recording, or 0 for one saved before 0.9.20. */
         public final long finished;
+        /** The extra part of a lengthened airing: its times, or 0 for the airing's main recording. */
+        public final long tailStart;
+        public final long tailEnd;
+        /** Where its audio ends, or 0 if not known (saved before 0.9.21). */
+        public final long covered;
 
         Pending(long id, long showId, String file, String mimeType, long airingStart, long airingEnd,
-                long finished) {
+                long finished, long tailStart, long tailEnd, long covered) {
             this.id = id;
             this.showId = showId;
             this.file = file;
@@ -81,6 +89,42 @@ public class RecordingStore extends SQLiteOpenHelper {
             this.airingStart = airingStart;
             this.airingEnd = airingEnd;
             this.finished = finished;
+            this.tailStart = tailStart;
+            this.tailEnd = tailEnd;
+            this.covered = covered;
+        }
+
+        public boolean isTail() {
+            return tailStart > 0;
+        }
+    }
+
+    /**
+     * A recording being written, kept so one cut short (force stop, crash, phone off) can be found and finished
+     * when Yonder next starts.
+     */
+    public static final class Unfinished {
+        public final String file;
+        public final long showId;
+        public final long airingStart;
+        public final long airingEnd;
+        public final long tailStart;
+        public final long tailEnd;
+        public final long started;
+        public final int pid;
+        public final boolean live;
+
+        Unfinished(String file, long showId, long airingStart, long airingEnd, long tailStart, long tailEnd,
+                   long started, int pid, boolean live) {
+            this.file = file;
+            this.showId = showId;
+            this.airingStart = airingStart;
+            this.airingEnd = airingEnd;
+            this.tailStart = tailStart;
+            this.tailEnd = tailEnd;
+            this.started = started;
+            this.pid = pid;
+            this.live = live;
         }
     }
 
@@ -103,16 +147,26 @@ public class RecordingStore extends SQLiteOpenHelper {
                 + "feed INTEGER NOT NULL, source TEXT NOT NULL, method TEXT NOT NULL, rewind INTEGER NOT NULL, "
                 + "status TEXT NOT NULL, prefer_live INTEGER NOT NULL, last_saved INTEGER NOT NULL, "
                 + "last_missed INTEGER NOT NULL DEFAULT 0, mix_in INTEGER NOT NULL DEFAULT 0, plays_in TEXT, "
-                + "listener_tag TEXT, stopped INTEGER NOT NULL DEFAULT 0, skip_airing INTEGER NOT NULL DEFAULT 0)");
+                + "listener_tag TEXT, stopped INTEGER NOT NULL DEFAULT 0, skip_airing INTEGER NOT NULL DEFAULT 0, "
+                + "created INTEGER NOT NULL DEFAULT 0)");
         db.execSQL("CREATE TABLE " + PENDING + " (id INTEGER PRIMARY KEY AUTOINCREMENT, show INTEGER NOT NULL, "
                 + "file TEXT NOT NULL, mime TEXT, airing_start INTEGER NOT NULL, airing_end INTEGER NOT NULL, "
-                + "finished INTEGER NOT NULL DEFAULT 0)");
+                + "finished INTEGER NOT NULL DEFAULT 0, tail_start INTEGER NOT NULL DEFAULT 0, "
+                + "tail_end INTEGER NOT NULL DEFAULT 0, covered INTEGER NOT NULL DEFAULT 0)");
         createFinished(db);
+        db.execSQL("ALTER TABLE " + FINISHED + " ADD COLUMN covered INTEGER NOT NULL DEFAULT 0");
+        createUnfinished(db);
     }
 
     /** When each saved recording actually finished recording, by its guid. Delete times count from this. */
     private static void createFinished(SQLiteDatabase db) {
         db.execSQL("CREATE TABLE " + FINISHED + " (guid TEXT PRIMARY KEY, at INTEGER NOT NULL)");
+    }
+
+    private static void createUnfinished(SQLiteDatabase db) {
+        db.execSQL("CREATE TABLE " + UNFINISHED + " (file TEXT PRIMARY KEY, show INTEGER NOT NULL, "
+                + "airing_start INTEGER NOT NULL, airing_end INTEGER NOT NULL, tail_start INTEGER NOT NULL, "
+                + "tail_end INTEGER NOT NULL, started INTEGER NOT NULL, pid INTEGER NOT NULL, live INTEGER NOT NULL)");
     }
 
     @Override
@@ -135,6 +189,16 @@ public class RecordingStore extends SQLiteOpenHelper {
             db.execSQL("ALTER TABLE " + SHOWS + " ADD COLUMN skip_airing INTEGER NOT NULL DEFAULT 0");
             db.execSQL("ALTER TABLE " + PENDING + " ADD COLUMN finished INTEGER NOT NULL DEFAULT 0");
             createFinished(db);
+        }
+        if (oldVersion < 7) {
+            db.execSQL("ALTER TABLE " + SHOWS + " ADD COLUMN created INTEGER NOT NULL DEFAULT 0");
+            // Shows already set up count as set up now, so no earlier airing is reported as not recorded.
+            db.execSQL("UPDATE " + SHOWS + " SET created = " + System.currentTimeMillis());
+            db.execSQL("ALTER TABLE " + PENDING + " ADD COLUMN tail_start INTEGER NOT NULL DEFAULT 0");
+            db.execSQL("ALTER TABLE " + PENDING + " ADD COLUMN tail_end INTEGER NOT NULL DEFAULT 0");
+            db.execSQL("ALTER TABLE " + PENDING + " ADD COLUMN covered INTEGER NOT NULL DEFAULT 0");
+            db.execSQL("ALTER TABLE " + FINISHED + " ADD COLUMN covered INTEGER NOT NULL DEFAULT 0");
+            createUnfinished(db);
         }
     }
 
@@ -163,7 +227,10 @@ public class RecordingStore extends SQLiteOpenHelper {
     }
 
     public synchronized long insert(Show show) {
-        show.id = getWritableDatabase().insert(SHOWS, null, values(show));
+        show.created = System.currentTimeMillis();
+        ContentValues values = values(show);
+        values.put("created", show.created);
+        show.id = getWritableDatabase().insert(SHOWS, null, values);
         return show.id;
     }
 
@@ -201,13 +268,30 @@ public class RecordingStore extends SQLiteOpenHelper {
     }
 
     public synchronized void setFinished(String guid, long at) {
+        setFinished(guid, at, 0);
+    }
+
+    /** at: when it finished recording (delete times count from it). covered: where its audio ends, or 0. */
+    public synchronized void setFinished(String guid, long at, long covered) {
         if (guid == null) {
             return;
         }
         ContentValues values = new ContentValues();
         values.put("guid", guid);
         values.put("at", at);
+        values.put("covered", covered);
         getWritableDatabase().insertWithOnConflict(FINISHED, null, values, SQLiteDatabase.CONFLICT_REPLACE);
+    }
+
+    /** Where the recording with this guid's audio ends, or 0 if not known. */
+    public synchronized long getCovered(String guid) {
+        if (guid == null) {
+            return 0;
+        }
+        try (Cursor cursor = getReadableDatabase().query(FINISHED, new String[] {"covered"}, "guid = ?",
+                new String[] {guid}, null, null, null)) {
+            return cursor.moveToFirst() ? cursor.getLong(0) : 0;
+        }
     }
 
     public synchronized void deleteFinished(String guid) {
@@ -226,9 +310,12 @@ public class RecordingStore extends SQLiteOpenHelper {
     }
 
     public synchronized long addPending(long showId, String file, String mimeType, long airingStart,
-                                        long airingEnd, long finished) {
+                                        long airingEnd, long finished, long tailStart, long tailEnd, long covered) {
         ContentValues values = new ContentValues();
         values.put("finished", finished);
+        values.put("tail_start", tailStart);
+        values.put("tail_end", tailEnd);
+        values.put("covered", covered);
         values.put("show", showId);
         values.put("file", file);
         values.put("mime", mimeType);
@@ -247,10 +334,50 @@ public class RecordingStore extends SQLiteOpenHelper {
                         cursor.getString(cursor.getColumnIndexOrThrow("mime")),
                         cursor.getLong(cursor.getColumnIndexOrThrow("airing_start")),
                         cursor.getLong(cursor.getColumnIndexOrThrow("airing_end")),
-                        cursor.getLong(cursor.getColumnIndexOrThrow("finished"))));
+                        cursor.getLong(cursor.getColumnIndexOrThrow("finished")),
+                        cursor.getLong(cursor.getColumnIndexOrThrow("tail_start")),
+                        cursor.getLong(cursor.getColumnIndexOrThrow("tail_end")),
+                        cursor.getLong(cursor.getColumnIndexOrThrow("covered"))));
             }
         }
         return result;
+    }
+
+    public synchronized void addUnfinished(String file, long showId, long airingStart, long airingEnd,
+                                           long tailStart, long tailEnd, long started, int pid, boolean live) {
+        ContentValues values = new ContentValues();
+        values.put("file", file);
+        values.put("show", showId);
+        values.put("airing_start", airingStart);
+        values.put("airing_end", airingEnd);
+        values.put("tail_start", tailStart);
+        values.put("tail_end", tailEnd);
+        values.put("started", started);
+        values.put("pid", pid);
+        values.put("live", live ? 1 : 0);
+        getWritableDatabase().insertWithOnConflict(UNFINISHED, null, values, SQLiteDatabase.CONFLICT_REPLACE);
+    }
+
+    public synchronized List<Unfinished> getUnfinished() {
+        List<Unfinished> result = new ArrayList<>();
+        try (Cursor cursor = getReadableDatabase().query(UNFINISHED, null, null, null, null, null, "started ASC")) {
+            while (cursor.moveToNext()) {
+                result.add(new Unfinished(cursor.getString(cursor.getColumnIndexOrThrow("file")),
+                        cursor.getLong(cursor.getColumnIndexOrThrow("show")),
+                        cursor.getLong(cursor.getColumnIndexOrThrow("airing_start")),
+                        cursor.getLong(cursor.getColumnIndexOrThrow("airing_end")),
+                        cursor.getLong(cursor.getColumnIndexOrThrow("tail_start")),
+                        cursor.getLong(cursor.getColumnIndexOrThrow("tail_end")),
+                        cursor.getLong(cursor.getColumnIndexOrThrow("started")),
+                        cursor.getInt(cursor.getColumnIndexOrThrow("pid")),
+                        cursor.getInt(cursor.getColumnIndexOrThrow("live")) != 0));
+            }
+        }
+        return result;
+    }
+
+    public synchronized void deleteUnfinished(String file) {
+        getWritableDatabase().delete(UNFINISHED, "file = ?", new String[] {file});
     }
 
     public synchronized void setPendingFinished(long id, long finished) {
@@ -329,6 +456,7 @@ public class RecordingStore extends SQLiteOpenHelper {
         // can't undo them.
         show.stopped = cursor.getInt(cursor.getColumnIndexOrThrow("stopped")) != 0;
         show.skipAiring = cursor.getLong(cursor.getColumnIndexOrThrow("skip_airing"));
+        show.created = cursor.getLong(cursor.getColumnIndexOrThrow("created"));
         int playsIn = cursor.getColumnIndexOrThrow("plays_in");
         if (!cursor.isNull(playsIn)) {
             show.playsIn = new LinkedHashSet<>();

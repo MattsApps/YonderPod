@@ -44,33 +44,84 @@ public final class RecordingCipher {
     }
 
     public static void encrypt(InputStream in, OutputStream out, KeyWrap wrap) throws IOException {
-        SecureRandom random = new SecureRandom();
-        byte[] key = new byte[KEY_BYTES];
-        byte[] iv = new byte[IV_BYTES];
-        random.nextBytes(key);
-        random.nextBytes(iv);
-        try {
-            byte[] wrapped = wrap.wrap(key);
-            DataOutputStream header = new DataOutputStream(out);
-            header.write(MAGIC);
-            header.writeShort(wrapped.length);
-            header.write(wrapped);
-            header.write(iv);
-            header.flush();
-            Cipher blocks = blockCipher(key);
-            byte[] buffer = new byte[BUFFER];
-            long position = 0;
-            int read;
-            while ((read = in.read(buffer)) != -1) {
-                xorKeystream(blocks, iv, position, buffer, 0, read);
-                out.write(buffer, 0, read);
-                position += read;
+        OutputStream encrypted = writer(out, wrap);
+        byte[] buffer = new byte[BUFFER];
+        int read;
+        while ((read = in.read(buffer)) != -1) {
+            encrypted.write(buffer, 0, read);
+        }
+        encrypted.flush();
+    }
+
+    /**
+     * Encrypts as it writes. The header goes out first, then every byte is encrypted before it reaches out,
+     * so nothing readable is ever written: a recording cut short by a force stop, a crash or a flat battery
+     * stays encrypted, and what did reach the file can still be opened and finished later. Closing it closes
+     * out.
+     */
+    public static OutputStream writer(OutputStream out, KeyWrap wrap) throws IOException {
+        return new Writer(out, wrap);
+    }
+
+    private static final class Writer extends OutputStream {
+        private final OutputStream out;
+        private final Cipher blocks;
+        private final byte[] iv = new byte[IV_BYTES];
+        private final byte[] scratch = new byte[BUFFER];
+        private long position;
+
+        Writer(OutputStream out, KeyWrap wrap) throws IOException {
+            this.out = out;
+            SecureRandom random = new SecureRandom();
+            byte[] key = new byte[KEY_BYTES];
+            random.nextBytes(key);
+            random.nextBytes(iv);
+            try {
+                byte[] wrapped = wrap.wrap(key);
+                DataOutputStream header = new DataOutputStream(out);
+                header.write(MAGIC);
+                header.writeShort(wrapped.length);
+                header.write(wrapped);
+                header.write(iv);
+                header.flush();
+                blocks = blockCipher(key);
+            } catch (GeneralSecurityException e) {
+                throw new IOException(e);
+            } finally {
+                Arrays.fill(key, (byte) 0);
             }
+        }
+
+        @Override
+        public void write(int b) throws IOException {
+            write(new byte[] {(byte) b}, 0, 1);
+        }
+
+        @Override
+        public void write(byte[] data, int offset, int length) throws IOException {
+            while (length > 0) {
+                int chunk = Math.min(length, scratch.length);
+                System.arraycopy(data, offset, scratch, 0, chunk);
+                try {
+                    xorKeystream(blocks, iv, position, scratch, 0, chunk);
+                } catch (GeneralSecurityException e) {
+                    throw new IOException(e);
+                }
+                out.write(scratch, 0, chunk);
+                position += chunk;
+                offset += chunk;
+                length -= chunk;
+            }
+        }
+
+        @Override
+        public void flush() throws IOException {
             out.flush();
-        } catch (GeneralSecurityException e) {
-            throw new IOException(e);
-        } finally {
-            Arrays.fill(key, (byte) 0);
+        }
+
+        @Override
+        public void close() throws IOException {
+            out.close();
         }
     }
 

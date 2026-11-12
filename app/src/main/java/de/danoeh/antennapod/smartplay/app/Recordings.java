@@ -5,7 +5,6 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.media.MediaDataSource;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.Build;
@@ -60,6 +59,7 @@ import de.danoeh.antennapod.smartplay.radio.RecordingCipher;
 import de.danoeh.antennapod.smartplay.radio.RecordingKeys;
 import de.danoeh.antennapod.smartplay.radio.RecordingRules;
 import de.danoeh.antennapod.smartplay.radio.RewindWindow;
+import de.danoeh.antennapod.smartplay.radio.ShowOverlap;
 import de.danoeh.antennapod.smartplay.radio.ShowTimes;
 import de.danoeh.antennapod.smartplay.schedule.DayRanges;
 import de.danoeh.antennapod.storage.database.DBReader;
@@ -67,7 +67,6 @@ import de.danoeh.antennapod.storage.database.DBWriter;
 import de.danoeh.antennapod.storage.database.FeedDatabaseWriter;
 import de.danoeh.antennapod.storage.preferences.PlaybackPreferences;
 import de.danoeh.antennapod.storage.preferences.RadioPreferences;
-import de.danoeh.antennapod.storage.preferences.UserPreferences;
 
 public final class Recordings {
     private static final String TAG = "Recordings";
@@ -284,11 +283,11 @@ public final class Recordings {
 
     private static void renameRecordings(Context context, RecordingStore.Show show) {
         for (FeedItem item : recordingItems(show)) {
-            if (item.getPubDate() == null) {
+            if (startOf(item) <= 0) {
                 continue;
             }
-            ShowTimes.Airing airing = new ShowTimes.Airing(item.getPubDate().getTime(), item.getPubDate().getTime());
-            String title = context.getString(R.string.recording_title, show.name, dayLabel(context, show, airing));
+            long[] tail = tailTimes(item.getItemIdentifier());
+            String title = title(context, show, startOf(item), tail != null ? tail[0] : 0, tail != null ? tail[1] : 0);
             if (title.equals(item.getTitle())) {
                 continue;
             }
@@ -334,7 +333,7 @@ public final class Recordings {
     /**
      * "stop today's recording": stops a live recording now and keeps what it has as a normal recording
      * (it plays once and deletes itself like any other). The schedule carries on, so the next airing records
-     * as usual. The long press, the show's notification and "stop recording this show" all come here.
+     * as usual. The long press and "stop recording this show" both come here.
      */
     public static void stopToday(Context context, long showId) {
         long start = RecordingService.recordingStart(showId);
@@ -534,6 +533,8 @@ public final class Recordings {
     }
 
     public static void rescheduleAll(Context context) {
+        // Finish and explain any recording cut short last time, before scheduling (which may record the rest).
+        RecordingRecovery.recoverOnce(context);
         RecordingStore store = RecordingStore.getInstance(context);
         SharedPreferences prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
         boolean renameDefaults = !prefs.getBoolean(KEY_NAMES_UPDATED, false);
@@ -588,6 +589,10 @@ public final class Recordings {
         }
         long skipAiring = stored != null ? stored.skipAiring : 0;
         long now = System.currentTimeMillis();
+        ShowTimes.Airing onNow = ShowTimes.nextEnd(show.spec(), Math.max(now, after));
+        if (onNow != null && onNow.getStart() <= now && recordExtraPart(context, show, onNow, skipAiring)) {
+            return;
+        }
         if (usesLive(show)) {
             ShowTimes.Airing airing = ShowTimes.nextEnd(show.spec(), Math.max(now, after));
             if (airing != null && airing.getStart() <= skipAiring) {
@@ -616,6 +621,80 @@ public final class Recordings {
                         Math.max(0, airing.getEnd() + RecordingRules.BURST_DELAY_MILLIS - now));
             }
         }
+    }
+
+    /** The shortest extra part worth recording. */
+    private static final long MIN_EXTRA_MILLIS = 60_000L;
+
+    /**
+     * For an airing on now that's already been recorded in part (the show was lengthened after its recording
+     * finished, or Yonder was closed part-way and opened again): records only the part no recording on the
+     * station covers yet, as an extra part of that airing, then carries on with the next airing. Returns false
+     * if nothing of this airing is recorded yet, so it's recorded as usual.
+     */
+    private static boolean recordExtraPart(Context context, RecordingStore.Show show, ShowTimes.Airing airing,
+                                           long skipAiring) {
+        if (RecordingService.recordingStart(show.id) > 0) {
+            return false; // a running recording simply takes the new end (see change)
+        }
+        long[] coverage = newestCoverage(context, show);
+        long now = System.currentTimeMillis();
+        boolean recorded;
+        long groupStart;
+        long from;
+        if (coverage != null && coverage[1] > airing.getStart()) {
+            groupStart = coverage[0];
+            from = Math.max(now, coverage[1]);
+            recorded = true;
+        } else if (show.lastSavedAiring >= airing.getStart()) {
+            // Recorded and already played (so deleted): only what's still to come.
+            groupStart = show.lastSavedAiring;
+            from = now;
+            recorded = true;
+        } else {
+            return false;
+        }
+        if (groupStart <= skipAiring) {
+            // The listener stopped today's recording: nothing more of this airing.
+            scheduleAfter(context, show, airing.getEnd());
+            return true;
+        }
+        long[] part = uncovered(context, show, from, airing.getEnd());
+        if (recorded && part != null && part[1] - part[0] >= MIN_EXTRA_MILLIS) {
+            Log.d(TAG, show.name + ": recording the extra part, " + new Date(part[0]) + " to " + new Date(part[1]));
+            RecordingService.startExtra(context, show.id, groupStart, airing.getEnd(), part[0], part[1]);
+        } else {
+            scheduleAfter(context, show, airing.getEnd());
+        }
+        return true;
+    }
+
+    /**
+     * The part of from–to that no other show on the same station records (by their scheduled times), or null.
+     * Other shows at the start push it later; other shows at the end pull it earlier.
+     */
+    private static long[] uncovered(Context context, RecordingStore.Show show, long from, long to) {
+        long start = from;
+        long end = to;
+        boolean changed = true;
+        for (int round = 0; changed && round < 10; round++) {
+            changed = false;
+            for (RecordingStore.Show other : showsFor(context, show.stationItemId)) {
+                if (other.id == show.id || other.stopped) {
+                    continue;
+                }
+                for (ShowTimes.Airing airing : ShowOverlap.airingsBetween(other.spec(), start - 86_400_000L, end)) {
+                    if (airing.getStart() <= start && airing.getEnd() > start) {
+                        start = airing.getEnd();
+                        changed = true;
+                    } else if (airing.getStart() > start && airing.getStart() < end) {
+                        end = airing.getStart();
+                        changed = true;
+                    }
+                }
+            }
+        }
+        return end > start ? new long[] {start, end} : null;
     }
 
     public static boolean canScheduleExact(Context context) {
@@ -663,8 +742,13 @@ public final class Recordings {
         WorkManager.getInstance(context).enqueueUniqueWork(name, ExistingWorkPolicy.REPLACE, request);
     }
 
+    /** Every show's recordings live in a folder of its own in here, kept out of backups. */
+    static File recordingsRoot(Context context) {
+        return new File(context.getNoBackupFilesDir(), FOLDER);
+    }
+
     static File folder(Context context, RecordingStore.Show show) {
-        File folder = new File(new File(context.getNoBackupFilesDir(), FOLDER), String.valueOf(show.id));
+        File folder = new File(recordingsRoot(context), String.valueOf(show.id));
         if (!folder.exists() && !folder.mkdirs()) {
             Log.e(TAG, "Could not create " + folder);
         }
@@ -677,14 +761,24 @@ public final class Recordings {
         return format.format(new Date(airing.getStart()));
     }
 
+    /** The file name for the extra part of a lengthened airing, e.g. 2026-11-13_0900_from_1005. */
+    static String tailFileName(RecordingStore.Show show, ShowTimes.Airing airing, long tailStart) {
+        SimpleDateFormat format = new SimpleDateFormat("HHmmss", Locale.ROOT);
+        format.setTimeZone(show.spec().timeZone());
+        return fileName(show, airing) + "_from_" + format.format(new Date(tailStart));
+    }
+
     static int maxBitrate(RecordingStore.Show show) {
         return RadioPreferences.maxBitrate(show.stationItemId);
     }
 
-    /** Saves a finished recording. finished is when it actually finished recording; its delete times count from it. */
-    static void saved(Context context, RecordingStore.Show show, Recorder.Saved plain, ShowTimes.Airing airing,
-                      long finished) throws IOException {
-        Recorder.Saved saved = new Recorder.Saved(encrypt(plain.file), plain.mimeType);
+    /**
+     * Saves a finished recording (already encrypted). finished is when it actually finished recording; its
+     * delete times count from it. covered is where its audio ends (for a quick save, the airing's end plus
+     * padding), so lengthening the show records only what comes after.
+     */
+    static void saved(Context context, RecordingStore.Show show, Recorder.Saved saved, ShowTimes.Airing airing,
+                      long finished, long covered) {
         show.lastSavedAiring = Math.max(show.lastSavedAiring, airing.getStart());
         show.status = "";
         show.preferLiveNext = false;
@@ -692,7 +786,7 @@ public final class Recordings {
         long availableAt = ShowTimes.availableAt(show.spec(), airing, TimeZone.getDefault(), show.sameLocalTime);
         if (RecordingRules.waiting(availableAt, System.currentTimeMillis())) {
             long id = RecordingStore.getInstance(context).addPending(show.id, saved.file.getAbsolutePath(),
-                    saved.mimeType, airing.getStart(), airing.getEnd(), finished);
+                    saved.mimeType, airing.getStart(), airing.getEnd(), finished, 0, 0, covered);
             for (RecordingStore.Pending pending : RecordingStore.getInstance(context).getPending()) {
                 if (pending.id == id) {
                     enqueuePublish(context, pending);
@@ -701,24 +795,74 @@ public final class Recordings {
             sweep(context);
             EventBus.getDefault().post(new Radio.ChangedEvent());
         } else {
-            addRecording(context, show, saved.file, saved.mimeType, airing, finished);
+            addRecording(context, show, saved.file, saved.mimeType, airing, finished, covered, 0, 0);
         }
     }
 
-    private static File encrypt(File plain) throws IOException {
-        String name = plain.getName();
-        int dot = name.lastIndexOf('.');
-        File encrypted = new File(plain.getParentFile(), (dot > 0 ? name.substring(0, dot) : name)
-                + RecordingCipher.EXTENSION);
-        try {
-            RecordingCipher.encrypt(plain, encrypted, RecordingKeys.get());
-        } catch (IOException e) {
-            FileUtils.deleteQuietly(encrypted);
-            throw e;
-        } finally {
-            FileUtils.deleteQuietly(plain);
+    /**
+     * Saves the extra part of a lengthened airing (recorded after the airing's own recording had finished) as
+     * a recording of its own. It's listed with the show and plays straight after the main recording. It plays
+     * once, and otherwise goes when the main recording goes: it takes the main recording's finish time, so its
+     * delete times are the same. If the main recording is still held to play at the same local time, so is it.
+     */
+    static void savedTail(Context context, RecordingStore.Show show, Recorder.Saved saved, ShowTimes.Airing airing,
+                          long tailStart, long tailEnd, long covered) {
+        RecordingStore store = RecordingStore.getInstance(context);
+        long mainFinished = 0;
+        boolean mainHeld = false;
+        for (RecordingStore.Pending pending : pendingFor(context, show.id)) {
+            if (pending.airingStart == airing.getStart() && !pending.isTail()) {
+                mainHeld = true;
+                mainFinished = finishedOf(context, pending);
+            }
         }
-        return encrypted;
+        if (!mainHeld) {
+            FeedItem main = itemWithGuid(show, guid(show, airing.getStart(), 0, 0));
+            if (main != null) {
+                mainFinished = finishedAt(context, main);
+            }
+        }
+        long finished = mainFinished > 0 ? mainFinished : covered;
+        long availableAt = ShowTimes.availableAt(show.spec(), airing, TimeZone.getDefault(), show.sameLocalTime);
+        if (mainHeld || RecordingRules.waiting(availableAt, System.currentTimeMillis())) {
+            long id = store.addPending(show.id, saved.file.getAbsolutePath(), saved.mimeType, airing.getStart(),
+                    airing.getEnd(), finished, tailStart, tailEnd, covered);
+            for (RecordingStore.Pending pending : store.getPending()) {
+                if (pending.id == id) {
+                    enqueuePublish(context, pending);
+                }
+            }
+            sweep(context);
+        } else {
+            addRecording(context, show, saved.file, saved.mimeType, airing, finished, covered, tailStart, tailEnd);
+        }
+        Log.d(TAG, "Saved the extra part of " + show.name);
+        EventBus.getDefault().post(new Radio.ChangedEvent());
+    }
+
+    /**
+     * Explains a short or missing recording on the show's page and its row on the station page, e.g.
+     * "Cut short — recording stopped at 9:42 because Yonder was closed". It stays until a later airing saves.
+     */
+    static void note(Context context, long showId, long airingStart, String text) {
+        RecordingStore store = RecordingStore.getInstance(context);
+        RecordingStore.Show show = store.getShow(showId);
+        if (show == null) {
+            return;
+        }
+        show.status = text;
+        show.lastMissedAiring = Math.max(show.lastMissedAiring, airingStart);
+        store.update(show);
+        EventBus.getDefault().post(new Radio.ChangedEvent());
+    }
+
+    /** The note on the newest airing, or null if there isn't one. */
+    static String currentNote(RecordingStore.Show show) {
+        if (show.status == null || show.status.isEmpty() || show.lastMissedAiring <= 0
+                || show.lastMissedAiring < show.lastSavedAiring) {
+            return null;
+        }
+        return show.status;
     }
 
     static void missed(Context context, RecordingStore.Show show, ShowTimes.Airing airing, int reason,
@@ -764,13 +908,15 @@ public final class Recordings {
                 enqueuePublish(context, pending);
                 return;
             }
-            addRecording(context, show, file, pending.mimeType, airing, finishedOf(context, pending));
+            addRecording(context, show, file, pending.mimeType, airing, finishedOf(context, pending),
+                    pending.covered, pending.tailStart, pending.tailEnd);
             store.deletePending(pending.id);
         }
     }
 
     private static void addRecording(Context context, RecordingStore.Show show, File file, String mimeType,
-                                     ShowTimes.Airing airing, long finished) {
+                                     ShowTimes.Airing airing, long finished, long covered, long tailStart,
+                                     long tailEnd) {
         Feed feed = DBReader.getFeed(show.feedId, false, 0, Integer.MAX_VALUE);
         if (feed == null) {
             return;
@@ -778,15 +924,22 @@ public final class Recordings {
         if (feed.getItems() == null) {
             feed.setItems(new ArrayList<>());
         }
-        String guid = GUID_PREFIX + show.id + ":" + airing.getStart();
+        String guid = guid(show, airing.getStart(), tailStart, tailEnd);
         for (FeedItem existing : feed.getItems()) {
             if (guid.equals(existing.getItemIdentifier())) {
+                Log.w(TAG, "Already have " + guid + "; deleting the copy");
+                FileUtils.deleteQuietly(file);
                 return;
             }
         }
-        RecordingStore.getInstance(context).setFinished(guid, finished);
-        String title = context.getString(R.string.recording_title, show.name, dayLabel(context, show, airing));
-        FeedItem item = new FeedItem(0, title, guid, null, new Date(airing.getStart()), FeedItem.UNPLAYED, feed);
+        RecordingStore.getInstance(context).setFinished(guid, finished, covered);
+        String title = title(context, show, airing.getStart(), tailStart, tailEnd);
+        // A tail is dated just before its airing so it's listed under the main recording (newest first) and a
+        // "latest" rule picks the main recording first. Its own times are in its title and guid.
+        Date date = new Date(tailStart > 0
+                ? airing.getStart() - 1000 + Math.min(999, (tailStart - airing.getStart()) / 60_000L)
+                : airing.getStart());
+        FeedItem item = new FeedItem(0, title, guid, null, date, FeedItem.UNPLAYED, feed);
         item.disableAutoDownload();
         FeedMedia media = new FeedMedia(0, item, durationOf(context, file), 0, file.length(), mimeType,
                 file.getAbsolutePath(), Uri.fromFile(file).toString(), System.currentTimeMillis(), null, 0, 0);
@@ -875,6 +1028,115 @@ public final class Recordings {
         return feed == null || feed.getItems() == null ? new ArrayList<>() : feed.getItems();
     }
 
+    private static FeedItem itemWithGuid(RecordingStore.Show show, String guid) {
+        for (FeedItem item : recordingItems(show)) {
+            if (guid.equals(item.getItemIdentifier())) {
+                return item;
+            }
+        }
+        return null;
+    }
+
+    /** True if any recording of the airing starting then is saved or held. */
+    static boolean hasRecordingOf(Context context, RecordingStore.Show show, long airingStart) {
+        for (RecordingStore.Pending pending : pendingFor(context, show.id)) {
+            if (pending.airingStart == airingStart) {
+                return true;
+            }
+        }
+        for (FeedItem item : recordingItems(show)) {
+            if (startOf(item) == airingStart) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Where the newest airing's recordings (its main recording and any extra parts, saved or held) reach:
+     * {airing start, end of the audio}, or null if there are none. Lengthening a show records from here.
+     */
+    private static long[] newestCoverage(Context context, RecordingStore.Show show) {
+        long airingStart = 0;
+        long covered = 0;
+        for (FeedItem item : recordingItems(show)) {
+            long start = startOf(item);
+            if (start <= 0 || start < airingStart) {
+                continue;
+            }
+            long reach = RecordingStore.getInstance(context).getCovered(item.getItemIdentifier());
+            if (reach <= 0) {
+                reach = finishedAt(context, item);
+            }
+            covered = start > airingStart ? reach : Math.max(covered, reach);
+            airingStart = start;
+        }
+        for (RecordingStore.Pending pending : pendingFor(context, show.id)) {
+            if (pending.airingStart < airingStart) {
+                continue;
+            }
+            long reach = pending.covered > 0 ? pending.covered : finishedOf(context, pending);
+            covered = pending.airingStart > airingStart ? reach : Math.max(covered, reach);
+            airingStart = pending.airingStart;
+        }
+        return airingStart > 0 ? new long[] {airingStart, covered} : null;
+    }
+
+    /**
+     * Puts each extra part straight after its airing's main recording in the playlist, in time order, so a
+     * lengthened show plays through. If an extra part was picked but its main recording wasn't, the main
+     * recording comes first. Everything else keeps its place.
+     */
+    static List<FeedItem> tailsAfterMain(List<FeedItem> queue, Iterable<FeedItem> available) {
+        Map<String, List<FeedItem>> tails = new HashMap<>();
+        Map<String, FeedItem> mains = new HashMap<>();
+        for (FeedItem item : available) {
+            String guid = item.getItemIdentifier();
+            if (isTailGuid(guid)) {
+                List<FeedItem> list = tails.get(mainGuidOf(guid));
+                if (list == null) {
+                    list = new ArrayList<>();
+                    tails.put(mainGuidOf(guid), list);
+                }
+                list.add(item);
+            } else if (isRecordingGuid(guid)) {
+                mains.put(guid, item);
+            }
+        }
+        if (tails.isEmpty()) {
+            return queue;
+        }
+        for (List<FeedItem> list : tails.values()) {
+            Collections.sort(list, (a, b) -> Long.compare(tailTimes(a.getItemIdentifier())[0],
+                    tailTimes(b.getItemIdentifier())[0]));
+        }
+        List<FeedItem> result = new ArrayList<>();
+        Set<Long> placed = new HashSet<>();
+        for (FeedItem item : queue) {
+            if (placed.contains(item.getId())) {
+                continue;
+            }
+            String guid = item.getItemIdentifier();
+            String main = isTailGuid(guid) ? mainGuidOf(guid) : guid;
+            List<FeedItem> extra = main != null ? tails.get(main) : null;
+            if (extra == null) {
+                placed.add(item.getId());
+                result.add(item);
+                continue;
+            }
+            FeedItem mainItem = isTailGuid(guid) ? mains.get(main) : item;
+            if (mainItem != null && placed.add(mainItem.getId())) {
+                result.add(mainItem);
+            }
+            for (FeedItem tail : extra) {
+                if (placed.add(tail.getId())) {
+                    result.add(tail);
+                }
+            }
+        }
+        return result;
+    }
+
     /**
      * When this saved recording actually finished recording; its delete times count from this, never from
      * the show's schedule. A recording saved before 0.9.20 wasn't stamped, so it's stamped once here: from
@@ -919,16 +1181,82 @@ public final class Recordings {
         return at;
     }
 
+    /** The start of the airing a recording belongs to (an extra part belongs to its airing too). */
     private static long startOf(FeedItem item) {
+        String guid = item.getItemIdentifier();
+        if (isRecordingGuid(guid)) {
+            String[] parts = guid.substring(GUID_PREFIX.length()).split(":");
+            if (parts.length >= 2) {
+                try {
+                    return Long.parseLong(parts[1]);
+                } catch (NumberFormatException ignored) {
+                    // fall back to the date
+                }
+            }
+        }
         return item.getPubDate() != null ? item.getPubDate().getTime() : 0;
     }
+
+    /**
+     * A recording's guid: show and airing ("yonderpod-recording:12:1794470400000"), plus the extra part's start
+     * and end for a lengthened airing (":1794474300000-1794475200000").
+     */
+    private static String guid(RecordingStore.Show show, long airingStart, long tailStart, long tailEnd) {
+        return GUID_PREFIX + show.id + ":" + airingStart + (tailStart > 0 ? ":" + tailStart + "-" + tailEnd : "");
+    }
+
+    private static String title(Context context, RecordingStore.Show show, long airingStart, long tailStart,
+                                long tailEnd) {
+        String title = context.getString(R.string.recording_title, show.name,
+                dayLabel(context, show, new ShowTimes.Airing(airingStart, airingStart)));
+        if (tailStart <= 0) {
+            return title;
+        }
+        return context.getString(R.string.recording_tail_title, title, stationTime(context, show, tailStart),
+                stationTime(context, show, tailEnd > tailStart ? tailEnd : tailStart));
+    }
+
+    /** A time as the station lists it, like the show's own times. */
+    private static String stationTime(Context context, RecordingStore.Show show, long millis) {
+        Calendar calendar = Calendar.getInstance(show.spec().timeZone());
+        calendar.setTimeInMillis(millis);
+        return ScheduleText.time(context, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE));
+    }
+
+    /** True for the extra part of a lengthened airing. */
+    static boolean isTailGuid(String guid) {
+        return tailTimes(guid) != null;
+    }
+
+    /** The guid of the main recording an extra part belongs with. */
+    static String mainGuidOf(String tailGuid) {
+        return tailGuid.substring(0, tailGuid.lastIndexOf(':'));
+    }
+
+    /** An extra part's start and end, from its guid, or null if it isn't one. */
+    static long[] tailTimes(String guid) {
+        if (!isRecordingGuid(guid)) {
+            return null;
+        }
+        String[] parts = guid.substring(GUID_PREFIX.length()).split(":");
+        if (parts.length < 3) {
+            return null;
+        }
+        String[] times = parts[2].split("-");
+        try {
+            return new long[] {Long.parseLong(times[0]), times.length > 1 ? Long.parseLong(times[1]) : 0};
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
+
 
     private static boolean isPlaying(FeedMedia media) {
         return PlaybackService.isRunning && PlaybackPreferences.getCurrentlyPlayingFeedMediaId() == media.getId()
                 && PlaybackPreferences.getCurrentPlayerStatus() == PlaybackPreferences.PLAYER_STATUS_PLAYING;
     }
 
-    private static void removeItem(Context context, FeedItem item) {
+    static void removeItem(Context context, FeedItem item) {
         if (item.getMedia() != null && item.getMedia().getLocalFileUrl() != null) {
             FileUtils.deleteQuietly(new File(item.getMedia().getLocalFileUrl()));
         }
@@ -975,7 +1303,6 @@ public final class Recordings {
             return;
         }
         RecordingStore store = RecordingStore.getInstance(context);
-        boolean done = true;
         for (RecordingStore.Show show : store.getShows()) {
             FeedItem keepItem = null;
             RecordingStore.Pending keepPending = null;
@@ -1010,38 +1337,17 @@ public final class Recordings {
                     WorkManager.getInstance(context).cancelUniqueWork(WORK_PUBLISH + pending.id);
                 }
             }
-            try {
-                if (keepItem != null && !RecordingCipher.isEncrypted(keepItem.getMedia().getLocalFileUrl())) {
-                    File moved = moveAndEncrypt(context, show, new File(keepItem.getMedia().getLocalFileUrl()));
-                    FeedMedia media = keepItem.getMedia();
-                    media.setLocalFileUrl(moved.getAbsolutePath());
-                    media.setSize(moved.length());
-                    DBWriter.setMediaDownloadInformation(media).get();
-                }
-                if (keepPending != null && !RecordingCipher.isEncrypted(keepPending.file)) {
-                    File moved = moveAndEncrypt(context, show, new File(keepPending.file));
-                    store.setPendingFile(keepPending.id, moved.getAbsolutePath());
-                }
-                FileUtils.deleteQuietly(new File(UserPreferences.getDataFolder("Recordings"), String.valueOf(show.id)));
-            } catch (Exception e) {
-                Log.e(TAG, "Could not encrypt the recording of " + show.name + ", trying again next time", e);
-                done = false;
+            // An unencrypted recording from an older build is deleted, never encrypted from a plain copy.
+            if (keepItem != null && !RecordingCipher.isEncrypted(keepItem.getMedia().getLocalFileUrl())) {
+                removeItem(context, keepItem);
+            }
+            if (keepPending != null && !RecordingCipher.isEncrypted(keepPending.file)) {
+                FileUtils.deleteQuietly(new File(keepPending.file));
+                store.deletePending(keepPending.id);
             }
         }
-        if (done) {
-            prefs.edit().putBoolean(KEY_TIME_SHIFT_ONLY, true).apply();
-            Log.d(TAG, "Recordings are now time-shift only");
-        }
-    }
-
-    private static File moveAndEncrypt(Context context, RecordingStore.Show show, File plain) throws IOException {
-        File copy = new File(folder(context, show), plain.getName());
-        if (!plain.getAbsoluteFile().equals(copy.getAbsoluteFile())) {
-            FileUtils.copyFile(plain, copy);
-        }
-        File encrypted = encrypt(copy);
-        FileUtils.deleteQuietly(plain);
-        return encrypted;
+        prefs.edit().putBoolean(KEY_TIME_SHIFT_ONLY, true).apply();
+        Log.d(TAG, "Recordings are now time-shift only");
     }
 
     private static int durationOf(Context context, File file) {
@@ -1050,7 +1356,7 @@ public final class Recordings {
         try {
             if (RecordingCipher.isEncrypted(file.getPath())) {
                 reader = RecordingCipher.open(file, RecordingKeys.get());
-                retriever.setDataSource(new DecryptedSource(reader));
+                retriever.setDataSource(new RecordingSource(reader));
             } else {
                 retriever.setDataSource(file.getAbsolutePath());
             }
@@ -1071,28 +1377,6 @@ public final class Recordings {
                     Log.d(TAG, "Could not close recording");
                 }
             }
-        }
-    }
-
-    private static final class DecryptedSource extends MediaDataSource {
-        private final RecordingCipher.Reader reader;
-
-        DecryptedSource(RecordingCipher.Reader reader) {
-            this.reader = reader;
-        }
-
-        @Override
-        public int readAt(long position, byte[] buffer, int offset, int size) throws IOException {
-            return reader.read(position, buffer, offset, size);
-        }
-
-        @Override
-        public long getSize() throws IOException {
-            return reader.length();
-        }
-
-        @Override
-        public void close() {
         }
     }
 
@@ -1122,8 +1406,8 @@ public final class Recordings {
                 && RecordingRules.stillInWindow(latest, show.rewindSeconds, now)) {
             parts.add(context.getString(show.allowMobile ? R.string.recording_status_saving_soon
                     : R.string.recording_status_waiting_wifi, dayTime(context, latest.getStart())));
-        } else if (show.lastMissedAiring > show.lastSavedAiring && show.status != null && !show.status.isEmpty()) {
-            parts.add(show.status);
+        } else if (currentNote(show) != null) {
+            parts.add(currentNote(show));
         } else if (show.lastSavedAiring > 0) {
             parts.add(context.getString(R.string.recording_status_last_saved, dayTime(context, show.lastSavedAiring)));
         } else {
@@ -1140,6 +1424,9 @@ public final class Recordings {
 
     public static String pageInfo(Context context, RecordingStore.Show show) {
         List<String> lines = new ArrayList<>();
+        if (show != null && currentNote(show) != null) {
+            lines.add(currentNote(show));
+        }
         RecordingStore.Pending held = null;
         for (RecordingStore.Pending pending : show != null ? pendingFor(context, show.id)
                 : new ArrayList<RecordingStore.Pending>()) {
@@ -1200,12 +1487,21 @@ public final class Recordings {
                 return null;
             }
             ShowTimes.Airing airing = new ShowTimes.Airing(pending.airingStart, pending.airingEnd);
-            addRecording(context, show, file, pending.mimeType, airing, finishedOf(context, pending));
+            addRecording(context, show, file, pending.mimeType, airing, finishedOf(context, pending),
+                    pending.covered, pending.tailStart, pending.tailEnd);
             store.deletePending(pending.id);
             WorkManager.getInstance(context).cancelUniqueWork(WORK_PUBLISH + pending.id);
+            if (!pending.isTail()) {
+                // "listen now anyway" brings the airing's extra parts along too, to play after it.
+                for (RecordingStore.Pending tail : pendingFor(context, show.id)) {
+                    if (tail.isTail() && tail.airingStart == pending.airingStart) {
+                        releaseNow(context, tail.id);
+                    }
+                }
+            }
             EventBus.getDefault().post(new Radio.ChangedEvent());
-            return DBReader.getFeedItemByGuidOrEpisodeUrl(GUID_PREFIX + show.id + ":" + airing.getStart(),
-                    Uri.fromFile(file).toString());
+            return DBReader.getFeedItemByGuidOrEpisodeUrl(
+                    guid(show, airing.getStart(), pending.tailStart, pending.tailEnd), Uri.fromFile(file).toString());
         }
         return null;
     }

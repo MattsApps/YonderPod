@@ -118,6 +118,8 @@ public class MainActivity extends CastEnabledActivity implements NavigationToolb
     public static final String PREF_IS_FIRST_LAUNCH = "prefMainActivityIsFirstLaunch";
 
     public static final String EXTRA_REFRESH_ON_START = "refresh_on_start";
+    /** Opens one of the worlds (WorldSurface.RADIO, for example), as the recording notification does. */
+    public static final String EXTRA_OPEN_WORLD = "open_world";
     public static final String KEY_GENERATED_VIEW_ID = "generated_view_id";
     private static final String KEY_WORLDS_HIDDEN = "worlds_hidden";
     private static final String KEY_SHEETS = "sheets";
@@ -1039,6 +1041,9 @@ public class MainActivity extends CastEnabledActivity implements NavigationToolb
         }
         if (intent.getBooleanExtra(MainActivityStarter.EXTRA_OPEN_DOWNLOAD_LOGS, false)) {
             new DownloadLogFragment().show(getSupportFragmentManager(), DownloadLogFragment.TAG);
+        }
+        if (intent.hasExtra(EXTRA_OPEN_WORLD)) {
+            openWorld(intent.getIntExtra(EXTRA_OPEN_WORLD, WorldSurface.RADIO));
         }
         if (intent.getBooleanExtra(EXTRA_REFRESH_ON_START, false)) {
             FeedUpdateManager.getInstance().runOnceOrAsk(this);

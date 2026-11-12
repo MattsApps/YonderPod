@@ -169,4 +169,50 @@ public class RecordingCipherTest {
             assertArrayEquals(Arrays.copyOf(plain, 64), start);
         }
     }
+
+    @Test
+    public void writesEncryptedAsItGoesAndAPartialFileStillOpens() throws IOException {
+        byte[] plain = audio(200_000);
+        TestKeys keys = new TestKeys((byte) 9);
+        File file = folder.newFile("live.part" + RecordingCipher.EXTENSION);
+        FileOutputStream raw = new FileOutputStream(file);
+        java.io.OutputStream out = RecordingCipher.writer(raw, keys);
+        // Odd-sized writes, as segments arrive from a stream.
+        int at = 0;
+        int[] sizes = {1, 15, 17, 1000, 33_333, 65_536, 70_000};
+        for (int size : sizes) {
+            out.write(plain, at, size);
+            at += size;
+        }
+        // Nothing readable reaches the file, even before it's closed (as after a force stop).
+        byte[] onDisk = Files.readAllBytes(file.toPath());
+        assertFalse(new String(onDisk, StandardCharsets.ISO_8859_1).contains("ID3 radio show audio"));
+        try (RecordingCipher.Reader reader = RecordingCipher.open(file, keys)) {
+            assertEquals(at, reader.length());
+            byte[] back = new byte[at];
+            int read = 0;
+            while (read < at) {
+                read += reader.read(read, back, read, at - read);
+            }
+            assertArrayEquals(Arrays.copyOf(plain, at), back);
+        }
+        out.write(plain, at, plain.length - at);
+        out.close();
+        try (RecordingCipher.Reader reader = RecordingCipher.open(file, keys)) {
+            byte[] back = new byte[plain.length];
+            int read = 0;
+            while (read < plain.length) {
+                read += reader.read(read, back, read, plain.length - read);
+            }
+            assertArrayEquals(plain, back);
+        }
+    }
+
+    @Test
+    public void theWriterDoesNotChangeTheCallersBuffer() throws IOException {
+        byte[] plain = audio(1000);
+        byte[] copy = plain.clone();
+        RecordingCipher.writer(new ByteArrayOutputStream(), new TestKeys((byte) 1)).write(plain, 0, plain.length);
+        assertArrayEquals(copy, plain);
+    }
 }

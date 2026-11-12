@@ -41,6 +41,7 @@ import java.util.TimeZone;
 
 import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.model.feed.FeedItem;
+import de.danoeh.antennapod.smartplay.radio.ShowOverlap;
 import de.danoeh.antennapod.smartplay.radio.ShowTimes;
 import de.danoeh.antennapod.storage.database.DBReader;
 import de.danoeh.antennapod.storage.preferences.RadioPreferences;
@@ -255,6 +256,11 @@ public final class RecordShowDialog {
                 Toast.makeText(app, R.string.record_plays_in_none, Toast.LENGTH_LONG).show();
                 return;
             }
+            String zoneId = zones.get(Math.max(0, zone.getSelectedItemPosition()));
+            if (!fitAroundOtherShows(context, station, show, zoneId)) {
+                return;
+            }
+            updateTimes.run();
             int length = lengthMinutes(show.startMinute, show.endMinute);
             if (length <= LONG_MINUTES) {
                 save.run();
@@ -275,6 +281,45 @@ public final class RecordShowDialog {
                     .show();
         }));
         dialog.show();
+    }
+
+    /**
+     * Same-station shows may overlap by up to five minutes at each end. More than that, and the show being
+     * added or changed gives way to the shows already set up (which are never changed): it starts where the
+     * other ends or ends where it starts, and says so. Returns false if it can't fit at all.
+     */
+    private static boolean fitAroundOtherShows(Context context, FeedItem station, RecordingStore.Show show,
+                                               String zoneId) {
+        List<RecordingStore.Show> others = new ArrayList<>();
+        List<ShowTimes.Spec> specs = new ArrayList<>();
+        for (RecordingStore.Show other : Recordings.showsFor(context, station.getId())) {
+            if (other.id != show.id) {
+                others.add(other);
+                specs.add(other.spec());
+            }
+        }
+        if (others.isEmpty()) {
+            return true;
+        }
+        ShowOverlap.Result fit = ShowOverlap.fit(new ShowTimes.Spec(zoneId, show.weekdays, show.startMinute,
+                show.endMinute), specs, System.currentTimeMillis());
+        if (fit.blockedBy >= 0) {
+            Toast.makeText(context, context.getString(R.string.record_overlap_blocked,
+                    others.get(fit.blockedBy).name), Toast.LENGTH_LONG).show();
+            return false;
+        }
+        if (fit.changed()) {
+            List<String> names = new ArrayList<>();
+            for (int index : fit.fittedAround) {
+                names.add(others.get(index).name);
+            }
+            show.startMinute = fit.startMinute;
+            show.endMinute = fit.endMinute;
+            Toast.makeText(context, context.getString(R.string.record_overlap_adjusted,
+                    android.text.TextUtils.join(context.getString(R.string.record_overlap_and), names)),
+                    Toast.LENGTH_LONG).show();
+        }
+        return true;
     }
 
     /** Shows longer than this ask before saving. There's no hard limit. */

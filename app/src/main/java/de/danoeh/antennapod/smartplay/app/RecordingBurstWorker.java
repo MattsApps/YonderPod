@@ -12,6 +12,8 @@ import androidx.work.ForegroundInfo;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
+import java.io.File;
+
 import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.smartplay.radio.RecordingRules;
 import de.danoeh.antennapod.smartplay.radio.ShowTimes;
@@ -49,16 +51,19 @@ public class RecordingBurstWorker extends Worker {
         } catch (Exception e) {
             Log.d(TAG, "Could not run in the foreground: " + e.getMessage());
         }
+        File part = Recorder.partFile(Recordings.folder(context, show), Recordings.fileName(show, airing));
         try {
             Recorder.Saved saved;
+            RecordingRecovery.begin(context, part, show.id, airing, 0, 0, false);
             RecordingHttp.begin(Recordings.userAgent(context, show));
             try {
-                saved = Recorder.burst(show.sourceUrl, Recordings.maxBitrate(show), airing,
-                        Recordings.folder(context, show), Recordings.fileName(show, airing));
+                saved = Recorder.burst(show.sourceUrl, Recordings.maxBitrate(show), airing, part);
             } finally {
                 RecordingHttp.end();
             }
-            Recordings.saved(context, show, saved, airing, System.currentTimeMillis());
+            // A quick save holds the whole airing plus padding, whenever it finished saving.
+            Recordings.saved(context, show, saved, airing, System.currentTimeMillis(),
+                    airing.getEnd() + RecordingRules.LIVE_PADDING_MILLIS);
         } catch (Recorder.NotYetException e) {
             if (System.currentTimeMillis() < airing.getEnd() + GIVE_UP_AFTER_END) {
                 return Result.retry();
@@ -77,6 +82,8 @@ public class RecordingBurstWorker extends Worker {
                 return Result.retry();
             }
             Recordings.missed(context, show, airing, R.string.recording_missed_connection, true);
+        } finally {
+            RecordingRecovery.end(context, part);
         }
         RecordingStore.Show latest = RecordingStore.getInstance(context).getShow(showId);
         if (latest != null) {

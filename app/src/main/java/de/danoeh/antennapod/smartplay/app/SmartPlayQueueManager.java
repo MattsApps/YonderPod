@@ -462,6 +462,12 @@ public class SmartPlayQueueManager {
                     newQueue.add(item);
                 }
             }
+            // A lengthened show's extra part plays straight after its main recording.
+            newQueue = Recordings.tailsAfterMain(newQueue, itemsById.values());
+            resultIds.clear();
+            for (FeedItem item : newQueue) {
+                resultIds.add(item.getId());
+            }
             if (!resultIds.equals(currentIds)) {
                 DBWriter.setQueue(newQueue).get();
             }
