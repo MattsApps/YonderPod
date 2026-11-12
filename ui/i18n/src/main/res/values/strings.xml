@@ -39,7 +39,6 @@
     <string name="current_playing_episode">Current</string>
 
     <!-- Google Assistant -->
-    <string name="app_action_not_found">\"%1$s\" not found</string>
 
     <!-- SwipeActions -->
     <string name="swipeactions_label">Swipe actions</string>

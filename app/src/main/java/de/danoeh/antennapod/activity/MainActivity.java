@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.media.AudioManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -80,7 +79,6 @@ import de.danoeh.antennapod.ui.screen.FavoritesFragment;
 import de.danoeh.antennapod.ui.screen.AddFeedFragment;
 import de.danoeh.antennapod.ui.screen.AllEpisodesFragment;
 import de.danoeh.antennapod.ui.screen.PlaybackHistoryFragment;
-import de.danoeh.antennapod.ui.screen.SearchFragment;
 import de.danoeh.antennapod.ui.screen.download.CompletedDownloadsFragment;
 import de.danoeh.antennapod.ui.screen.download.DownloadLogFragment;
 import de.danoeh.antennapod.ui.screen.drawer.BottomNavigation;
@@ -1034,8 +1032,6 @@ public class MainActivity extends CastEnabledActivity implements NavigationToolb
         } else if (intent.getBooleanExtra(MainActivityStarter.EXTRA_OPEN_PLAYER, false)) {
             sheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
             bottomSheetCallback.onSlide(null, 1.0f);
-        } else {
-            handleDeeplink(intent.getData());
         }
 
         if (intent.getBooleanExtra(MainActivityStarter.EXTRA_OPEN_DRAWER, false) && drawerLayout != null) {
@@ -1063,61 +1059,6 @@ public class MainActivity extends CastEnabledActivity implements NavigationToolb
         handleNavIntent();
     }
 
-    /**
-     * Handles the deep link incoming via App Actions.
-     * Performs an in-app search or opens the relevant feature of the app
-     * depending on the query.
-     *
-     * @param uri incoming deep link
-     */
-    private void handleDeeplink(Uri uri) {
-        if (uri == null || uri.getPath() == null) {
-            return;
-        }
-        Log.d(TAG, "Handling deeplink: " + uri.toString());
-        switch (uri.getPath()) {
-            case "/deeplink/search":
-                String query = uri.getQueryParameter("query");
-                if (query == null) {
-                    return;
-                }
-
-                this.loadChildFragment(SearchFragment.newInstance(query));
-                break;
-            case "/deeplink/main":
-                String feature = uri.getQueryParameter("page");
-                if (feature == null) {
-                    return;
-                }
-                switch (feature) {
-                    case "DOWNLOADS":
-                        loadFragment(CompletedDownloadsFragment.TAG, null);
-                        break;
-                    case "HISTORY":
-                        loadFragment(PlaybackHistoryFragment.TAG, null);
-                        break;
-                    case "EPISODES":
-                        loadFragment(AllEpisodesFragment.TAG, null);
-                        break;
-                    case "QUEUE":
-                        loadFragment(QueueFragment.TAG, null);
-                        break;
-                    case "SUBSCRIPTIONS":
-                        loadFragment(SubscriptionFragment.TAG, null);
-                        break;
-                    case "STATISTICS":
-                        loadFragment(StatisticsFragment.TAG, null);
-                        break;
-                    default:
-                        EventBus.getDefault().post(new MessageEvent(getString(R.string.app_action_not_found, feature)));
-                        return;
-                }
-                break;
-            default:
-                break;
-        }
-    }
-  
     //Hardware keyboard support
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
