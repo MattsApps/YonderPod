@@ -1478,6 +1478,14 @@
     <string name="record_plays_in_own">its own Smart Play</string>
     <string name="record_plays_in_none">Choose at least one Smart Play for it to play in.</string>
     <string name="record_needs_times">Pick at least one day, and a start and end time.</string>
+    <string name="record_long_title">A long recording</string>
+    <string name="record_long_message">%1$s to %2$s records for %3$s. Is that right?</string>
+    <string name="record_long_message_overnight">%1$s to %2$s records for %3$s, overnight. Is that right?</string>
+    <string name="record_long_hours">%1$d h</string>
+    <string name="record_long_hours_minutes">%1$d h %2$d min</string>
+    <string name="record_change_times">change times</string>
+    <string name="record_remove_question">Remove %1$s?</string>
+    <string name="record_remove_message">Its recording schedule and any saved recording will go.</string>
     <string name="record_alarm_title">Allow exact start times?</string>
     <string name="record_alarm_message">This station can only be recorded live, so Yonder needs to start on time. Android asks for permission to use Alarms &amp; reminders for this. Without it, recordings may start a few minutes late.</string>
     <string name="record_alarm_allow">allow</string>

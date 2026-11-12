@@ -308,6 +308,12 @@ public class FeedItemlistFragment extends Fragment implements AdapterView.OnItem
         viewBinding.toolbar.getMenu().findItem(R.id.record_edit).setVisible(recordings);
         viewBinding.toolbar.getMenu().findItem(R.id.record_stop).setVisible(recordings);
         viewBinding.toolbar.getMenu().findItem(R.id.record_play_in).setVisible(recordings);
+        if (recordings) {
+            // A recorded show is removed through Yonder's own path, which also stops a running recording.
+            viewBinding.toolbar.getMenu().findItem(R.id.remove_archive_feed).setVisible(true)
+                    .setTitle(R.string.yonder_button_remove);
+            viewBinding.toolbar.getMenu().findItem(R.id.remove_restore_feed).setVisible(false);
+        }
         viewBinding.toolbar.getMenu().findItem(R.id.book_mark).setVisible(subscribed).setChecked(isBook);
         viewBinding.toolbar.getMenu().findItem(R.id.book_mark_finished).setVisible(subscribed && isBook);
     }
@@ -348,6 +354,10 @@ public class FeedItemlistFragment extends Fragment implements AdapterView.OnItem
         } else if (item.getItemId() == R.id.sort_items) {
             SingleFeedSortDialog.newInstance(feed).show(getChildFragmentManager(), "SortDialog");
             return true;
+        } else if ((item.getItemId() == R.id.remove_archive_feed || item.getItemId() == R.id.remove_restore_feed)
+                && Recordings.isRecordingsFeed(feed)) {
+            handleRecordingMenu(R.id.remove_archive_feed);
+            return true;
         } else if (item.getItemId() == R.id.remove_archive_feed || item.getItemId() == R.id.remove_restore_feed) {
             new RemoveFeedDialogClose(Collections.singletonList(feed)).show(getParentFragmentManager(), null);
             return true;
@@ -383,6 +393,13 @@ public class FeedItemlistFragment extends Fragment implements AdapterView.OnItem
                         Toast.makeText(appContext, R.string.recording_stopped, Toast.LENGTH_LONG).show();
                     } else if (itemId == R.id.record_edit) {
                         RecordShowDialog.edit(requireContext(), show);
+                    } else if (itemId == R.id.remove_archive_feed) {
+                        RecordShowDialog.confirmRemove(requireContext(), show, () -> {
+                            if (isAdded() && getActivity() != null
+                                    && getActivity().getSupportFragmentManager().getBackStackEntryCount() > 0) {
+                                getActivity().getSupportFragmentManager().popBackStack();
+                            }
+                        });
                     } else if (itemId == R.id.record_play_in) {
                         PlayInDialog.show(requireContext(), show.feedId, show.name);
                     } else {
@@ -578,8 +595,9 @@ public class FeedItemlistFragment extends Fragment implements AdapterView.OnItem
         } else {
             viewBinding.header.txtvFailure.setVisibility(View.GONE);
         }
-        if ((!feed.getPreferences().getKeepUpdated() && feed.getState() != Feed.STATE_NOT_SUBSCRIBED)
-                || feed.getState() == Feed.STATE_ARCHIVED) {
+        // Yonder's own shows (recordings, added files, radio) turn updates off on purpose.
+        if (!feed.isAppManaged() && ((!feed.getPreferences().getKeepUpdated()
+                && feed.getState() != Feed.STATE_NOT_SUBSCRIBED) || feed.getState() == Feed.STATE_ARCHIVED)) {
             viewBinding.header.txtvUpdatesDisabled.setText(R.string.updates_disabled_label);
             viewBinding.header.txtvUpdatesDisabled.setVisibility(View.VISIBLE);
         } else {

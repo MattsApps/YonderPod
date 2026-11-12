@@ -31,7 +31,7 @@ public final class ScheduleText {
         calendar.setTimeInMillis((hour * 60L + minute) * 60000L);
         Locale locale = ConfigurationCompat.getLocales(context.getResources().getConfiguration()).get(0);
         return DateFormat.format(DateFormat.getBestDateTimePattern(locale == null ? Locale.getDefault() : locale,
-                DateFormat.is24HourFormat(context) ? "Hm" : "hm"), calendar).toString();
+                DateFormat.is24HourFormat(context) ? "Hm" : "hma"), calendar).toString();
     }
 
     public static String time(Context context, long millis) {

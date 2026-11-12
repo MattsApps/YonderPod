@@ -244,7 +244,95 @@ public final class Recordings {
         EventBus.getDefault().post(new Radio.ChangedEvent());
     }
 
+    /**
+     * Saves changed settings for a show from "change times" (the record dialog in edit mode).
+     * A new name also goes to the show's saved recordings and to its own Smart Play, unless that Smart Play
+     * was renamed by hand. A running recording takes the new end time. The listener tag stays the same.
+     */
+    public static void change(Context context, RecordingStore.Show show, String oldName, int oldEndMinute,
+                              String oldZoneId) {
+        update(context, show);
+        if (!show.name.equals(oldName)) {
+            renameRecordings(context, show);
+            SmartPlayStore.StoredSmartPlay own = ownSmartPlay(context, show.feedId);
+            if (own != null && own.getDefinition().getName().equals(oldName)) {
+                SmartPlayStore.getInstance(context).update(own.getId(),
+                        SmartPlayJson.fromJson(show.name, SmartPlayJson.toJson(own.getDefinition())));
+                SmartPlayQueueManager.getInstance().onSmartPlaysChanged();
+            }
+        }
+        long start = RecordingService.recordingStart(show.id);
+        if (start > 0 && (show.endMinute != oldEndMinute || !show.zoneId.equals(oldZoneId))) {
+            RecordingService.changeEnd(show.id, endAfter(show, start));
+        }
+        EventBus.getDefault().post(new Radio.ChangedEvent());
+    }
+
+    /** The first time after start that the show's end time comes round, in the show's time zone. */
+    static long endAfter(RecordingStore.Show show, long start) {
+        Calendar end = Calendar.getInstance(show.spec().timeZone());
+        end.setTimeInMillis(start);
+        end.set(Calendar.HOUR_OF_DAY, show.endMinute / 60);
+        end.set(Calendar.MINUTE, show.endMinute % 60);
+        end.set(Calendar.SECOND, 0);
+        end.set(Calendar.MILLISECOND, 0);
+        if (end.getTimeInMillis() <= start) {
+            end.add(Calendar.DAY_OF_MONTH, 1);
+        }
+        return end.getTimeInMillis();
+    }
+
+    private static void renameRecordings(Context context, RecordingStore.Show show) {
+        for (FeedItem item : recordingItems(show)) {
+            if (item.getPubDate() == null) {
+                continue;
+            }
+            ShowTimes.Airing airing = new ShowTimes.Airing(item.getPubDate().getTime(), item.getPubDate().getTime());
+            String title = context.getString(R.string.recording_title, show.name, dayLabel(context, show, airing));
+            if (title.equals(item.getTitle())) {
+                continue;
+            }
+            item.setTitle(title);
+            try {
+                DBWriter.setFeedItem(item, false).get();
+            } catch (Exception e) {
+                Log.e(TAG, "Could not rename " + item.getTitle(), e);
+            }
+        }
+    }
+
+    /**
+     * Removes a recorded show: its schedule and every recording, saved or waiting. A recording running now
+     * stops at once and its partial file is deleted. Every way of removing a recorded show comes here.
+     */
+    public static void remove(Context context, RecordingStore.Show show) {
+        RecordingService.discard(show.id);
+        RecordingStore store = RecordingStore.getInstance(context);
+        for (RecordingStore.Pending pending : pendingFor(context, show.id)) {
+            FileUtils.deleteQuietly(new File(pending.file));
+            store.deletePending(pending.id);
+            WorkManager.getInstance(context).cancelUniqueWork(WORK_PUBLISH + pending.id);
+        }
+        CREATING.add(show.feedId);
+        try {
+            for (FeedItem item : recordingItems(show)) {
+                removeItem(context, item);
+            }
+            Feed feed = DBReader.getFeed(show.feedId, false, 0, 0);
+            if (feed != null) {
+                DBWriter.deleteFeed(context, feed.getId()).get();
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Could not remove " + show.name, e);
+        } finally {
+            CREATING.remove(show.feedId);
+        }
+        stop(context, show);
+    }
+
     public static void stop(Context context, RecordingStore.Show show) {
+        RecordingService.discard(show.id);
+        WorkManager.getInstance(context).cancelUniqueWork(WORK_FIRST + show.id);
         cancel(context, show);
         for (RecordingStore.Pending pending : pendingFor(context, show.id)) {
             if (releaseNow(context, pending.id) == null) {

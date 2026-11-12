@@ -21,6 +21,7 @@ import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import com.google.android.material.chip.Chip;
@@ -62,8 +63,10 @@ public final class RecordShowDialog {
         for (int day = Calendar.MONDAY; day <= Calendar.FRIDAY; day++) {
             show.weekdays |= ShowTimes.dayBit(day);
         }
-        show.startMinute = 18 * 60;
-        show.endMinute = 21 * 60;
+        // Start at the next whole hour, for an hour, so the pickers open near now rather than at 6 pm.
+        Calendar now = Calendar.getInstance();
+        show.startMinute = ((now.get(Calendar.HOUR_OF_DAY) + 1) % 24) * 60;
+        show.endMinute = (show.startMinute + 60) % (24 * 60);
         show.name = Recordings.defaultName(context, station.getTitle(), show);
         show(context, station, show, zones, true);
     }
@@ -90,6 +93,9 @@ public final class RecordShowDialog {
 
     private static void show(Context context, FeedItem station, RecordingStore.Show show, List<String> zones,
                              boolean isNew) {
+        String oldName = show.name;
+        int oldEndMinute = show.endMinute;
+        String oldZoneId = show.zoneId;
         View view = LayoutInflater.from(context).inflate(R.layout.record_show_dialog, null);
         EditText name = view.findViewById(R.id.record_name);
         Spinner zone = view.findViewById(R.id.record_zone);
@@ -199,51 +205,113 @@ public final class RecordShowDialog {
                 }, error -> Log.e(TAG, Log.getStackTraceString(error)));
 
         Context app = context.getApplicationContext();
-        new MaterialAlertDialogBuilder(context)
+        AlertDialog dialog = new MaterialAlertDialogBuilder(context)
                 .setTitle(isNew ? context.getString(R.string.record_title, station.getTitle())
                         : context.getString(R.string.record_edit))
                 .setView(view)
-                .setPositiveButton(R.string.yonder_button_save, (dialog, which) -> {
-                    String newName = name.getText().toString().trim();
-                    show.name = newName.isEmpty() ? Recordings.defaultName(context, station.getTitle(), show)
-                            : newName;
-                    show.zoneId = zones.get(Math.max(0, zone.getSelectedItemPosition()));
-                    show.sameLocalTime = available.getCheckedRadioButtonId() == R.id.record_available_same_time;
-                    show.allowMobile = mobile.isChecked();
-                    boolean own = ownBox.isChecked();
-                    Set<Long> otherIds = new LinkedHashSet<>();
-                    for (int i = 0; i < otherBoxes.size(); i++) {
-                        if (otherBoxes.get(i).isChecked()) {
-                            otherIds.add(others.get(i).getId());
-                        }
-                    }
-                    boolean choose = loaded[0] || isNew;
-                    if (show.weekdays == 0 || show.startMinute == show.endMinute) {
-                        Toast.makeText(app, R.string.record_needs_times, Toast.LENGTH_LONG).show();
-                        return;
-                    }
-                    if (loaded[0] && !own && otherIds.isEmpty()) {
-                        Toast.makeText(app, R.string.record_plays_in_none, Toast.LENGTH_LONG).show();
-                        return;
-                    }
-                    Toast.makeText(app, R.string.radio_checking, Toast.LENGTH_SHORT).show();
-                    Single.fromCallable(() -> {
-                        if (isNew) {
-                            Recordings.create(app, station, show);
-                        } else {
-                            Recordings.update(app, show);
-                            Recordings.sweep(app);
-                        }
-                        if (choose) {
-                            Recordings.setPlaysIn(app, show, own || !loaded[0], otherIds);
-                        }
-                        return show;
-                    })
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(saved -> afterSave(context, saved),
-                                    error -> Log.e(TAG, Log.getStackTraceString(error)));
-                })
+                .setPositiveButton(R.string.yonder_button_save, null)
+                .setNegativeButton(R.string.yonder_button_cancel, null)
+                .create();
+        Runnable save = () -> {
+            dialog.dismiss();
+            String newName = name.getText().toString().trim();
+            show.name = newName.isEmpty() ? Recordings.defaultName(context, station.getTitle(), show) : newName;
+            show.zoneId = zones.get(Math.max(0, zone.getSelectedItemPosition()));
+            show.sameLocalTime = available.getCheckedRadioButtonId() == R.id.record_available_same_time;
+            show.allowMobile = mobile.isChecked();
+            boolean own = ownBox.isChecked();
+            Set<Long> otherIds = new LinkedHashSet<>();
+            for (int i = 0; i < otherBoxes.size(); i++) {
+                if (otherBoxes.get(i).isChecked()) {
+                    otherIds.add(others.get(i).getId());
+                }
+            }
+            boolean choose = loaded[0] || isNew;
+            Toast.makeText(app, R.string.radio_checking, Toast.LENGTH_SHORT).show();
+            Single.fromCallable(() -> {
+                if (isNew) {
+                    Recordings.create(app, station, show);
+                } else {
+                    Recordings.change(app, show, oldName, oldEndMinute, oldZoneId);
+                    Recordings.sweep(app);
+                }
+                if (choose) {
+                    Recordings.setPlaysIn(app, show, own || !loaded[0], otherIds);
+                }
+                return show;
+            })
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(saved -> afterSave(context, saved),
+                            error -> Log.e(TAG, Log.getStackTraceString(error)));
+        };
+        dialog.setOnShowListener(shown -> dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
+            // Problems keep the dialog open so the times can be fixed.
+            if (show.weekdays == 0 || show.startMinute == show.endMinute) {
+                Toast.makeText(app, R.string.record_needs_times, Toast.LENGTH_LONG).show();
+                return;
+            }
+            if (loaded[0] && !ownBox.isChecked() && !anyChecked(otherBoxes)) {
+                Toast.makeText(app, R.string.record_plays_in_none, Toast.LENGTH_LONG).show();
+                return;
+            }
+            int length = lengthMinutes(show.startMinute, show.endMinute);
+            if (length <= LONG_MINUTES) {
+                save.run();
+                return;
+            }
+            String from = ScheduleText.time(context, show.startMinute / 60, show.startMinute % 60);
+            String to = ScheduleText.time(context, show.endMinute / 60, show.endMinute % 60);
+            String duration = length % 60 == 0
+                    ? context.getString(R.string.record_long_hours, length / 60)
+                    : context.getString(R.string.record_long_hours_minutes, length / 60, length % 60);
+            new MaterialAlertDialogBuilder(context)
+                    .setTitle(R.string.record_long_title)
+                    .setMessage(context.getString(show.endMinute < show.startMinute
+                            ? R.string.record_long_message_overnight : R.string.record_long_message,
+                            from, to, duration))
+                    .setPositiveButton(R.string.yonder_button_save, (confirm, which) -> save.run())
+                    .setNegativeButton(R.string.record_change_times, null)
+                    .show();
+        }));
+        dialog.show();
+    }
+
+    /** Shows longer than this ask before saving. There's no hard limit. */
+    static final int LONG_MINUTES = 6 * 60;
+
+    /** Length of a show in minutes, allowing for overnight (an end before the start runs into the next day). */
+    static int lengthMinutes(int startMinute, int endMinute) {
+        return ((endMinute - startMinute) % (24 * 60) + 24 * 60) % (24 * 60);
+    }
+
+    private static boolean anyChecked(List<CheckBox> boxes) {
+        for (CheckBox box : boxes) {
+            if (box.isChecked()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /** Asks before removing a recorded show, then removes its schedule and recordings. */
+    public static void confirmRemove(Context context, RecordingStore.Show show, Runnable afterRemoved) {
+        Context app = context.getApplicationContext();
+        new MaterialAlertDialogBuilder(context)
+                .setTitle(context.getString(R.string.record_remove_question, show.name))
+                .setMessage(R.string.record_remove_message)
+                .setPositiveButton(R.string.yonder_button_remove, (dialog, which) ->
+                        Single.fromCallable(() -> {
+                            Recordings.remove(app, show);
+                            return true;
+                        })
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(done -> {
+                                    if (afterRemoved != null) {
+                                        afterRemoved.run();
+                                    }
+                                }, error -> Log.e(TAG, Log.getStackTraceString(error))))
                 .setNegativeButton(R.string.yonder_button_cancel, null)
                 .show();
     }

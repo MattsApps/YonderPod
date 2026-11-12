@@ -15,8 +15,13 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.app.ServiceCompat;
 import androidx.core.content.ContextCompat;
 
+import org.apache.commons.io.FileUtils;
+
+import java.io.File;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.model.feed.FeedItem;
@@ -29,9 +34,55 @@ public class RecordingService extends Service {
     private static final String TAG = "RecordingService";
     private static final int NOTIFICATION_ID = 1991;
 
+    private static final Map<Long, Control> CONTROLS = new ConcurrentHashMap<>();
+
     private final Set<Long> running = new HashSet<>();
     private volatile boolean destroyed = false;
     private volatile boolean cutShort = false;
+
+    /** What a running live recording should do: when to stop, and whether to throw away what it has. */
+    private static final class Control {
+        final long start;
+        volatile long end;
+        volatile long stopAt;
+        volatile boolean discard;
+
+        Control(long start, long end) {
+            this.start = start;
+            this.end = end;
+            this.stopAt = end + RecordingRules.LIVE_PADDING_MILLIS;
+        }
+    }
+
+    /** Start time of the airing this show is recording now, or -1 if it isn't recording. */
+    static long recordingStart(long showId) {
+        Control control = CONTROLS.get(showId);
+        return control != null ? control.start : -1;
+    }
+
+    /**
+     * The running recording takes a new end. If that's still ahead it stops then (plus the usual padding);
+     * if it has passed, it stops now and keeps what it has.
+     */
+    static void changeEnd(long showId, long newEnd) {
+        Control control = CONTROLS.get(showId);
+        if (control == null) {
+            return;
+        }
+        long now = System.currentTimeMillis();
+        control.end = newEnd;
+        control.stopAt = newEnd <= now ? now : newEnd + RecordingRules.LIVE_PADDING_MILLIS;
+        Log.d(TAG, "Recording " + showId + " now ends at " + newEnd);
+    }
+
+    /** Stops the running recording at once and deletes what it recorded. */
+    static void discard(long showId) {
+        Control control = CONTROLS.get(showId);
+        if (control != null) {
+            control.discard = true;
+            Log.d(TAG, "Recording " + showId + " stopped and discarded");
+        }
+    }
 
     public static void start(Context context, long showId, long start, long end) {
         if (showId < 0) {
@@ -99,6 +150,9 @@ public class RecordingService extends Service {
 
     private void record(RecordingStore.Show show, ShowTimes.Airing airing) {
         Context context = getApplicationContext();
+        Control control = new Control(airing.getStart(), airing.getEnd());
+        CONTROLS.put(show.id, control);
+        File folder = null;
         try {
             FeedItem station = DBReader.getFeedItem(show.stationItemId);
             ConnectivityManager connectivity = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -109,36 +163,66 @@ public class RecordingService extends Service {
                 Recordings.missed(context, show, airing, R.string.recording_missed_wifi, false);
                 return;
             }
-            long until = airing.getEnd() + RecordingRules.LIVE_PADDING_MILLIS;
+            // The stop time lives in control, so changing the show's times can move it while recording.
             Recorder.Saved saved;
+            folder = Recordings.folder(context, show);
             RecordingHttp.begin(Recordings.userAgent(context, show));
             try {
                 saved = Recorder.recordLive(station.getMedia().getDownloadUrl(),
-                        station.getMedia().getMimeType(), until, Recordings.folder(context, show),
-                        Recordings.fileName(show, airing), () -> destroyed);
+                        station.getMedia().getMimeType(), Long.MAX_VALUE, folder,
+                        Recordings.fileName(show, airing), () -> destroyed || control.discard
+                                || System.currentTimeMillis() >= control.stopAt);
             } finally {
                 RecordingHttp.end();
             }
-            Recordings.saved(context, show, saved, airing);
+            if (control.discard) {
+                FileUtils.deleteQuietly(saved.file);
+                return;
+            }
+            ShowTimes.Airing recorded = control.end == airing.getEnd() ? airing
+                    : new ShowTimes.Airing(airing.getStart(), control.end);
+            // Use the show as it is now: its name or times may have been changed while it recorded.
+            RecordingStore.Show current = RecordingStore.getInstance(context).getShow(show.id);
+            if (current == null) {
+                FileUtils.deleteQuietly(saved.file);
+                return;
+            }
+            Recordings.saved(context, current, saved, recorded);
             if (cutShort) {
-                Recordings.missed(context, show, airing, R.string.recording_cut_short, false);
+                Recordings.missed(context, current, recorded, R.string.recording_cut_short, false);
             }
         } catch (Recorder.UnsupportedException e) {
-            Recordings.missed(context, show, airing, R.string.recording_missed_unsupported, false);
+            if (!control.discard) {
+                missedLatest(context, show.id, airing, R.string.recording_missed_unsupported);
+            }
         } catch (Exception e) {
-            Log.e(TAG, "Live recording failed", e);
-            Recordings.missed(context, show, airing, R.string.recording_missed_connection, false);
+            if (!control.discard) {
+                Log.e(TAG, "Live recording failed", e);
+                missedLatest(context, show.id, airing, R.string.recording_missed_connection);
+            }
         } finally {
+            CONTROLS.remove(show.id, control);
+            if (control.discard && folder != null) {
+                FileUtils.deleteQuietly(folder);
+            }
             RecordingStore.Show latest = RecordingStore.getInstance(context).getShow(show.id);
             if (latest != null) {
                 latest.preferLiveNext = false;
                 RecordingStore.getInstance(context).update(latest);
-                Recordings.scheduleAfter(context, latest, airing.getEnd());
+                Recordings.scheduleAfter(context, latest, control.end);
             }
             synchronized (running) {
                 running.remove(show.id);
             }
             stopIfIdle();
+        }
+    }
+
+    /** Notes a failed recording on the show as it is now, so a change made while recording isn't undone. */
+    private static void missedLatest(Context context, long showId, ShowTimes.Airing airing, int reason) {
+        RecordingStore.Show current = RecordingStore.getInstance(context).getShow(showId);
+        if (current != null) {
+            Recordings.missed(context, current, airing, reason, false);
         }
     }
 

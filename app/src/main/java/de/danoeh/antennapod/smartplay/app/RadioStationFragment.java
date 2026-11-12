@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.PopupMenu;
 import androidx.core.widget.TextViewCompat;
 import androidx.fragment.app.Fragment;
 
@@ -177,6 +178,10 @@ public class RadioStationFragment extends Fragment {
             showName.setPadding(0, dp(18), 0, dp(2));
             showName.setOnClickListener(v -> ((MainActivity) getActivity())
                     .loadChildFragment(FeedItemlistFragment.newInstance(block.show.feedId)));
+            showName.setOnLongClickListener(v -> {
+                showActions(v, block.show);
+                return true;
+            });
             showsView.addView(showName);
             showsView.addView(line(block.times, false));
             showsView.addView(line(block.status, false));
@@ -212,6 +217,25 @@ public class RadioStationFragment extends Fragment {
                 showsView.addView(recording);
             }
         }
+    }
+
+    /** Long press on a show's name: change times, or remove. */
+    private void showActions(View anchor, RecordingStore.Show show) {
+        PopupMenu menu = new PopupMenu(requireContext(), anchor);
+        menu.getMenu().add(0, 1, 0, R.string.record_change_times);
+        menu.getMenu().add(0, 2, 1, R.string.yonder_button_remove);
+        menu.setOnMenuItemClickListener(item -> {
+            if (!isAdded()) {
+                return true;
+            }
+            if (item.getItemId() == 1) {
+                RecordShowDialog.edit(requireContext(), show);
+            } else {
+                RecordShowDialog.confirmRemove(requireContext(), show, null);
+            }
+            return true;
+        });
+        menu.show();
     }
 
     private TextView line(String text, boolean clickable) {
