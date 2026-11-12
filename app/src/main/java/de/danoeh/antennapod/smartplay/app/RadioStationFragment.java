@@ -183,6 +183,9 @@ public class RadioStationFragment extends Fragment {
                 return true;
             });
             showsView.addView(showName);
+            if (block.show.stopped) {
+                showsView.addView(line(getString(R.string.record_not_recording), false));
+            }
             showsView.addView(line(block.times, false));
             showsView.addView(line(block.status, false));
             Context app = requireContext().getApplicationContext();
@@ -219,17 +222,29 @@ public class RadioStationFragment extends Fragment {
         }
     }
 
-    /** Long press on a show's name: change times, or remove. */
+    /**
+     * Long press on a show's name: change times; stop today's recording (only while it's recording live);
+     * stop recording this show, or start it again; delete this show. The show's ⋮ menu and the recording
+     * notification use the same calls.
+     */
     private void showActions(View anchor, RecordingStore.Show show) {
         PopupMenu menu = new PopupMenu(requireContext(), anchor);
         menu.getMenu().add(0, 1, 0, R.string.record_change_times);
-        menu.getMenu().add(0, 2, 1, R.string.yonder_button_remove);
+        if (Recordings.isRecordingNow(show.id)) {
+            menu.getMenu().add(0, 2, 1, R.string.record_stop_today);
+        }
+        menu.getMenu().add(0, 3, 2, show.stopped ? R.string.record_start_show : R.string.record_stop_show);
+        menu.getMenu().add(0, 4, 3, R.string.record_delete_show);
         menu.setOnMenuItemClickListener(item -> {
             if (!isAdded()) {
                 return true;
             }
             if (item.getItemId() == 1) {
                 RecordShowDialog.edit(requireContext(), show);
+            } else if (item.getItemId() == 2) {
+                RecordShowDialog.stopToday(requireContext(), show);
+            } else if (item.getItemId() == 3) {
+                RecordShowDialog.stopOrStartShow(requireContext(), show, null);
             } else {
                 RecordShowDialog.confirmRemove(requireContext(), show, null);
             }

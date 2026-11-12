@@ -1463,9 +1463,11 @@
     <string name="station_record_button">record a show</string>
     <string name="record_title">Record a show on %1$s</string>
     <string name="record_edit">Edit recording</string>
-    <string name="record_stop">Stop recording</string>
-    <string name="record_stop_question">Stop recording %1$s?</string>
-    <string name="record_stop_message">Recordings you already have stay.</string>
+    <string name="record_stop_today">stop today\'s recording</string>
+    <string name="record_stop_show">stop recording this show</string>
+    <string name="record_start_show">start recording this show again</string>
+    <string name="record_delete_show">delete this show</string>
+    <string name="record_not_recording">not recording</string>
     <string name="record_name_hint">Show name</string>
     <string name="record_zone_title">Times as the station lists them, in</string>
     <string name="record_starts">Starts %1$s</string>
@@ -1484,7 +1486,7 @@
     <string name="record_long_hours">%1$d h</string>
     <string name="record_long_hours_minutes">%1$d h %2$d min</string>
     <string name="record_change_times">change times</string>
-    <string name="record_remove_question">Remove %1$s?</string>
+    <string name="record_remove_question">Delete %1$s?</string>
     <string name="record_remove_message">Its recording schedule and any saved recording will go.</string>
     <string name="record_alarm_title">Allow exact start times?</string>
     <string name="record_alarm_message">This station can only be recorded live, so Yonder needs to start on time. Android asks for permission to use Alarms &amp; reminders for this. Without it, recordings may start a few minutes late.</string>

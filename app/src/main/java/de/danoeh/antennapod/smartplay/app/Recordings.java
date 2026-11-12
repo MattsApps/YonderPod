@@ -303,7 +303,8 @@ public final class Recordings {
 
     /**
      * Removes a recorded show: its schedule and every recording, saved or waiting. A recording running now
-     * stops at once and its partial file is deleted. Every way of removing a recorded show comes here.
+     * stops at once and its partial file is deleted. Every way of deleting a recorded show comes here
+     * ("delete this show" on the station page and on the show's ⋮ menu).
      */
     public static void remove(Context context, RecordingStore.Show show) {
         RecordingService.discard(show.id);
@@ -327,10 +328,61 @@ public final class Recordings {
         } finally {
             CREATING.remove(show.feedId);
         }
-        stop(context, show);
+        forget(context, show);
     }
 
-    public static void stop(Context context, RecordingStore.Show show) {
+    /**
+     * "stop today's recording": stops a live recording now and keeps what it has as a normal recording
+     * (it plays once and deletes itself like any other). The schedule carries on, so the next airing records
+     * as usual. The long press, the show's notification and "stop recording this show" all come here.
+     */
+    public static void stopToday(Context context, long showId) {
+        long start = RecordingService.recordingStart(showId);
+        if (start <= 0) {
+            return;
+        }
+        // So opening Yonder later in the same airing doesn't start recording it again.
+        RecordingStore.getInstance(context).setSkipAiring(showId, start);
+        RecordingService.stopNow(showId);
+        EventBus.getDefault().post(new Radio.ChangedEvent());
+    }
+
+    /** True while this show is recording live (never for a show saved after the airing). */
+    public static boolean isRecordingNow(long showId) {
+        return RecordingService.recordingStart(showId) > 0;
+    }
+
+    /**
+     * "stop recording this show": nothing records until the listener starts it again. A recording running
+     * now stops and keeps what it has. Saved recordings stay until they'd normally delete themselves, and the
+     * listener tag stays. The long press and the show's ⋮ menu both come here.
+     */
+    public static void stopShow(Context context, RecordingStore.Show show) {
+        RecordingStore.getInstance(context).setStopped(show.id, true);
+        stopToday(context, show.id);
+        WorkManager.getInstance(context).cancelUniqueWork(WORK_FIRST + show.id);
+        cancel(context, show);
+        Log.d(TAG, "Stopped recording " + show.name);
+        EventBus.getDefault().post(new Radio.ChangedEvent());
+    }
+
+    /** "start recording this show again": the schedule comes back as it was. */
+    public static void startShow(Context context, RecordingStore.Show show) {
+        RecordingStore store = RecordingStore.getInstance(context);
+        store.setStopped(show.id, false);
+        RecordingStore.Show current = store.getShow(show.id);
+        if (current != null) {
+            schedule(context, current);
+            Log.d(TAG, "Recording " + current.name + " again");
+        }
+        EventBus.getDefault().post(new Radio.ChangedEvent());
+    }
+
+    /**
+     * Forgets a show whose page or station has gone: a running recording is thrown away, and the schedule
+     * goes. Saved recordings are left to the sweep, which deletes them on time.
+     */
+    static void forget(Context context, RecordingStore.Show show) {
         RecordingService.discard(show.id);
         WorkManager.getInstance(context).cancelUniqueWork(WORK_FIRST + show.id);
         cancel(context, show);
@@ -351,7 +403,7 @@ public final class Recordings {
         for (RecordingStore.Show show : RecordingStore.getInstance(context).getShows()) {
             if (isLeftOver(show)) {
                 Log.d(TAG, "Stopping " + show.name + ": its show or station is gone");
-                stop(context, show);
+                forget(context, show);
             }
         }
     }
@@ -409,8 +461,7 @@ public final class Recordings {
                     removeItem(context, item);
                     continue;
                 }
-                long start = startOf(item);
-                recordings.add(new RecordingRules.Recording(item.getId(), start, start + media.getDuration(),
+                recordings.add(new RecordingRules.Recording(item.getId(), startOf(item), finishedAt(context, item),
                         media.getDownloadDate(), item.isPlayed(), isPlaying(media)));
                 items.add(item);
             }
@@ -489,7 +540,7 @@ public final class Recordings {
         for (RecordingStore.Show show : store.getShows()) {
             if (isLeftOver(show)) {
                 Log.d(TAG, "Stopping " + show.name + ": its show or station is gone");
-                stop(context, show);
+                forget(context, show);
                 continue;
             }
             if (renameDefaults) {
@@ -530,9 +581,18 @@ public final class Recordings {
 
     public static void scheduleAfter(Context context, RecordingStore.Show show, long after) {
         cancel(context, show);
+        // Read from the store, as the show passed in may have been loaded before it was stopped.
+        RecordingStore.Show stored = RecordingStore.getInstance(context).getShow(show.id);
+        if (stored != null && stored.stopped) {
+            return;
+        }
+        long skipAiring = stored != null ? stored.skipAiring : 0;
         long now = System.currentTimeMillis();
         if (usesLive(show)) {
             ShowTimes.Airing airing = ShowTimes.nextEnd(show.spec(), Math.max(now, after));
+            if (airing != null && airing.getStart() <= skipAiring) {
+                airing = ShowTimes.nextEnd(show.spec(), airing.getEnd());
+            }
             if (airing == null) {
                 return;
             }
@@ -577,7 +637,7 @@ public final class Recordings {
     }
 
     static void tryNow(Context context, RecordingStore.Show show) {
-        if (show.method() != RecordingRules.Method.QUICK) {
+        if (show.stopped || show.method() != RecordingRules.Method.QUICK) {
             return;
         }
         long now = System.currentTimeMillis();
@@ -621,8 +681,9 @@ public final class Recordings {
         return RadioPreferences.maxBitrate(show.stationItemId);
     }
 
-    static void saved(Context context, RecordingStore.Show show, Recorder.Saved plain, ShowTimes.Airing airing)
-            throws IOException {
+    /** Saves a finished recording. finished is when it actually finished recording; its delete times count from it. */
+    static void saved(Context context, RecordingStore.Show show, Recorder.Saved plain, ShowTimes.Airing airing,
+                      long finished) throws IOException {
         Recorder.Saved saved = new Recorder.Saved(encrypt(plain.file), plain.mimeType);
         show.lastSavedAiring = Math.max(show.lastSavedAiring, airing.getStart());
         show.status = "";
@@ -631,7 +692,7 @@ public final class Recordings {
         long availableAt = ShowTimes.availableAt(show.spec(), airing, TimeZone.getDefault(), show.sameLocalTime);
         if (RecordingRules.waiting(availableAt, System.currentTimeMillis())) {
             long id = RecordingStore.getInstance(context).addPending(show.id, saved.file.getAbsolutePath(),
-                    saved.mimeType, airing.getStart(), airing.getEnd());
+                    saved.mimeType, airing.getStart(), airing.getEnd(), finished);
             for (RecordingStore.Pending pending : RecordingStore.getInstance(context).getPending()) {
                 if (pending.id == id) {
                     enqueuePublish(context, pending);
@@ -640,7 +701,7 @@ public final class Recordings {
             sweep(context);
             EventBus.getDefault().post(new Radio.ChangedEvent());
         } else {
-            addRecording(context, show, saved.file, saved.mimeType, airing);
+            addRecording(context, show, saved.file, saved.mimeType, airing, finished);
         }
     }
 
@@ -703,13 +764,13 @@ public final class Recordings {
                 enqueuePublish(context, pending);
                 return;
             }
-            addRecording(context, show, file, pending.mimeType, airing);
+            addRecording(context, show, file, pending.mimeType, airing, finishedOf(context, pending));
             store.deletePending(pending.id);
         }
     }
 
     private static void addRecording(Context context, RecordingStore.Show show, File file, String mimeType,
-                                     ShowTimes.Airing airing) {
+                                     ShowTimes.Airing airing, long finished) {
         Feed feed = DBReader.getFeed(show.feedId, false, 0, Integer.MAX_VALUE);
         if (feed == null) {
             return;
@@ -723,6 +784,7 @@ public final class Recordings {
                 return;
             }
         }
+        RecordingStore.getInstance(context).setFinished(guid, finished);
         String title = context.getString(R.string.recording_title, show.name, dayLabel(context, show, airing));
         FeedItem item = new FeedItem(0, title, guid, null, new Date(airing.getStart()), FeedItem.UNPLAYED, feed);
         item.disableAutoDownload();
@@ -753,10 +815,8 @@ public final class Recordings {
                     removeItem(context, item);
                     continue;
                 }
-                long start = startOf(item);
-                recordings.add(new RecordingRules.Recording(item.getId(), start,
-                        start + show.spec().durationMillis(), media.getDownloadDate(), item.isPlayed(),
-                        isPlaying(media)));
+                recordings.add(new RecordingRules.Recording(item.getId(), startOf(item), finishedAt(context, item),
+                        media.getDownloadDate(), item.isPlayed(), isPlaying(media)));
                 items.add(item);
             }
             List<RecordingStore.Pending> held = new ArrayList<>();
@@ -765,8 +825,8 @@ public final class Recordings {
                     store.deletePending(pending.id);
                     continue;
                 }
-                recordings.add(new RecordingRules.Recording(-pending.id, pending.airingStart, pending.airingEnd,
-                        playsAt(context, pending), false, false));
+                recordings.add(new RecordingRules.Recording(-pending.id, pending.airingStart,
+                        finishedOf(context, pending), playsAt(context, pending), false, false));
                 held.add(pending);
             }
             List<Long> going = RecordingRules.toDelete(recordings, now);
@@ -791,6 +851,7 @@ public final class Recordings {
             next = Math.min(next, deadline);
         }
         next = Math.min(next, sweepLeftovers(context, store, now));
+        store.pruneFinished(now - TimeUnit.DAYS.toMillis(7));
         scheduleSweep(context, next);
     }
 
@@ -798,15 +859,13 @@ public final class Recordings {
         List<RecordingRules.Recording> recordings = new ArrayList<>();
         for (FeedItem item : recordingItems(show)) {
             if (item.getMedia() != null) {
-                long start = startOf(item);
-                recordings.add(new RecordingRules.Recording(item.getId(), start,
-                        start + show.spec().durationMillis(), item.getMedia().getDownloadDate(), item.isPlayed(),
-                        false));
+                recordings.add(new RecordingRules.Recording(item.getId(), startOf(item), finishedAt(context, item),
+                        item.getMedia().getDownloadDate(), item.isPlayed(), false));
             }
         }
         for (RecordingStore.Pending pending : pendingFor(context, show.id)) {
-            recordings.add(new RecordingRules.Recording(-pending.id, pending.airingStart, pending.airingEnd,
-                    playsAt(context, pending), false, false));
+            recordings.add(new RecordingRules.Recording(-pending.id, pending.airingStart,
+                    finishedOf(context, pending), playsAt(context, pending), false, false));
         }
         return RecordingRules.nextDeadline(recordings, System.currentTimeMillis());
     }
@@ -814,6 +873,50 @@ public final class Recordings {
     private static List<FeedItem> recordingItems(RecordingStore.Show show) {
         Feed feed = DBReader.getFeed(show.feedId, false, 0, Integer.MAX_VALUE);
         return feed == null || feed.getItems() == null ? new ArrayList<>() : feed.getItems();
+    }
+
+    /**
+     * When this saved recording actually finished recording; its delete times count from this, never from
+     * the show's schedule. A recording saved before 0.9.20 wasn't stamped, so it's stamped once here: from
+     * its file's time (written as it finished), or failing that when it was saved.
+     */
+    private static long finishedAt(Context context, FeedItem item) {
+        RecordingStore store = RecordingStore.getInstance(context);
+        String guid = item.getItemIdentifier();
+        long at = store.getFinished(guid);
+        if (at > 0) {
+            return at;
+        }
+        FeedMedia media = item.getMedia();
+        String from = "file time";
+        at = media != null && media.getLocalFileUrl() != null ? new File(media.getLocalFileUrl()).lastModified() : 0;
+        if (at <= 0 && media != null && media.getDownloadDate() > 0) {
+            at = media.getDownloadDate();
+            from = "saved time";
+        }
+        if (at <= 0) {
+            at = startOf(item) + (media != null ? media.getDuration() : 0);
+            from = "start plus length";
+        }
+        store.setFinished(guid, at);
+        Log.d(TAG, "Stamped " + item.getTitle() + " as finished at " + new Date(at) + " (" + from + ")");
+        return at;
+    }
+
+    /** The same for a recording waiting to play at the same local time. */
+    private static long finishedOf(Context context, RecordingStore.Pending pending) {
+        if (pending.finished > 0) {
+            return pending.finished;
+        }
+        long at = new File(pending.file).lastModified();
+        String from = "file time";
+        if (at <= 0) {
+            at = pending.airingEnd;
+            from = "airing end";
+        }
+        RecordingStore.getInstance(context).setPendingFinished(pending.id, at);
+        Log.d(TAG, "Stamped a held recording as finished at " + new Date(at) + " (" + from + ")");
+        return at;
     }
 
     private static long startOf(FeedItem item) {
@@ -829,12 +932,19 @@ public final class Recordings {
         if (item.getMedia() != null && item.getMedia().getLocalFileUrl() != null) {
             FileUtils.deleteQuietly(new File(item.getMedia().getLocalFileUrl()));
         }
+        if (isRecordingGuid(item.getItemIdentifier())) {
+            RecordingStore.getInstance(context).deleteFinished(item.getItemIdentifier());
+        }
         try {
             DBWriter.deleteFeedItems(context, Collections.singletonList(item)).get();
         } catch (Exception e) {
             Log.e(TAG, "Could not remove recording", e);
         }
         dropDeadEntries();
+    }
+
+    private static boolean isRecordingGuid(String guid) {
+        return guid != null && guid.startsWith(GUID_PREFIX);
     }
 
     static void dropDeadEntries() {
@@ -1019,7 +1129,7 @@ public final class Recordings {
         } else {
             parts.add(context.getString(R.string.recording_status_nothing_yet));
         }
-        ShowTimes.Airing next = ShowTimes.nextEnd(show.spec(), now);
+        ShowTimes.Airing next = show.stopped ? null : ShowTimes.nextEnd(show.spec(), now);
         if (next != null && next.getStart() <= now) {
             parts.add(context.getString(R.string.recording_status_on_now, ScheduleText.time(context, next.getEnd())));
         } else if (next != null) {
@@ -1090,7 +1200,7 @@ public final class Recordings {
                 return null;
             }
             ShowTimes.Airing airing = new ShowTimes.Airing(pending.airingStart, pending.airingEnd);
-            addRecording(context, show, file, pending.mimeType, airing);
+            addRecording(context, show, file, pending.mimeType, airing, finishedOf(context, pending));
             store.deletePending(pending.id);
             WorkManager.getInstance(context).cancelUniqueWork(WORK_PUBLISH + pending.id);
             EventBus.getDefault().post(new Radio.ChangedEvent());

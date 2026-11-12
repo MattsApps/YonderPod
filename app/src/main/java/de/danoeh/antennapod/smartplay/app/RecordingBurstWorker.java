@@ -36,7 +36,10 @@ public class RecordingBurstWorker extends Worker {
             return Result.success();
         }
         if (Recordings.isLeftOver(show)) {
-            Recordings.stop(context, show);
+            Recordings.forget(context, show);
+            return Result.success();
+        }
+        if (show.stopped) {
             return Result.success();
         }
         ShowTimes.Airing airing = new ShowTimes.Airing(getInputData().getLong(Recordings.KEY_START, 0),
@@ -55,7 +58,7 @@ public class RecordingBurstWorker extends Worker {
             } finally {
                 RecordingHttp.end();
             }
-            Recordings.saved(context, show, saved, airing);
+            Recordings.saved(context, show, saved, airing, System.currentTimeMillis());
         } catch (Recorder.NotYetException e) {
             if (System.currentTimeMillis() < airing.getEnd() + GIVE_UP_AFTER_END) {
                 return Result.retry();

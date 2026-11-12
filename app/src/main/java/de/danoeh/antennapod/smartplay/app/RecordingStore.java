@@ -16,9 +16,10 @@ import de.danoeh.antennapod.smartplay.radio.ShowTimes;
 
 public class RecordingStore extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "recordings.db";
-    private static final int DATABASE_VERSION = 5;
+    private static final int DATABASE_VERSION = 6;
     private static final String SHOWS = "shows";
     private static final String PENDING = "pending";
+    private static final String FINISHED = "finished";
 
     private static RecordingStore instance;
 
@@ -43,6 +44,10 @@ public class RecordingStore extends SQLiteOpenHelper {
         public boolean mixIn;
         public Set<Long> playsIn;
         public String listenerTag;
+        /** "stop recording this show": nothing records until the listener starts it again. */
+        public boolean stopped;
+        /** Start of an airing the listener stopped part-way ("stop today's recording"); it isn't recorded again. */
+        public long skipAiring;
 
         public ShowTimes.Spec spec() {
             return new ShowTimes.Spec(zoneId, weekdays, startMinute, endMinute);
@@ -64,14 +69,18 @@ public class RecordingStore extends SQLiteOpenHelper {
         public final String mimeType;
         public final long airingStart;
         public final long airingEnd;
+        /** When it actually finished recording, or 0 for one saved before 0.9.20. */
+        public final long finished;
 
-        Pending(long id, long showId, String file, String mimeType, long airingStart, long airingEnd) {
+        Pending(long id, long showId, String file, String mimeType, long airingStart, long airingEnd,
+                long finished) {
             this.id = id;
             this.showId = showId;
             this.file = file;
             this.mimeType = mimeType;
             this.airingStart = airingStart;
             this.airingEnd = airingEnd;
+            this.finished = finished;
         }
     }
 
@@ -94,9 +103,16 @@ public class RecordingStore extends SQLiteOpenHelper {
                 + "feed INTEGER NOT NULL, source TEXT NOT NULL, method TEXT NOT NULL, rewind INTEGER NOT NULL, "
                 + "status TEXT NOT NULL, prefer_live INTEGER NOT NULL, last_saved INTEGER NOT NULL, "
                 + "last_missed INTEGER NOT NULL DEFAULT 0, mix_in INTEGER NOT NULL DEFAULT 0, plays_in TEXT, "
-                + "listener_tag TEXT)");
+                + "listener_tag TEXT, stopped INTEGER NOT NULL DEFAULT 0, skip_airing INTEGER NOT NULL DEFAULT 0)");
         db.execSQL("CREATE TABLE " + PENDING + " (id INTEGER PRIMARY KEY AUTOINCREMENT, show INTEGER NOT NULL, "
-                + "file TEXT NOT NULL, mime TEXT, airing_start INTEGER NOT NULL, airing_end INTEGER NOT NULL)");
+                + "file TEXT NOT NULL, mime TEXT, airing_start INTEGER NOT NULL, airing_end INTEGER NOT NULL, "
+                + "finished INTEGER NOT NULL DEFAULT 0)");
+        createFinished(db);
+    }
+
+    /** When each saved recording actually finished recording, by its guid. Delete times count from this. */
+    private static void createFinished(SQLiteDatabase db) {
+        db.execSQL("CREATE TABLE " + FINISHED + " (guid TEXT PRIMARY KEY, at INTEGER NOT NULL)");
     }
 
     @Override
@@ -113,6 +129,12 @@ public class RecordingStore extends SQLiteOpenHelper {
         }
         if (oldVersion < 5) {
             db.execSQL("ALTER TABLE " + SHOWS + " ADD COLUMN listener_tag TEXT");
+        }
+        if (oldVersion < 6) {
+            db.execSQL("ALTER TABLE " + SHOWS + " ADD COLUMN stopped INTEGER NOT NULL DEFAULT 0");
+            db.execSQL("ALTER TABLE " + SHOWS + " ADD COLUMN skip_airing INTEGER NOT NULL DEFAULT 0");
+            db.execSQL("ALTER TABLE " + PENDING + " ADD COLUMN finished INTEGER NOT NULL DEFAULT 0");
+            createFinished(db);
         }
     }
 
@@ -155,13 +177,58 @@ public class RecordingStore extends SQLiteOpenHelper {
         getWritableDatabase().update(SHOWS, values, "id = ?", new String[] {String.valueOf(id)});
     }
 
+    public synchronized void setStopped(long id, boolean stopped) {
+        ContentValues values = new ContentValues();
+        values.put("stopped", stopped ? 1 : 0);
+        getWritableDatabase().update(SHOWS, values, "id = ?", new String[] {String.valueOf(id)});
+    }
+
+    public synchronized void setSkipAiring(long id, long airingStart) {
+        ContentValues values = new ContentValues();
+        values.put("skip_airing", airingStart);
+        getWritableDatabase().update(SHOWS, values, "id = ?", new String[] {String.valueOf(id)});
+    }
+
+    /** When the recording with this guid finished recording, or 0 if it was never stamped. */
+    public synchronized long getFinished(String guid) {
+        if (guid == null) {
+            return 0;
+        }
+        try (Cursor cursor = getReadableDatabase().query(FINISHED, new String[] {"at"}, "guid = ?",
+                new String[] {guid}, null, null, null)) {
+            return cursor.moveToFirst() ? cursor.getLong(0) : 0;
+        }
+    }
+
+    public synchronized void setFinished(String guid, long at) {
+        if (guid == null) {
+            return;
+        }
+        ContentValues values = new ContentValues();
+        values.put("guid", guid);
+        values.put("at", at);
+        getWritableDatabase().insertWithOnConflict(FINISHED, null, values, SQLiteDatabase.CONFLICT_REPLACE);
+    }
+
+    public synchronized void deleteFinished(String guid) {
+        if (guid != null) {
+            getWritableDatabase().delete(FINISHED, "guid = ?", new String[] {guid});
+        }
+    }
+
+    /** Drops stamps for recordings long gone (every recording goes within 48 hours). */
+    public synchronized void pruneFinished(long before) {
+        getWritableDatabase().delete(FINISHED, "at < ?", new String[] {String.valueOf(before)});
+    }
+
     public synchronized void delete(long id) {
         getWritableDatabase().delete(SHOWS, "id = ?", new String[] {String.valueOf(id)});
     }
 
     public synchronized long addPending(long showId, String file, String mimeType, long airingStart,
-                                        long airingEnd) {
+                                        long airingEnd, long finished) {
         ContentValues values = new ContentValues();
+        values.put("finished", finished);
         values.put("show", showId);
         values.put("file", file);
         values.put("mime", mimeType);
@@ -179,10 +246,17 @@ public class RecordingStore extends SQLiteOpenHelper {
                         cursor.getString(cursor.getColumnIndexOrThrow("file")),
                         cursor.getString(cursor.getColumnIndexOrThrow("mime")),
                         cursor.getLong(cursor.getColumnIndexOrThrow("airing_start")),
-                        cursor.getLong(cursor.getColumnIndexOrThrow("airing_end"))));
+                        cursor.getLong(cursor.getColumnIndexOrThrow("airing_end")),
+                        cursor.getLong(cursor.getColumnIndexOrThrow("finished"))));
             }
         }
         return result;
+    }
+
+    public synchronized void setPendingFinished(long id, long finished) {
+        ContentValues values = new ContentValues();
+        values.put("finished", finished);
+        getWritableDatabase().update(PENDING, values, "id = ?", new String[] {String.valueOf(id)});
     }
 
     public synchronized void setPendingFile(long id, String file) {
@@ -251,6 +325,10 @@ public class RecordingStore extends SQLiteOpenHelper {
         show.lastMissedAiring = cursor.getLong(cursor.getColumnIndexOrThrow("last_missed"));
         show.mixIn = cursor.getInt(cursor.getColumnIndexOrThrow("mix_in")) != 0;
         show.listenerTag = cursor.getString(cursor.getColumnIndexOrThrow("listener_tag"));
+        // Written only through setStopped and setSkipAiring, never by update(), so a show loaded earlier
+        // can't undo them.
+        show.stopped = cursor.getInt(cursor.getColumnIndexOrThrow("stopped")) != 0;
+        show.skipAiring = cursor.getLong(cursor.getColumnIndexOrThrow("skip_airing"));
         int playsIn = cursor.getColumnIndexOrThrow("plays_in");
         if (!cursor.isNull(playsIn)) {
             show.playsIn = new LinkedHashSet<>();

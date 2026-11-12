@@ -294,13 +294,54 @@ public final class RecordShowDialog {
         return false;
     }
 
-    /** Asks before removing a recorded show, then removes its schedule and recordings. */
+    /**
+     * "stop today's recording". The station page's long press uses this; the notification's stop button
+     * calls the same Recordings.stopToday.
+     */
+    public static void stopToday(Context context, RecordingStore.Show show) {
+        Context app = context.getApplicationContext();
+        inBackground(() -> Recordings.stopToday(app, show.id), null);
+    }
+
+    /**
+     * "stop recording this show", or "start recording this show again" if it's stopped. The long press and
+     * the show's ⋮ menu both use this.
+     */
+    public static void stopOrStartShow(Context context, RecordingStore.Show show, Runnable after) {
+        Context app = context.getApplicationContext();
+        inBackground(() -> {
+            if (show.stopped) {
+                Recordings.startShow(app, show);
+            } else {
+                Recordings.stopShow(app, show);
+            }
+        }, after);
+    }
+
+    private static void inBackground(Runnable work, Runnable after) {
+        Single.fromCallable(() -> {
+            work.run();
+            return true;
+        })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(done -> {
+                    if (after != null) {
+                        after.run();
+                    }
+                }, error -> Log.e(TAG, Log.getStackTraceString(error)));
+    }
+
+    /**
+     * "delete this show": asks first, then deletes its schedule and every recording at once, including the
+     * partial file of a running recording. The long press and the show's ⋮ menu both use this.
+     */
     public static void confirmRemove(Context context, RecordingStore.Show show, Runnable afterRemoved) {
         Context app = context.getApplicationContext();
         new MaterialAlertDialogBuilder(context)
                 .setTitle(context.getString(R.string.record_remove_question, show.name))
                 .setMessage(R.string.record_remove_message)
-                .setPositiveButton(R.string.yonder_button_remove, (dialog, which) ->
+                .setPositiveButton(R.string.yonder_button_delete, (dialog, which) ->
                         Single.fromCallable(() -> {
                             Recordings.remove(app, show);
                             return true;

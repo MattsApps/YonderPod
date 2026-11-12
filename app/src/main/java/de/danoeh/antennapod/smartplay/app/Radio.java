@@ -139,7 +139,7 @@ public final class Radio {
             DBWriter.deleteFeedItems(context, Collections.singletonList(station)).get();
             RadioPreferences.remove(station.getId());
             for (RecordingStore.Show show : Recordings.showsFor(context, station.getId())) {
-                Recordings.stop(context, show);
+                Recordings.forget(context, show);
             }
             Recordings.dropDeadEntries();
         } catch (Exception e) {

@@ -79,7 +79,6 @@ import de.danoeh.antennapod.ui.swipeactions.SwipeActions;
 import io.reactivex.rxjava3.core.Completable;
 import io.reactivex.rxjava3.core.Maybe;
 import io.reactivex.rxjava3.core.Observable;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
@@ -114,6 +113,7 @@ public class FeedItemlistFragment extends Fragment implements AdapterView.OnItem
     private boolean localFolderRefreshed = false;
     private boolean isBook = false;
     private volatile String recordingInfo = "";
+    private volatile boolean recordingStopped = false;
     private long feedID;
     private Feed feed;
     private Disposable disposable;
@@ -306,12 +306,13 @@ public class FeedItemlistFragment extends Fragment implements AdapterView.OnItem
         boolean subscribed = feed.getState() == Feed.STATE_SUBSCRIBED && !LocalFolders.isAddedFiles(feed)
                 && !recordings;
         viewBinding.toolbar.getMenu().findItem(R.id.record_edit).setVisible(recordings);
-        viewBinding.toolbar.getMenu().findItem(R.id.record_stop).setVisible(recordings);
+        viewBinding.toolbar.getMenu().findItem(R.id.record_stop).setVisible(recordings)
+                .setTitle(recordingStopped ? R.string.record_start_show : R.string.record_stop_show);
         viewBinding.toolbar.getMenu().findItem(R.id.record_play_in).setVisible(recordings);
         if (recordings) {
-            // A recorded show is removed through Yonder's own path, which also stops a running recording.
+            // A recorded show is deleted through Yonder's own path, the same as the station page's long press.
             viewBinding.toolbar.getMenu().findItem(R.id.remove_archive_feed).setVisible(true)
-                    .setTitle(R.string.yonder_button_remove);
+                    .setTitle(R.string.record_delete_show);
             viewBinding.toolbar.getMenu().findItem(R.id.remove_restore_feed).setVisible(false);
         }
         viewBinding.toolbar.getMenu().findItem(R.id.book_mark).setVisible(subscribed).setChecked(isBook);
@@ -403,17 +404,8 @@ public class FeedItemlistFragment extends Fragment implements AdapterView.OnItem
                     } else if (itemId == R.id.record_play_in) {
                         PlayInDialog.show(requireContext(), show.feedId, show.name);
                     } else {
-                        new MaterialAlertDialogBuilder(requireContext())
-                                .setTitle(getString(R.string.record_stop_question, show.name))
-                                .setMessage(R.string.record_stop_message)
-                                .setPositiveButton(R.string.record_stop, (dialog, which) ->
-                                        Observable.fromCallable(() -> {
-                                            Recordings.stop(appContext, show);
-                                            return true;
-                                        }).subscribeOn(Schedulers.io()).subscribe(done -> { }, error ->
-                                                Log.e(TAG, Log.getStackTraceString(error))))
-                                .setNegativeButton(R.string.cancel_label, null)
-                                .show();
+                        // The same as the station page's long press.
+                        RecordShowDialog.stopOrStartShow(requireContext(), show, null);
                     }
                 }, error -> Log.e(TAG, Log.getStackTraceString(error)));
     }
@@ -675,12 +667,14 @@ public class FeedItemlistFragment extends Fragment implements AdapterView.OnItem
             List<RecordingStore.Pending> waiting = show != null
                     ? Recordings.pendingFor(appContext, show.id) : new ArrayList<>();
             recordingInfo = Recordings.isRecordingsFeed(shownFeed) ? Recordings.pageInfo(appContext, show) : "";
+            recordingStopped = show != null && show.stopped;
             return waiting.isEmpty() ? -1L : waiting.get(0).id;
         })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(pendingId -> {
                     if (viewBinding != null) {
+                        updateToolbar();
                         viewBinding.header.recordingInfo.setText(recordingInfo);
                         viewBinding.header.recordingInfo.setVisibility(recordingInfo.isEmpty() ? View.GONE
                                 : View.VISIBLE);

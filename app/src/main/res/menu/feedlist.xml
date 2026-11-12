@@ -53,7 +53,7 @@
     <item
         android:id="@+id/record_stop"
         android:menuCategory="container"
-        android:title="@string/record_stop"
+        android:title="@string/record_stop_show"
         android:visible="false"
         custom:showAsAction="never" />
 

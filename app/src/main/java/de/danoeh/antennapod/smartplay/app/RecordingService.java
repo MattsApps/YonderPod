@@ -1,6 +1,7 @@
 package de.danoeh.antennapod.smartplay.app;
 
 import android.app.Notification;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -75,6 +76,18 @@ public class RecordingService extends Service {
         Log.d(TAG, "Recording " + showId + " now ends at " + newEnd);
     }
 
+    /**
+     * Stops the running recording now and keeps what it has, saved as a normal recording. The airing's end
+     * is left alone, so the next recording is scheduled from the next airing, not this one.
+     */
+    static void stopNow(long showId) {
+        Control control = CONTROLS.get(showId);
+        if (control != null) {
+            control.stopAt = System.currentTimeMillis();
+            Log.d(TAG, "Recording " + showId + " stopped; keeping what it has");
+        }
+    }
+
     /** Stops the running recording at once and deletes what it recorded. */
     static void discard(long showId) {
         Control control = CONTROLS.get(showId);
@@ -109,8 +122,8 @@ public class RecordingService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         long showId = intent != null ? intent.getLongExtra(Recordings.KEY_SHOW, -1) : -1;
         RecordingStore.Show show = showId >= 0 ? RecordingStore.getInstance(this).getShow(showId) : null;
-        boolean foreground = startInForeground(show != null ? show.name : "");
-        if (show == null) {
+        boolean foreground = startInForeground(show);
+        if (show == null || show.stopped) {
             stopIfIdle();
             return START_NOT_STICKY;
         }
@@ -131,13 +144,23 @@ public class RecordingService extends Service {
         return START_NOT_STICKY;
     }
 
-    private boolean startInForeground(String name) {
-        Notification notification = new NotificationCompat.Builder(this, NotificationUtils.CHANNEL_ID_DOWNLOADING)
-                .setContentTitle(getString(R.string.recording_live_notification, name))
+    private boolean startInForeground(@Nullable RecordingStore.Show show) {
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this,
+                NotificationUtils.CHANNEL_ID_DOWNLOADING)
+                .setContentTitle(getString(R.string.recording_live_notification, show != null ? show.name : ""))
                 .setSmallIcon(R.drawable.ic_notification_sync)
                 .setOngoing(true)
-                .setSilent(true)
-                .build();
+                .setSilent(true);
+        if (show != null) {
+            // The same as "stop today's recording" on the station page (Recordings.stopToday).
+            Intent stop = new Intent(this, RecordingAlarmReceiver.class);
+            stop.setAction(RecordingAlarmReceiver.ACTION_STOP_TODAY);
+            stop.setData(android.net.Uri.parse("yonderpod-recording-stop://" + show.id));
+            stop.putExtra(Recordings.KEY_SHOW, show.id);
+            builder.addAction(0, getString(R.string.record_stop_today), PendingIntent.getBroadcast(this,
+                    (int) show.id, stop, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE));
+        }
+        Notification notification = builder.build();
         try {
             ServiceCompat.startForeground(this, NOTIFICATION_ID, notification,
                     Build.VERSION.SDK_INT >= 34 ? ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE : 0);
@@ -175,6 +198,7 @@ public class RecordingService extends Service {
             } finally {
                 RecordingHttp.end();
             }
+            long finished = System.currentTimeMillis();
             if (control.discard) {
                 FileUtils.deleteQuietly(saved.file);
                 return;
@@ -187,7 +211,7 @@ public class RecordingService extends Service {
                 FileUtils.deleteQuietly(saved.file);
                 return;
             }
-            Recordings.saved(context, current, saved, recorded);
+            Recordings.saved(context, current, saved, recorded, finished);
             if (cutShort) {
                 Recordings.missed(context, current, recorded, R.string.recording_cut_short, false);
             }
