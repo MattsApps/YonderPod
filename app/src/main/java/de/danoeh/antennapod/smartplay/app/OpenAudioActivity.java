@@ -62,7 +62,7 @@ public class OpenAudioActivity extends AppCompatActivity {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(result -> {
                     if (action == PLAY_NOW && result.item.getMedia() != null) {
-                        new PlaybackServiceStarter(this, result.item.getMedia())
+                        new PlaybackServiceStarter(getApplicationContext(), result.item.getMedia())
                                 .callEvenIfRunning(true)
                                 .start();
                     } else if (action == PLAY_NEXT) {
