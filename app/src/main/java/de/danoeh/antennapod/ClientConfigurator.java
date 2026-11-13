@@ -30,6 +30,7 @@ import de.danoeh.antennapod.smartplay.app.YonderFeedUpdateManager;
 import de.danoeh.antennapod.storage.database.PodDBAdapter;
 
 import de.danoeh.antennapod.ui.notifications.NotificationUtils;
+import de.danoeh.antennapod.ui.widget.WidgetUpdaterWorker;
 import java.io.File;
 
 public class ClientConfigurator {
@@ -52,6 +53,10 @@ public class ClientConfigurator {
         SynchronizationSettings.init(context);
         UsageStatistics.init(context);
         PlaybackPreferences.init(context);
+        boolean wasPlaying = PlaybackPreferences.getCurrentPlayerStatus() == PlaybackPreferences.PLAYER_STATUS_PLAYING;
+        if (wasPlaying) {
+            PlaybackPreferences.setCurrentPlayerStatus(PlaybackPreferences.PLAYER_STATUS_PAUSED);
+        }
         SslProviderInstaller.install(context);
         NetworkUtils.init(context);
         DownloadServiceInterface.setImpl(new DownloadServiceInterfaceImpl());
@@ -68,6 +73,9 @@ public class ClientConfigurator {
         BookTopUpWorker.init(context);
         UpdateScheduler.init(context);
         ImportedPlayState.init(context);
+        if (wasPlaying) {
+            WidgetUpdaterWorker.enqueueWork(context);
+        }
         initialized = true;
     }
 }

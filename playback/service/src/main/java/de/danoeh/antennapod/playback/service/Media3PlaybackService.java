@@ -1,23 +1,30 @@
 package de.danoeh.antennapod.playback.service;
 
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.ServiceInfo;
 import android.media.audiofx.LoudnessEnhancer;
 import android.media.AudioDeviceCallback;
 import android.media.AudioDeviceInfo;
 import android.media.AudioManager;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Bundle;
 import android.os.PowerManager;
+import android.service.notification.StatusBarNotification;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.webkit.URLUtil;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.OptIn;
+import androidx.annotation.RequiresApi;
+import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.util.Pair;
 import androidx.media3.common.AudioAttributes;
@@ -108,6 +115,8 @@ public class Media3PlaybackService extends MediaLibraryService {
     private static final String BOOK_CATEGORY = "Audiobooks";
     private static final int REBUILD_WAIT_TRIES = 20;
     private static final long REBUILD_WAIT_MS = 500;
+    private static final long FOREGROUND_HAND_BACK_MS = 15000;
+    private static final long FOREGROUND_CHECK_MS = 3000;
     private ExoPlayer exoPlayer;
     private Player player;
     private MediaLibrarySession mediaSession;
@@ -131,6 +140,10 @@ public class Media3PlaybackService extends MediaLibraryService {
     private float duckFactor = 1.0f;
     private float lastBaseVolume = 1.0f;
     private final Handler fadeInHandler = new Handler(Looper.getMainLooper());
+    private final Handler foregroundHandler = new Handler(Looper.getMainLooper());
+    private long playingSince = 0;
+    private boolean foregroundLogged = false;
+    private boolean notForegroundWarned = false;
     private float fadeInVolume = 1.0f;
     @Nullable
     private LoudnessEnhancer loudnessEnhancer = null;
@@ -201,6 +214,7 @@ public class Media3PlaybackService extends MediaLibraryService {
                         seekToDefaultPosition();
                     }
                     applyAudioAttributes();
+                    goForeground("play");
                     super.play();
                     return;
                 }
@@ -217,6 +231,7 @@ public class Media3PlaybackService extends MediaLibraryService {
                     startFadeIn();
                 }
                 applyAudioAttributes();
+                goForeground("play");
                 super.play();
             }
 
@@ -224,6 +239,9 @@ public class Media3PlaybackService extends MediaLibraryService {
             public void setPlayWhenReady(boolean playWhenReady) {
                 if (AudioFocusPolicy.holdsFocus(playWhenReady)) {
                     applyAudioAttributes();
+                }
+                if (playWhenReady) {
+                    goForeground("next");
                 }
                 super.setPlayWhenReady(playWhenReady);
             }
@@ -492,6 +510,9 @@ public class Media3PlaybackService extends MediaLibraryService {
             if (PlaybackService.isRunning) {
                 lastPositionSaveTime = System.currentTimeMillis();
                 setupPositionObserver();
+                playingSince = System.currentTimeMillis();
+                foregroundLogged = false;
+                notForegroundWarned = false;
             } else {
                 cancelPositionObserver();
                 saveCurrentPosition();
@@ -556,6 +577,107 @@ public class Media3PlaybackService extends MediaLibraryService {
         }
     };
 
+    @UnstableApi
+    @Override
+    public int onStartCommand(@Nullable Intent intent, int flags, int startId) {
+        int result = super.onStartCommand(intent, flags, startId);
+        if (startsPlayback(intent)) {
+            String source = intent.getStringExtra(MediaButtonStarter.EXTRA_MEDIA_BUTTON_SOURCE);
+            goForeground(source != null ? source : "media button");
+        }
+        return result;
+    }
+
+    private boolean startsPlayback(@Nullable Intent intent) {
+        if (intent == null || !Intent.ACTION_MEDIA_BUTTON.equals(intent.getAction())
+                || player == null || player.getPlayWhenReady()) {
+            return false;
+        }
+        KeyEvent keyEvent = intent.getParcelableExtra(Intent.EXTRA_KEY_EVENT);
+        if (keyEvent == null || keyEvent.getAction() != KeyEvent.ACTION_DOWN) {
+            return false;
+        }
+        int keyCode = keyEvent.getKeyCode();
+        return keyCode == KeyEvent.KEYCODE_MEDIA_PLAY || keyCode == KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE
+                || keyCode == KeyEvent.KEYCODE_HEADSETHOOK;
+    }
+
+    @OptIn(markerClass = UnstableApi.class)
+    private void goForeground(String reason) {
+        if (Build.VERSION.SDK_INT < 31) {
+            return;
+        }
+        if (isForeground()) {
+            Log.d(TAG, "Foreground: already, for " + reason);
+            return;
+        }
+        try {
+            Util.setForegroundServiceNotification(this, R.id.notification_playing, foregroundNotification(),
+                    ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK, "mediaPlayback");
+            Log.d(TAG, "Foreground: started for " + reason);
+        } catch (IllegalStateException e) {
+            Log.e(TAG, "Foreground: not allowed for " + reason + ", playing in the background", e);
+        }
+        foregroundHandler.removeCallbacks(handBackForeground);
+        foregroundHandler.postDelayed(handBackForeground, FOREGROUND_HAND_BACK_MS);
+    }
+
+    @RequiresApi(29)
+    private boolean isForeground() {
+        return getForegroundServiceType() != 0;
+    }
+
+    private Notification foregroundNotification() {
+        NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        if (notificationManager != null) {
+            for (StatusBarNotification shown : notificationManager.getActiveNotifications()) {
+                if (shown.getId() == R.id.notification_playing) {
+                    return shown.getNotification();
+                }
+            }
+        }
+        CharSequence title = currentPlayable != null && currentPlayable.getItem() != null
+                ? currentPlayable.getItem().getTitle() : getApplicationInfo().loadLabel(getPackageManager());
+        return new NotificationCompat.Builder(this, NotificationUtils.CHANNEL_ID_PLAYING)
+                .setSmallIcon(R.drawable.ic_notification)
+                .setContentTitle(title)
+                .setContentIntent(new MainActivityStarter(this).withOpenPlayer().getPendingIntent())
+                .setSilent(true)
+                .setOngoing(true)
+                .build();
+    }
+
+    private final Runnable handBackForeground = new Runnable() {
+        @Override
+        @OptIn(markerClass = UnstableApi.class)
+        public void run() {
+            if (getSessions().isEmpty()) {
+                Util.stopForeground(Media3PlaybackService.this, true);
+            } else {
+                triggerNotificationUpdate();
+            }
+        }
+    };
+
+    private void checkForeground() {
+        if (Build.VERSION.SDK_INT < 31 || player == null || !player.isPlaying()
+                || System.currentTimeMillis() - playingSince < FOREGROUND_CHECK_MS) {
+            return;
+        }
+        if (isForeground()) {
+            if (!foregroundLogged) {
+                Log.d(TAG, "Foreground: playing in the foreground");
+                foregroundLogged = true;
+            }
+            notForegroundWarned = false;
+        } else if (!notForegroundWarned) {
+            notForegroundWarned = true;
+            foregroundLogged = false;
+            Log.w(TAG, "Foreground: playing without foreground status");
+            goForeground("playing check");
+        }
+    }
+
     @Nullable
     @Override
     public MediaLibrarySession onGetSession(@NonNull MediaSession.ControllerInfo controllerInfo) {
@@ -570,6 +692,7 @@ public class Media3PlaybackService extends MediaLibraryService {
         unregisterAudioDeviceCallback();
         unregisterReceiver(screenOnReceiver);
         fadeInHandler.removeCallbacksAndMessages(null);
+        foregroundHandler.removeCallbacksAndMessages(null);
         if (sleepTimer != null) {
             sleepTimer.stop();
             sleepTimer = null;
@@ -614,6 +737,7 @@ public class Media3PlaybackService extends MediaLibraryService {
                             if (currentPlayable == null || player == null) {
                                 return;
                             }
+                            checkForeground();
                             checkStopAt();
                             long position = player.getCurrentPosition();
                             long duration = player.getDuration();
@@ -1279,6 +1403,7 @@ public class Media3PlaybackService extends MediaLibraryService {
             if (target != AudioFocusPolicy.NO_SEEK) {
                 exoPlayer.seekTo(target);
             }
+            goForeground("after interruption");
             exoPlayer.play();
         }
 
