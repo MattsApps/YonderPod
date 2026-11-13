@@ -12,6 +12,8 @@ import android.text.TextUtils;
 import android.text.format.DateFormat;
 import android.util.Log;
 
+import androidx.annotation.Nullable;
+
 import androidx.work.BackoffPolicy;
 import androidx.work.Constraints;
 import androidx.work.Data;
@@ -779,12 +781,21 @@ public final class Recordings {
      */
     static void saved(Context context, RecordingStore.Show show, Recorder.Saved saved, ShowTimes.Airing airing,
                       long finished, long covered) {
+        saved(context, show, saved, airing, finished, covered, false);
+    }
+
+    /**
+     * The same. playNow saves it ready to play straight away, even while its show is still on: for a
+     * recording cut short on a show set to play as soon as it's saved, so it never looks lost.
+     */
+    static void saved(Context context, RecordingStore.Show show, Recorder.Saved saved, ShowTimes.Airing airing,
+                      long finished, long covered, boolean playNow) {
         show.lastSavedAiring = Math.max(show.lastSavedAiring, airing.getStart());
         show.status = "";
         show.preferLiveNext = false;
         RecordingStore.getInstance(context).update(show);
         long availableAt = ShowTimes.availableAt(show.spec(), airing, TimeZone.getDefault(), show.sameLocalTime);
-        if (RecordingRules.waiting(availableAt, System.currentTimeMillis())) {
+        if (!playNow && RecordingRules.waiting(availableAt, System.currentTimeMillis())) {
             long id = RecordingStore.getInstance(context).addPending(show.id, saved.file.getAbsolutePath(),
                     saved.mimeType, airing.getStart(), airing.getEnd(), finished, 0, 0, covered);
             for (RecordingStore.Pending pending : RecordingStore.getInstance(context).getPending()) {
@@ -1398,9 +1409,7 @@ public final class Recordings {
         }
         ShowTimes.Airing latest = ShowTimes.latestEnded(show.spec(), now);
         if (held != null) {
-            ShowTimes.Airing airing = new ShowTimes.Airing(held.airingStart, held.airingEnd);
-            parts.add(playsAtText(context, ShowTimes.availableAt(show.spec(), airing, TimeZone.getDefault(),
-                    show.sameLocalTime)));
+            parts.add(heldLine(context, show, held));
         } else if (!usesLive(show) && latest != null && latest.getStart() > show.lastSavedAiring
                 && latest.getStart() > show.lastMissedAiring
                 && RecordingRules.stillInWindow(latest, show.rewindSeconds, now)) {
@@ -1434,7 +1443,7 @@ public final class Recordings {
                 held = pending;
             }
         }
-        if (held != null) {
+        if (held != null && !isCutShortRecordingRest(show, held)) {
             lines.add(playsAtText(context, playsAt(context, held)));
         }
         long deletesAt = show != null ? deletesAt(context, show) : Long.MAX_VALUE;
@@ -1446,13 +1455,61 @@ public final class Recordings {
     }
 
     public static String playsAtText(Context context, long millis) {
+        return context.getString(R.string.recording_plays_at, playsAtTime(context, millis));
+    }
+
+    /** A time today ("1:00 pm"), or a day and time ("Sat 1:00 pm"). */
+    private static String playsAtTime(Context context, long millis) {
         Calendar then = Calendar.getInstance();
         then.setTimeInMillis(millis);
         Calendar today = Calendar.getInstance();
         boolean sameDay = then.get(Calendar.YEAR) == today.get(Calendar.YEAR)
                 && then.get(Calendar.DAY_OF_YEAR) == today.get(Calendar.DAY_OF_YEAR);
-        return context.getString(R.string.recording_plays_at,
-                sameDay ? ScheduleText.time(context, millis) : dayTime(context, millis));
+        return sameDay ? ScheduleText.time(context, millis) : dayTime(context, millis);
+    }
+
+    /**
+     * True for the main recording of an airing that was cut short (Yonder closed, a crash, the phone off)
+     * while the show is still on and the rest of it is recording now. It's held to play at its time.
+     */
+    static boolean isCutShortRecordingRest(RecordingStore.Show show, RecordingStore.Pending pending) {
+        return show != null && !pending.isTail() && pending.covered > 0
+                && pending.covered < pending.airingEnd - RecordingRecovery.SHORT_BY_MILLIS
+                && RecordingService.recordingStart(show.id) == pending.airingStart;
+    }
+
+    /**
+     * The line for a held recording: "Cut short at 12:15 · recording the rest · plays here at 1:00 pm" while
+     * the rest of a cut-short airing records, otherwise "Saved · plays here at 1:00 pm".
+     */
+    public static String heldLine(Context context, RecordingStore.Show show, RecordingStore.Pending pending) {
+        long playsAt = playsAt(context, pending);
+        if (isCutShortRecordingRest(show, pending)) {
+            return context.getString(R.string.recording_cut_short_rest, ScheduleText.time(context, pending.covered),
+                    playsAtTime(context, playsAt));
+        }
+        return playsAtText(context, playsAt);
+    }
+
+    /**
+     * The newest held recording of the show if it's a cut-short part whose rest is recording now, as
+     * {title, line}, so it can be listed with the show's recordings (not playable yet). Otherwise null.
+     */
+    @Nullable
+    public static String[] cutShortRow(Context context, RecordingStore.Show show) {
+        if (show == null) {
+            return null;
+        }
+        RecordingStore.Pending held = null;
+        for (RecordingStore.Pending pending : pendingFor(context, show.id)) {
+            if (held == null || pending.airingStart > held.airingStart) {
+                held = pending;
+            }
+        }
+        if (held == null || !isCutShortRecordingRest(show, held)) {
+            return null;
+        }
+        return new String[] {title(context, show, held.airingStart, 0, 0), heldLine(context, show, held)};
     }
 
     public static List<RecordingStore.Pending> pendingFor(Context context, long showId) {

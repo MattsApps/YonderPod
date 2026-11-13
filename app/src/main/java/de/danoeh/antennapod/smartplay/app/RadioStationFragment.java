@@ -61,6 +61,8 @@ public class RadioStationFragment extends Fragment {
         String status;
         List<FeedItem> latest;
         List<RecordingStore.Pending> waiting;
+        /** A cut-short part whose rest is recording now: {title, line}, listed but not playable yet. */
+        String[] cutShort;
     }
 
     private static final class Loaded {
@@ -145,6 +147,7 @@ public class RadioStationFragment extends Fragment {
                 block.times = Recordings.timesLine(app, show);
                 block.status = Recordings.summary(app, show);
                 block.waiting = Recordings.pendingFor(app, show.id);
+                block.cutShort = Recordings.cutShortRow(app, show);
                 Feed feed = DBReader.getFeed(show.feedId, false, 0, 0);
                 block.latest = feed == null ? new ArrayList<>() : DBReader.getFeedItemList(feed,
                         FeedItemFilter.unfiltered(), SortOrder.DATE_NEW_OLD, 0, LATEST);
@@ -198,7 +201,17 @@ public class RadioStationFragment extends Fragment {
                 listen.setOnClickListener(v -> RadioSurface.listenNow(app, pending.id));
                 showsView.addView(listen);
             }
-            if (block.latest.isEmpty()) {
+            if (block.cutShort != null) {
+                // Listed with the recordings at once, so it never looks lost; it plays at its time.
+                TextView part = line(block.cutShort[0], false);
+                TextViewCompat.setTextAppearance(part, R.style.Widget_WildInk_Link);
+                part.setTextColor(MaterialColors.getColor(part, android.R.attr.textColorSecondary));
+                part.setMinHeight(dp(48));
+                part.setGravity(Gravity.CENTER_VERTICAL);
+                part.setBackground(null);
+                showsView.addView(part);
+            }
+            if (block.latest.isEmpty() && block.cutShort == null) {
                 showsView.addView(line(getString(R.string.station_no_recordings), false));
             }
             for (FeedItem item : block.latest) {

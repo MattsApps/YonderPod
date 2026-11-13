@@ -18,6 +18,7 @@ import androidx.core.app.ServiceCompat;
 import androidx.core.content.ContextCompat;
 
 import org.apache.commons.io.FileUtils;
+import org.greenrobot.eventbus.EventBus;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -229,6 +230,8 @@ public class RecordingService extends Service {
                 : airing.getEnd() + RecordingRules.LIVE_PADDING_MILLIS;
         Control control = new Control(airing.getStart(), airing.getEnd(), stopAt);
         CONTROLS.put(show.id, control);
+        // So pages showing "recording the rest" under a cut-short part catch up as soon as it starts.
+        EventBus.getDefault().post(new Radio.ChangedEvent());
         File folder = null;
         File part = null;
         try {

@@ -135,14 +135,22 @@ final class RecordingRecovery {
         }
         ShowTimes.Airing airing = new ShowTimes.Airing(unfinished.airingStart, unfinished.airingEnd);
         Log.d(TAG, "Keeping " + show.name + ", cut short at " + new java.util.Date(stoppedAt));
+        long due = unfinished.tailStart > 0 ? unfinished.tailEnd : unfinished.airingEnd;
+        boolean cutShort = stoppedAt < due - SHORT_BY_MILLIS;
         if (unfinished.tailStart > 0) {
             Recordings.savedTail(context, show, saved, airing, unfinished.tailStart,
                     Math.min(unfinished.tailEnd, stoppedAt), stoppedAt);
         } else {
-            Recordings.saved(context, show, saved, airing, stoppedAt, stoppedAt);
+            // A show set to play as soon as it's saved gets its cut-short part ready to play now, even while
+            // the show is still on; the rest follows as an extra part. A show held to play at the same local
+            // time keeps it held, and it's listed with "Cut short at … · recording the rest · plays here at …".
+            boolean playNow = cutShort && !show.sameLocalTime;
+            if (playNow) {
+                Log.d(TAG, show.name + " plays as soon as it's saved: the cut-short part can play now");
+            }
+            Recordings.saved(context, show, saved, airing, stoppedAt, stoppedAt, playNow);
         }
-        long due = unfinished.tailStart > 0 ? unfinished.tailEnd : unfinished.airingEnd;
-        if (stoppedAt < due - SHORT_BY_MILLIS) {
+        if (cutShort) {
             Recordings.note(context, show.id, airing.getStart(), cutShortText(context, stoppedAt, unfinished.pid));
         }
     }

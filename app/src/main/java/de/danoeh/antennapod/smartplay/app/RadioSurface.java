@@ -72,7 +72,7 @@ public class RadioSurface extends WorldSurface {
                     Waiting waiting = new Waiting();
                     waiting.pendingId = pending.id;
                     waiting.name = show.name;
-                    waiting.note = Recordings.playsAtText(app, Recordings.playsAt(app, pending));
+                    waiting.note = Recordings.heldLine(app, show, pending);
                     state.waiting.add(waiting);
                 }
                 Feed feed = DBReader.getFeed(show.feedId, false, 0, 0);

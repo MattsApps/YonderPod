@@ -2037,6 +2037,7 @@
         <item>metal</item>
     </string-array>
     <string name="recording_plays_at">Saved · plays here at %1$s</string>
+    <string name="recording_cut_short_rest">Cut short at %1$s · recording the rest · plays here at %2$s</string>
     <string name="recording_listen_now">listen now anyway</string>
     <string name="recording_time_shift">Recordings are for listening later, not keeping: each one goes when the next airs or after 25 hours.</string>
     <string name="recording_deletes_at">Deletes at %1$s</string>

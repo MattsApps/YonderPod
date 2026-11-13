@@ -114,6 +114,7 @@ public class FeedItemlistFragment extends Fragment implements AdapterView.OnItem
     private boolean isBook = false;
     private volatile String recordingInfo = "";
     private volatile boolean recordingStopped = false;
+    private volatile String[] recordingCutShort = null;
     private long feedID;
     private Feed feed;
     private Disposable disposable;
@@ -668,6 +669,7 @@ public class FeedItemlistFragment extends Fragment implements AdapterView.OnItem
                     ? Recordings.pendingFor(appContext, show.id) : new ArrayList<>();
             recordingInfo = Recordings.isRecordingsFeed(shownFeed) ? Recordings.pageInfo(appContext, show) : "";
             recordingStopped = show != null && show.stopped;
+            recordingCutShort = Recordings.cutShortRow(appContext, show);
             return waiting.isEmpty() ? -1L : waiting.get(0).id;
         })
                 .subscribeOn(Schedulers.io())
@@ -678,6 +680,14 @@ public class FeedItemlistFragment extends Fragment implements AdapterView.OnItem
                         viewBinding.header.recordingInfo.setText(recordingInfo);
                         viewBinding.header.recordingInfo.setVisibility(recordingInfo.isEmpty() ? View.GONE
                                 : View.VISIBLE);
+                        // A cut-short part whose rest is recording now: listed at once, not playable yet.
+                        String[] cutShort = recordingCutShort;
+                        viewBinding.header.recordingCutShort.setVisibility(cutShort != null ? View.VISIBLE
+                                : View.GONE);
+                        if (cutShort != null) {
+                            viewBinding.header.recordingCutShortTitle.setText(cutShort[0]);
+                            viewBinding.header.recordingCutShortLine.setText(cutShort[1]);
+                        }
                         viewBinding.header.recordingListenNow.setVisibility(pendingId >= 0 ? View.VISIBLE : View.GONE);
                         viewBinding.header.recordingListenNow.setOnClickListener(v -> {
                             v.setVisibility(View.GONE);

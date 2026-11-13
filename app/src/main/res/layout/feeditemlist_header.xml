@@ -231,6 +231,32 @@
             android:textColor="?android:attr/textColorSecondary"
             android:visibility="gone" />
 
+        <LinearLayout
+            android:id="@+id/recordingCutShort"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="48dp"
+            android:gravity="center_vertical"
+            android:orientation="vertical"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="8dp"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/recordingCutShortTitle"
+                android:textAppearance="@style/TextAppearance.WildInk.RowLabel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="?android:attr/textColorSecondary" />
+
+            <TextView
+                android:id="@+id/recordingCutShortLine"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="?android:attr/textColorSecondary" />
+
+        </LinearLayout>
+
         <TextView
             android:id="@+id/recordingListenNow"
             style="@style/Widget.WildInk.Link"

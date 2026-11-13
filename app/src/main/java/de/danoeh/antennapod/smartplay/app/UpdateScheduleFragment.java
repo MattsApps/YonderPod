@@ -17,8 +17,10 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.widget.TextViewCompat;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.material.color.MaterialColors;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.util.ArrayList;
@@ -38,6 +40,8 @@ public class UpdateScheduleFragment extends Fragment {
 
     private final CompositeDisposable disposables = new CompositeDisposable();
     private View root;
+    /** The listener went to Android's battery settings from this page, so the box stays to show the result. */
+    private boolean batteryVisited = false;
 
     private static final class CategoryRow {
         final String name;
@@ -56,7 +60,10 @@ public class UpdateScheduleFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         root = inflater.inflate(R.layout.update_schedule_fragment, container, false);
-        root.findViewById(R.id.schedule_battery_fix).setOnClickListener(v -> fixBatteryOptimisation(getContext()));
+        root.findViewById(R.id.schedule_battery_fix).setOnClickListener(v -> {
+            batteryVisited = true;
+            fixBatteryOptimisation(getContext());
+        });
         Context context = requireContext().getApplicationContext();
         disposables.add(Single.fromCallable(() -> UpdateScheduler.getDefault(context).getSchedule())
                 .subscribeOn(Schedulers.io())
@@ -82,8 +89,7 @@ public class UpdateScheduleFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        root.findViewById(R.id.schedule_battery_card).setVisibility(
-                UpdateScheduler.isBatteryOptimised(requireContext()) ? View.VISIBLE : View.GONE);
+        showBatteryBox();
         loadCategories();
     }
 
@@ -198,12 +204,34 @@ public class UpdateScheduleFragment extends Fragment {
                 .show();
     }
 
+    /**
+     * Checked every time the page comes back, so after a visit to Android's battery settings it shows the
+     * result: still restricted, the box stays as it is; now unrestricted, the box turns the highlight colour,
+     * like finished boxes elsewhere. Unrestricted without a visit from here, there's no box.
+     */
+    private void showBatteryBox() {
+        View card = root.findViewById(R.id.schedule_battery_card);
+        TextView text = root.findViewById(R.id.schedule_battery_text);
+        boolean optimised = UpdateScheduler.isBatteryOptimised(requireContext());
+        card.setVisibility(optimised || batteryVisited ? View.VISIBLE : View.GONE);
+        if (optimised) {
+            card.setBackgroundResource(R.drawable.wildink_block);
+            TextViewCompat.setTextAppearance(text, R.style.TextAppearance_WildInk_Detail);
+        } else {
+            card.setBackgroundResource(R.drawable.wildink_block_accent);
+            TextViewCompat.setTextAppearance(text, R.style.TextAppearance_WildInk_Detail);
+            text.setTextColor(MaterialColors.getColor(text, R.attr.colorOnPrimary));
+        }
+    }
+
     private void showBatteryPrompt() {
         new MaterialAlertDialogBuilder(requireContext())
                 .setTitle(R.string.schedule_battery_dialog_title)
                 .setMessage(R.string.schedule_battery_dialog_message)
-                .setPositiveButton(R.string.schedule_battery_fix, (dialog, which) ->
-                        fixBatteryOptimisation(getContext()))
+                .setPositiveButton(R.string.schedule_battery_fix, (dialog, which) -> {
+                    batteryVisited = true;
+                    fixBatteryOptimisation(getContext());
+                })
                 .setNegativeButton(R.string.yonder_button_cancel, null)
                 .show();
     }
