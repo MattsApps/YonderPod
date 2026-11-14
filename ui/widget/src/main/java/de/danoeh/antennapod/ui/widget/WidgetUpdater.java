@@ -26,6 +26,7 @@ import java.util.Map;
 import de.danoeh.antennapod.model.feed.FeedMedia;
 import de.danoeh.antennapod.model.playback.MediaType;
 import de.danoeh.antennapod.model.playback.Playable;
+import de.danoeh.antennapod.playback.base.LiveBehind;
 import de.danoeh.antennapod.playback.base.PlayerStatus;
 import de.danoeh.antennapod.storage.preferences.UserPreferences;
 import de.danoeh.antennapod.ui.appstartintent.MainActivityStarter;
@@ -40,6 +41,7 @@ import de.danoeh.antennapod.ui.episodes.TimeSpeedConverter;
 public abstract class WidgetUpdater {
     private static final String TAG = "WidgetUpdater";
     private static final float WIDE_PAD = 14;
+    private static final float STOP_BOX = 78;
     private static final float SLIM_PAD = 10;
     private static final float WIDE_MIN_WIDTH = 250;
     private static final float WIDE_MIN_HEIGHT = 110;
@@ -166,6 +168,9 @@ public abstract class WidgetUpdater {
         } else {
             fillWide(context, views, widgetState, palette, smartPlay, startMediaPlayer, startApp);
             placeWide(context, views, widthDp, heightDp);
+            if (isBehindLive(widgetState)) {
+                fillBehindLive(context, views, palette);
+            }
         }
         return views;
     }
@@ -194,6 +199,50 @@ public abstract class WidgetUpdater {
         int across = px(context, (button - icon) / 2);
         int down = px(context, (row - icon) / 2);
         views.setViewPadding(R.id.butSkip, across, down, across, down);
+        // Live pause's small live circle: sized from the same bottom row, inside the widget.
+        float dot = Math.min(row * 0.8f, button);
+        if (Build.VERSION.SDK_INT >= 31) {
+            views.setViewLayoutWidth(R.id.liveBox, dot, TypedValue.COMPLEX_UNIT_DIP);
+            views.setViewLayoutHeight(R.id.liveBox, dot, TypedValue.COMPLEX_UNIT_DIP);
+            textSize(views, R.id.liveText, dot * 0.3f);
+        }
+    }
+
+    private static boolean isBehindLive(WidgetState widgetState) {
+        return LiveBehind.isActive() && widgetState.media instanceof FeedMedia
+                && ((FeedMedia) widgetState.media).isLiveRadio();
+    }
+
+    /**
+     * Live pause, paused or playing behind live: the Smart Play name, the bar, -10, +30 and skip go. A stop
+     * circle hangs off the bottom-right corner as the play circle hangs off the top-left, the same size; a
+     * small live circle sits bottom left; the line under the station says how far behind.
+     */
+    private static void fillBehindLive(Context context, RemoteViews views, Palette palette) {
+        for (int id : new int[] {R.id.txtvSmartPlay, R.id.butRew, R.id.butFastForward, R.id.butSkip,
+            R.id.imgvProgress}) {
+            views.setViewVisibility(id, View.GONE);
+        }
+        views.setViewVisibility(R.id.progressRow, View.VISIBLE);
+        views.setViewVisibility(R.id.liveBox, View.VISIBLE);
+        views.setViewVisibility(R.id.stopBox, View.VISIBLE);
+        // Keep the text clear of the stop circle: its box is as wide as the play circle's, less the padding.
+        views.setViewPadding(R.id.layout_center, 0, 0, px(context, STOP_BOX - WIDE_PAD), 0);
+        views.setInt(R.id.liveCircle, "setColorFilter", palette.accent);
+        views.setTextColor(R.id.liveText, palette.onAccent);
+        views.setInt(R.id.butStopCircle, "setColorFilter", palette.text);
+        views.setInt(R.id.butStop, "setColorFilter", palette.background);
+        int minutes = LiveBehind.minutes();
+        views.setTextViewText(R.id.txtvProgress, LiveBehind.isPaused()
+                ? context.getString(R.string.live_pause_widget_paused, minutes)
+                : context.getString(R.string.live_pause_notification_behind, minutes));
+        if (Build.VERSION.SDK_INT >= 31) {
+            views.setViewLayoutMargin(R.id.txtvProgress, RemoteViews.MARGIN_START, 0, TypedValue.COMPLEX_UNIT_DIP);
+        }
+        views.setOnClickPendingIntent(R.id.liveBox,
+                MediaButtonStarter.createPendingIntent(context, Player.COMMAND_SEEK_TO_NEXT));
+        views.setOnClickPendingIntent(R.id.butStopCircle,
+                MediaButtonStarter.createPendingIntent(context, Player.COMMAND_STOP));
     }
 
     private static void placeSlim(Context context, RemoteViews views, float widthDp, float heightDp) {

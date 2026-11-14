@@ -51,6 +51,74 @@
             android:textColor="?attr/colorPrimary"
             android:textSize="13sp" />
 
+        <!-- Live pause (0.9.26): sizes, gaps and position are set by LivePauseFit, measured from the play
+             circle, so nothing here is a fixed size except the label text (the LIVE label's style). -->
+        <LinearLayout
+            android:id="@+id/worldLivePause"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start|top"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/worldLiveCircle"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:background="@drawable/wildink_dot"
+                android:backgroundTint="?attr/colorPrimary"
+                android:contentDescription="@string/live_pause_go_live_description"
+                android:fontFamily="@font/bricolage_extrabold"
+                android:foreground="?android:attr/selectableItemBackgroundBorderless"
+                android:gravity="center"
+                android:includeFontPadding="false"
+                android:maxLines="1"
+                android:text="@string/live_pause_go_live"
+                android:textColor="?attr/colorOnPrimary" />
+
+            <TextView
+                android:id="@+id/worldLivePaused"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/bricolage_extrabold"
+                android:letterSpacing="0.08"
+                android:maxLines="1"
+                android:text="@string/live_pause_paused"
+                android:textColor="?attr/colorPrimary"
+                android:textSize="13sp" />
+
+            <TextView
+                android:id="@+id/worldLiveBehind"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/bricolage_extrabold"
+                android:letterSpacing="0.08"
+                android:maxLines="1"
+                android:textColor="?attr/colorPrimary"
+                android:textSize="13sp" />
+
+            <FrameLayout
+                android:id="@+id/worldLiveStop"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:background="@drawable/wildink_dot"
+                android:backgroundTint="?android:attr/textColorPrimary"
+                android:contentDescription="@string/live_pause_stop_description"
+                android:foreground="?android:attr/selectableItemBackgroundBorderless">
+
+                <ImageView
+                    android:id="@+id/worldLiveStopIcon"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_gravity="center"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/wildink_stop_square"
+                    android:tint="?android:attr/colorBackground" />
+
+            </FrameLayout>
+
+        </LinearLayout>
+
     </FrameLayout>
 
     <TextView

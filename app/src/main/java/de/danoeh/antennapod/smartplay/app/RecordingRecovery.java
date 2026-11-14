@@ -23,6 +23,7 @@ import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.model.feed.Feed;
 import de.danoeh.antennapod.model.feed.FeedItem;
 import de.danoeh.antennapod.model.feed.FeedMedia;
+import de.danoeh.antennapod.playback.service.LiveBuffer;
 import de.danoeh.antennapod.smartplay.radio.RecordingCipher;
 import de.danoeh.antennapod.smartplay.radio.RecordingRules;
 import de.danoeh.antennapod.smartplay.radio.ShowTimes;
@@ -100,6 +101,8 @@ final class RecordingRecovery {
         } catch (Exception e) {
             Log.e(TAG, "Could not tidy the recordings folder", e);
         }
+        // Live pause leftovers (Android killed Yonder while a live station was paused): never kept.
+        LiveBuffer.deleteLeftovers(context);
         try {
             noteNotRecorded(context);
         } catch (Exception e) {

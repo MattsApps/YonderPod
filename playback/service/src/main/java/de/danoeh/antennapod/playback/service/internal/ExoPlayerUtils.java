@@ -31,6 +31,7 @@ import androidx.media3.extractor.mp3.Mp3Extractor;
 import de.danoeh.antennapod.net.common.NetworkUtils;
 import de.danoeh.antennapod.net.common.UserAgentInterceptor;
 import de.danoeh.antennapod.playback.base.MediaItemAdapter;
+import de.danoeh.antennapod.playback.service.LiveBufferDataSource;
 import de.danoeh.antennapod.playback.service.R;
 import de.danoeh.antennapod.smartplay.radio.RecordingCipher;
 import de.danoeh.antennapod.storage.preferences.UserPreferences;
@@ -150,6 +151,10 @@ public class ExoPlayerUtils {
         }
 
         private DataSource.Factory buildDataSourceFactory(MediaItem mediaItem) {
+            if (mediaItem.localConfiguration != null
+                    && LiveBufferDataSource.isBuffer(mediaItem.localConfiguration.uri)) {
+                return LiveBufferDataSource::new;
+            }
             if (mediaItem.localConfiguration != null
                     && RecordingCipher.isEncrypted(mediaItem.localConfiguration.uri.getPath())) {
                 return RecordingDataSource::new;

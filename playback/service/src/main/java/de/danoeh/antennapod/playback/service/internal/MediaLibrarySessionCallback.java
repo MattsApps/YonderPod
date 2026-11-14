@@ -31,6 +31,7 @@ import de.danoeh.antennapod.model.feed.FeedItem;
 import de.danoeh.antennapod.model.feed.FeedItemFilter;
 import de.danoeh.antennapod.model.feed.FeedMedia;
 import de.danoeh.antennapod.model.feed.SortOrder;
+import de.danoeh.antennapod.playback.base.LiveBehind;
 import de.danoeh.antennapod.playback.base.MediaItemAdapter;
 import de.danoeh.antennapod.storage.preferences.ControlsPreferences;
 import de.danoeh.antennapod.ui.appstartintent.MediaButtonStarter;
@@ -79,6 +80,11 @@ public class MediaLibrarySessionCallback implements MediaLibraryService.MediaLib
             = new SessionCommand("disable_sleep_timer", Bundle.EMPTY);
     public static final SessionCommand SESSION_COMMAND_EXTEND_SLEEP_TIMER
             = new SessionCommand("extend_sleep_timer", Bundle.EMPTY);
+    /** Live pause (0.9.26): back to live, and stop (ends playback and deletes the buffer). */
+    public static final SessionCommand SESSION_COMMAND_GO_LIVE
+            = new SessionCommand("go_live", Bundle.EMPTY);
+    public static final SessionCommand SESSION_COMMAND_STOP_LIVE
+            = new SessionCommand("stop_live", Bundle.EMPTY);
 
     private static final String EXTRA_VALUE = "value";
 
@@ -124,6 +130,8 @@ public class MediaLibrarySessionCallback implements MediaLibraryService.MediaLib
                 .add(SESSION_COMMAND_SET_SLEEP_TIMER)
                 .add(SESSION_COMMAND_DISABLE_SLEEP_TIMER)
                 .add(SESSION_COMMAND_EXTEND_SLEEP_TIMER)
+                .add(SESSION_COMMAND_GO_LIVE)
+                .add(SESSION_COMMAND_STOP_LIVE)
                 .build();
         Player.Commands playerCommands = new Player.Commands.Builder()
                 .addAllCommands()
@@ -149,6 +157,18 @@ public class MediaLibrarySessionCallback implements MediaLibraryService.MediaLib
     @UnstableApi
     private ImmutableList<CommandButton> buildCustomLayout() {
         ImmutableList.Builder<CommandButton> buttons = ImmutableList.builder();
+        if (LiveBehind.isActive()) {
+            // Paused or behind live: the notification offers live and stop.
+            buttons.add(new CommandButton.Builder(CommandButton.ICON_RADIO)
+                    .setSessionCommand(SESSION_COMMAND_GO_LIVE)
+                    .setDisplayName(context.getString(R.string.live_pause_go_live))
+                    .build());
+            buttons.add(new CommandButton.Builder(CommandButton.ICON_STOP)
+                    .setSessionCommand(SESSION_COMMAND_STOP_LIVE)
+                    .setDisplayName(context.getString(R.string.live_pause_stop))
+                    .build());
+            return buttons.build();
+        }
 
         buttons.add(new CommandButton.Builder(CommandButton.ICON_REWIND)
                 .setSessionCommand(SESSION_COMMAND_REWIND)

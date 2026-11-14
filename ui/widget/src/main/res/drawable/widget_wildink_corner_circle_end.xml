@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- widget_wildink_corner_circle turned half a turn: the same circle hanging off the bottom-right corner,
+     its centre 26dp in from that corner, so a symbol centred there sits at the centre of the full circle. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="78dp"
+    android:height="78dp"
+    android:viewportWidth="78"
+    android:viewportHeight="78">
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M52,78L6.967,78A52,52 0,0 1,78 6.967L78,52A26,26 0,0 1,52 78Z" />
+</vector>

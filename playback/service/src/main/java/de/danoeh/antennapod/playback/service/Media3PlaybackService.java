@@ -30,8 +30,10 @@ import androidx.core.util.Pair;
 import androidx.media3.common.AudioAttributes;
 import androidx.media3.common.C;
 import androidx.media3.common.DeviceInfo;
+import androidx.media3.common.FlagSet;
 import androidx.media3.common.ForwardingPlayer;
 import androidx.media3.common.MediaItem;
+import androidx.media3.common.MediaMetadata;
 import androidx.media3.common.PlaybackException;
 import androidx.media3.common.Player;
 import androidx.media3.common.util.UnstableApi;
@@ -66,6 +68,7 @@ import de.danoeh.antennapod.model.feed.VolumeAdaptionSetting;
 import de.danoeh.antennapod.net.common.NetworkUtils;
 import de.danoeh.antennapod.net.download.serviceinterface.AutoDownloadManager;
 import de.danoeh.antennapod.net.sync.serviceinterface.SynchronizationQueue;
+import de.danoeh.antennapod.playback.base.LiveBehind;
 import de.danoeh.antennapod.playback.base.MediaItemAdapter;
 import de.danoeh.antennapod.playback.base.PlayerStatus;
 import de.danoeh.antennapod.playback.cast.CastPlayerWrapper;
@@ -108,6 +111,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.TimeUnit;
 
 public class Media3PlaybackService extends MediaLibraryService {
@@ -119,6 +123,10 @@ public class Media3PlaybackService extends MediaLibraryService {
     private static final long FOREGROUND_HAND_BACK_MS = 15000;
     private static final long FOREGROUND_CHECK_MS = 3000;
     private static final long IDLE_CHECK_DELAY_MS = 2000;
+    private static final long LIVE_TICK_MS = 15_000;
+    private static final long LIVE_KEEP_PLAYED_MS = 60_000;
+    private static final long LIVE_EDGE_MS = 2000;
+    private static final long IDLE_AFTER_LIVE_PAUSE_MS = 10 * 60_000L;
     private ExoPlayer exoPlayer;
     private Player player;
     private MediaLibrarySession mediaSession;
@@ -147,6 +155,15 @@ public class Media3PlaybackService extends MediaLibraryService {
     private boolean foregroundLogged = false;
     private boolean notForegroundWarned = false;
     private String idleReason = "";
+    // Live pause (0.9.26): set while a live station is paused with a buffer, or playing behind live.
+    @Nullable
+    private LiveBuffer liveBuffer;
+    @Nullable
+    private MediaItem liveItem;
+    private long bufferItemStart;
+    private long keepForegroundUntil;
+    private boolean pausingForSleep;
+    private final CopyOnWriteArraySet<Player.Listener> metadataListeners = new CopyOnWriteArraySet<>();
     private float fadeInVolume = 1.0f;
     @Nullable
     private LoudnessEnhancer loudnessEnhancer = null;
@@ -156,6 +173,7 @@ public class Media3PlaybackService extends MediaLibraryService {
     @Override
     public void onCreate() {
         super.onCreate();
+        LiveBuffer.deleteLeftovers(this);
         EventBus.getDefault().register(this);
         buttonPressHandler = new ButtonPressHandler(this, this::performButtonAction);
         registerAudioDeviceCallback();
@@ -203,6 +221,13 @@ public class Media3PlaybackService extends MediaLibraryService {
 
             @Override
             public void play() {
+                if (liveBuffer != null && isLiveStationLoaded()) {
+                    // Resume behind live: the buffer is local, so no streaming question.
+                    applyAudioAttributes();
+                    goForeground("play");
+                    super.play();
+                    return;
+                }
                 if (handleStreamingConfirmation()) {
                     return;
                 } else if (shouldBlockForStreamingConfirmation()) {
@@ -247,6 +272,43 @@ public class Media3PlaybackService extends MediaLibraryService {
                     goForeground("next");
                 }
                 super.setPlayWhenReady(playWhenReady);
+                if (!playWhenReady) {
+                    maybeStartLivePause();
+                }
+            }
+
+            @Override
+            public void pause() {
+                super.pause();
+                maybeStartLivePause();
+            }
+
+            @Override
+            public void stop() {
+                if (liveBuffer != null) {
+                    endLivePause(false);
+                }
+                super.stop();
+            }
+
+            @Override
+            @NonNull
+            public MediaMetadata getMediaMetadata() {
+                MediaMetadata metadata = super.getMediaMetadata();
+                String line = liveBuffer != null ? liveLine() : null;
+                return line == null ? metadata : metadata.buildUpon().setArtist(line).setSubtitle(line).build();
+            }
+
+            @Override
+            public void addListener(@NonNull Player.Listener listener) {
+                super.addListener(listener);
+                metadataListeners.add(listener);
+            }
+
+            @Override
+            public void removeListener(@NonNull Player.Listener listener) {
+                super.removeListener(listener);
+                metadataListeners.remove(listener);
             }
 
             @Override
@@ -258,11 +320,19 @@ public class Media3PlaybackService extends MediaLibraryService {
 
             @Override
             public void seekBack() {
+                if (liveBuffer != null) {
+                    moveInBuffer(-UserPreferences.getRewindSecs() * 1000L);
+                    return;
+                }
                 seekTo(Math.max(0, getCurrentPosition() - UserPreferences.getRewindSecs() * 1000L));
             }
 
             @Override
             public void seekForward() {
+                if (liveBuffer != null) {
+                    moveInBuffer(UserPreferences.getFastForwardSecs() * 1000L);
+                    return;
+                }
                 long duration = getDuration();
                 long target = getCurrentPosition() + UserPreferences.getFastForwardSecs() * 1000L;
                 if (isLiveStationLoaded()) {
@@ -282,6 +352,10 @@ public class Media3PlaybackService extends MediaLibraryService {
 
             @Override
             public void seekToNextMediaItem() {
+                if (liveBuffer != null) {
+                    goLive();
+                    return;
+                }
                 if (isRequestOfOtherApp()) {
                     // Some controllers (e.g. Gadgetbridge) call this directly, bypassing
                     // onMediaButtonEvent, so the remap needs to apply here too.
@@ -293,11 +367,19 @@ public class Media3PlaybackService extends MediaLibraryService {
 
             @Override
             public void seekToNext() {
+                if (liveBuffer != null) {
+                    goLive();
+                    return;
+                }
                 buttonPressHandler.onCommand(ButtonPress.NEXT, controllerPackage());
             }
 
             @Override
             public void seekToPreviousMediaItem() {
+                if (liveBuffer != null) {
+                    seekBack();
+                    return;
+                }
                 if (isRequestOfOtherApp()) {
                     buttonPressHandler.onCommand(ButtonPress.PREVIOUS, controllerPackage());
                     return;
@@ -307,6 +389,10 @@ public class Media3PlaybackService extends MediaLibraryService {
 
             @Override
             public void seekToPrevious() {
+                if (liveBuffer != null) {
+                    seekBack();
+                    return;
+                }
                 buttonPressHandler.onCommand(ButtonPress.PREVIOUS, controllerPackage());
             }
 
@@ -398,6 +484,14 @@ public class Media3PlaybackService extends MediaLibraryService {
                 return Futures.immediateFuture(new SessionResult(SessionResult.RESULT_SUCCESS));
             } else if (customCommand.customAction.equals(SESSION_COMMAND_EXTEND_SLEEP_TIMER.customAction)) {
                 extendSleepTimer(MediaLibrarySessionCallback.getLong(args, 0));
+                return Futures.immediateFuture(new SessionResult(SessionResult.RESULT_SUCCESS));
+            } else if (customCommand.customAction.equals(
+                    MediaLibrarySessionCallback.SESSION_COMMAND_GO_LIVE.customAction)) {
+                goLive();
+                return Futures.immediateFuture(new SessionResult(SessionResult.RESULT_SUCCESS));
+            } else if (customCommand.customAction.equals(
+                    MediaLibrarySessionCallback.SESSION_COMMAND_STOP_LIVE.customAction)) {
+                player.stop();
                 return Futures.immediateFuture(new SessionResult(SessionResult.RESULT_SUCCESS));
             }
             return super.onCustomCommand(session, controller, customCommand, args);
@@ -506,6 +600,7 @@ public class Media3PlaybackService extends MediaLibraryService {
         @Override
         public void onIsPlayingChanged(boolean isPlaying) {
             PlaybackService.isRunning = !Util.shouldShowPlayButton(player);
+            updateLiveBehind(false);
             if (isPlaying && player.getCurrentMediaItem() != null) {
                 playedMediaId = player.getCurrentMediaItem().mediaId;
                 saveCurrentPosition();
@@ -559,6 +654,10 @@ public class Media3PlaybackService extends MediaLibraryService {
 
         @Override
         public void onMediaItemTransition(@Nullable MediaItem mediaItem, int reason) {
+            if (liveBuffer != null && !isBufferItem(mediaItem)) {
+                Log.d(TAG, "Live pause: something else was loaded, deleting the buffer");
+                abandonLivePause();
+            }
             if (mediaItem == null) {
                 if (currentPlayable != null
                         && CastPlayerWrapper.hasPlaybackJustFinished(Media3PlaybackService.this)) {
@@ -574,6 +673,10 @@ public class Media3PlaybackService extends MediaLibraryService {
         @Override
         public void onPlayerError(@NonNull PlaybackException error) {
             PlaybackService.isRunning = false;
+            if (liveBuffer != null) {
+                Log.e(TAG, "Live pause: the buffer couldn't be played", error);
+                endLivePause(false);
+            }
             EventBus.getDefault().post(new PlayerErrorEvent(
                     ExoPlayerUtils.translateErrorReason(error, Media3PlaybackService.this)));
             EventBus.getDefault().post(new PlayerStatusEvent());
@@ -706,7 +809,8 @@ public class Media3PlaybackService extends MediaLibraryService {
         if (player == null) {
             return true;
         }
-        if (isCasting()) {
+        if (isCasting() || liveBuffer != null) {
+            // A live buffer counts as busy: the idle stop starts only once it has ended.
             return false;
         }
         int state = player.getPlaybackState();
@@ -722,6 +826,10 @@ public class Media3PlaybackService extends MediaLibraryService {
     @Override
     @UnstableApi
     public void onUpdateNotification(@NonNull MediaSession session, boolean startInForegroundRequired) {
+        // While a live buffer runs (and for 10 minutes after it ends while paused), stay in the foreground
+        // even though nothing is audible, so the buffer keeps recording with the screen off.
+        boolean keep = liveBuffer != null || System.currentTimeMillis() < keepForegroundUntil;
+        startInForegroundRequired = startInForegroundRequired || keep;
         super.onUpdateNotification(session, startInForegroundRequired);
         if (startInForegroundRequired) {
             foregroundHandler.removeCallbacks(idleCheck);
@@ -754,10 +862,221 @@ public class Media3PlaybackService extends MediaLibraryService {
         }
     };
 
+    // Live pause (0.9.26) ------------------------------------------------------------------------------
+
+    private static boolean isBufferItem(@Nullable MediaItem item) {
+        return item != null && item.localConfiguration != null
+                && LiveBufferDataSource.isBuffer(item.localConfiguration.uri);
+    }
+
+    /** The station's live item, played from the buffer from time onwards. */
+    private MediaItem bufferItem(MediaItem live, long time) {
+        return live.buildUpon()
+                .setUri(LiveBufferDataSource.uriFrom(time))
+                .setMimeType(null)
+                .setCustomCacheKey(null)
+                .build();
+    }
+
+    /** The moment of the stream being heard (or waiting to be heard, while paused). */
+    private long heardTime() {
+        if (player != null && isBufferItem(player.getCurrentMediaItem())) {
+            return bufferItemStart + Math.max(0, player.getCurrentPosition());
+        }
+        return bufferItemStart;
+    }
+
+    /** A live station was just paused by the listener: start buffering behind them. */
+    private void maybeStartLivePause() {
+        if (liveBuffer == null && !pausingForSleep && isLiveStationLoaded()) {
+            foregroundHandler.post(this::startLivePause);
+        }
+    }
+
+    private void startLivePause() {
+        if (player == null || liveBuffer != null || player.getPlayWhenReady() || isCasting()
+                || !isLiveStationLoaded() || player.getPlaybackState() == Player.STATE_IDLE) {
+            return;
+        }
+        MediaItem live = player.getCurrentMediaItem();
+        if (live == null || live.localConfiguration == null || isBufferItem(live)) {
+            return;
+        }
+        String mimeType = live.localConfiguration.mimeType != null ? live.localConfiguration.mimeType
+                : currentPlayable.getMimeType();
+        liveItem = live;
+        bufferItemStart = System.currentTimeMillis();
+        keepForegroundUntil = 0;
+        liveBuffer = LiveBuffer.start(this, live.localConfiguration.uri.toString(), mimeType,
+                this::onLiveBufferUnsupported);
+        Log.d(TAG, "Live pause: paused, buffering behind the listener");
+        // The live connection closes; the player waits, paused, at the start of the buffer.
+        player.setMediaItem(bufferItem(live, bufferItemStart));
+        player.prepare();
+        foregroundHandler.removeCallbacks(liveTick);
+        foregroundHandler.postDelayed(liveTick, LIVE_TICK_MS);
+        updateLiveBehind(true);
+    }
+
+    private void onLiveBufferUnsupported(LiveBuffer buffer, String why) {
+        if (buffer != liveBuffer) {
+            return;
+        }
+        Log.d(TAG, "Live pause: this station can't be buffered (" + why + "), paused at live as before");
+        endLivePause(false);
+    }
+
+    /** Back to live: deletes the buffer and plays the station live. */
+    private void goLive() {
+        if (liveBuffer == null) {
+            return;
+        }
+        Log.d(TAG, "Live pause: back to live");
+        MediaItem live = liveItem;
+        endLivePause(true);
+        if (live != null) {
+            player.prepare();
+            player.play();
+        }
+    }
+
+    /**
+     * Ends live pause: stops the buffer and deletes it, and puts the station's live item back. With resume
+     * false (stop, the 1-hour limit, an error) the station is left paused at live, and the service stays in
+     * the foreground for 10 more minutes before the usual idle stop.
+     */
+    @OptIn(markerClass = UnstableApi.class)
+    private void endLivePause(boolean resume) {
+        LiveBuffer buffer = liveBuffer;
+        MediaItem live = liveItem;
+        liveBuffer = null;
+        liveItem = null;
+        foregroundHandler.removeCallbacks(liveTick);
+        if (buffer != null) {
+            buffer.stop();
+        }
+        if (!resume) {
+            keepForegroundUntil = System.currentTimeMillis() + IDLE_AFTER_LIVE_PAUSE_MS;
+            foregroundHandler.postDelayed(idleAfterLivePause, IDLE_AFTER_LIVE_PAUSE_MS + 1000);
+        }
+        if (live != null && player != null) {
+            player.setMediaItem(live);
+        }
+        updateLiveBehind(true);
+    }
+
+    /** 10 minutes after live pause ended while paused: let the usual idle stop happen. */
+    private final Runnable idleAfterLivePause = new Runnable() {
+        @Override
+        @OptIn(markerClass = UnstableApi.class)
+        public void run() {
+            triggerNotificationUpdate();
+        }
+    };
+
+    /** Something else was loaded (another station or an episode): just drop the buffer. */
+    private void abandonLivePause() {
+        LiveBuffer buffer = liveBuffer;
+        liveBuffer = null;
+        liveItem = null;
+        foregroundHandler.removeCallbacks(liveTick);
+        if (buffer != null) {
+            buffer.stop();
+        }
+        updateLiveBehind(true);
+    }
+
+    /** Rewind or skip forward within the buffer: never before its start, never past live. */
+    private void moveInBuffer(long byMillis) {
+        LiveBuffer buffer = liveBuffer;
+        MediaItem live = liveItem;
+        if (buffer == null || live == null || buffer.oldest() < 0) {
+            return;
+        }
+        long now = System.currentTimeMillis();
+        long earliest = Math.max(buffer.oldest(), now - LiveBehind.LIMIT_MILLIS + 60_000);
+        long latest = Math.max(earliest, buffer.newest() - LIVE_EDGE_MS);
+        long target = Math.max(earliest, Math.min(latest, heardTime() + byMillis));
+        boolean play = player.getPlayWhenReady();
+        bufferItemStart = target;
+        player.setMediaItem(bufferItem(live, target));
+        player.prepare();
+        player.setPlayWhenReady(play);
+        updateLiveBehind(true);
+    }
+
+    /** Every 15 seconds while live pause runs: the 1-hour limit, deleting what's been played, the minutes. */
+    private final Runnable liveTick = new Runnable() {
+        @Override
+        public void run() {
+            LiveBuffer buffer = liveBuffer;
+            if (buffer == null || player == null) {
+                return;
+            }
+            long heard = heardTime();
+            if (System.currentTimeMillis() - heard >= LiveBehind.LIMIT_MILLIS) {
+                Log.d(TAG, "Live pause: 1 hour behind, stopping and deleting the buffer");
+                player.stop();
+                return;
+            }
+            buffer.deleteBefore(heard - LIVE_KEEP_PLAYED_MS);
+            updateLiveBehind(false);
+            foregroundHandler.postDelayed(this, LIVE_TICK_MS);
+        }
+    };
+
+    /** "paused · 12 min behind · stops at 1 hour" or "12 min behind live", for the notification. */
+    @Nullable
+    private String liveLine() {
+        if (!LiveBehind.isActive()) {
+            return null;
+        }
+        return LiveBehind.isPaused()
+                ? getString(R.string.live_pause_notification_paused, LiveBehind.minutes())
+                : getString(R.string.live_pause_notification_behind, LiveBehind.minutes());
+    }
+
+    /**
+     * Works out paused or playing and the minutes behind, and when they change (or force), tells the
+     * notification, Android's media controls, the widget and the app.
+     */
+    @OptIn(markerClass = UnstableApi.class)
+    private void updateLiveBehind(boolean force) {
+        boolean active = liveBuffer != null;
+        boolean paused = active && player != null && !player.getPlayWhenReady();
+        int minutes = active ? (int) ((System.currentTimeMillis() - heardTime()) / 60_000) : 0;
+        boolean wasActive = LiveBehind.isActive();
+        if (!force && active == wasActive && paused == LiveBehind.isPaused() && minutes == LiveBehind.minutes()) {
+            return;
+        }
+        LiveBehind.set(active, paused, minutes);
+        if (active != wasActive) {
+            sessionCallback.refreshNotification(mediaSession);
+        }
+        MediaMetadata metadata = player.getMediaMetadata();
+        Player.Events events = new Player.Events(new FlagSet.Builder()
+                .add(Player.EVENT_MEDIA_METADATA_CHANGED).build());
+        for (Player.Listener listener : metadataListeners) {
+            listener.onMediaMetadataChanged(metadata);
+            listener.onEvents(player, events);
+        }
+        WidgetUpdater.WidgetState widgetState = new WidgetUpdater.WidgetState(currentPlayable,
+                player.getPlayWhenReady() ? PlayerStatus.PLAYING : PlayerStatus.PAUSED,
+                (int) player.getContentPosition(), (int) player.getDuration(),
+                player.getPlaybackParameters().speed);
+        Schedulers.io().scheduleDirect(() -> WidgetUpdater.updateWidget(Media3PlaybackService.this, widgetState));
+        EventBus.getDefault().post(new PlayerStatusEvent());
+    }
+
     @UnstableApi
     @Override
     public void onDestroy() {
         PlaybackService.isRunning = false;
+        if (liveBuffer != null) {
+            liveBuffer.stop();
+            liveBuffer = null;
+            LiveBehind.set(false, false, 0);
+        }
         cancelPositionObserver();
         unregisterAudioDeviceCallback();
         unregisterReceiver(screenOnReceiver);
@@ -1297,7 +1616,9 @@ public class Media3PlaybackService extends MediaLibraryService {
             Log.d(TAG, "Sleep timer expired, pausing playback");
             if (player != null) {
                 applyVolumeAdaption(1.0f);
+                pausingForSleep = true;
                 player.pause();
+                pausingForSleep = false;
             }
             sleepTimer = null;
             sessionCallback.refreshNotification(mediaSession);
@@ -1364,6 +1685,10 @@ public class Media3PlaybackService extends MediaLibraryService {
 
     @OptIn(markerClass = UnstableApi.class)
     private void skipToNextEpisode() {
+        if (liveBuffer != null) {
+            goLive();
+            return;
+        }
         if (currentPlayable != null) {
             saveCurrentPosition();
             startNextInQueue(currentPlayable, true, false);
@@ -1379,6 +1704,13 @@ public class Media3PlaybackService extends MediaLibraryService {
     @OptIn(markerClass = UnstableApi.class)
     private void performButtonAction(ButtonPress press) {
         if (player == null) {
+            return;
+        }
+        if (liveBuffer != null && press == ButtonPress.NEXT) {
+            goLive();
+            return;
+        } else if (liveBuffer != null && press == ButtonPress.PREVIOUS) {
+            player.seekBack();
             return;
         }
         switch (ControlsPreferences.getButtonAction(press)) {

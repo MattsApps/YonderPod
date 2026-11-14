@@ -448,6 +448,7 @@ public final class HelpIndex {
 
         Group radio = group(R.string.help_group_radio);
         topic(radio, R.string.help_topic_radio_live, R.string.help_about_radio_live, OPEN_TOPIC, 0);
+        topic(radio, R.string.help_topic_radio_pause, R.string.help_about_radio_pause, OPEN_TOPIC, 0);
         topic(radio, R.string.help_topic_radio_record, R.string.help_about_radio_record, OPEN_TOPIC, 0);
         topic(radio, R.string.help_topic_radio_saving, R.string.help_about_radio_saving, OPEN_TOPIC, 0);
         topic(radio, R.string.help_topic_radio_waiting, R.string.help_about_radio_waiting, OPEN_TOPIC, 0);

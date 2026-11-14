@@ -20,6 +20,8 @@ import de.danoeh.antennapod.model.feed.FeedItem;
 import de.danoeh.antennapod.model.feed.FeedItemFilter;
 import de.danoeh.antennapod.model.feed.FeedMedia;
 import de.danoeh.antennapod.model.feed.SortOrder;
+import de.danoeh.antennapod.playback.base.LiveBehind;
+import de.danoeh.antennapod.playback.service.PlaybackController;
 import de.danoeh.antennapod.playback.service.PlaybackServiceStarter;
 import de.danoeh.antennapod.storage.database.DBReader;
 import de.danoeh.antennapod.storage.preferences.RadioPreferences;
@@ -108,6 +110,7 @@ public class RadioSurface extends WorldSurface {
         if (station == null) {
             subtitle.setVisibility(View.GONE);
             live.setVisibility(View.INVISIBLE);
+            showLivePause(false);
             title.setText(R.string.world_radio_empty);
             title.setTextSize(TypedValue.COMPLEX_UNIT_SP, 44);
             hint.setText(R.string.world_radio_empty_hint);
@@ -119,14 +122,23 @@ public class RadioSurface extends WorldSurface {
             subtitle.setText(state.country.isEmpty() ? name : getString(R.string.detail_joined, name,
                     state.country));
             subtitle.setVisibility(View.VISIBLE);
-            live.setVisibility(View.VISIBLE);
             title.setText(state.shortName.toLowerCase(Locale.getDefault()));
             title.setTextSize(TypedValue.COMPLEX_UNIT_SP, state.shortName.length() > 12 ? 40 : 56);
             hint.setVisibility(View.GONE);
             FeedMedia media = station.getMedia();
-            showPlaying(isPlaying(media));
+            boolean behind = LiveBehind.isActive() && isCurrent(media);
+            live.setVisibility(behind ? View.GONE : View.VISIBLE);
+            showLivePause(behind);
+            showPlaying(behind ? !LiveBehind.isPaused() : isPlaying(media));
             root.findViewById(R.id.worldPlay).setOnClickListener(v -> {
-                if (isPlaying(media)) {
+                if (LiveBehind.isActive() && isCurrent(media)) {
+                    // Paused or behind live: play carries on from the buffer, pause pauses it.
+                    if (LiveBehind.isPaused()) {
+                        PlaybackController.bindToMedia3Service(requireContext(), controller -> controller.play());
+                    } else {
+                        pause();
+                    }
+                } else if (isPlaying(media)) {
                     pause();
                 } else {
                     RadioFragment.play(requireContext(), station);
@@ -169,6 +181,23 @@ public class RadioSurface extends WorldSurface {
             });
             list.addView(row);
         }
+    }
+
+    /** Live pause's stack beside the play circle (placed by LivePauseFit): live, how far behind, stop. */
+    private void showLivePause(boolean behind) {
+        View stack = root.findViewById(R.id.worldLivePause);
+        stack.setVisibility(behind ? View.VISIBLE : View.GONE);
+        if (!behind) {
+            return;
+        }
+        root.findViewById(R.id.worldLivePaused).setVisibility(LiveBehind.isPaused() ? View.VISIBLE : View.GONE);
+        ((TextView) root.findViewById(R.id.worldLiveBehind)).setText(
+                getString(R.string.live_pause_minutes_behind, LiveBehind.minutes()));
+        root.findViewById(R.id.worldLiveCircle).setOnClickListener(v ->
+                PlaybackController.bindToMedia3Service(requireContext(), controller -> controller.seekToNext()));
+        root.findViewById(R.id.worldLiveStop).setOnClickListener(v ->
+                PlaybackController.bindToMedia3Service(requireContext(), controller -> controller.stop()));
+        stack.requestLayout();
     }
 
     public static void listenNow(Context app, long pendingId) {

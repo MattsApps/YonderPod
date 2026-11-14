@@ -1439,6 +1439,15 @@
     <string name="radio_rewind_not_live">This link isn\'t a live stream.</string>
     <string name="radio_rewind_unknown">Couldn\'t tell how far back this stream can be rewound.</string>
     <string name="radio_live">LIVE</string>
+    <string name="live_pause_paused">PAUSED</string>
+    <string name="live_pause_minutes_behind">%1$d MIN BEHIND</string>
+    <string name="live_pause_go_live">live</string>
+    <string name="live_pause_stop">stop</string>
+    <string name="live_pause_notification_paused">paused · %1$d min behind · stops at 1 hour</string>
+    <string name="live_pause_notification_behind">%1$d min behind live</string>
+    <string name="live_pause_widget_paused">%1$d min behind · stops at 1 hour</string>
+    <string name="live_pause_go_live_description">Back to live</string>
+    <string name="live_pause_stop_description">Stop, and delete what was saved behind you</string>
     <string name="radio_search_hint">Station name, place or style</string>
     <string name="radio_adding">Adding %1$s…</string>
     <!-- Yonder radio recordings -->
@@ -2181,6 +2190,8 @@
     <string name="help_about_smart_play_menu">Long-press a Smart Play in Podcasts Tend for Edit, Duplicate and Delete.</string>
     <string name="help_topic_radio_live">Listening live</string>
     <string name="help_about_radio_live">Tap a station in Radio to listen live.</string>
+    <string name="help_topic_radio_pause">Pause live radio</string>
+    <string name="help_about_radio_pause">Pause a live station and carry on from where you paused, up to an hour behind. Yonder records the stream behind you, privately and encrypted, and deletes it as it plays. Tap live to catch up, or stop to end it. At an hour behind it stops by itself.</string>
     <string name="help_topic_radio_record">Recording a show</string>
     <string name="help_about_radio_record">Record a station\'s show and hear it at the same local time, wherever you are.</string>
     <string name="help_topic_radio_saving">How recordings are saved</string>
