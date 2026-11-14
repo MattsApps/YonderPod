@@ -166,6 +166,7 @@ public abstract class WidgetUpdater {
         if (slim) {
             placeSlim(context, views, widthDp, heightDp);
         } else {
+            showBehindLive(context, views, false);
             fillWide(context, views, widgetState, palette, smartPlay, startMediaPlayer, startApp);
             placeWide(context, views, widthDp, heightDp);
             if (isBehindLive(widgetState)) {
@@ -208,6 +209,27 @@ public abstract class WidgetUpdater {
         }
     }
 
+    /**
+     * Shows or hides everything live pause changes. Both ways, every time: the home screen often applies a
+     * new widget picture on top of the old one, so anything not set explicitly keeps its last state (that's
+     * how the stop circle stayed after live pause ended).
+     */
+    private static void showBehindLive(Context context, RemoteViews views, boolean behind) {
+        int normal = behind ? View.GONE : View.VISIBLE;
+        for (int id : new int[] {R.id.txtvSmartPlay, R.id.butRew, R.id.butFastForward, R.id.butSkip,
+            R.id.imgvProgress}) {
+            views.setViewVisibility(id, normal);
+        }
+        views.setViewVisibility(R.id.liveBox, behind ? View.VISIBLE : View.GONE);
+        views.setViewVisibility(R.id.stopBox, behind ? View.VISIBLE : View.GONE);
+        // Keep the text clear of the stop circle: its box is as wide as the play circle's, less the padding.
+        views.setViewPadding(R.id.layout_center, 0, 0, behind ? px(context, STOP_BOX - WIDE_PAD) : 0, 0);
+        if (Build.VERSION.SDK_INT >= 31) {
+            views.setViewLayoutMargin(R.id.txtvProgress, RemoteViews.MARGIN_START, behind ? 0 : 8,
+                    TypedValue.COMPLEX_UNIT_DIP);
+        }
+    }
+
     private static boolean isBehindLive(WidgetState widgetState) {
         return LiveBehind.isActive() && widgetState.media instanceof FeedMedia
                 && ((FeedMedia) widgetState.media).isLiveRadio();
@@ -219,15 +241,8 @@ public abstract class WidgetUpdater {
      * small live circle sits bottom left; the line under the station says how far behind.
      */
     private static void fillBehindLive(Context context, RemoteViews views, Palette palette) {
-        for (int id : new int[] {R.id.txtvSmartPlay, R.id.butRew, R.id.butFastForward, R.id.butSkip,
-            R.id.imgvProgress}) {
-            views.setViewVisibility(id, View.GONE);
-        }
+        showBehindLive(context, views, true);
         views.setViewVisibility(R.id.progressRow, View.VISIBLE);
-        views.setViewVisibility(R.id.liveBox, View.VISIBLE);
-        views.setViewVisibility(R.id.stopBox, View.VISIBLE);
-        // Keep the text clear of the stop circle: its box is as wide as the play circle's, less the padding.
-        views.setViewPadding(R.id.layout_center, 0, 0, px(context, STOP_BOX - WIDE_PAD), 0);
         views.setInt(R.id.liveCircle, "setColorFilter", palette.accent);
         views.setTextColor(R.id.liveText, palette.onAccent);
         views.setInt(R.id.butStopCircle, "setColorFilter", palette.text);
@@ -236,9 +251,6 @@ public abstract class WidgetUpdater {
         views.setTextViewText(R.id.txtvProgress, LiveBehind.isPaused()
                 ? context.getString(R.string.live_pause_widget_paused, minutes)
                 : context.getString(R.string.live_pause_notification_behind, minutes));
-        if (Build.VERSION.SDK_INT >= 31) {
-            views.setViewLayoutMargin(R.id.txtvProgress, RemoteViews.MARGIN_START, 0, TypedValue.COMPLEX_UNIT_DIP);
-        }
         views.setOnClickPendingIntent(R.id.liveBox,
                 MediaButtonStarter.createPendingIntent(context, Player.COMMAND_SEEK_TO_NEXT));
         views.setOnClickPendingIntent(R.id.butStopCircle,

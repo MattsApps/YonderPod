@@ -3,6 +3,7 @@ package de.danoeh.antennapod;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import de.danoeh.antennapod.playback.service.LiveBuffer;
 import de.danoeh.antennapod.net.download.serviceinterface.AutoDownloadManager;
 import de.danoeh.antennapod.net.download.serviceinterface.FeedUpdateManager;
 import de.danoeh.antennapod.net.sync.service.SynchronizationQueueImpl;
@@ -75,7 +76,10 @@ public class ClientConfigurator {
         BookTopUpWorker.init(context);
         UpdateScheduler.init(context);
         ImportedPlayState.init(context);
-        if (wasPlaying) {
+        // Killed during live pause (paused or behind live): the widget still shows the live pause layout,
+        // so redraw it as the station paused at live, as after any kill.
+        boolean wasLivePause = LiveBuffer.deleteLeftovers(context);
+        if (wasPlaying || wasLivePause) {
             WidgetUpdaterWorker.enqueueWork(context);
         }
         initialized = true;

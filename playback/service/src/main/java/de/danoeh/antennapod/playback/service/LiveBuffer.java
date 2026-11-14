@@ -130,16 +130,18 @@ public final class LiveBuffer {
 
     /**
      * Deletes anything left in the buffer folder, as when Android killed Yonder while paused. Called when
-     * Yonder starts (RecordingRecovery) and when the player starts. Leaves a running buffer alone.
+     * Yonder starts (ClientConfigurator, RecordingRecovery) and when the player starts. Leaves a running
+     * buffer alone. True if anything was left, i.e. Yonder was killed during live pause.
      */
-    public static void deleteLeftovers(Context context) {
+    public static boolean deleteLeftovers(Context context) {
         if (current != null) {
-            return;
+            return false;
         }
         int count = deleteAll(folder(context));
         if (count > 0) {
             Log.d(TAG, "Deleted " + count + " leftover buffer files");
         }
+        return count > 0;
     }
 
     private static int deleteAll(File folder) {

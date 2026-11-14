@@ -46,8 +46,12 @@ public class WidgetUpdaterWorker extends Worker {
     private void updateWidget() {
         final Playable media = DBReader.getFeedMedia(PlaybackPreferences.getCurrentlyPlayingFeedMediaId());
         if (media != null) {
+            // Redrawn for a palette change while playing, the widget must still show pause. After a kill,
+            // ClientConfigurator has already set the saved status to paused.
+            boolean playing = PlaybackPreferences.getCurrentPlayerStatus()
+                    == PlaybackPreferences.PLAYER_STATUS_PLAYING;
             WidgetUpdater.updateWidget(getApplicationContext(),
-                    new WidgetUpdater.WidgetState(media, PlayerStatus.STOPPED,
+                    new WidgetUpdater.WidgetState(media, playing ? PlayerStatus.PLAYING : PlayerStatus.STOPPED,
                             media.getPosition(), media.getDuration(),
                             PlaybackSpeedUtils.getCurrentPlaybackSpeed(media)));
         } else {
