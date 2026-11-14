@@ -911,7 +911,7 @@ public class Media3PlaybackService extends MediaLibraryService {
                 this::onLiveBufferUnsupported);
         Log.d(TAG, "Live pause: paused, buffering behind the listener");
         // The live connection closes; the player waits, paused, at the start of the buffer.
-        player.setMediaItem(bufferItem(live, bufferItemStart));
+        switchItem(bufferItem(live, bufferItemStart));
         player.prepare();
         foregroundHandler.removeCallbacks(liveTick);
         foregroundHandler.postDelayed(liveTick, LIVE_TICK_MS);
@@ -960,9 +960,20 @@ public class Media3PlaybackService extends MediaLibraryService {
             foregroundHandler.postDelayed(idleAfterLivePause, IDLE_AFTER_LIVE_PAUSE_MS + 1000);
         }
         if (live != null && player != null) {
-            player.setMediaItem(live);
+            switchItem(live);
         }
         updateLiveBehind(true);
+    }
+
+    /**
+     * Swaps between the live stream and the buffer with a fresh audio decoder. Swapping in place kept the
+     * decoder from before, flushed, and George FM then sounded duller from the swap on, even back at live
+     * (the decoder can lose the high-frequency part of HE-AAC, which it only detects when it starts).
+     * Stopping first releases the decoder, as a fresh start does.
+     */
+    private void switchItem(MediaItem item) {
+        exoPlayer.stop();
+        player.setMediaItem(item);
     }
 
     /** 10 minutes after live pause ended while paused: let the usual idle stop happen. */
@@ -999,7 +1010,7 @@ public class Media3PlaybackService extends MediaLibraryService {
         long target = Math.max(earliest, Math.min(latest, heardTime() + byMillis));
         boolean play = player.getPlayWhenReady();
         bufferItemStart = target;
-        player.setMediaItem(bufferItem(live, target));
+        switchItem(bufferItem(live, target));
         player.prepare();
         player.setPlayWhenReady(play);
         updateLiveBehind(true);
