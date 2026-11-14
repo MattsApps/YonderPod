@@ -43,6 +43,8 @@ import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.event.EpisodeDownloadEvent;
 import de.danoeh.antennapod.event.FeedUpdateRunningEvent;
 import de.danoeh.antennapod.event.MessageEvent;
+import de.danoeh.antennapod.event.playback.NextUpQuestionEvent;
+import de.danoeh.antennapod.smartplay.app.NextUpQuestions;
 import de.danoeh.antennapod.event.StreamingConfirmationEvent;
 import de.danoeh.antennapod.model.download.DownloadStatus;
 import de.danoeh.antennapod.net.download.service.feed.FeedUpdateManagerImpl;
@@ -789,6 +791,12 @@ public class MainActivity extends CastEnabledActivity implements NavigationToolb
         if (UserPreferences.getHiddenDrawerItems().contains(NavDrawerFragment.getLastNavFragment(this))) {
             loadFragment(UserPreferences.getDefaultPage(), null);
         }
+        NextUpQuestions.showPending(this);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onNextUpQuestion(NextUpQuestionEvent event) {
+        NextUpQuestions.showPending(this);
     }
 
     @Override

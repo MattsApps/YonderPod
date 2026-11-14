@@ -30,6 +30,7 @@ import de.danoeh.antennapod.smartplay.schedule.CategoryScheduleMode;
 import de.danoeh.antennapod.smartplay.worlds.WorldPages;
 import de.danoeh.antennapod.storage.preferences.SleepTimerPreferences;
 import de.danoeh.antennapod.storage.preferences.UserPreferences;
+import de.danoeh.antennapod.storage.preferences.NextUpPreferences;
 import de.danoeh.antennapod.ui.common.Palette;
 import de.danoeh.antennapod.ui.screen.AllEpisodesFragment;
 import de.danoeh.antennapod.ui.screen.FavoritesFragment;
@@ -140,6 +141,11 @@ public class TuneFragment extends Fragment {
         row(sections, R.string.tune_buttons, getString(R.string.tune_skip_value,
                 UserPreferences.getRewindSecs(), UserPreferences.getFastForwardSecs()),
                 () -> TendRows.open(this, new ControlsSettingsFragment()));
+        row(sections, R.string.tune_when_episode_ends, getString(!NextUpPreferences.isContinuousAsked()
+                ? R.string.tune_next_not_chosen : NextUpPreferences.keepPlaying()
+                ? R.string.tune_next_keep : R.string.tune_next_choose), this::chooseWhenEpisodeEnds);
+        row(sections, R.string.tune_half_played, getString(NextUpPreferences.includeHalfPlayed()
+                ? R.string.tune_half_included : R.string.tune_half_left_out), this::chooseHalfPlayed);
         row(sections, R.string.tune_playback, "", () -> openSettings(PreferenceActivity.OPEN_PLAYBACK_SCREEN));
 
         heading(sections, R.string.tune_worlds);
@@ -228,6 +234,36 @@ public class TuneFragment extends Fragment {
         Intent intent = new Intent(requireContext(), PreferenceActivity.class);
         intent.putExtra(extra, true);
         startActivity(intent);
+    }
+
+    /** Keep playing or I'll choose: AntennaPod's continuous playback setting, reused. */
+    private void chooseWhenEpisodeEnds() {
+        String[] options = {getString(R.string.tune_next_keep), getString(R.string.tune_next_choose)};
+        int checked = !NextUpPreferences.isContinuousAsked() ? -1 : NextUpPreferences.keepPlaying() ? 0 : 1;
+        new MaterialAlertDialogBuilder(requireContext())
+                .setTitle(R.string.tune_when_episode_ends)
+                .setSingleChoiceItems(options, checked, (dialog, which) -> {
+                    NextUpPreferences.setKeepPlaying(which == 0, false);
+                    dialog.dismiss();
+                    load();
+                })
+                .show();
+    }
+
+    private void chooseHalfPlayed() {
+        String[] options = {getString(R.string.next_up_half_include), getString(R.string.next_up_half_leave_out)};
+        new MaterialAlertDialogBuilder(requireContext())
+                .setTitle(R.string.next_up_half_title)
+                .setMessage(R.string.next_up_half_message)
+                .setPositiveButton(R.string.next_up_half_include, (dialog, which) -> {
+                    NextUpPreferences.setIncludeHalfPlayed(true);
+                    load();
+                })
+                .setNegativeButton(R.string.next_up_half_leave_out, (dialog, which) -> {
+                    NextUpPreferences.setIncludeHalfPlayed(false);
+                    load();
+                })
+                .show();
     }
 
     private void heading(LinearLayout parent, int text) {

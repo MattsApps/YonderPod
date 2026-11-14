@@ -1049,6 +1049,7 @@ public class SmartPlayEditorFragment extends Fragment {
                     SmartPlayQueueManager.getInstance().onSmartPlaysChanged();
                     clearDraft();
                     savedSnapshot = snapshot();
+                    NextUpQuestions.onSmartPlaySetUp(getActivity());
                     if (isActive) {
                         askToRebuild();
                     } else {

@@ -185,6 +185,10 @@ public final class HelpIndex {
     }
 
     private void addYonderSettings() {
+        setting(R.string.tune_when_episode_ends, R.string.help_words_next_up, OPEN_TUNE,
+                R.string.tune_title, R.string.tune_controls);
+        setting(R.string.tune_half_played, R.string.help_words_half_played, OPEN_TUNE,
+                R.string.tune_title, R.string.tune_controls);
         setting(R.string.tune_daily_update, R.string.help_words_daily_update, OPEN_TUNE,
                 R.string.tune_title, R.string.tune_updates);
         setting(R.string.tune_category_schedules, R.string.help_words_category_schedules, OPEN_TUNE,

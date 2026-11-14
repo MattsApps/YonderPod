@@ -35,6 +35,7 @@ import de.danoeh.antennapod.playback.base.MediaItemAdapter;
 import de.danoeh.antennapod.storage.preferences.ControlsPreferences;
 import de.danoeh.antennapod.ui.appstartintent.MediaButtonStarter;
 import de.danoeh.antennapod.playback.service.R;
+import de.danoeh.antennapod.playback.service.NextUpRule;
 import de.danoeh.antennapod.storage.database.DBReader;
 import de.danoeh.antennapod.storage.preferences.PlaybackPreferences;
 import de.danoeh.antennapod.storage.preferences.UserPreferences;
@@ -352,10 +353,12 @@ public class MediaLibrarySessionCallback implements MediaLibraryService.MediaLib
         Maybe.fromCallable(() -> {
             FeedMedia media = DBReader.getFeedMedia(PlaybackPreferences.getCurrentlyPlayingFeedMediaId());
             if (media == null) {
-                Log.d(TAG, "onPlaybackResumption: trying paused queue now");
-                List<FeedItem> recentQueue = DBReader.getPausedQueue(1);
-                if (!recentQueue.isEmpty()) {
-                    media = recentQueue.get(0).getMedia();
+                // Nothing loaded: the central "what plays next" rule chooses, as for every other route.
+                NextUpRule.Choice choice = NextUpRule.whenNothingLoaded();
+                if (choice.item != null) {
+                    media = choice.item.getMedia();
+                } else if (choice.nothingNewShow != null && !fallbackToRecentEpisode) {
+                    NextUpRule.sayNothingNew(context, choice.nothingNewShow);
                 }
             }
             if (media == null && fallbackToRecentEpisode) {

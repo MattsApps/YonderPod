@@ -86,6 +86,7 @@ import de.danoeh.antennapod.storage.preferences.PlaybackPreferences;
 import de.danoeh.antennapod.storage.preferences.RadioPreferences;
 import de.danoeh.antennapod.storage.preferences.ButtonPress;
 import de.danoeh.antennapod.storage.preferences.ControlsPreferences;
+import de.danoeh.antennapod.storage.preferences.NextUpPreferences;
 import de.danoeh.antennapod.storage.preferences.SleepTimerPreferences;
 import de.danoeh.antennapod.storage.preferences.SleepTimerType;
 import de.danoeh.antennapod.storage.preferences.UserPreferences;
@@ -95,7 +96,6 @@ import de.danoeh.antennapod.ui.episodes.PlaybackSpeedUtils;
 import de.danoeh.antennapod.ui.notifications.NotificationUtils;
 import de.danoeh.antennapod.ui.widget.WidgetUpdater;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
-import io.reactivex.rxjava3.core.Maybe;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.disposables.Disposable;
@@ -104,6 +104,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
@@ -812,6 +813,12 @@ public class Media3PlaybackService extends MediaLibraryService {
                     }
                     FeedMedia media = DBReader.getFeedMedia(mediaId);
                     ChapterUtils.loadChapters(media, this, false);
+                    if (media != null && media.getItem() != null && !media.getItem().isTagged(FeedItem.TAG_QUEUE)
+                            && !media.isLiveRadio() && previousMediaId != PlaybackPreferences.NO_MEDIA_PLAYING
+                            && previousMediaId != mediaId) {
+                        // A detour: the interrupted episode resumes after it, even if half-played ones are off.
+                        NextUpPreferences.setDetourResume(previousMediaId);
+                    }
                     return media;
                 })
                         .subscribeOn(Schedulers.io())
@@ -851,6 +858,10 @@ public class Media3PlaybackService extends MediaLibraryService {
     @OptIn(markerClass = UnstableApi.class)
     private void switchToPlayable(FeedMedia media) {
         currentPlayable = media;
+        if (media.getId() == NextUpPreferences.getDetourResume()) {
+            NextUpPreferences.setDetourResume(-1);
+        }
+        NextUpPreferences.setNothingNew(null);
         playbackStartPosition = Math.max(currentPlayable.getPosition(), 0);
         playedDurationCountedUntil = playbackStartPosition;
 
@@ -1101,7 +1112,9 @@ public class Media3PlaybackService extends MediaLibraryService {
     }
 
     /**
-     * Loads the next item, and starts it if continuous playback is enabled.
+     * Loads what the central rule ({@link NextUpRule}) chooses, and starts it if the rule says so. Otherwise
+     * it waits, paused, for play from any route. The rule may ask a question (keep playing or choose, or
+     * half-played episodes), shown in Yonder or as a notification.
      */
     @UnstableApi
     private void startNextInQueue(FeedMedia media, boolean wasSkipped, boolean ended) {
@@ -1116,57 +1129,64 @@ public class Media3PlaybackService extends MediaLibraryService {
             return;
         }
         int startPosition = playbackStartPosition;
-        queueLoaderDisposable = Maybe.fromCallable(() -> {
-            FeedItem nextItem = DBReader.getNextInQueue(item);
-            if (wasSkipped && (nextItem == null || nextItem.getMedia() == null)) {
-                nextItem = getFirstOtherInQueue(item);
+        queueLoaderDisposable = Single.fromCallable(() -> {
+            if (ended) {
+                NextUpPreferences.setLastFinished(item.getId());
             }
-            boolean hasNext = nextItem != null && nextItem.getMedia() != null;
-            boolean lastInPlaylist = !hasNext && ended && !wasSkipped && !media.isLiveRadio()
-                    && DBReader.getQueueIDList().contains(item.getId());
-            updateDatabaseAfterPlayback(media, startPosition, ended, wasSkipped, hasNext);
-            if (lastInPlaylist) {
-                nextItem = firstAfterRebuild(item);
-                hasNext = nextItem != null;
-            }
-            if (hasNext) {
-                return new Pair<>(nextItem.getMedia(),
-                        MediaItemAdapter.fromPlayable(Media3PlaybackService.this, nextItem.getMedia(), false));
-            }
-            return null;
+            List<FeedItem> queue = DBReader.getQueue();
+            // Marks it played and takes it out of the playlist before any Smart Play rebuild, as before.
+            updateDatabaseAfterPlayback(media, startPosition, ended, wasSkipped, false);
+            NextUpRule.Choice choice = NextUpRule.afterEpisode(item, ended, wasSkipped, queue,
+                    Media3PlaybackService::rebuiltQueue);
+            NextUpPreferences.setNothingNew(choice.nothingNewShow);
+            MediaItem mediaItem = choice.item != null ? MediaItemAdapter.fromPlayable(
+                    Media3PlaybackService.this, choice.item.getMedia(), false) : null;
+            return new Pair<>(choice, mediaItem);
         })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         pair -> {
-                            final FeedMedia nextMedia = pair.first;
-                            final MediaItem nextMediaItem = pair.second;
-                            if (player == null || confirmStreamingIfNeeded(nextMedia)) {
+                            NextUpRule.Choice choice = pair.first;
+                            if (choice.questions != 0) {
+                                NextUpAsk.ask(this, choice.questions);
+                            }
+                            if (player == null) {
+                                return;
+                            }
+                            if (choice.item == null) {
+                                stopWithNothingNext(wasSkipped);
+                                return;
+                            }
+                            final FeedMedia nextMedia = choice.item.getMedia();
+                            if (confirmStreamingIfNeeded(nextMedia)) {
                                 return;
                             }
                             Log.d(TAG, "Next: " + (nextMedia.localFileAvailable() ? "downloaded" : "streaming")
-                                    + ", skipped " + wasSkipped);
+                                    + ", skipped " + wasSkipped + ", " + choice.reason
+                                    + (choice.play ? "" : ", waiting for play"));
                             switchToPlayable(nextMedia);
-                            player.setPlayWhenReady(UserPreferences.isFollowQueue());
-                            player.setMediaItem(nextMediaItem, resumePosition(nextMedia));
+                            player.setPlayWhenReady(choice.play);
+                            player.setMediaItem(pair.second, resumePosition(nextMedia));
                             player.prepare();
                         },
-                        error -> Log.e(TAG, "Failed to load next queue item", error),
-                        () -> {
-                            if (wasSkipped && currentPlayable != null && player != null) {
-                                return;
-                            }
-                            currentPlayable = null;
-                            player.stop();
-                            player.clearMediaItems();
-                            PlaybackPreferences.writeNoMediaPlaying();
-                            EventBus.getDefault().post(new PlayerStatusEvent());
-                            EventBus.getDefault().post(
-                                    new PlaybackServiceEvent(PlaybackServiceEvent.Action.SERVICE_SHUT_DOWN));
-                            if (wasSkipped) {
-                                EventBus.getDefault().post(new MessageEvent(getString(R.string.no_following_in_queue)));
-                            }
-                        });
+                        error -> Log.e(TAG, "Failed to load next queue item", error));
+    }
+
+    private void stopWithNothingNext(boolean wasSkipped) {
+        if (wasSkipped && currentPlayable != null) {
+            return;
+        }
+        currentPlayable = null;
+        player.stop();
+        player.clearMediaItems();
+        PlaybackPreferences.writeNoMediaPlaying();
+        EventBus.getDefault().post(new PlayerStatusEvent());
+        EventBus.getDefault().post(
+                new PlaybackServiceEvent(PlaybackServiceEvent.Action.SERVICE_SHUT_DOWN));
+        if (wasSkipped) {
+            EventBus.getDefault().post(new MessageEvent(getString(R.string.no_following_in_queue)));
+        }
     }
 
     private long resumePosition(FeedMedia media) {
@@ -1178,31 +1198,24 @@ public class Media3PlaybackService extends MediaLibraryService {
         return start;
     }
 
-    private static FeedItem firstAfterRebuild(FeedItem ended) {
+    /** Rebuilds the Smart Play (the playlist ran out) and waits briefly for the new list. */
+    private static List<FeedItem> rebuiltQueue(FeedItem ended) {
         EventBus.getDefault().post(new RebuildSmartPlayEvent());
         for (int attempt = 0; attempt < REBUILD_WAIT_TRIES; attempt++) {
             try {
                 Thread.sleep(REBUILD_WAIT_MS);
             } catch (InterruptedException e) {
-                return null;
+                return new ArrayList<>();
             }
-            for (FeedItem queueItem : DBReader.getQueue()) {
+            List<FeedItem> queue = DBReader.getQueue();
+            for (FeedItem queueItem : queue) {
                 if (queueItem.getId() != ended.getId() && queueItem.getMedia() != null
                         && !queueItem.getMedia().isLiveRadio()) {
-                    return queueItem;
+                    return queue;
                 }
             }
         }
-        return null;
-    }
-
-    private static FeedItem getFirstOtherInQueue(FeedItem item) {
-        for (FeedItem queueItem : DBReader.getQueue()) {
-            if (queueItem.getId() != item.getId() && queueItem.getMedia() != null) {
-                return queueItem;
-            }
-        }
-        return null;
+        return new ArrayList<>();
     }
 
     @UnstableApi

@@ -1674,6 +1674,26 @@
     <string name="tune_buttons">Buttons and rewind</string>
     <string name="tune_skip_value">back %1$d · forward %2$d</string>
     <string name="tune_playback">Playback and headphones</string>
+    <string name="tune_when_episode_ends">When an episode ends</string>
+    <string name="tune_next_keep">keep playing</string>
+    <string name="tune_next_choose">I\'ll choose</string>
+    <string name="tune_next_not_chosen">stop (not chosen yet)</string>
+    <string name="tune_half_played">Half-played episodes</string>
+    <string name="tune_half_included">included when moving on</string>
+    <string name="tune_half_left_out">left out when moving on</string>
+    <string name="help_words_next_up">continuous, continuous playback, keep playing, stop after, stop after each episode, choose next, autoplay, play next, next episode, when an episode ends</string>
+    <string name="help_words_half_played">half-played, half played, in progress, unfinished, started, resume, moving on, continuous</string>
+    <string name="next_up_title">When an episode ends</string>
+    <string name="next_up_message">Keep playing the next one, or stop so you can choose? You can change this any time in Tune.</string>
+    <string name="next_up_again_title">Your Smart Play is set up</string>
+    <string name="next_up_again_message">When an episode ends, keep playing your Smart Play, or still stop so you can choose?</string>
+    <string name="next_up_keep_playing">keep playing</string>
+    <string name="next_up_choose">I\'ll choose</string>
+    <string name="next_up_half_title">Half-played episodes</string>
+    <string name="next_up_half_message">When Yonder moves on by itself, should it include episodes you\'ve half played? Picking an episode yourself always plays it, and an episode Yonder interrupted always resumes.</string>
+    <string name="next_up_half_include">include them</string>
+    <string name="next_up_half_leave_out">leave them out</string>
+    <string name="next_up_nothing_new">Nothing new in %1$s</string>
     <string name="tune_look">look</string>
     <string name="tune_language">language</string>
     <string name="tune_language_older">Yonder speaks English for now. On Android 13 and newer, this opens your phone\'s language setting for Yonder. More languages are coming.</string>
@@ -2092,7 +2112,7 @@
     <string name="help_words_data_folder">storage, sd card, folder, location, space</string>
     <string name="help_words_download_limit">how many, limit, storage, space, download</string>
     <string name="help_words_mark_played">played, finished, end, mark</string>
-    <string name="help_words_continuous">continuous, next, autoplay, keep playing</string>
+    <string name="help_words_continuous">continuous, next, autoplay, keep playing, stop after, choose next, when an episode ends</string>
     <string name="help_words_app_notifications">notification, notifications, alerts</string>
     <!-- Yonder help topics: groups, titles and what each covers -->
     <string name="help_group_start">Getting started</string>

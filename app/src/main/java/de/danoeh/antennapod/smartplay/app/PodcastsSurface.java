@@ -5,12 +5,16 @@ import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 import de.danoeh.antennapod.R;
+import de.danoeh.antennapod.playback.service.NextUpRule;
+import de.danoeh.antennapod.storage.preferences.NextUpPreferences;
 import de.danoeh.antennapod.activity.MainActivity;
 import de.danoeh.antennapod.event.playback.PlaybackPositionEvent;
 import de.danoeh.antennapod.model.feed.FeedItem;
@@ -34,6 +38,7 @@ public class PodcastsSurface extends WorldSurface {
         FeedMedia media;
         FeedItem next;
         String smartPlay = "";
+        String nothingNew;
     }
 
     @Override
@@ -58,12 +63,16 @@ public class PodcastsSurface extends WorldSurface {
             if (isPodcast(current, books)) {
                 state.media = current;
             } else {
+                // Nothing loaded: show what play would play, by the same rule every route uses.
+                List<FeedItem> podcasts = new ArrayList<>();
                 for (FeedItem item : queue) {
                     if (isPodcast(item.getMedia(), books)) {
-                        state.media = item.getMedia();
-                        break;
+                        podcasts.add(item);
                     }
                 }
+                FeedItem first = NextUpRule.firstInPlaylist(podcasts);
+                state.media = first != null ? first.getMedia() : null;
+                state.nothingNew = first == null ? NextUpPreferences.getNothingNew() : null;
             }
             long shownItem = state.media != null ? state.media.getItemId() : -1;
             boolean passed = shownItem < 0;
@@ -149,6 +158,10 @@ public class PodcastsSurface extends WorldSurface {
         showPlaying(isPlaying(shown));
         FeedMedia media = shown;
         root.findViewById(R.id.worldPlay).setOnClickListener(v -> {
+            if (media == null && state.nothingNew != null) {
+                Toast.makeText(requireContext(), getString(R.string.next_up_nothing_new, state.nothingNew),
+                        Toast.LENGTH_SHORT).show();
+            }
             if (media == null) {
                 SmartPlayQueueManager manager = SmartPlayQueueManager.getInstance();
                 if (manager != null) {

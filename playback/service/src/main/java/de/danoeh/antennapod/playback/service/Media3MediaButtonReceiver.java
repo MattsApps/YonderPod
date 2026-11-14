@@ -11,7 +11,6 @@ import androidx.annotation.OptIn;
 import androidx.media3.common.util.UnstableApi;
 import androidx.media3.session.MediaButtonReceiver;
 import de.danoeh.antennapod.playback.service.internal.AudioFocusPolicy;
-import de.danoeh.antennapod.storage.database.DBReader;
 import de.danoeh.antennapod.storage.preferences.PlaybackPreferences;
 import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.schedulers.Schedulers;
@@ -55,13 +54,15 @@ public class Media3MediaButtonReceiver extends MediaButtonReceiver {
         }
 
         PendingResult pendingResult = goAsync();
-        Single.fromCallable(() -> DBReader.getPausedQueue(1))
+        Single.fromCallable(NextUpRule::whenNothingLoaded)
                 .subscribeOn(Schedulers.io())
                 .doFinally(pendingResult::finish)
-                .subscribe(resumable -> {
-                    Log.d(TAG, "Resumable: " + resumable.size());
-                    if (!resumable.isEmpty()) {
+                .subscribe(choice -> {
+                    Log.d(TAG, "Next up: " + (choice.item != null ? choice.item.getTitle() : "nothing"));
+                    if (choice.item != null) {
                         handleIntentAndMaybeStartTheService(context, intent);
+                    } else if (choice.nothingNewShow != null) {
+                        NextUpRule.sayNothingNew(context, choice.nothingNewShow);
                     }
                 }, error -> Log.e(TAG, "Unable to load media for resumption", error));
     }

@@ -73,6 +73,10 @@
         </service>
 
         <receiver
+            android:name="de.danoeh.antennapod.playback.service.NextUpAnswerReceiver"
+            android:exported="false" />
+
+        <receiver
             android:name="de.danoeh.antennapod.playback.service.Media3MediaButtonReceiver"
             android:enabled="${newServiceEnabled}"
             android:exported="true">
