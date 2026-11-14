@@ -187,8 +187,11 @@ public class TuneFragment extends Fragment {
     /** Hidden switches for testing tip me. They only change what the wordmark shows, never unlock anything. */
     private void tipTesting() {
         Context context = requireContext();
-        CharSequence[] choices = {getString(R.string.tip_test_jump), getString(R.string.tip_test_forget),
-            getString(R.string.tip_test_normal)};
+        CharSequence[] choices = BuildConfig.DEBUG
+                ? new CharSequence[] {getString(R.string.tip_test_jump), getString(R.string.tip_test_forget),
+                    getString(R.string.tip_test_normal), getString(R.string.tip_test_year_out)}
+                : new CharSequence[] {getString(R.string.tip_test_jump), getString(R.string.tip_test_forget),
+                    getString(R.string.tip_test_normal)};
         new MaterialAlertDialogBuilder(context)
                 .setTitle(R.string.tip_test_title)
                 .setItems(choices, (dialog, which) -> {
@@ -196,8 +199,10 @@ public class TuneFragment extends Fragment {
                         Tip.testJumpMonth(context);
                     } else if (which == 1) {
                         Tip.testForgetTip(context);
-                    } else {
+                    } else if (which == 2) {
                         Tip.testBackToNormal(context);
+                    } else {
+                        Tip.testYearRanOut(context);
                     }
                     load();
                 })

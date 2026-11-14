@@ -1805,6 +1805,8 @@
     <string name="welcome_notifications_why">So you get playback controls on the lock screen, and see downloads.</string>
     <string name="welcome_battery">Let overnight downloads run</string>
     <string name="welcome_battery_why">In Yonder\'s app settings, tap Battery and choose Unrestricted, so the overnight update isn\'t skipped.</string>
+    <string name="welcome_free_title">free</string>
+    <string name="welcome_free_body">Yonder is free. All of the functions you have today will be free forever. But if you like the app, consider supporting me. In one month, “yonder” at the top of the app will turn into a “tip me” button. If you tip anything, it turns back to “yonder” for a year. If you don\'t, everything still works. You can change the button back to “yonder” for the day with a long press.</string>
     <string name="welcome_ready_title">ready?</string>
     <string name="welcome_ready_body">Bring your shows from another app, or start fresh and find some.</string>
     <string name="welcome_moving">Move from another app</string>
@@ -2251,7 +2253,7 @@
     <!-- PLACEHOLDER: Matt to rewrite this line in his own words. -->
     <string name="tip_line">Hi, I\'m Matt. I made Yonder because I missed BeyondPod. It\'s free, and nothing in it will ever be locked. If it\'s earned a place on your phone, a small tip once a year keeps it going.</string>
     <string name="tip_explain">Any tip brings back “yonder” at the top for a year. It doesn\'t unlock anything: everything already works.</string>
-    <string name="tip_explain_again">Tipping again adds another year.</string>
+    <string name="tip_explain_again">Tipping again starts a new year from that day.</string>
     <string name="tip_supporter_until">You\'re a supporter until %1$s. Thank you!</string>
     <string name="tip_supporter">You\'re a supporter. Thank you!</string>
     <string name="tip_loading">Asking Google Play for prices…</string>
@@ -2267,6 +2269,10 @@
     <string name="tip_test_jump">Pretend a month has passed</string>
     <string name="tip_test_forget">Forget my tip on this phone</string>
     <string name="tip_test_normal">Back to normal</string>
+    <string name="tip_test_year_out">Pretend a tipped year has run out</string>
+    <string name="tip_note_month_up">Your free month is up. Tap “tip me” to support Yonder. Everything still works, and a long press brings “yonder” back for the day.</string>
+    <string name="tip_note_year_up">Your year of “yonder” is up. Thank you for tipping. Tap “tip me” to support Yonder for another year. Everything still works, and a long press brings “yonder” back for the day.</string>
+    <string name="tip_note_got_it">got it</string>
     <string-array name="tip_amounts" translatable="false">
         <item>NZ$3</item>
         <item>NZ$6</item>

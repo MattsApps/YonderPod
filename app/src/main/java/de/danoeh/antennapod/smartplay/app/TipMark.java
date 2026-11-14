@@ -43,6 +43,10 @@ final class TipMark {
         mark.setLongClickable(false);
         mark.setBackground(null);
         mark.setContentDescription(null);
+        View note = root.findViewById(R.id.tipNote);
+        if (note != null) {
+            note.setVisibility(View.GONE);
+        }
 
         long thanks = Tip.thanksLeft(context);
         if (thanks > 0) {
@@ -67,9 +71,25 @@ final class TipMark {
                 Toast.makeText(context, R.string.tip_dismissed, Toast.LENGTH_SHORT).show();
                 return true;
             });
+            showNote(context, note);
             return;
         }
         mark.setText(R.string.yonder_wordmark);
+    }
+
+    /** The small note under "tip me", once each time it comes back, until "got it". */
+    private static void showNote(Context context, @Nullable View note) {
+        if (note == null) {
+            return;
+        }
+        int which = Tip.note(context);
+        if (which == Tip.NOTE_NONE) {
+            return;
+        }
+        ((TextView) note.findViewById(R.id.tipNoteText)).setText(
+                which == Tip.NOTE_YEAR ? R.string.tip_note_year_up : R.string.tip_note_month_up);
+        note.findViewById(R.id.tipNoteOk).setOnClickListener(v -> Tip.noteSeen(context));
+        note.setVisibility(View.VISIBLE);
     }
 
     @Nullable

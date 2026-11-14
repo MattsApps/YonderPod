@@ -47,6 +47,34 @@
 
     </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/tipNote"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="8dp"
+        android:layout_marginTop="4dp"
+        android:background="@drawable/wildink_block"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="12dp"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/tipNoteText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textAppearance="@style/TextAppearance.WildInk.Detail" />
+
+        <Button
+            android:id="@+id/tipNoteOk"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="@string/tip_note_got_it" />
+
+    </LinearLayout>
+
     <TextView
         style="@style/Widget.WildInk.Fit.WorldName"
         android:id="@+id/worldName"

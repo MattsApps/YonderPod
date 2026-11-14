@@ -118,6 +118,7 @@ public class Media3PlaybackService extends MediaLibraryService {
     private static final long REBUILD_WAIT_MS = 500;
     private static final long FOREGROUND_HAND_BACK_MS = 15000;
     private static final long FOREGROUND_CHECK_MS = 3000;
+    private static final long IDLE_CHECK_DELAY_MS = 2000;
     private ExoPlayer exoPlayer;
     private Player player;
     private MediaLibrarySession mediaSession;
@@ -145,6 +146,7 @@ public class Media3PlaybackService extends MediaLibraryService {
     private long playingSince = 0;
     private boolean foregroundLogged = false;
     private boolean notForegroundWarned = false;
+    private String idleReason = "";
     private float fadeInVolume = 1.0f;
     @Nullable
     private LoudnessEnhancer loudnessEnhancer = null;
@@ -582,11 +584,21 @@ public class Media3PlaybackService extends MediaLibraryService {
     @Override
     public int onStartCommand(@Nullable Intent intent, int flags, int startId) {
         int result = super.onStartCommand(intent, flags, startId);
+        if (intent == null) {
+            // Android restarted the service by itself after killing it. A new process can't be playing
+            // anything (ClientConfigurator shows it paused), so stop again rather than sit idle.
+            Log.d(TAG, "Idle: restarted by Android with nothing playing");
+            scheduleIdleCheck("restarted by Android");
+            return START_NOT_STICKY;
+        }
         if (startsPlayback(intent)) {
             String source = intent.getStringExtra(MediaButtonStarter.EXTRA_MEDIA_BUTTON_SOURCE);
             goForeground(source != null ? source : "media button");
         }
-        return result;
+        // Media3 sends itself a start request each time it goes (or stays) in the foreground, so while
+        // playing the latest answer is sticky, and once paused it isn't: Android restarts the player only
+        // if it was playing.
+        return isPlayerIdle() ? START_NOT_STICKY : result;
     }
 
     private boolean startsPlayback(@Nullable Intent intent) {
@@ -684,6 +696,63 @@ public class Media3PlaybackService extends MediaLibraryService {
     public MediaLibrarySession onGetSession(@NonNull MediaSession.ControllerInfo controllerInfo) {
         return mediaSession;
     }
+
+    /**
+     * The one place that decides whether the player is idle (0.9.25). Idle means nothing is playing or
+     * about to play, so the service can stop. Live pause (0.9.26) adds its buffer here: a live station
+     * paused with a buffer running counts as busy.
+     */
+    private boolean isPlayerIdle() {
+        if (player == null) {
+            return true;
+        }
+        if (isCasting()) {
+            return false;
+        }
+        int state = player.getPlaybackState();
+        boolean playing = player.getPlayWhenReady()
+                && (state == Player.STATE_READY || state == Player.STATE_BUFFERING);
+        return !playing;
+    }
+
+    /**
+     * Media3 calls this on every notification change. When it no longer needs the foreground (10 minutes
+     * after a pause, or once there's nothing to play), the player service stops if it's idle.
+     */
+    @Override
+    @UnstableApi
+    public void onUpdateNotification(@NonNull MediaSession session, boolean startInForegroundRequired) {
+        super.onUpdateNotification(session, startInForegroundRequired);
+        if (startInForegroundRequired) {
+            foregroundHandler.removeCallbacks(idleCheck);
+        } else {
+            scheduleIdleCheck("left the foreground");
+        }
+    }
+
+    /** Checks again a moment later, so a play that is just starting is never mistaken for idle. */
+    private void scheduleIdleCheck(String reason) {
+        idleReason = reason;
+        foregroundHandler.removeCallbacks(idleCheck);
+        foregroundHandler.postDelayed(idleCheck, IDLE_CHECK_DELAY_MS);
+    }
+
+    private final Runnable idleCheck = new Runnable() {
+        @Override
+        @OptIn(markerClass = UnstableApi.class)
+        public void run() {
+            if (!isPlayerIdle()) {
+                return;
+            }
+            Log.d(TAG, "Idle: stopping the player service (" + idleReason + ")");
+            saveCurrentPosition();
+            if (Build.VERSION.SDK_INT >= 29 && isForeground()) {
+                pauseAllPlayersAndStopSelf();
+            } else {
+                stopSelf();
+            }
+        }
+    };
 
     @UnstableApi
     @Override
@@ -1087,6 +1156,7 @@ public class Media3PlaybackService extends MediaLibraryService {
         if (currentPlayable != null && currentPlayable.isLiveRadio()) {
             player.stop();
             EventBus.getDefault().post(new PlayerStatusEvent());
+            scheduleIdleCheck("live station ended");
             return;
         }
         FeedMedia media = currentPlayable;
@@ -1101,6 +1171,7 @@ public class Media3PlaybackService extends MediaLibraryService {
                 EventBus.getDefault().post(
                         new PlaybackServiceEvent(PlaybackServiceEvent.Action.SERVICE_SHUT_DOWN));
                 EventBus.getDefault().post(new PlayerStatusEvent());
+                scheduleIdleCheck("sleep timer ended");
                 return;
             }
         }
@@ -1187,6 +1258,7 @@ public class Media3PlaybackService extends MediaLibraryService {
         if (wasSkipped) {
             EventBus.getDefault().post(new MessageEvent(getString(R.string.no_following_in_queue)));
         }
+        scheduleIdleCheck("ended with nothing next");
     }
 
     private long resumePosition(FeedMedia media) {

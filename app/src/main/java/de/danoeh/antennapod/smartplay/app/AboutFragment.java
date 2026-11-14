@@ -1,6 +1,8 @@
 package de.danoeh.antennapod.smartplay.app;
 
 import android.os.Bundle;
+import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,6 +43,7 @@ public class AboutFragment extends Fragment {
         action.setText(R.string.about_feedback);
         action.setOnClickListener(v -> askFeedback());
         root.findViewById(R.id.pageActionNote).setVisibility(View.GONE);
+        addTipButton(action);
 
         LinearLayout sections = root.findViewById(R.id.pageSections);
         row(sections, R.string.about_made_by, getString(R.string.yonder_developer_name), this::askFeedback);
@@ -57,6 +60,25 @@ public class AboutFragment extends Fragment {
         row(sections, R.string.about_privacy, "", () ->
                 IntentUtils.openInBrowser(requireContext(), getString(R.string.yonder_privacy_url)));
         return root;
+    }
+
+    /**
+     * "tip me", on both builds from day one. Play: the same tip choices as the top "tip me". F-Droid: the
+     * web page in yonder_tip_link (nothing opens while that link is empty).
+     */
+    private void addTipButton(TextView feedback) {
+        ViewGroup parent = (ViewGroup) feedback.getParent();
+        TextView tip = new TextView(requireContext(), null, 0, R.style.Widget_WildInk_Block);
+        tip.setText(R.string.tip_me_mark);
+        tip.setGravity(Gravity.CENTER);
+        tip.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+        tip.setContentDescription(getString(R.string.tip_me_description));
+        tip.setOnClickListener(v -> TipShop.open(this));
+        float density = getResources().getDisplayMetrics().density;
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, feedback.getLayoutParams().height);
+        params.topMargin = Math.round(12 * density);
+        parent.addView(tip, parent.indexOfChild(feedback) + 1, params);
     }
 
     private void askFeedback() {

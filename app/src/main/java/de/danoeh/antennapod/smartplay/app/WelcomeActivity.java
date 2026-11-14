@@ -50,7 +50,7 @@ public class WelcomeActivity extends AppCompatActivity {
     private static final String KEY_SHOWN = "shown";
     private static final String KEY_CRASH_ANSWERED = "crashAnswered";
     private static final String KEY_CRASH_NEVER = "crashNever";
-    private static final int PAGES = 4;
+    private static final int PAGES = 5;
 
     private ViewPager2 pager;
     private final ActivityResultLauncher<String> notificationPermission = registerForActivityResult(
@@ -197,6 +197,10 @@ public class WelcomeActivity extends AppCompatActivity {
                 }
                 break;
             case 3:
+                title.setText(R.string.welcome_free_title);
+                body.setText(R.string.welcome_free_body);
+                break;
+            case 4:
             default:
                 title.setText(R.string.welcome_ready_title);
                 body.setText(R.string.welcome_ready_body);

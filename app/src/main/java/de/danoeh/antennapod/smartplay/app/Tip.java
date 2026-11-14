@@ -33,6 +33,8 @@ public final class Tip {
 
     private static final String KEY_FIRST_SEEN = "firstSeen";
     private static final String KEY_DISMISSED_DAY = "dismissedDay";
+    private static final String KEY_WAS_DUE = "wasDue";
+    private static final String KEY_NOTE = "note";
 
     private static final String KEY_SUPPORTER = "supporter";
     private static final String KEY_UNTIL = "until";
@@ -41,6 +43,13 @@ public final class Tip {
     private static final String KEY_TEST_DAYS = "testDays";
     private static final String KEY_TEST_MONTH_PASSED = "testMonthPassed";
     private static final String KEY_TEST_IGNORE = "testIgnoreToken";
+    private static final String KEY_EVER_TIPPED = "everTipped";
+    private static final String KEY_TEST_TIPPED = "testTipped";
+
+    /** The note under "tip me": none, the free month is up, or a tipped year is up. */
+    static final int NOTE_NONE = 0;
+    static final int NOTE_MONTH = 1;
+    static final int NOTE_YEAR = 2;
 
     private static boolean checkedThisRun;
 
@@ -61,14 +70,45 @@ public final class Tip {
 
     /** True when the wordmark should be the "tip me" button. */
     static boolean showTipMe(Context context) {
+        return tipMeDue(context) && !today().equals(prefs(context).getString(KEY_DISMISSED_DAY, ""));
+    }
+
+    /** "tip me" is due (free month over, no tip in the last year), whether or not it's hidden for today. */
+    private static boolean tipMeDue(Context context) {
         if (!TipShop.canTip(context) || isSupporter(context)) {
             return false;
         }
-        if (!local(context).getBoolean(KEY_TEST_MONTH_PASSED, false)
-                && System.currentTimeMillis() < addMonth(firstSeen(context))) {
-            return false;
+        return local(context).getBoolean(KEY_TEST_MONTH_PASSED, false)
+                || System.currentTimeMillis() >= addMonth(firstSeen(context));
+    }
+
+    /**
+     * The note to show under "tip me", once per change: each time "tip me" replaces "yonder" (the free month
+     * ends, or a tipped year runs out) the note comes back until "got it". Hiding "tip me" for the day with
+     * a long press isn't a change.
+     */
+    static int note(Context context) {
+        SharedPreferences prefs = prefs(context);
+        boolean due = tipMeDue(context);
+        boolean wasDue = prefs.getBoolean(KEY_WAS_DUE, false);
+        if (due && !wasDue) {
+            prefs.edit().putBoolean(KEY_WAS_DUE, true)
+                    .putInt(KEY_NOTE, everTipped(context) ? NOTE_YEAR : NOTE_MONTH).apply();
+        } else if (!due && wasDue) {
+            prefs.edit().putBoolean(KEY_WAS_DUE, false).remove(KEY_NOTE).apply();
         }
-        return !today().equals(prefs(context).getString(KEY_DISMISSED_DAY, ""));
+        return showTipMe(context) ? prefs.getInt(KEY_NOTE, NOTE_NONE) : NOTE_NONE;
+    }
+
+    /** "got it": hidden until "tip me" next comes back. */
+    static void noteSeen(Context context) {
+        prefs(context).edit().remove(KEY_NOTE).apply();
+        changed();
+    }
+
+    private static boolean everTipped(Context context) {
+        SharedPreferences local = local(context);
+        return local.getBoolean(KEY_EVER_TIPPED, false) || local.getBoolean(KEY_TEST_TIPPED, false);
     }
 
     /** The web page the F-Droid build opens for a tip (empty until Matt sets it in strings.xml). */
@@ -96,8 +136,17 @@ public final class Tip {
         return first;
     }
 
+    /**
+     * True for a year from the latest tip. Play says whether a tip is active; the year is counted here
+     * from the day of the latest tip (decided 14 Nov), even where Play's own end date is later.
+     */
     static boolean isSupporter(Context context) {
-        return local(context).getBoolean(KEY_SUPPORTER, false);
+        SharedPreferences local = local(context);
+        if (!local.getBoolean(KEY_SUPPORTER, false)) {
+            return false;
+        }
+        long until = local.getLong(KEY_UNTIL, 0);
+        return until <= 0 || System.currentTimeMillis() < until;
     }
 
     /** Best estimate of when the tip runs out, or 0 if unknown. Display only: Play decides. */
@@ -125,13 +174,13 @@ public final class Tip {
             editor.putBoolean(KEY_SUPPORTER, false).remove(KEY_UNTIL).remove(KEY_TOKEN);
         } else {
             if (!token.equals(local.getString(KEY_TOKEN, null))) {
-                // A top-up gets a new token and adds a year to the old end date. After a reinstall the old
-                // end date is unknown, so the estimate starts from the latest purchase.
-                long previous = local.getLong(KEY_UNTIL, 0);
-                editor.putLong(KEY_UNTIL, addYear(previous > purchaseTime ? previous : purchaseTime));
+                // Any tip gives "yonder" for a year from the day of that tip (decided 14 Nov): a tip in the
+                // free month, or a top-up while a year is running, restarts the year from the new tip.
+                // Play's top-up adds a year to its own end date instead; Yonder only uses the tip's date.
+                editor.putLong(KEY_UNTIL, addYear(purchaseTime > 0 ? purchaseTime : System.currentTimeMillis()));
                 editor.putString(KEY_TOKEN, token);
             }
-            editor.putBoolean(KEY_SUPPORTER, true);
+            editor.putBoolean(KEY_SUPPORTER, true).putBoolean(KEY_EVER_TIPPED, true);
         }
         editor.apply();
         changed();
@@ -153,8 +202,19 @@ public final class Tip {
     // Hidden test switches (Tune → long-press the tip row). They only change what the wordmark shows.
 
     static void testJumpMonth(Context context) {
-        local(context).edit().putBoolean(KEY_TEST_MONTH_PASSED, true).remove(KEY_TEST_DAYS).apply();
-        prefs(context).edit().remove(KEY_DISMISSED_DAY).apply();
+        local(context).edit().putBoolean(KEY_TEST_MONTH_PASSED, true).remove(KEY_TEST_DAYS)
+                .remove(KEY_TEST_TIPPED).apply();
+        prefs(context).edit().remove(KEY_DISMISSED_DAY).remove(KEY_WAS_DUE).remove(KEY_NOTE).apply();
+        changed();
+    }
+
+    /** Debug builds only: as if a tipped year had just run out, so the second note shows. */
+    static void testYearRanOut(Context context) {
+        SharedPreferences local = local(context);
+        local.edit().putBoolean(KEY_TEST_MONTH_PASSED, true).putBoolean(KEY_TEST_TIPPED, true)
+                .putString(KEY_TEST_IGNORE, local.getString(KEY_TOKEN, ""))
+                .putBoolean(KEY_SUPPORTER, false).remove(KEY_UNTIL).remove(KEY_TOKEN).remove(KEY_THANKS_AT).apply();
+        prefs(context).edit().remove(KEY_DISMISSED_DAY).remove(KEY_WAS_DUE).remove(KEY_NOTE).apply();
         changed();
     }
 
@@ -167,7 +227,8 @@ public final class Tip {
     }
 
     static void testBackToNormal(Context context) {
-        local(context).edit().remove(KEY_TEST_DAYS).remove(KEY_TEST_MONTH_PASSED).remove(KEY_TEST_IGNORE).apply();
+        local(context).edit().remove(KEY_TEST_DAYS).remove(KEY_TEST_MONTH_PASSED).remove(KEY_TEST_IGNORE)
+                .remove(KEY_TEST_TIPPED).apply();
         changed();
         TipShop.refresh(context.getApplicationContext());
     }
