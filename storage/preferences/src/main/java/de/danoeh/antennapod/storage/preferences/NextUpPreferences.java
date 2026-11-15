@@ -6,6 +6,9 @@ import android.content.SharedPreferences;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * What plays next, and the two questions about it.
  *
@@ -31,6 +34,7 @@ public final class NextUpPreferences {
     private static final String KEY_DETOUR_RESUME = "detourResumeMediaId";
     private static final String KEY_LAST_FINISHED = "lastFinishedItemId";
     private static final String KEY_NOTHING_NEW = "nothingNewShow";
+    private static final String KEY_DETOUR_KEPT = "detourKeptItemIds";
 
     private static SharedPreferences prefs;
 
@@ -122,5 +126,24 @@ public final class NextUpPreferences {
 
     public static void setNothingNew(@Nullable String show) {
         prefs.edit().putString(KEY_NOTHING_NEW, show).apply();
+    }
+
+    public static Set<Long> getDetourKept() {
+        Set<Long> ids = new HashSet<>();
+        String saved = prefs != null ? prefs.getString(KEY_DETOUR_KEPT, "") : "";
+        for (String id : saved.split(",")) {
+            if (!id.isEmpty()) {
+                ids.add(Long.parseLong(id));
+            }
+        }
+        return ids;
+    }
+
+    public static void setDetourKept(Set<Long> ids) {
+        StringBuilder saved = new StringBuilder();
+        for (long id : ids) {
+            saved.append(saved.length() > 0 ? "," : "").append(id);
+        }
+        prefs.edit().putString(KEY_DETOUR_KEPT, saved.toString()).commit();
     }
 }

@@ -42,3 +42,4 @@ signing.properties
 release-log.txt
 widget-size.txt
 recordings-log.txt
+stop-log*.txt

@@ -46,6 +46,7 @@ import de.danoeh.antennapod.net.common.NetworkUtils;
 import de.danoeh.antennapod.playback.service.PlaybackServiceStarter;
 import de.danoeh.antennapod.storage.database.DBReader;
 import de.danoeh.antennapod.storage.database.DBWriter;
+import de.danoeh.antennapod.storage.preferences.NextUpPreferences;
 import de.danoeh.antennapod.storage.preferences.PlaybackPreferences;
 import de.danoeh.antennapod.storage.preferences.UserPreferences;
 
@@ -403,7 +404,8 @@ public class SmartPlayQueueManager {
             Map<Long, FeedItem> itemsById = loadCandidates(queue, streamFeeds);
             long playingItemId = playingItemId(itemsById);
             Map<Long, Set<Long>> playsIn = Recordings.playsInByFeed(context);
-            Set<Long> dead = deadIds(itemsById.values(), playingItemId, playsIn);
+            Set<Long> detour = detourKept(queue);
+            Set<Long> dead = deadIds(itemsById.values(), playingItemId, playsIn, detour);
             itemsById.keySet().removeAll(dead);
             editStore.forget(dead);
             boolean streamingAllowed = NetworkUtils.isStreamingAllowed();
@@ -490,7 +492,8 @@ public class SmartPlayQueueManager {
             }
             long playingItemId = playingItemId(inQueue);
             Map<Long, Set<Long>> playsIn = Recordings.playsInByFeed(context);
-            Set<Long> dead = deadIds(queue, playingItemId, playsIn);
+            Set<Long> detour = detourKept(queue);
+            Set<Long> dead = deadIds(queue, playingItemId, playsIn, detour);
             Set<Long> forget = new HashSet<>(dead);
             List<FeedItem> remembered = new ArrayList<>();
             for (long id : editStore.load().getHandAddedIds()) {
@@ -503,7 +506,7 @@ public class SmartPlayQueueManager {
                     }
                 }
             }
-            forget.addAll(deadIds(remembered, playingItemId, playsIn));
+            forget.addAll(deadIds(remembered, playingItemId, playsIn, detour));
             editStore.forget(forget);
             if (!dead.isEmpty()) {
                 List<FeedItem> kept = new ArrayList<>();
@@ -520,7 +523,19 @@ public class SmartPlayQueueManager {
         }
     }
 
-    private Set<Long> deadIds(Collection<FeedItem> items, long playingItemId, Map<Long, Set<Long>> playsIn) {
+    private static Set<Long> detourKept(List<FeedItem> queue) {
+        Set<Long> saved = NextUpPreferences.getDetourKept();
+        Set<Long> kept = new HashSet<>();
+        for (FeedItem item : queue) {
+            if (saved.contains(item.getId())) {
+                kept.add(item.getId());
+            }
+        }
+        return kept;
+    }
+
+    private Set<Long> deadIds(Collection<FeedItem> items, long playingItemId, Map<Long, Set<Long>> playsIn,
+                              Set<Long> kept) {
         Set<Long> feedIds = new HashSet<>();
         for (Feed feed : DBReader.getFeedList()) {
             feedIds.add(feed.getId());
@@ -533,7 +548,8 @@ public class SmartPlayQueueManager {
                     || Radio.isRadioFeed(feed);
             if (!gone && Recordings.isRecordingsFeed(feed)) {
                 gone = !media.localFileAvailable() || !media.fileExists()
-                        || (item.getId() != playingItemId && !chosenHere(playsIn, item.getFeedId()));
+                        || (item.getId() != playingItemId && !kept.contains(item.getId())
+                                && !chosenHere(playsIn, item.getFeedId()));
             }
             if (gone) {
                 dead.add(item.getId());

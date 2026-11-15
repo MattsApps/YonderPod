@@ -85,6 +85,7 @@ import de.danoeh.antennapod.playback.service.internal.EpisodeSleepTimer;
 import de.danoeh.antennapod.storage.database.DBReader;
 import de.danoeh.antennapod.ui.appstartintent.MediaButtonStarter;
 import de.danoeh.antennapod.storage.database.DBWriter;
+import de.danoeh.antennapod.storage.database.LongList;
 import de.danoeh.antennapod.storage.preferences.PlaybackPreferences;
 import de.danoeh.antennapod.storage.preferences.RadioPreferences;
 import de.danoeh.antennapod.storage.preferences.ButtonPress;
@@ -111,12 +112,16 @@ import java.io.EOFException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 public class Media3PlaybackService extends MediaLibraryService {
     private static final String TAG = "M3PlaybackService";
+    private static final String RECORDING_GUID_PREFIX = "yonderpod-recording:";
     private static final long POSITION_SAVE_INTERVAL_MS = 5000;
     private static final String BOOK_CATEGORY = "Audiobooks";
     private static final int REBUILD_WAIT_TRIES = 20;
@@ -1501,8 +1506,64 @@ public class Media3PlaybackService extends MediaLibraryService {
             boolean book = feed != null && feed.getPreferences() != null
                     && feed.getPreferences().getTags().contains(BOOK_CATEGORY);
             int index = radio || book ? DBReader.getQueueIDList().size() : 0;
-            DBWriter.addQueueItemAt(this, item.getId(), index);
+            List<FeedItem> parts = radio || book ? new ArrayList<>() : extraPartsOf(item);
+            if (parts.isEmpty()) {
+                DBWriter.addQueueItemAt(this, item.getId(), index);
+                return;
+            }
+            LongList queueIds = DBReader.getQueueIDList();
+            Set<Long> kept = new HashSet<>();
+            for (long id : NextUpPreferences.getDetourKept()) {
+                if (queueIds.contains(id)) {
+                    kept.add(id);
+                }
+            }
+            kept.add(item.getId());
+            for (FeedItem part : parts) {
+                kept.add(part.getId());
+            }
+            NextUpPreferences.setDetourKept(kept);
+            Log.d(TAG, "Detour: " + item.getTitle() + " brings " + parts.size() + " extra part(s)");
+            try {
+                DBWriter.addQueueItemAt(this, item.getId(), index).get();
+                for (int i = 0; i < parts.size(); i++) {
+                    DBWriter.addQueueItemAt(this, parts.get(i).getId(), index + 1 + i).get();
+                }
+            } catch (ExecutionException | InterruptedException e) {
+                Log.e(TAG, "Could not add the extra parts", e);
+            }
         });
+    }
+
+    private static List<FeedItem> extraPartsOf(FeedItem main) {
+        List<FeedItem> parts = new ArrayList<>();
+        String guid = main.getItemIdentifier();
+        if (guid == null || !guid.startsWith(RECORDING_GUID_PREFIX)
+                || guid.substring(RECORDING_GUID_PREFIX.length()).split(":").length != 2) {
+            return parts;
+        }
+        Feed feed = DBReader.getFeed(main.getFeedId(), false, 0, Integer.MAX_VALUE);
+        if (feed == null || feed.getItems() == null) {
+            return parts;
+        }
+        for (FeedItem item : feed.getItems()) {
+            String itemGuid = item.getItemIdentifier();
+            if (itemGuid != null && itemGuid.startsWith(guid + ":") && item.getMedia() != null
+                    && item.getMedia().localFileAvailable()) {
+                parts.add(item);
+            }
+        }
+        Collections.sort(parts, (a, b) -> Long.compare(partStart(a), partStart(b)));
+        return parts;
+    }
+
+    private static long partStart(FeedItem part) {
+        String guid = part.getItemIdentifier();
+        try {
+            return Long.parseLong(guid.substring(guid.lastIndexOf(':') + 1).split("-")[0]);
+        } catch (NumberFormatException e) {
+            return 0;
+        }
     }
 
     @UnstableApi
@@ -1587,6 +1648,9 @@ public class Media3PlaybackService extends MediaLibraryService {
         queueLoaderDisposable = Single.fromCallable(() -> {
             if (ended) {
                 NextUpPreferences.setLastFinished(item.getId());
+                if (PlaybackPreferences.getCurrentlyPlayingFeedMediaId() == media.getId()) {
+                    PlaybackPreferences.writeNoMediaPlaying();
+                }
             }
             List<FeedItem> queue = DBReader.getQueue();
             // Marks it played and takes it out of the playlist before any Smart Play rebuild, as before.
