@@ -320,14 +320,16 @@ public class SmartPlayEditorFragment extends Fragment {
             hoursDays.addView(chip);
         }
         hoursSwitch.setOnCheckedChangeListener((button, checked) -> showHours());
-        hoursFrom.setOnClickListener(v -> new TimePickerDialog(requireContext(), (picker, hour, minute) -> {
+        hoursFrom.setOnClickListener(v -> TimePickerLook.show(new TimePickerDialog(requireContext(),
+                (picker, hour, minute) -> {
             hoursFromMinute = hour * 60 + minute;
             showHours();
-        }, hoursFromMinute / 60, hoursFromMinute % 60, DateFormat.is24HourFormat(requireContext())).show());
-        hoursTo.setOnClickListener(v -> new TimePickerDialog(requireContext(), (picker, hour, minute) -> {
+        }, hoursFromMinute / 60, hoursFromMinute % 60, DateFormat.is24HourFormat(requireContext()))));
+        hoursTo.setOnClickListener(v -> TimePickerLook.show(new TimePickerDialog(requireContext(),
+                (picker, hour, minute) -> {
             hoursToMinute = hour * 60 + minute;
             showHours();
-        }, hoursToMinute / 60, hoursToMinute % 60, DateFormat.is24HourFormat(requireContext())).show());
+        }, hoursToMinute / 60, hoursToMinute % 60, DateFormat.is24HourFormat(requireContext()))));
     }
 
     private void applyHours(ActiveHours.Window window) {

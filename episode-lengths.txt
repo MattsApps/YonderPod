@@ -1,0 +1,21 @@
+==== Episode lengths, Sun 15 Nov 2026 17:16:33 NZDT ====
+Checking 39 downloaded episodes (BBC ones first)
+
+Comedy of the Week/Evil Animals - Crows.16556.mp3
+   ok
+      file 31849165 bytes, audio from byte 103494, 128 kbps 44100 Hz
+      actual audio: 75954 frames = 0:33:04
+      no frame count in the file: estimated from size and bitrate 0:33:04 (-0.0 s vs actual)
+
+Comedy of the Week/Randy Feltfaces Human Handbook.16668.mp3
+   ok
+      file 28260799 bytes, audio from byte 103307, 128 kbps 44100 Hz
+      actual audio: 67369 frames = 0:29:20
+      no frame count in the file: estimated from size and bitrate 0:29:20 (-0.0 s vs actual)
+
+Comedy of the Week/The Matt Forde Focus Group.16793.mp3
+   ok
+      file 27713855 bytes, audio from byte 103472, 128 kbps 44100 Hz
+      actual audio: 66060 frames = 0:28:46
+      no frame count in the file: estimated from size and bitrate 0:28:46 (-0.0 s vs actual)
+

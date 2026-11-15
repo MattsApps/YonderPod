@@ -72,12 +72,12 @@ public class SleepSettingsFragment extends Fragment {
         updateStopAtTime(time);
         time.setOnClickListener(v -> {
             int minuteOfDay = SleepTimerPreferences.stopAtMinuteOfDay();
-            new TimePickerDialog(requireContext(), (picker, hour, minute) -> {
+            TimePickerLook.show(new TimePickerDialog(requireContext(), (picker, hour, minute) -> {
                 SleepTimerPreferences.setStopAtMinuteOfDay(hour * 60 + minute);
                 SleepTimerPreferences.setStopAtEnabled(true);
                 enabled.setChecked(true);
                 updateStopAtTime(time);
-            }, minuteOfDay / 60, minuteOfDay % 60, DateFormat.is24HourFormat(requireContext())).show();
+            }, minuteOfDay / 60, minuteOfDay % 60, DateFormat.is24HourFormat(requireContext())));
         });
 
         ChipGroup days = root.findViewById(R.id.sleep_stop_days);

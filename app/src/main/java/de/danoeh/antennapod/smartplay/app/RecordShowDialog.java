@@ -151,14 +151,14 @@ public final class RecordShowDialog {
             updateName.run();
         };
         updateTimes.run();
-        start.setOnClickListener(v -> new TimePickerDialog(context, (picker, hour, minute) -> {
+        start.setOnClickListener(v -> TimePickerLook.show(new TimePickerDialog(context, (picker, hour, minute) -> {
             show.startMinute = hour * 60 + minute;
             updateTimes.run();
-        }, show.startMinute / 60, show.startMinute % 60, DateFormat.is24HourFormat(context)).show());
-        end.setOnClickListener(v -> new TimePickerDialog(context, (picker, hour, minute) -> {
+        }, show.startMinute / 60, show.startMinute % 60, DateFormat.is24HourFormat(context))));
+        end.setOnClickListener(v -> TimePickerLook.show(new TimePickerDialog(context, (picker, hour, minute) -> {
             show.endMinute = hour * 60 + minute;
             updateTimes.run();
-        }, show.endMinute / 60, show.endMinute % 60, DateFormat.is24HourFormat(context)).show());
+        }, show.endMinute / 60, show.endMinute % 60, DateFormat.is24HourFormat(context))));
 
         Runnable updateAvailability = () -> {
             String selected = zones.get(Math.max(0, zone.getSelectedItemPosition()));

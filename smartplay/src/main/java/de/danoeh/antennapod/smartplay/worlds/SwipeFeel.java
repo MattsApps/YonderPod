@@ -10,6 +10,7 @@ public final class SwipeFeel {
     public static final float BACK_GESTURE_TRAVEL = 0.25f;
     public static final double VERTICAL_DEGREES = 60;
     public static final int EDGE_DP = 32;
+    public static final int DECIDE_AFTER_DP = 40;
 
     private SwipeFeel() {
     }

@@ -107,6 +107,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.io.EOFException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -127,6 +128,7 @@ public class Media3PlaybackService extends MediaLibraryService {
     private static final long LIVE_KEEP_PLAYED_MS = 60_000;
     private static final long LIVE_EDGE_MS = 2000;
     private static final long IDLE_AFTER_LIVE_PAUSE_MS = 10 * 60_000L;
+    private static final long RAN_OUT_NEAR_END_MS = 60_000;
     private ExoPlayer exoPlayer;
     private Player player;
     private MediaLibrarySession mediaSession;
@@ -343,6 +345,7 @@ public class Media3PlaybackService extends MediaLibraryService {
                 }
 
                 if (duration > 0 && target >= duration) {
+                    noteEnd("Skipped forward past the end");
                     handlePlaybackEnded();
                     return;
                 }
@@ -566,6 +569,7 @@ public class Media3PlaybackService extends MediaLibraryService {
                 saveCurrentPosition();
             }
             if (playbackState == Player.STATE_ENDED && currentPlayable != null) {
+                noteEnd("Reached the end");
                 handlePlaybackEnded();
             }
         }
@@ -673,6 +677,15 @@ public class Media3PlaybackService extends MediaLibraryService {
         @Override
         public void onPlayerError(@NonNull PlaybackException error) {
             PlaybackService.isRunning = false;
+            if (liveBuffer == null && ranOutOfAudio(error)) {
+                noteEnd("Ran out of audio (" + error.getErrorCodeName() + ", " + error.getCause()
+                        + "), counted as finished");
+                handlePlaybackEnded();
+                return;
+            }
+            if (currentPlayable != null && !currentPlayable.isLiveRadio()) {
+                noteEnd("Playback error " + error.getErrorCodeName() + ", " + error.getCause());
+            }
             if (liveBuffer != null) {
                 Log.e(TAG, "Live pause: the buffer couldn't be played", error);
                 endLivePause(false);
@@ -1232,6 +1245,12 @@ public class Media3PlaybackService extends MediaLibraryService {
                                 addPlayedToQueue(media);
                             }
                             switchToPlayable(media);
+                            PlaybackException pending = player.getPlayerError();
+                            if (pending != null && liveBuffer == null && ranOutOfAudio(pending)) {
+                                noteEnd("Ran out of audio as it loaded (" + pending.getErrorCodeName()
+                                        + "), counted as finished");
+                                handlePlaybackEnded();
+                            }
                         },
                                 error -> Log.e(TAG, "Failed to load current media", error));
 
@@ -1345,6 +1364,11 @@ public class Media3PlaybackService extends MediaLibraryService {
                 && media.getPosition() >= media.getDuration() - smartMarkAsPlayedSecs * 1000;
 
         almostEnded = almostEnded && !skipped;
+        if (almostEnded && !ended) {
+            EpisodeEndLog.note(this, "Counted as played near the end: " + media.getEpisodeTitle() + " at "
+                    + EpisodeEndLog.describe(media.getPosition(), media.getDuration())
+                    + (playingNext ? ", another episode was picked" : ""));
+        }
         SynchronizationQueue.getInstance().enqueueEpisodePlayed(media, startPosition, ended || almostEnded);
         if (item != null) {
             boolean recording = item.getFeed() != null && item.getFeed().getDownloadUrl() != null
@@ -1494,6 +1518,8 @@ public class Media3PlaybackService extends MediaLibraryService {
         if (sleepTimer != null && sleepTimer.isActive()) {
             sleepTimer.episodeFinishedPlayback();
             if (!sleepTimer.shouldContinueToNextEpisode()) {
+                EpisodeEndLog.note(this, "Sleep timer: stopping after "
+                        + (media != null ? media.getEpisodeTitle() : "nothing"));
                 updateDatabaseAfterPlayback(media, playbackStartPosition, true, false, false);
                 player.stop();
                 player.clearMediaItems();
@@ -1510,6 +1536,34 @@ public class Media3PlaybackService extends MediaLibraryService {
 
     private boolean isCasting() {
         return player.getDeviceInfo().playbackType == DeviceInfo.PLAYBACK_TYPE_REMOTE;
+    }
+
+    /**
+     * An episode whose audio runs out before its reported length can't be read any further: the player
+     * reports an error (no audio at that position, or the file ending mid-read) instead of reaching the end.
+     * Near the end, that counts as finished, so it is never left unplayable a few seconds from the end.
+     */
+    private boolean ranOutOfAudio(PlaybackException error) {
+        if (currentPlayable == null || currentPlayable.isLiveRadio() || player == null) {
+            return false;
+        }
+        boolean noAudioThere = error.errorCode == PlaybackException.ERROR_CODE_IO_READ_POSITION_OUT_OF_RANGE
+                || error.errorCode == PlaybackException.ERROR_CODE_PARSING_CONTAINER_MALFORMED;
+        for (Throwable cause = error.getCause(); cause != null && !noAudioThere; cause = cause.getCause()) {
+            noAudioThere = cause instanceof EOFException;
+        }
+        long duration = player.getDuration() > 0 ? player.getDuration() : currentPlayable.getDuration();
+        return noAudioThere && duration > 0 && duration - player.getCurrentPosition() <= RAN_OUT_NEAR_END_MS;
+    }
+
+    private void noteEnd(String what) {
+        if (currentPlayable == null || player == null) {
+            return;
+        }
+        EpisodeEndLog.note(this, what + ": " + currentPlayable.getEpisodeTitle() + " at "
+                + EpisodeEndLog.describe(player.getCurrentPosition(), player.getDuration())
+                + (currentPlayable.localFileAvailable() ? ", downloaded" : ", streaming")
+                + (isScreenOn() ? "" : ", screen off"));
     }
 
     /**
@@ -1552,6 +1606,13 @@ public class Media3PlaybackService extends MediaLibraryService {
                             if (choice.questions != 0) {
                                 NextUpAsk.ask(this, choice.questions);
                             }
+                            if (ended) {
+                                EpisodeEndLog.note(this, "After " + media.getEpisodeTitle() + ": "
+                                        + (choice.item != null ? choice.item.getTitle() : "nothing") + ", "
+                                        + choice.reason + (choice.play ? ", playing" : ", waiting for play")
+                                        + (choice.questions != 0 ? ", asking " + choice.questions : "")
+                                        + (player == null ? ", but the player had gone" : ""));
+                            }
                             if (player == null) {
                                 return;
                             }
@@ -1571,7 +1632,11 @@ public class Media3PlaybackService extends MediaLibraryService {
                             player.setMediaItem(pair.second, resumePosition(nextMedia));
                             player.prepare();
                         },
-                        error -> Log.e(TAG, "Failed to load next queue item", error));
+                        error -> {
+                            Log.e(TAG, "Failed to load next queue item", error);
+                            EpisodeEndLog.note(this, "After " + media.getEpisodeTitle()
+                                    + ": couldn't load what plays next, " + error);
+                        });
     }
 
     private void stopWithNothingNext(boolean wasSkipped) {

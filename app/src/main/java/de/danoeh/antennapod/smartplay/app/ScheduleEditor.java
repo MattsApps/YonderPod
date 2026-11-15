@@ -62,11 +62,12 @@ public class ScheduleEditor {
             dayChips[i] = chip;
             days.addView(chip);
         }
-        time.setOnClickListener(v -> new TimePickerDialog(root.getContext(), (picker, hour, minute) -> {
+        time.setOnClickListener(v -> TimePickerLook.show(new TimePickerDialog(root.getContext(),
+                (picker, hour, minute) -> {
             schedule = schedule.withTime(hour, minute);
             bind();
             notifyChanged();
-        }, schedule.getHour(), schedule.getMinute(), DateFormat.is24HourFormat(root.getContext())).show());
+        }, schedule.getHour(), schedule.getMinute(), DateFormat.is24HourFormat(root.getContext()))));
         wifiOnly.setOnCheckedChangeListener((button, checked) -> onEdited());
         charging.setOnCheckedChangeListener((button, checked) -> onEdited());
         everyN.setOnCheckedChangeListener((button, checked) -> onEdited());
