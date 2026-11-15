@@ -144,14 +144,9 @@ final class RecordingRecovery {
             Recordings.savedTail(context, show, saved, airing, unfinished.tailStart,
                     Math.min(unfinished.tailEnd, stoppedAt), stoppedAt);
         } else {
-            // A show set to play as soon as it's saved gets its cut-short part ready to play now, even while
-            // the show is still on; the rest follows as an extra part. A show held to play at the same local
-            // time keeps it held, and it's listed with "Cut short at … · recording the rest · plays here at …".
-            boolean playNow = cutShort && !show.sameLocalTime;
-            if (playNow) {
-                Log.d(TAG, show.name + " plays as soon as it's saved: the cut-short part can play now");
-            }
-            Recordings.saved(context, show, saved, airing, stoppedAt, stoppedAt, playNow);
+            // A cut-short part is held until the show has ended, and it's listed with
+            // "Cut short at … · recording the rest · plays here at …".
+            Recordings.saved(context, show, saved, airing, stoppedAt, stoppedAt);
         }
         if (cutShort) {
             Recordings.note(context, show.id, airing.getStart(), cutShortText(context, stoppedAt, unfinished.pid));

@@ -10,14 +10,11 @@ import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -103,7 +100,6 @@ public final class RecordShowDialog {
         ChipGroup days = view.findViewById(R.id.record_days);
         Button start = view.findViewById(R.id.record_start);
         Button end = view.findViewById(R.id.record_end);
-        RadioGroup available = view.findViewById(R.id.record_available);
         MaterialSwitch mobile = view.findViewById(R.id.record_mobile);
         LinearLayout playsIn = view.findViewById(R.id.record_plays_in);
 
@@ -160,27 +156,6 @@ public final class RecordShowDialog {
             updateTimes.run();
         }, show.endMinute / 60, show.endMinute % 60, DateFormat.is24HourFormat(context))));
 
-        Runnable updateAvailability = () -> {
-            String selected = zones.get(Math.max(0, zone.getSelectedItemPosition()));
-            boolean sameClock = ShowTimes.sameClock(TimeZone.getDefault(), TimeZone.getTimeZone(selected));
-            available.setVisibility(sameClock ? View.GONE : View.VISIBLE);
-            ((RadioButton) view.findViewById(R.id.record_available_same_time))
-                    .setText(context.getString(R.string.record_available_same_time,
-                            ScheduleText.time(context, show.startMinute / 60, show.startMinute % 60)));
-        };
-        available.check(show.sameLocalTime ? R.id.record_available_same_time : R.id.record_available_saved);
-        updateAvailability.run();
-        zone.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View v, int position, long id) {
-                updateAvailability.run();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-            }
-        });
-
         mobile.setChecked(show.allowMobile);
         CheckBox ownBox = new CheckBox(context);
         ownBox.setText(R.string.record_plays_in_own);
@@ -218,7 +193,6 @@ public final class RecordShowDialog {
             String newName = name.getText().toString().trim();
             show.name = newName.isEmpty() ? Recordings.defaultName(context, station.getTitle(), show) : newName;
             show.zoneId = zones.get(Math.max(0, zone.getSelectedItemPosition()));
-            show.sameLocalTime = available.getCheckedRadioButtonId() == R.id.record_available_same_time;
             show.allowMobile = mobile.isChecked();
             boolean own = ownBox.isChecked();
             Set<Long> otherIds = new LinkedHashSet<>();

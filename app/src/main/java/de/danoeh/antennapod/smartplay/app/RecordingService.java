@@ -57,6 +57,7 @@ public class RecordingService extends Service {
         volatile boolean discard;
         /** The listener stopped it ("stop today's recording"), so it isn't called cut short. */
         volatile boolean stoppedByListener;
+        volatile boolean extra;
 
         Control(long start, long end, long stopAt) {
             this.start = start;
@@ -69,6 +70,11 @@ public class RecordingService extends Service {
     static long recordingStart(long showId) {
         Control control = CONTROLS.get(showId);
         return control != null ? control.start : -1;
+    }
+
+    static boolean recordingExtra(long showId) {
+        Control control = CONTROLS.get(showId);
+        return control != null && control.extra;
     }
 
     /**
@@ -229,6 +235,7 @@ public class RecordingService extends Service {
         long stopAt = extra ? extraEnd + (extraEnd >= airing.getEnd() ? RecordingRules.LIVE_PADDING_MILLIS : 0)
                 : airing.getEnd() + RecordingRules.LIVE_PADDING_MILLIS;
         Control control = new Control(airing.getStart(), airing.getEnd(), stopAt);
+        control.extra = extra;
         CONTROLS.put(show.id, control);
         // So pages showing "recording the rest" under a cut-short part catch up as soon as it starts.
         EventBus.getDefault().post(new Radio.ChangedEvent());

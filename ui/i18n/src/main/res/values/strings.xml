@@ -1493,8 +1493,6 @@
     <string name="record_zone_title">Times as the station lists them, in</string>
     <string name="record_starts">Starts %1$s</string>
     <string name="record_ends">Ends %1$s</string>
-    <string name="record_available_same_time">Available at %1$s here</string>
-    <string name="record_available_saved">Available as soon as it\'s saved</string>
     <string name="record_mobile">Use mobile data to save</string>
     <string name="record_plays_in">plays in</string>
     <string name="record_plays_in_detail">Its own Smart Play, any of your others, or both. It never turns up anywhere else.</string>
@@ -2193,11 +2191,11 @@
     <string name="help_topic_radio_pause">Pause live radio</string>
     <string name="help_about_radio_pause">Pause a live station and carry on from where you paused, up to an hour behind. Yonder records the stream behind you, privately and encrypted, and deletes it as it plays. Tap live to catch up, or stop to end it. At an hour behind it stops by itself.</string>
     <string name="help_topic_radio_record">Recording a show</string>
-    <string name="help_about_radio_record">Record a station\'s show and hear it at the same local time, wherever you are.</string>
+    <string name="help_about_radio_record">Record a station\'s show and hear it once it\'s saved, whenever suits you, wherever you are.</string>
     <string name="help_topic_radio_saving">How recordings are saved</string>
     <string name="help_about_radio_saving">Quick burst or recorded live, the alarms permission, Wi-Fi or mobile data, and what “Missed” means.</string>
-    <string name="help_topic_radio_waiting">Recordings waiting for their time</string>
-    <string name="help_about_radio_waiting">A saved recording waits for your local release time. “listen now anyway” plays it straight away.</string>
+    <string name="help_topic_radio_waiting">Recordings waiting for the show to end</string>
+    <string name="help_about_radio_waiting">A recording plays as soon as the whole show is saved. If it was cut short while the show was still on, the part already saved waits until the show has ended, so you hear it all at once. “listen now anyway” plays it straight away.</string>
     <string name="help_topic_radio_keeping">Recordings are for listening later</string>
     <string name="help_about_radio_keeping">Recordings are for listening later, not keeping: each one goes when the next airs or after 25 hours.</string>
     <string name="help_topic_radio_short_names">Short station names</string>
@@ -2261,8 +2259,7 @@
     <string name="tip_thank_you_mark">thank you</string>
     <string name="tip_dismissed">Back to “yonder” until tomorrow</string>
     <string name="tip_title">tip me</string>
-    <!-- PLACEHOLDER: Matt to rewrite this line in his own words. -->
-    <string name="tip_line">Hi, I\'m Matt. I made Yonder because I missed BeyondPod. It\'s free, and nothing in it will ever be locked. If it\'s earned a place on your phone, a small tip once a year keeps it going.</string>
+    <string name="tip_line">Yonder is free. All of the functions you have today will be free forever. But if you like the app, consider supporting me.</string>
     <string name="tip_explain">Any tip brings back “yonder” at the top for a year. It doesn\'t unlock anything: everything already works.</string>
     <string name="tip_explain_again">Tipping again starts a new year from that day.</string>
     <string name="tip_supporter_until">You\'re a supporter until %1$s. Thank you!</string>

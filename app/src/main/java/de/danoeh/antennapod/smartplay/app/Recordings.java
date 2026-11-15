@@ -264,7 +264,14 @@ public final class Recordings {
         }
         long start = RecordingService.recordingStart(show.id);
         if (start > 0 && (show.endMinute != oldEndMinute || !show.zoneId.equals(oldZoneId))) {
-            RecordingService.changeEnd(show.id, endAfter(show, start));
+            long end = endAfter(show, start);
+            if (RecordingService.recordingExtra(show.id)) {
+                // An extra part only takes what no other show on the station records.
+                long now = System.currentTimeMillis();
+                long[] part = uncovered(context, show, now, end);
+                end = part != null && part[0] <= now ? part[1] : now;
+            }
+            RecordingService.changeEnd(show.id, end);
         }
         EventBus.getDefault().post(new Radio.ChangedEvent());
     }
@@ -794,7 +801,7 @@ public final class Recordings {
         show.status = "";
         show.preferLiveNext = false;
         RecordingStore.getInstance(context).update(show);
-        long availableAt = ShowTimes.availableAt(show.spec(), airing, TimeZone.getDefault(), show.sameLocalTime);
+        long availableAt = ShowTimes.availableAt(show.spec(), airing, TimeZone.getDefault(), false);
         if (!playNow && RecordingRules.waiting(availableAt, System.currentTimeMillis())) {
             long id = RecordingStore.getInstance(context).addPending(show.id, saved.file.getAbsolutePath(),
                     saved.mimeType, airing.getStart(), airing.getEnd(), finished, 0, 0, covered);
@@ -831,10 +838,12 @@ public final class Recordings {
             FeedItem main = itemWithGuid(show, guid(show, airing.getStart(), 0, 0));
             if (main != null) {
                 mainFinished = finishedAt(context, main);
+            } else {
+                mainFinished = store.getFinished(guid(show, airing.getStart(), 0, 0));
             }
         }
         long finished = mainFinished > 0 ? mainFinished : covered;
-        long availableAt = ShowTimes.availableAt(show.spec(), airing, TimeZone.getDefault(), show.sameLocalTime);
+        long availableAt = ShowTimes.availableAt(show.spec(), airing, TimeZone.getDefault(), false);
         if (mainHeld || RecordingRules.waiting(availableAt, System.currentTimeMillis())) {
             long id = store.addPending(show.id, saved.file.getAbsolutePath(), saved.mimeType, airing.getStart(),
                     airing.getEnd(), finished, tailStart, tailEnd, covered);
@@ -892,7 +901,7 @@ public final class Recordings {
         }
         long availableAt = ShowTimes.availableAt(show.spec(),
                 new ShowTimes.Airing(pending.airingStart, pending.airingEnd), TimeZone.getDefault(),
-                show.sameLocalTime);
+                false);
         OneTimeWorkRequest request = new OneTimeWorkRequest.Builder(RecordingPublishWorker.class)
                 .setInputData(new Data.Builder().putLong(KEY_PENDING, pending.id).build())
                 .setInitialDelay(Math.max(0, availableAt - System.currentTimeMillis()), TimeUnit.MILLISECONDS)
@@ -914,7 +923,7 @@ public final class Recordings {
                 return;
             }
             ShowTimes.Airing airing = new ShowTimes.Airing(pending.airingStart, pending.airingEnd);
-            long availableAt = ShowTimes.availableAt(show.spec(), airing, TimeZone.getDefault(), show.sameLocalTime);
+            long availableAt = ShowTimes.availableAt(show.spec(), airing, TimeZone.getDefault(), false);
             if (RecordingRules.waiting(availableAt, System.currentTimeMillis())) {
                 enqueuePublish(context, pending);
                 return;
@@ -1271,7 +1280,7 @@ public final class Recordings {
         if (item.getMedia() != null && item.getMedia().getLocalFileUrl() != null) {
             FileUtils.deleteQuietly(new File(item.getMedia().getLocalFileUrl()));
         }
-        if (isRecordingGuid(item.getItemIdentifier())) {
+        if (isRecordingGuid(item.getItemIdentifier()) && isTailGuid(item.getItemIdentifier())) {
             RecordingStore.getInstance(context).deleteFinished(item.getItemIdentifier());
         }
         try {
@@ -1528,7 +1537,7 @@ public final class Recordings {
             return pending.airingEnd;
         }
         return ShowTimes.availableAt(show.spec(), new ShowTimes.Airing(pending.airingStart, pending.airingEnd),
-                TimeZone.getDefault(), show.sameLocalTime);
+                TimeZone.getDefault(), false);
     }
 
     public static FeedItem releaseNow(Context context, long pendingId) {

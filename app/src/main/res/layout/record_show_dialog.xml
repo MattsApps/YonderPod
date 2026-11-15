@@ -66,25 +66,6 @@
             android:text="@string/recording_time_shift"
             android:textAppearance="@style/TextAppearance.WildInk.Detail" />
 
-        <RadioGroup
-            android:id="@+id/record_available"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp">
-
-            <RadioButton
-                android:id="@+id/record_available_same_time"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-            <RadioButton
-                android:id="@+id/record_available_saved"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/record_available_saved" />
-
-        </RadioGroup>
-
         <com.google.android.material.materialswitch.MaterialSwitch
             android:id="@+id/record_mobile"
             android:layout_width="match_parent"

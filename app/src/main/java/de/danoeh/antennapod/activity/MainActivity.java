@@ -260,7 +260,7 @@ public class MainActivity extends CastEnabledActivity implements NavigationToolb
         transaction.replace(R.id.navDrawerFragment, navDrawerFragment, NavDrawerFragment.TAG);
         AudioPlayerFragment audioPlayerFragment = new AudioPlayerFragment();
         transaction.replace(R.id.audioplayerFragment, audioPlayerFragment, AudioPlayerFragment.TAG);
-        transaction.replace(R.id.worlds_container, new WorldsFragment(), WorldsFragment.TAG);
+        transaction.replace(R.id.worlds_container, WorldsFragment.newInstance(currentWorld), WorldsFragment.TAG);
         transaction.commit();
 
         FragmentContainerView bottomSheet = findViewById(R.id.audioplayerFragment);

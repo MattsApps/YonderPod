@@ -64,9 +64,12 @@ public class AboutFragment extends Fragment {
 
     /**
      * "tip me", on both builds from day one. Play: the same tip choices as the top "tip me". F-Droid: the
-     * web page in yonder_tip_link (nothing opens while that link is empty).
+     * web page in yonder_tip_link (hidden while that link is empty).
      */
     private void addTipButton(TextView feedback) {
+        if (!TipShop.canTip(requireContext())) {
+            return;
+        }
         ViewGroup parent = (ViewGroup) feedback.getParent();
         TextView tip = new TextView(requireContext(), null, 0, R.style.Widget_WildInk_Block);
         tip.setText(R.string.tip_me_mark);
