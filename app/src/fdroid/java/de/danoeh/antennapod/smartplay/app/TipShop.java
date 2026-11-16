@@ -4,29 +4,23 @@ import android.content.Context;
 
 import androidx.fragment.app.Fragment;
 
-import de.danoeh.antennapod.ui.common.IntentUtils;
-
 /**
- * F-Droid build: no Google libraries, so no in-app tips. "tip me" opens a web page instead, and only
- * once Matt has set yonder_tip_link in strings.xml. Until then "yonder" always shows.
+ * F-Droid build: no Google libraries, so no in-app tips. "tip me" opens the tip code screen: four Buy Me a
+ * Coffee shop items (see TipCodes) and a field for the code they give.
  */
 final class TipShop {
     private TipShop() {
     }
 
     static boolean canTip(Context context) {
-        return !Tip.webLink(context).isEmpty();
+        return true;
     }
 
-    /** Nothing to ask: the F-Droid build can't know who has tipped. */
+    /** Nothing to ask: the F-Droid build only knows the codes entered on this phone. */
     static void refresh(Context context) {
     }
 
     static void open(Fragment fragment) {
-        Context context = fragment.requireContext();
-        if (canTip(context)) {
-            IntentUtils.openInBrowser(context, Tip.webLink(context));
-            Tip.dismissForToday(context);
-        }
+        TendRows.open(fragment, new TipCodeFragment());
     }
 }

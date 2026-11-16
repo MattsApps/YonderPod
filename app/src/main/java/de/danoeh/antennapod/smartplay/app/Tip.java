@@ -14,6 +14,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
+import de.danoeh.antennapod.BuildConfig;
 import de.danoeh.antennapod.R;
 
 /**
@@ -30,6 +31,7 @@ public final class Tip {
     static final String LOCAL_PREFS = "YonderTipLocal";
 
     private static final long THANKS_MILLIS = 8000;
+    private static final long TEST_TIP_MILLIS = 30 * 60 * 1000;
 
     private static final String KEY_FIRST_SEEN = "firstSeen";
     private static final String KEY_DISMISSED_DAY = "dismissedDay";
@@ -137,8 +139,8 @@ public final class Tip {
     }
 
     /**
-     * True for a year from the latest tip. Play says whether a tip is active; the year is counted here
-     * from the day of the latest tip (decided 14 Nov), even where Play's own end date is later.
+     * True until the stored end date. Play says whether a tip is active; each tip adds a year on top of
+     * whatever supporter time is left (decided 16 Nov), as Play's own top-up does.
      */
     static boolean isSupporter(Context context) {
         SharedPreferences local = local(context);
@@ -174,15 +176,30 @@ public final class Tip {
             editor.putBoolean(KEY_SUPPORTER, false).remove(KEY_UNTIL).remove(KEY_TOKEN);
         } else {
             if (!token.equals(local.getString(KEY_TOKEN, null))) {
-                // Any tip gives "yonder" for a year from the day of that tip (decided 14 Nov): a tip in the
-                // free month, or a top-up while a year is running, restarts the year from the new tip.
-                // Play's top-up adds a year to its own end date instead; Yonder only uses the tip's date.
-                editor.putLong(KEY_UNTIL, addYear(purchaseTime > 0 ? purchaseTime : System.currentTimeMillis()));
+                // Each tip adds a year on top of whatever supporter time is left (decided 16 Nov), the same
+                // as Play's top-up; with no time left, the year starts from the tip.
+                long start = purchaseTime > 0 ? purchaseTime : System.currentTimeMillis();
+                long until = local.getLong(KEY_UNTIL, 0);
+                if (local.getBoolean(KEY_SUPPORTER, false) && until > start) {
+                    start = until;
+                }
+                editor.putLong(KEY_UNTIL, addTip(start));
                 editor.putString(KEY_TOKEN, token);
             }
             editor.putBoolean(KEY_SUPPORTER, true).putBoolean(KEY_EVER_TIPPED, true);
         }
         editor.apply();
+        changed();
+    }
+
+    /**
+     * F-Droid build: a valid tip code was entered. "yonder" comes back for a year from today; entering a code
+     * again restarts the year from that day.
+     */
+    static void codeEntered(Context context) {
+        long now = System.currentTimeMillis();
+        local(context).edit().putBoolean(KEY_SUPPORTER, true).putBoolean(KEY_EVER_TIPPED, true)
+                .putLong(KEY_UNTIL, addYear(now)).putString(KEY_TOKEN, "code:" + now).apply();
         changed();
     }
 
@@ -199,7 +216,7 @@ public final class Tip {
         return left > 0 && left <= THANKS_MILLIS ? left : 0;
     }
 
-    // Hidden test switches (Tune → long-press the tip row). They only change what the wordmark shows.
+    // Test switches (debug builds only: long-press "tip me"). They only change what the wordmark shows.
 
     static void testJumpMonth(Context context) {
         local(context).edit().putBoolean(KEY_TEST_MONTH_PASSED, true).remove(KEY_TEST_DAYS)
@@ -218,10 +235,10 @@ public final class Tip {
         changed();
     }
 
-    static void testForgetTip(Context context) {
-        SharedPreferences local = local(context);
-        local.edit().putString(KEY_TEST_IGNORE, local.getString(KEY_TOKEN, ""))
-                .putBoolean(KEY_SUPPORTER, false).remove(KEY_UNTIL).remove(KEY_TOKEN).remove(KEY_THANKS_AT).apply();
+    /** Debug builds only (F-Droid tip code screen): as if the code's year ended a moment ago. */
+    static void testCodeYearUp(Context context) {
+        local(context).edit().putBoolean(KEY_TEST_MONTH_PASSED, true)
+                .putLong(KEY_UNTIL, System.currentTimeMillis() - 1000).apply();
         prefs(context).edit().remove(KEY_DISMISSED_DAY).apply();
         changed();
     }
@@ -242,6 +259,11 @@ public final class Tip {
         calendar.setTimeInMillis(time);
         calendar.add(Calendar.MONTH, 1);
         return calendar.getTimeInMillis();
+    }
+
+    /** A Play tip's length: a year, or in debug builds the 30 minutes Play gives a test tip. */
+    private static long addTip(long time) {
+        return BuildConfig.DEBUG ? time + TEST_TIP_MILLIS : addYear(time);
     }
 
     private static long addYear(long time) {

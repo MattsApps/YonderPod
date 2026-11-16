@@ -2261,7 +2261,7 @@
     <string name="tip_title">tip me</string>
     <string name="tip_line">Yonder is free. All of the functions you have today will be free forever. But if you like the app, consider supporting me.</string>
     <string name="tip_explain">Any tip brings back “yonder” at the top for a year. It doesn\'t unlock anything: everything already works.</string>
-    <string name="tip_explain_again">Tipping again starts a new year from that day.</string>
+    <string name="tip_explain_again">Tipping again adds another year on top of the time you have left.</string>
     <string name="tip_supporter_until">You\'re a supporter until %1$s. Thank you!</string>
     <string name="tip_supporter">You\'re a supporter. Thank you!</string>
     <string name="tip_loading">Asking Google Play for prices…</string>
@@ -2275,12 +2275,18 @@
     <string name="tune_supporter_until">until %1$s</string>
     <string name="tip_test_title">Tip testing</string>
     <string name="tip_test_jump">Pretend a month has passed</string>
-    <string name="tip_test_forget">Forget my tip on this phone</string>
     <string name="tip_test_normal">Back to normal</string>
     <string name="tip_test_year_out">Pretend a tipped year has run out</string>
     <string name="tip_note_month_up">Your free month is up. Tap “tip me” to support Yonder. Everything still works, and a long press brings “yonder” back for the day.</string>
     <string name="tip_note_year_up">Your year of “yonder” is up. Thank you for tipping. Tap “tip me” to support Yonder for another year. Everything still works, and a long press brings “yonder” back for the day.</string>
     <string name="tip_note_got_it">got it</string>
+    <!-- F-Droid build only: the tip code screen (decided 16 Nov) -->
+    <string name="tip_code_how">Yonder has no ads and is supported by tips. On this version, tips go through Buy Me a Coffee: pick an amount, and you\'ll get a code to type in below. It\'s an honesty system: everyone gets the same code, and nothing is checked online.</string>
+    <string name="tip_code_hint">your code</string>
+    <string name="tip_code_enter">enter</string>
+    <string name="tip_code_wrong">That code didn\'t match. Check it and try again.</string>
+    <string name="tip_code_again">Entering the code again starts a new year from that day.</string>
+    <string name="tip_code_test">Test (debug builds only): pretend this code\'s year has run out</string>
     <string-array name="tip_amounts" translatable="false">
         <item>NZ$3</item>
         <item>NZ$6</item>

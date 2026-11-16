@@ -13,8 +13,11 @@ import androidx.core.widget.TextViewCompat;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.color.MaterialColors;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
+import de.danoeh.antennapod.BuildConfig;
 import de.danoeh.antennapod.R;
+import de.danoeh.antennapod.activity.MainActivity;
 
 /** The wordmark at the top of each surface: "yonder", "tip me", or a brief "thank you". */
 final class TipMark {
@@ -65,16 +68,50 @@ final class TipMark {
             mark.setTextColor(MaterialColors.getColor(mark, R.attr.colorPrimary));
             mark.setBackground(selectable(mark.getContext()));
             mark.setContentDescription(context.getString(R.string.tip_me_description));
-            mark.setOnClickListener(v -> TipShop.open(fragment));
+            mark.setOnClickListener(v -> {
+                if (fragment.getActivity() instanceof MainActivity) {
+                    MainActivity activity = (MainActivity) fragment.getActivity();
+                    if (fragment instanceof WorldSurface) {
+                        activity.openWorld(((WorldSurface) fragment).world());
+                    } else {
+                        activity.hideWorlds();
+                    }
+                }
+                TipShop.open(fragment);
+            });
             mark.setOnLongClickListener(v -> {
-                Tip.dismissForToday(context);
-                Toast.makeText(context, R.string.tip_dismissed, Toast.LENGTH_SHORT).show();
+                if (BuildConfig.DEBUG) {
+                    testMenu(context);
+                } else {
+                    Tip.dismissForToday(context);
+                    Toast.makeText(context, R.string.tip_dismissed, Toast.LENGTH_SHORT).show();
+                }
                 return true;
             });
             showNote(context, note);
             return;
         }
         mark.setText(R.string.yonder_wordmark);
+    }
+
+    /** Debug builds only: the day's snooze and the tip test switches together. */
+    private static void testMenu(Context context) {
+        CharSequence[] choices = {context.getString(R.string.tip_dismissed), context.getString(R.string.tip_test_jump),
+            context.getString(R.string.tip_test_normal), context.getString(R.string.tip_test_year_out)};
+        new MaterialAlertDialogBuilder(context)
+                .setTitle(R.string.tip_test_title)
+                .setItems(choices, (dialog, which) -> {
+                    if (which == 0) {
+                        Tip.dismissForToday(context);
+                    } else if (which == 1) {
+                        Tip.testJumpMonth(context);
+                    } else if (which == 2) {
+                        Tip.testBackToNormal(context);
+                    } else {
+                        Tip.testYearRanOut(context);
+                    }
+                })
+                .show();
     }
 
     /** The small note under "tip me", once each time it comes back, until "got it". */
