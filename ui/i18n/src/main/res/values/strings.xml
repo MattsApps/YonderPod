@@ -2189,7 +2189,7 @@
     <string name="help_topic_radio_live">Listening live</string>
     <string name="help_about_radio_live">Tap a station in Radio to listen live.</string>
     <string name="help_topic_radio_pause">Pause live radio</string>
-    <string name="help_about_radio_pause">Pause a live station and carry on from where you paused, up to an hour behind. Yonder records the stream behind you, privately and encrypted, and deletes it as it plays. Tap live to catch up, or stop to end it. At an hour behind it stops by itself.</string>
+    <string name="help_about_radio_pause">Pause a live station and carry on from where you paused, up to an hour behind. Yonder records the stream behind you, privately and encrypted, and deletes it as it plays. A phone call pauses it the same way, and it carries on after the call. Tap live to catch up, or stop to end it. At an hour behind it stops by itself.</string>
     <string name="help_topic_radio_record">Recording a show</string>
     <string name="help_about_radio_record">Record a station\'s show and hear it once it\'s saved, whenever suits you, wherever you are.</string>
     <string name="help_topic_radio_saving">How recordings are saved</string>
@@ -2285,7 +2285,7 @@
     <string name="tip_code_hint">your code</string>
     <string name="tip_code_enter">enter</string>
     <string name="tip_code_wrong">That code didn\'t match. Check it and try again.</string>
-    <string name="tip_code_again">Entering the code again starts a new year from that day.</string>
+    <string name="tip_code_again">Entering the code again adds another year on top of the time you have left.</string>
     <string name="tip_code_test">Test (debug builds only): pretend this code\'s year has run out</string>
     <string-array name="tip_amounts" translatable="false">
         <item>NZ$3</item>

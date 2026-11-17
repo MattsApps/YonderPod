@@ -164,7 +164,9 @@ public abstract class WidgetUpdater {
             views.setOnClickPendingIntent(R.id.butSkip, startApp);
         }
         if (slim) {
-            placeSlim(context, views, widthDp, heightDp);
+            boolean behind = isBehindLive(widgetState);
+            placeSlim(context, views, widthDp, heightDp, behind);
+            fillSlimBehind(context, views, palette, behind);
         } else {
             showBehindLive(context, views, false);
             fillWide(context, views, widgetState, palette, smartPlay, startMediaPlayer, startApp);
@@ -257,8 +259,28 @@ public abstract class WidgetUpdater {
                 MediaButtonStarter.createPendingIntent(context, Player.COMMAND_STOP));
     }
 
-    private static void placeSlim(Context context, RemoteViews views, float widthDp, float heightDp) {
-        textSize(views, R.id.txtvTitle, heightDp * 0.28f);
+    /**
+     * Slim widget, live pause: a second line under the station says how far behind, as the wide widget's
+     * does. Set both ways on every redraw, so it never lingers after live pause ends.
+     */
+    private static void fillSlimBehind(Context context, RemoteViews views, Palette palette, boolean behind) {
+        views.setViewVisibility(R.id.txtvBehind, behind ? View.VISIBLE : View.GONE);
+        views.setInt(R.id.txtvTitle, "setMaxLines", behind ? 1 : 2);
+        if (!behind) {
+            views.setTextViewText(R.id.txtvBehind, "");
+            return;
+        }
+        views.setTextColor(R.id.txtvBehind, palette.secondary);
+        int minutes = LiveBehind.minutes();
+        views.setTextViewText(R.id.txtvBehind, LiveBehind.isPaused()
+                ? context.getString(R.string.live_pause_widget_paused, minutes)
+                : context.getString(R.string.live_pause_notification_behind, minutes));
+    }
+
+    private static void placeSlim(Context context, RemoteViews views, float widthDp, float heightDp,
+                                  boolean behind) {
+        textSize(views, R.id.txtvTitle, heightDp * (behind ? 0.24f : 0.28f));
+        textSize(views, R.id.txtvBehind, heightDp * 0.19f);
         float button = Math.min(heightDp * 0.8f, (widthDp - 2 * SLIM_PAD) / 5);
         if (Build.VERSION.SDK_INT >= 31) {
             views.setViewLayoutWidth(R.id.butSkip, button, TypedValue.COMPLEX_UNIT_DIP);

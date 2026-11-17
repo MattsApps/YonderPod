@@ -48,17 +48,35 @@
 
         </FrameLayout>
 
-        <TextView
-            android:id="@+id/txtvTitle"
+        <LinearLayout
+            android:id="@+id/titleBox"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
             android:layout_weight="1"
-            android:ellipsize="end"
-            android:fontFamily="sans-serif-black"
-            android:lineSpacingMultiplier="0.95"
-            android:maxLines="2"
-            android:textSize="17sp" />
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/txtvTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:fontFamily="sans-serif-black"
+                android:lineSpacingMultiplier="0.95"
+                android:maxLines="2"
+                android:textSize="17sp" />
+
+            <TextView
+                android:id="@+id/txtvBehind"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:fontFamily="sans-serif-medium"
+                android:maxLines="1"
+                android:textSize="12sp"
+                android:visibility="gone" />
+
+        </LinearLayout>
 
         <ImageView
             android:id="@+id/butSkip"

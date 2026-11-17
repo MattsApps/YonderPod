@@ -134,6 +134,8 @@ public class Media3PlaybackService extends MediaLibraryService {
     private static final long LIVE_EDGE_MS = 2000;
     private static final long IDLE_AFTER_LIVE_PAUSE_MS = 10 * 60_000L;
     private static final long RAN_OUT_NEAR_END_MS = 60_000;
+    private static final long CALL_CHECK_MS = 500;
+    private static final long CALL_LOOK_MS = 5000;
     private ExoPlayer exoPlayer;
     private Player player;
     private MediaLibrarySession mediaSession;
@@ -170,6 +172,10 @@ public class Media3PlaybackService extends MediaLibraryService {
     private long bufferItemStart;
     private long keepForegroundUntil;
     private boolean pausingForSleep;
+    // A phone call during live radio (0.9.32): live pause from the call's start, carrying on after it.
+    private boolean callPause;
+    private boolean callPauseAtLive;
+    private long callLookUntil;
     private final CopyOnWriteArraySet<Player.Listener> metadataListeners = new CopyOnWriteArraySet<>();
     private float fadeInVolume = 1.0f;
     @Nullable
@@ -292,6 +298,7 @@ public class Media3PlaybackService extends MediaLibraryService {
 
             @Override
             public void stop() {
+                callPause = false;
                 if (liveBuffer != null) {
                     endLivePause(false);
                 }
@@ -543,6 +550,7 @@ public class Media3PlaybackService extends MediaLibraryService {
                     == Player.PLAYBACK_SUPPRESSION_REASON_TRANSIENT_AUDIO_FOCUS_LOSS) {
                 wasTemporarilySuspended = true;
                 suppressionStartedAt = System.currentTimeMillis();
+                lookForCall();
             } else if (playbackSuppressionReason == Player.PLAYBACK_SUPPRESSION_REASON_NONE
                     && wasTemporarilySuspended && currentPlayable != null) {
                 wasTemporarilySuspended = false;
@@ -911,6 +919,73 @@ public class Media3PlaybackService extends MediaLibraryService {
         }
     }
 
+    /** A short audio focus loss while a live station plays: look for a phone call for a few seconds. */
+    private void lookForCall() {
+        if (callPause || liveBuffer != null || !isLiveStationLoaded()) {
+            return;
+        }
+        callLookUntil = System.currentTimeMillis() + CALL_LOOK_MS;
+        foregroundHandler.removeCallbacks(callWatch);
+        foregroundHandler.post(callWatch);
+    }
+
+    /** A phone call while a live station plays: pause behind live from the call's start. */
+    private boolean startCallPause() {
+        if (callPause || liveBuffer != null || isCasting() || !isLiveStationLoaded() || !inCall()) {
+            return false;
+        }
+        Log.d(TAG, "Live pause: phone call, pausing behind live");
+        callPause = true;
+        callPauseAtLive = false;
+        player.pause();
+        foregroundHandler.removeCallbacks(callWatch);
+        foregroundHandler.postDelayed(callWatch, CALL_CHECK_MS);
+        return true;
+    }
+
+    /**
+     * Before a call: looks for one while the focus loss lasts. During one: when the call is over, carries on
+     * from where it began, as podcasts resume after a call. Play, live or stop meanwhile ends the watch.
+     */
+    private final Runnable callWatch = new Runnable() {
+        @Override
+        public void run() {
+            if (player == null) {
+                callPause = false;
+                return;
+            }
+            if (!callPause) {
+                if (System.currentTimeMillis() < callLookUntil && player.getPlayWhenReady()
+                        && exoPlayer.getPlaybackSuppressionReason()
+                        == Player.PLAYBACK_SUPPRESSION_REASON_TRANSIENT_AUDIO_FOCUS_LOSS
+                        && !startCallPause()) {
+                    foregroundHandler.postDelayed(this, CALL_CHECK_MS);
+                }
+                return;
+            }
+            if (player.getPlayWhenReady() || (liveBuffer == null && !callPauseAtLive)) {
+                callPause = false;
+                return;
+            }
+            if (inCall()) {
+                foregroundHandler.postDelayed(this, CALL_CHECK_MS);
+                return;
+            }
+            callPause = false;
+            Log.d(TAG, "Live pause: call over, carrying on from where it began");
+            player.play();
+        }
+    };
+
+    private boolean inCall() {
+        AudioManager audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
+        try {
+            return audioManager != null && audioManager.getMode() != AudioManager.MODE_NORMAL;
+        } catch (RuntimeException e) {
+            return false;
+        }
+    }
+
     private void startLivePause() {
         if (player == null || liveBuffer != null || player.getPlayWhenReady() || isCasting()
                 || !isLiveStationLoaded() || player.getPlaybackState() == Player.STATE_IDLE) {
@@ -941,6 +1016,7 @@ public class Media3PlaybackService extends MediaLibraryService {
             return;
         }
         Log.d(TAG, "Live pause: this station can't be buffered (" + why + "), paused at live as before");
+        callPauseAtLive = callPause;
         endLivePause(false);
     }
 
@@ -1941,6 +2017,9 @@ public class Media3PlaybackService extends MediaLibraryService {
         public void onInterrupted() {
             suppressionStartedAt = System.currentTimeMillis();
             if (exoPlayer.getPlayWhenReady()) {
+                if (startCallPause()) {
+                    return;
+                }
                 exoPlayer.pause();
             } else {
                 duckingFocus.abandon();
@@ -1949,6 +2028,9 @@ public class Media3PlaybackService extends MediaLibraryService {
 
         @Override
         public void onInterruptionOver() {
+            if (callPause) {
+                return;
+            }
             if (currentPlayable == null || exoPlayer.getPlayWhenReady()) {
                 return;
             }

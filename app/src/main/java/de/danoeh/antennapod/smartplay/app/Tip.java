@@ -193,13 +193,19 @@ public final class Tip {
     }
 
     /**
-     * F-Droid build: a valid tip code was entered. "yonder" comes back for a year from today; entering a code
-     * again restarts the year from that day.
+     * F-Droid build: a valid tip code was entered. Like a Play tip, it adds a year on top of whatever supporter
+     * time is left; with no time left, the year starts today.
      */
     static void codeEntered(Context context) {
         long now = System.currentTimeMillis();
-        local(context).edit().putBoolean(KEY_SUPPORTER, true).putBoolean(KEY_EVER_TIPPED, true)
-                .putLong(KEY_UNTIL, addYear(now)).putString(KEY_TOKEN, "code:" + now).apply();
+        SharedPreferences local = local(context);
+        long start = now;
+        long until = local.getLong(KEY_UNTIL, 0);
+        if (local.getBoolean(KEY_SUPPORTER, false) && until > now) {
+            start = until;
+        }
+        local.edit().putBoolean(KEY_SUPPORTER, true).putBoolean(KEY_EVER_TIPPED, true)
+                .putLong(KEY_UNTIL, addYear(start)).putString(KEY_TOKEN, "code:" + now).apply();
         changed();
     }
 
