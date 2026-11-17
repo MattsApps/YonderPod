@@ -92,18 +92,17 @@ public class NotificationUtils {
         return notificationChannel.build();
     }
 
+    /**
+     * Named for AntennaPod's sync errors, but since 0.9.33 (sync removed) only automatic database
+     * export failures use it. The ID stays so Android keeps the listener's choice for it.
+     */
     private static NotificationChannelCompat createChannelSyncError(final Context c) {
-        final NotificationChannelCompat.Builder notificationChannel = new NotificationChannelCompat.Builder(
+        return new NotificationChannelCompat.Builder(
                         CHANNEL_ID_SYNC_ERROR, NotificationManagerCompat.IMPORTANCE_HIGH)
                 .setName(c.getString(R.string.notification_channel_sync_error))
                 .setDescription(c.getString(R.string.notification_channel_sync_error_description))
-                .setGroup(GROUP_ID_ERRORS);
-
-        if (!UserPreferences.getGpodnetNotificationsEnabledRaw()) {
-            // Migration from app managed setting: disable notification
-            notificationChannel.setImportance(NotificationManagerCompat.IMPORTANCE_NONE);
-        }
-        return notificationChannel.build();
+                .setGroup(GROUP_ID_ERRORS)
+                .build();
     }
 
     private static NotificationChannelCompat createChannelEpisodeNotification(final Context c) {

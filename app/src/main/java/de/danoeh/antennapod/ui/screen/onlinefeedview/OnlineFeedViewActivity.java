@@ -50,7 +50,7 @@ import de.danoeh.antennapod.storage.database.FeedDatabaseWriter;
 import de.danoeh.antennapod.ui.appstartintent.MainActivityStarter;
 import de.danoeh.antennapod.ui.common.ThemeSwitcher;
 import de.danoeh.antennapod.ui.common.ThemeUtils;
-import de.danoeh.antennapod.ui.preferences.screen.synchronization.AuthenticationDialog;
+import de.danoeh.antennapod.ui.preferences.screen.AuthenticationDialog;
 import de.danoeh.antennapod.ui.screen.download.DownloadErrorLabel;
 import de.danoeh.antennapod.ui.screen.feed.FeedItemlistFragment;
 import io.reactivex.rxjava3.core.Maybe;

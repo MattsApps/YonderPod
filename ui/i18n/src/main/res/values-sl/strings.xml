@@ -292,8 +292,6 @@
     <string name="no_subscriptions_label">Če se želite naročiti na poddajo, pritisnite spodnjo plus ikono.</string>
     <!--Preferences-->
   <string name="project_pref">Projekt</string>
-    <string name="synchronization_pref">Sinhronizacija</string>
-    <string name="synchronization_sum">Sinhroniziraj z drugimi napravami</string>
     <string name="automation">Avtomatizacija</string>
     <string name="download_pref_details">Podrobnosti</string>
     <string name="import_export_pref">Varnostne kopije</string>
@@ -441,13 +439,6 @@
     <string name="no_results_for_query">Ni rezultatov za \"%1$s\"</string>
     <string name="search_online">Iskanje na spletu</string>
     <!--Synchronization-->
-  <string name="sync_status_started">Začela se je sinhronizacija</string>
-    <string name="sync_status_episodes_upload">Nalaganje sprememb epizode …</string>
-    <string name="sync_status_episodes_download">Prenašanje sprememb epizode …</string>
-    <string name="sync_status_upload_played">Nalaganje stanja predvajanja …</string>
-    <string name="sync_status_subscriptions">Sinhronizacija naročnin…</string>
-    <string name="sync_status_success">Sinhronizacija uspela</string>
-    <string name="sync_status_error">Sinhronizacija ni uspela</string>
     <!--import and export-->
   <string name="import_export_summary">Premaknite naročnine in čakalno vrsto na drugo napravo</string>
     <string name="database">Podatkovna zbirka</string>
@@ -493,36 +484,8 @@
     <string name="auto_enable_change_times">Spremeni časovno obdobje</string>
     <string name="sleep_timer_enabled_label">Časovnik za izklop je omogočen</string>
     <!--Synchronisation-->
-  <string name="synchronization_choose_title">Izberite ponudnika preko katerega želite opraviti sinhronizacijo</string>
-    <string name="synchronization_summary_unchoosen">Izbirate lahko med večimi ponudniki, da sinhronizirate vaše naročnine in epizode</string>
-    <string name="dialog_choose_sync_service_title">Izberite ponudnika preko katerega želite opraviti sinhronizacijo</string>
-    <string name="gpodnet_description">Gpodder.net je odprtokodna storitev sinhronizacije poddaj, ki je neodvisna od projekta AntennaPod.</string>
-    <string name="synchronization_summary_nextcloud">Gpoddersync je odportokodna Nextcloud aplikacija, katero lahko enostavno namestite na vaše lastni stsrežnik. Ta aplikacija je neodvisna od projekta AntennaPod.</string>
-    <string name="synchronization_host_explanation">Lahko izberete svoj strežnik za sinhronizacijo. Ko ste identificirali svoj želeni sinhronizacijski strežnik, ga prosim vnesite tukaj.</string>
-    <string name="synchronization_host_label">Naslov strežnika</string>
-    <string name="proceed_to_login_butLabel">Nadaljuj s prijavo</string>
-    <string name="gpodnetauth_login_butLabel">Prijava</string>
-    <string name="gpodnetauth_encryption_warning">Geslo in podatki niso šifrirani!</string>
     <string name="username_label">Uporabniško ime</string>
     <string name="password_label">Geslo</string>
-    <string name="synchronization_login_butLabel">Prijavi se</string>
-    <string name="gpodnetauth_device_name">Ime naprave</string>
-    <string name="gpodnetauth_device_name_default">AntennaPod je na %1$s</string>
-    <string name="gpodnetauth_existing_devices">Obstoječe naprave</string>
-    <string name="gpodnetauth_create_device">Ustvari napravo</string>
-    <string name="gpodnetauth_finish_descr">Čestitam! Vaš račun gpodder.net je zdaj povezan z vašo napravo. AntennaPod bo od zdaj naprej samodejno sinhroniziral naročnine na vaši napravi z vašim računom gpodder.net.</string>
-    <string name="pref_gpodnet_setlogin_information_title">Spremenite podatke za prijavo</string>
-    <string name="pref_gpodnet_setlogin_information_sum">Spremenite podatke za prijavo za svoj račun gpodder.net.</string>
-    <string name="synchronization_sync_changes_title">Sinhroniziraj takoj</string>
-    <string name="synchronization_full_sync_title">Vsili polno sihnronizacijo</string>
-    <string name="synchronization_force_sync_summary">Ponovno sinhronizirajte vse naročnine in epizode</string>
-    <string name="synchronization_logout">Odjava</string>
-    <string name="pref_synchronization_logout_toast">Odjava je bila uspešna</string>
-    <string name="gpodnetsync_error_title">napaka pri sinhronizaciji gpodder.net</string>
-    <string name="gpodnetsync_error_descr">"Med sinhronizacijo je prišlo do napake: "</string>
-    <string name="gpodnetsync_pref_report_successful">Uspešno</string>
-    <string name="gpodnetsync_pref_report_failed">Ne uspešno</string>
-    <string name="gpodnetsync_username_characters_error">Uporabniška imena lahko vsebujejo samo črke, številke, vezaje in podčrtaje.</string>
     <!--Directory chooser-->
   <string name="choose_data_directory">Izberite podatkovno mapo</string>
     <string name="choose_data_directory_available_space">%1$s od %2$s prostega</string>

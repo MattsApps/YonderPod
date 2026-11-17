@@ -180,8 +180,6 @@
     <string name="no_subscriptions_label">Jei norite prenumeruoti tinklalaidę, paspauskite žemiau esančią pliuso piktogramą.</string>
     <!--Preferences-->
   <string name="project_pref">Projektas</string>
-    <string name="synchronization_pref">Sinchronizavimas</string>
-    <string name="synchronization_sum">Sinchronizuoti su kitais įrenginiais</string>
     <string name="automation">Automatizacija</string>
     <string name="download_pref_details">Išsamiau</string>
     <string name="import_export_pref">Atsarginės kopijos ir atkūrimas</string>
@@ -270,13 +268,6 @@
     <string name="search_label">Paieška</string>
     <string name="no_results_for_query">Rezultatų paieškai „%1$s“ nėra</string>
     <!--Synchronization-->
-  <string name="sync_status_started">Sinchronizavimas pradėtas</string>
-    <string name="sync_status_episodes_upload">Įkeliami epizodų pakeitimai…</string>
-    <string name="sync_status_episodes_download">Atsiunčiami epizodų pakeitimai…</string>
-    <string name="sync_status_upload_played">Įkeliama atkūrimo būsena…</string>
-    <string name="sync_status_subscriptions">Sinchronizuojamos prenumeratos…</string>
-    <string name="sync_status_success">Sinchronizavimas sėkmingas</string>
-    <string name="sync_status_error">Sinchronizavimas nepavyko</string>
     <!--import and export-->
   <string name="import_export_summary">Perkelti prenumeratas ir eilę į kitą įrenginį</string>
     <string name="database">Duomenų bazė</string>
@@ -319,34 +310,8 @@
     <string name="time_hours">valandos</string>
     <string name="sleep_timer_enabled_label">Miego laikmatis įjungtas</string>
     <!--Synchronisation-->
-  <string name="synchronization_choose_title">Pasirinkite sinchronizavimo teikėją</string>
-    <string name="synchronization_summary_unchoosen">Galite pasirinkti iš keleto teikėjų prenumeratų ir epizodų atkūrimo būsenai sinchronizuoti</string>
-    <string name="dialog_choose_sync_service_title">Pasirinkite sinchronizavimo teikėją</string>
-    <string name="synchronization_summary_nextcloud">„Gpodder Sync“ yra atvirojo kodo „Nextcloud“ programėlė, kurią galite nesunkiai įdiegti savo serveryje. „Gpodder Sync“ yra nepriklausoma nuo „AntennaPod“ projekto.</string>
-    <string name="synchronization_nextcloud_authenticate_browser">Suteikite prieigą atsivėrusioje interneto naršyklėje ir sugrįžkite į „AntennaPod“.</string>
-    <string name="gpodnetauth_login_butLabel">Prisijungti</string>
-    <string name="gpodnetauth_encryption_warning">Slaptažodis ir duomenys nėra užšifruojami!</string>
     <string name="username_label">Vartotojo vardas</string>
     <string name="password_label">Slaptažodis</string>
-    <string name="gpodnetauth_device_name">Įrenginio pavadinimas</string>
-    <string name="gpodnetauth_device_name_default">„AntennaPod“ %1$s įrenginyje</string>
-    <string name="gpodnetauth_existing_devices">Esami įrenginiai</string>
-    <string name="gpodnetauth_create_device">Sukurti įrenginį</string>
-    <string name="gpodnetauth_finish_descr">Sveikiname! Jūsų „gpodder.net“ paskyra susieta su šiuo įrenginiu. Nuo šiol „AntennaPod“ automatiškai sinchronizuos prenumeratas šiame įrenginyje su Jūsų „gpodder.net“ paskyra.</string>
-    <string name="pref_gpodnet_setlogin_information_title">Keisti prisijungimo duomenis</string>
-    <string name="pref_gpodnet_setlogin_information_sum">Keisti prisijungimo prie „gpodder.net“ paskyros duomenis.</string>
-    <string name="synchronization_sync_changes_title">Sinchronizuoti dabar</string>
-    <string name="synchronization_sync_summary">Sinchronizuoti prenumeratų ir epizodų būsenų pokyčius</string>
-    <string name="synchronization_full_sync_title">Priverstinis pilnas sinchronizavimas</string>
-    <string name="synchronization_force_sync_summary">Sinchronizuoti visų prenumeratų ir epizodų būsenas iš naujo</string>
-    <string name="synchronization_logout">Atsijungti</string>
-    <string name="synchronization_login_status">%2$s prisijungta kaip %1$s.\n\nAtsijungę vėl galėsite pasirinkti sinchronizavimo teikėją.</string>
-    <string name="pref_synchronization_logout_toast">Sėkmingai atsijungta</string>
-    <string name="gpodnetsync_error_title">„gpodder.net“ sinchronizavimo klaida</string>
-    <string name="gpodnetsync_error_descr">"Sinchronizavimo metu įvyko klaida: "</string>
-    <string name="gpodnetsync_pref_report_successful">Pavyko</string>
-    <string name="gpodnetsync_pref_report_failed">Nepavyko</string>
-    <string name="gpodnetsync_username_characters_error">Naudotojo vardą sudaryti gali tik raidės, skaitmenys, brūkšniai ir pabraukimo brūkšniai.</string>
     <string name="choose_data_directory_available_space">%1$s iš %2$s laisva</string>
     <!--Online feed view-->
   <string name="subscribe_label">Prenumeruoti</string>
@@ -447,12 +412,8 @@
     <string name="pref_new_episodes_action_sum">Veiksmas, kurio reikia imtis atsiradus naujiems epizodams</string>
     <string name="pref_new_episodes_action_title">Ką daryti su naujais epizodais</string>
     <string name="episode_information">Epizodo informacija</string>
-    <string name="sync_status_wait_for_downloads">Laukiama, kol bus atnaujinta prenumerata…</string>
     <string name="opml_reader_error">Skaitant failą įvyko klaida. Įsitikinkite, kad iš tikrųjų pasirinkote OPML failą ir kad failas yra galiojantis.</string>
     <string name="auto_enable_change_times">Keisti laiko intervalą</string>
-    <string name="synchronization_host_label">Serverio adresas</string>
-    <string name="synchronization_credentials_explanation">Pateikite savo paskyros sinchronizavimo serveryje prisijungimo duomenis.</string>
-    <string name="synchronization_selectDevice_explanation">Pasirinkite įrenginį, kurį sukūrėte sinchronizavimo serveryje, arba sukurkite naują.</string>
     <string name="choose_data_directory_message">Pasirinkite duomenų aplanko pagrindą. AntennaPod sukurs atitinkamus pakatalogius.</string>
     <string name="in_queue_label">Eilėje</string>
     <string name="is_favorite_label">Kaip mėgstamiausią pažymėti</string>
@@ -484,7 +445,6 @@
     <string name="button_action_fast_forward">Greitas peršokimas</string>
     <string name="pref_default_page">Numatytasis puslapis</string>
     <string name="search_online">Paieška internete</string>
-    <string name="synchronization_login_butLabel">Prisijungti</string>
     <string name="search_itunes_label">Paieška Apple Podcasts</string>
     <string name="search_podcastindex_label">Paieška Podcast Index</string>
     <string name="home_welcome_text">Dar nesate užsiprenumeravę jokių podcast\'ų. Atidarykite šoninį meniu ir pridėkite podkastą.</string>
@@ -640,9 +600,6 @@
     <string name="pref_delete_removes_from_queue_sum">Automatiškai pašalinti epizodą iš eilės, kai jis ištrinamas</string>
     <string name="sleep_timer_always">Visada</string>
     <string name="auto_enable_label_with_times">Automatiškai įjungiamas miego laikmatis, kai paspaudžiamas atkūrimas tarp %1$s ir %2$s</string>
-    <string name="gpodnet_description">Gpodder.net yra atvirojo kodo podkastų sinchronizavimo paslauga, kurią galite įdiegti savo serveryje. Gpodder.net nepriklauso nuo AntennaPod projekto.</string>
-    <string name="synchronization_host_explanation">Galite pasirinkti savo serverį sinchronizavimui. Nustatę pageidaujamą sinchronizavimo serverį, čia įveskite jo adresą.</string>
-    <string name="proceed_to_login_butLabel">Tęsti prie prisijungimo</string>
     <string name="choose_data_directory">Pasirinkite duomenų aplanką</string>
     <string name="rating_contribute_button">Atraskite būdų, kaip prisidėti</string>
     <string name="rating_rate">Įvertinkite AntennaPod</string>
@@ -684,7 +641,6 @@
     <string name="episode_download_failed">Epizodo atsisiųsti nepavyko</string>
     <string name="go_to_position_label">Eikite į šią poziciją</string>
     <string name="removed_history_label">Pašalinta iš istorijos</string>
-    <string name="nextcloud_login_error_generic">Nepavyksta prisijungti prie Nextcloud.\n\n- Patikrinkite tinklo ryšį.\n- Patikrinkite, ar naudojate teisingą serverio adresą.\n- Įsitikinkite, kad įdiegtas „Gpodder Sync“ įskiepis iš Nextcloud.</string>
     <string name="confirm_mobile_download_dialog_message_vpn">- Naudojatės VPN? Jūsų VPN programa apsimeta mobiliuoju tinklu (matuojamas ryšys). Jei norite, kad ši problema būtų išspręsta, susisiekite su savo VPN programos kūrėjais.\n- Nesinaudojate VPN? Android Wi-Fi nustatymuose pakeiskite Wi-Fi tipą į nematuojamą.</string>
     <string name="feed_volume_boost_light">Nedidelis postūmis</string>
     <string name="auto_enable_label">Automatiškai įjungti miego laikmatį paspaudus groti</string>

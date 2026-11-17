@@ -308,8 +308,6 @@
     <string name="no_subscriptions_label">Para inscrever-se em um podcast, pressione o ícone de adição abaixo.</string>
     <!--Preferences-->
   <string name="project_pref">Projeto</string>
-    <string name="synchronization_pref">Sincronização</string>
-    <string name="synchronization_sum">Sincronize com outros dispositivos</string>
     <string name="automation">Automação</string>
     <string name="download_pref_details">Detalhes</string>
     <string name="import_export_pref">Backup &amp; Restauração</string>
@@ -473,13 +471,6 @@
     <string name="no_results_for_query">Nenhum resultado para \"%1$s\"</string>
     <string name="search_online">Pesquisar online</string>
     <!--Synchronization-->
-  <string name="sync_status_started">Sincronização iniciada</string>
-    <string name="sync_status_episodes_upload">Enviando alterações de episódio…</string>
-    <string name="sync_status_episodes_download">Baixando alterações de episódio…</string>
-    <string name="sync_status_upload_played">Enviando status de reprodução…</string>
-    <string name="sync_status_subscriptions">Sincronizando inscrições…</string>
-    <string name="sync_status_success">Sincronização bem sucedida</string>
-    <string name="sync_status_error">Falha na sincronização</string>
     <!--import and export-->
   <string name="import_export_summary">Mover inscrições e fila para outro dispositivo</string>
     <string name="database">Banco de dados</string>
@@ -550,41 +541,8 @@
     <string name="auto_enable_change_times">Alterar intervalo</string>
     <string name="sleep_timer_enabled_label">Timer de suspensão ativado</string>
     <!--Synchronisation-->
-  <string name="synchronization_choose_title">Escolha o provedor de sincronização</string>
-    <string name="synchronization_summary_unchoosen">Você pode escolher entre vários provedores para sincronizar suas inscrições e o estado de reprodução dos episódios</string>
-    <string name="dialog_choose_sync_service_title">Escolha o provedor de sincronização</string>
-    <string name="gpodnet_description">Gpodder.net é um serviço de código aberto para sincronização de podcasts que você pode instalar em seu próprio servidor. Gpodder.net é um serviço independente do projeto AntennaPod.</string>
-    <string name="synchronization_summary_nextcloud">Gpodder Sync é um aplicativo Nextcloud de código aberto que você pode instalar facilmente em seu próprio servidor. Gpodder Sync é independente do projeto AntennaPod.</string>
-    <string name="synchronization_host_explanation">Você pode escolher seu próprio servidor de sincronização. Assim que identificar o seu servidor de sincronização preferido, digite aqui o endereço.</string>
-    <string name="synchronization_host_label">Endereço do servidor</string>
-    <string name="proceed_to_login_butLabel">Ir para o login</string>
-    <string name="synchronization_nextcloud_authenticate_browser">Conceda o acesso necessário através do navegador web e retorne ao AntennaPod.</string>
-    <string name="gpodnetauth_login_butLabel">Login</string>
-    <string name="synchronization_credentials_explanation">Por favor, forneça as credenciais da sua conta no servidor de sincronização.</string>
-    <string name="gpodnetauth_encryption_warning">A senha e os dados não são criptografados!</string>
     <string name="username_label">Nome de usuário</string>
     <string name="password_label">Senha</string>
-    <string name="synchronization_login_butLabel">Login</string>
-    <string name="synchronization_selectDevice_explanation">Selecione o dispositivo que você criou no servidor de sincronização ou crie um novo.</string>
-    <string name="gpodnetauth_device_name">Nome do dispositivo</string>
-    <string name="gpodnetauth_device_name_default">AntennaPod em %1$s</string>
-    <string name="gpodnetauth_existing_devices">Dispositivos existentes</string>
-    <string name="gpodnetauth_create_device">Criar dispositivo</string>
-    <string name="gpodnetauth_finish_descr">Parabéns! Sua conta gpodder.net agora está conectada ao seu dispositivo. O AntennaPod irá, daqui em diante, sincronizar automaticamente inscrições do seu dispositivo com sua conta gpodder.net.</string>
-    <string name="pref_gpodnet_setlogin_information_title">Alterar informações de login</string>
-    <string name="pref_gpodnet_setlogin_information_sum">Alterar dados de login da sua conta gpodder.net.</string>
-    <string name="synchronization_sync_changes_title">Sincronizar agora</string>
-    <string name="synchronization_sync_summary">Sincronizar mudanças de inscrições e estado dos episódios</string>
-    <string name="synchronization_full_sync_title">Forçar sincronização completa</string>
-    <string name="synchronization_force_sync_summary">Sincronizar novamente todas as inscrições e o estado dos episódios</string>
-    <string name="synchronization_logout">Encerrar sessão</string>
-    <string name="synchronization_login_status">Conectado como %1$s em %2$s.\n\nVocê poderá escolher o provedor de sincronização novamente ao encerrar a sessão.</string>
-    <string name="pref_synchronization_logout_toast">A sessão foi encerrada com sucesso</string>
-    <string name="gpodnetsync_error_title">gpodder.net: erro de sincronização</string>
-    <string name="gpodnetsync_error_descr">"Ocorreu um erro durante a sincronização: "</string>
-    <string name="gpodnetsync_pref_report_successful">Sucesso</string>
-    <string name="gpodnetsync_pref_report_failed">Falhou</string>
-    <string name="gpodnetsync_username_characters_error">Os nomes de usuário podem conter apenas letras, dígitos, hifens e sublinhados.</string>
     <!--Directory chooser-->
   <string name="choose_data_directory">Escolha a pasta</string>
     <string name="choose_data_directory_message">Por favor, escolha a pasta que servirá de base. O AntennaPod criará as subpastas apropriadas.</string>
@@ -740,7 +698,6 @@
     <string name="shortcut_select_subscription">Selecione a inscrição</string>
     <string name="add_shortcut">Adicionar atalho</string>
     <string name="home_no_recent_unplayed_episodes_text">Você já reproduziu todos os episódios recentes. Nada para se surpreender aqui ;)</string>
-    <string name="sync_status_wait_for_downloads">Aguardando atualização das inscrições…</string>
     <string name="statistics_episodes_space">espaço ocupado</string>
     <string name="statistics_release_schedule">cronograma de lançamento</string>
     <string name="statistics_release_next">próximo episódio (estimativa)</string>
@@ -754,7 +711,6 @@
     <string name="delete_downloads_played_confirmation">Confirme que deseja excluir tudo que já foi baixado e reproduzido.</string>
     <string name="bottom_navigation">Navegação inferior</string>
     <string name="bottom_navigation_summary">Acesse as telas mais importantes a partir de qualquer lugar com apenas um toque</string>
-    <string name="nextcloud_login_error_generic">Não foi possível fazer login no seu Nextcloud.\n\n- Verifique sua conexão de rede.\n- Confirme que esteja usando o endereço correto do servidor.\n- Certifique-se de que o plugin Gpodder Sync esteja instalado no Nextcloud.</string>
     <plurals name="statistics_episodes_total">
         <item quantity="one">total</item>
         <item quantity="many">totais</item>

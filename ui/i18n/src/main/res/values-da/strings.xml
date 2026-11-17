@@ -298,8 +298,6 @@
     <string name="no_subscriptions_label">Tryk på plus-ikonet nedenfor for at abonnere på en podcast.</string>
     <!--Preferences-->
   <string name="project_pref">Projekt</string>
-    <string name="synchronization_pref">Synkronisering</string>
-    <string name="synchronization_sum">Synkroniser med andre enheder</string>
     <string name="automation">Automatisering</string>
     <string name="download_pref_details">Detaljer</string>
     <string name="import_export_pref">Sikkerhedskopiering og gendannelse</string>
@@ -463,13 +461,6 @@
     <string name="no_results_for_query">Ingen resultater fundet for \"%1$s\"</string>
     <string name="search_online">Søg online</string>
     <!--Synchronization-->
-  <string name="sync_status_started">Synkronisering startet</string>
-    <string name="sync_status_episodes_upload">Overfører afsnitsændringer…</string>
-    <string name="sync_status_episodes_download">Henter afsnitsændringer…</string>
-    <string name="sync_status_upload_played">Overfører afspilningsstatus…</string>
-    <string name="sync_status_subscriptions">Synkroniserer abonnementer…</string>
-    <string name="sync_status_success">Synkroniseret</string>
-    <string name="sync_status_error">Synkronisering mislykkedes</string>
     <!--import and export-->
   <string name="import_export_summary">Flyt abonnementer og kø til en anden enhed</string>
     <string name="database">Database</string>
@@ -536,41 +527,8 @@
     <string name="auto_enable_change_times">Skift tidsinterval</string>
     <string name="sleep_timer_enabled_label">Søvntimer slået til</string>
     <!--Synchronisation-->
-  <string name="synchronization_choose_title">Vælg synkroniseringsudbyder</string>
-    <string name="synchronization_summary_unchoosen">Du kan vælge mellem flere udbydere til at synkronisere dine abonnementer og afspilningsstatus for afsnit med</string>
-    <string name="dialog_choose_sync_service_title">Vælg synkroniseringsudbyder</string>
-    <string name="gpodnet_description">Gpodder.net er en open source synkroniseringstjeneste til podcasts, som du kan installere på din egen server. Gpodder.net er uafhængig af AntennaPod-projektet.</string>
-    <string name="synchronization_summary_nextcloud">Gpodder Sync er en open source-app fra Nextcloud, som du nemt kan installere på din egen server. Gpodder Sync er uafhængig af AntennaPod-projektet.</string>
-    <string name="synchronization_host_explanation">Du kan vælge din egen server at synkronisere med. Når du har fundet din foretrukne synkroniseringsserver, skal du indtaste dens adresse her.</string>
-    <string name="synchronization_host_label">Server-adresse</string>
-    <string name="proceed_to_login_butLabel">Fortsæt til login</string>
-    <string name="synchronization_nextcloud_authenticate_browser">Giv adgang ved hjælp af den åbne internetbrowser, og vend tilbage til AntennaPod.</string>
-    <string name="gpodnetauth_login_butLabel">Log ind</string>
-    <string name="synchronization_credentials_explanation">Angiv legitimationsoplysningerne for din konto på synkroniseringsserveren.</string>
-    <string name="gpodnetauth_encryption_warning">Adgangskode og data er ikke krypteret!</string>
     <string name="username_label">Brugernavn</string>
     <string name="password_label">Adgangskode</string>
-    <string name="synchronization_login_butLabel">Log ind</string>
-    <string name="synchronization_selectDevice_explanation">Vælg den enhed, som du har oprettet på synkroniseringsserveren, eller opret en ny enhed.</string>
-    <string name="gpodnetauth_device_name">Enhedsnavn</string>
-    <string name="gpodnetauth_device_name_default">AntennaPod på %1$s</string>
-    <string name="gpodnetauth_existing_devices">Eksisterende enheder</string>
-    <string name="gpodnetauth_create_device">Opret ny enhed</string>
-    <string name="gpodnetauth_finish_descr">Tillykke! Din gpodder.net-konto er nu forbundet med din enhed. AntennaPod vil fra nu af automatisk synkronisere dine abonnementer på din enhed med din gpodder.net-konto.</string>
-    <string name="pref_gpodnet_setlogin_information_title">Ændr loginoplysninger</string>
-    <string name="pref_gpodnet_setlogin_information_sum">Ændr din gpodder.net-kontos loginoplysninger.</string>
-    <string name="synchronization_sync_changes_title">Synkroniser nu</string>
-    <string name="synchronization_sync_summary">Synkroniser ændringer i abonnement og afsnitstilstand</string>
-    <string name="synchronization_full_sync_title">Fremtving fuld synkronisering</string>
-    <string name="synchronization_force_sync_summary">Re-synkroniser alle abonnementer og afspilningsstatus for afsnit</string>
-    <string name="synchronization_logout">Log ud</string>
-    <string name="synchronization_login_status">Logget ind som %1$s på %2$s.\n\nDu kan vælge din synkroniseringsudbyder igen, når du har logget ud.</string>
-    <string name="pref_synchronization_logout_toast">Det er lykkedes at logge af</string>
-    <string name="gpodnetsync_error_title">gpodder.net-synkroniseringsfejl</string>
-    <string name="gpodnetsync_error_descr">"En fejl opstod under synkronisering: "</string>
-    <string name="gpodnetsync_pref_report_successful">Lykkedes</string>
-    <string name="gpodnetsync_pref_report_failed">Fejlede</string>
-    <string name="gpodnetsync_username_characters_error">Brugernavne kan kun indeholde bogstaver, tal, bindestreger og understreger.</string>
     <!--Directory chooser-->
   <string name="choose_data_directory">Vælg datamappe</string>
     <string name="choose_data_directory_message">Vælg basen for din datamappe. AntennaPod vil oprette de relevante undermapper.</string>
@@ -726,9 +684,7 @@
     <string name="shortcut_select_subscription">Vælg abonnement</string>
     <string name="add_shortcut">Tilføj genvej</string>
     <string name="home_no_recent_unplayed_episodes_text">Du har allerede afspillet alle de seneste afsnit. Ingen ting at blive overrasket over her ;)</string>
-    <string name="sync_status_wait_for_downloads">Venter på opdatering af abonnementer…</string>
     <string name="home_continue_empty_text">Du kan tilføje afsnit ved at overføre dem eller trykke længe på dem og vælge \"Tilføj til kø\".</string>
-    <string name="nextcloud_login_error_generic">Kan ikke logge ind på din Nextcloud.\n\n- Tjek din netværksforbindelse.\n- Bekræft, at du bruger den rigtige serveradresse.\n- Sørg for, at Gpodder Sync Nextcloud-udvidelsen er installeret.</string>
     <string name="discover_more">Opdag mere »</string>
     <string name="bottom_navigation_summary">Få adgang til de vigtigste skærme fra alle steder med et enkelt tryk</string>
     <string name="delete_downloads_played">Slet afspillede</string>

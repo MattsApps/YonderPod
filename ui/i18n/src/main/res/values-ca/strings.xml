@@ -297,8 +297,6 @@
     <string name="no_subscriptions_label">Per a subscriure\'t a un pòdcast, toqueu la icona + més avall.</string>
     <!--Preferences-->
   <string name="project_pref">Projecte</string>
-    <string name="synchronization_pref">Sincronització</string>
-    <string name="synchronization_sum">Sincronitza amb altres dispositius</string>
     <string name="automation">Automatització</string>
     <string name="download_pref_details">Detalls</string>
     <string name="import_export_pref">Còpia de seguretat i restaurar</string>
@@ -462,13 +460,6 @@
     <string name="no_results_for_query">No s\'han trobat resultats per «%1$s»</string>
     <string name="search_online">Cerca en línia</string>
     <!--Synchronization-->
-  <string name="sync_status_started">Sincronització començada</string>
-    <string name="sync_status_episodes_upload">S\'estan pujant canvis d\'episodi…</string>
-    <string name="sync_status_episodes_download">S\'estan baixant canvis d\'episodi…</string>
-    <string name="sync_status_upload_played">S\'està pujant l\'estat reproduït…</string>
-    <string name="sync_status_subscriptions">S\'estan sincronitzant les subscripcions…</string>
-    <string name="sync_status_success">Sincronització exitosa</string>
-    <string name="sync_status_error">Sincronització fallida</string>
     <!--import and export-->
   <string name="import_export_summary">Mou les subscripcions i la cua a un altre dispositiu</string>
     <string name="database">Base de dades</string>
@@ -539,41 +530,8 @@
     <string name="auto_enable_change_times">Canvia el rang de temps</string>
     <string name="sleep_timer_enabled_label">Temporitzador actiu</string>
     <!--Synchronisation-->
-  <string name="synchronization_choose_title">Escull el proveïdor de sincronització</string>
-    <string name="synchronization_summary_unchoosen">Podeu escollir entre múltiples proveïdors per sincronitzar-hi les vostres subscripcions i l\'estat de reproducció dels episodis</string>
-    <string name="dialog_choose_sync_service_title">Escull el proveïdor de sincronització</string>
-    <string name="gpodnet_description">Gpodder.net és un servei de sincronització de podcasts de codi obert que podeu instal·lar al vostre propi servidor. Gpodder.net és independent del projecte AntennaPod.</string>
-    <string name="synchronization_summary_nextcloud">Gpodder Sync és una aplicació de Nextcloud de codi obert que podeu instal·lar fàcilment al vostre propi servidor. Gpodder Sync és independent del projecte AntennaPod.</string>
-    <string name="synchronization_host_explanation">Podeu triar el vostre propi servidor per sincronitzar-lo. Quan hàgiu identificat el vostre servidor de sincronització preferit, introduïu la seva adreça aquí.</string>
-    <string name="synchronization_host_label">Adreça del servidor</string>
-    <string name="proceed_to_login_butLabel">Continua per iniciar la sessió</string>
-    <string name="synchronization_nextcloud_authenticate_browser">Concediu accés des de la finestra del navegador oberta i torneu a AntennaPod.</string>
-    <string name="gpodnetauth_login_butLabel">Entra</string>
-    <string name="synchronization_credentials_explanation">Proporcioneu les credencials del vostre compte al servidor de sincronització.</string>
-    <string name="gpodnetauth_encryption_warning">La contrasenya i les dades no estan encriptades!</string>
     <string name="username_label">Nom d\'usuari</string>
     <string name="password_label">Contrasenya</string>
-    <string name="synchronization_login_butLabel">Inicia la sessió</string>
-    <string name="synchronization_selectDevice_explanation">Seleccioneu el dispositiu que heu creat al servidor de sincronització o creeu-ne un de nou.</string>
-    <string name="gpodnetauth_device_name">Nom del dispositiu</string>
-    <string name="gpodnetauth_device_name_default">AntennaPod a %1$s</string>
-    <string name="gpodnetauth_existing_devices">Dispositius existents</string>
-    <string name="gpodnetauth_create_device">Crea dispositiu</string>
-    <string name="gpodnetauth_finish_descr">Felicitats! El vostre compte de gpodder.net s\'ha enllaçat amb el dispositiu. D\'ara endavant, AntennaPod sincronitzarà automàticament les subscripcions del dispositiu al vostre compte.</string>
-    <string name="pref_gpodnet_setlogin_information_title">Dades d\'inici de sessió</string>
-    <string name="pref_gpodnet_setlogin_information_sum">Canvieu la informació d\'inici de sessió del vostre compte de gpodder.net.</string>
-    <string name="synchronization_sync_changes_title">Sincronitzar ara</string>
-    <string name="synchronization_sync_summary">Sincronitza subscripció i canvis en l\'estat de l\'episodi</string>
-    <string name="synchronization_full_sync_title">Forçar sincronització completa</string>
-    <string name="synchronization_force_sync_summary">Re-sincronitza totes les subscripcions i estats dels episodis</string>
-    <string name="synchronization_logout">Desconnecta</string>
-    <string name="synchronization_login_status">Connectat com a %1$s a %2$s.\n\nPodeu tornar a triar el vostre proveïdor de sincronització un cop hagueu tancat la sessió.</string>
-    <string name="pref_synchronization_logout_toast">La desconnexió ha estat correcta</string>
-    <string name="gpodnetsync_error_title">Error de sincronització a gpodder.net</string>
-    <string name="gpodnetsync_error_descr">"S\'ha produït un error durant la sincronització: "</string>
-    <string name="gpodnetsync_pref_report_successful">Correcte</string>
-    <string name="gpodnetsync_pref_report_failed">Ha fallat</string>
-    <string name="gpodnetsync_username_characters_error">Noms d\'usuari sols poden contindre lletres, dígits, guions i guions baixos.</string>
     <!--Directory chooser-->
   <string name="choose_data_directory">Selecciona carpeta de dades</string>
     <string name="choose_data_directory_message">Seleccioneu l\'arreu del vostre directori d\'informació. AntennaPod crearà els subdirectoris pertinents.</string>
@@ -788,8 +746,6 @@
     <string name="pref_automatic_download_queue_description">Baixa automàticament els episodis de la cua</string>
     <string name="pref_downloads_button_action_title">Reprodueix des de la pantalla de baixades</string>
     <string name="pref_downloads_button_action_sum">Mostra el botó de reproducció en lloc del botó d\'esborrar a la pantalla de baixades</string>
-    <string name="sync_status_wait_for_downloads">S\'està esperant l\'actualització de les subscripcions…</string>
-    <string name="nextcloud_login_error_generic">No es pot iniciar sessió al Nextcloud.\n\n- Comproveu la connexió de xarxa.\n- Confirmeu que esteu utilitzant l\'adreça de servidor correcta.\n- Assegureu-vos que el connector Gpodder Sync del Nextcloud estigui instal·lat.</string>
     <string name="download_started_talkback">S\'ha iniciat la baixada per a %1$s</string>
     <string name="download_completed_talkback">S\'ha completat la baixada per a %1$s</string>
     <string name="statistics_time_total">total</string>

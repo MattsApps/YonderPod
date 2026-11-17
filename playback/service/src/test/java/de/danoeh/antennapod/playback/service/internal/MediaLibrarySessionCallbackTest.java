@@ -7,8 +7,6 @@ import androidx.media3.session.MediaSession;
 import de.danoeh.antennapod.model.feed.Feed;
 import de.danoeh.antennapod.model.feed.FeedItem;
 import de.danoeh.antennapod.model.feed.FeedMedia;
-import de.danoeh.antennapod.net.sync.serviceinterface.SynchronizationQueue;
-import de.danoeh.antennapod.net.sync.serviceinterface.SynchronizationQueueStub;
 import de.danoeh.antennapod.playback.base.MediaItemAdapter;
 import de.danoeh.antennapod.storage.database.FeedDatabaseWriter;
 import de.danoeh.antennapod.storage.database.PodDBAdapter;
@@ -43,7 +41,6 @@ public class MediaLibrarySessionCallbackTest {
         PlaybackPreferences.init(context);
         PodDBAdapter.init(context);
         PodDBAdapter.deleteDatabase();
-        SynchronizationQueue.setInstance(new SynchronizationQueueStub());
         callback = new MediaLibrarySessionCallback(context);
     }
 

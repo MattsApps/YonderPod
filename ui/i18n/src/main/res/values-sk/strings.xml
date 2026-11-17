@@ -308,8 +308,6 @@
     <string name="no_subscriptions_label">Pre prihlásenie odberu podcastu stlačte ikonu plus nižšie.</string>
     <!--Preferences-->
   <string name="project_pref">O projekte</string>
-    <string name="synchronization_pref">Synchronizácia</string>
-    <string name="synchronization_sum">Synchronizácia s ostatnými zariadeniami</string>
     <string name="automation">Automatizácia</string>
     <string name="download_pref_details">Podrobnosti</string>
     <string name="import_export_pref">Zálohovanie a obnovenie</string>
@@ -473,13 +471,6 @@
     <string name="no_results_for_query">Neboli nájdené žiadne výsledky pre „%1$s“</string>
     <string name="search_online">Hľadať online</string>
     <!--Synchronization-->
-  <string name="sync_status_started">Synchronizácia bola spustená</string>
-    <string name="sync_status_episodes_upload">Nahrávajú sa zmeny epizód…</string>
-    <string name="sync_status_episodes_download">Sťahujú sa zmeny epizód…</string>
-    <string name="sync_status_upload_played">Nahráva sa stav prehrávania…</string>
-    <string name="sync_status_subscriptions">Synchronizujú sa odbery…</string>
-    <string name="sync_status_success">Synchronizácia bola úspešná</string>
-    <string name="sync_status_error">Synchronizácia zlyhala</string>
     <!--import and export-->
   <string name="import_export_summary">Presun odberov a poradia na iné zariadenia</string>
     <string name="database">Databáza</string>
@@ -550,41 +541,8 @@
     <string name="auto_enable_change_times">Zmeniť časový rozsah</string>
     <string name="sleep_timer_enabled_label">Časovač vypnutia povolený</string>
     <!--Synchronisation-->
-  <string name="synchronization_choose_title">Vyberte si poskytovateľa synchronizácie</string>
-    <string name="synchronization_summary_unchoosen">Môžete si vybrať viacerých poskytovateľov na synchronizáciu vašich odberov a stavu prehrávania epizódy</string>
-    <string name="dialog_choose_sync_service_title">Vyberte si poskytovateľa synchronizácie</string>
-    <string name="gpodnet_description">Gpodder.net je open-source služba na synchronizáciu podcastov, ktorú si môžete nainštalovať na váš vlastný server. Gpodder.net je samostatný projekt a nezávisí na projekte AntennaPod.</string>
-    <string name="synchronization_summary_nextcloud">Gpodder Sync je open-source Nexcloud aplikácia, ktorú si viete ľahko nainštalovať na Váš vlastný server. Aplikácia je nezávislá od projektu AntennaPod.</string>
-    <string name="synchronization_host_explanation">Môžete si vybrať svoj vlastný server na synchronizáciu. Keď budete mať identifikovaný preferovaný server na synchronizáciu, tak prosím napíšte jeho adresu sem.</string>
-    <string name="synchronization_host_label">Adresa servera</string>
-    <string name="proceed_to_login_butLabel">Pokračujte na prihlásenie</string>
-    <string name="synchronization_nextcloud_authenticate_browser">Udeľte prístup použitím otvoreného webového prehliadača a vráťte sa späť k aplikácii AntennaPod.</string>
-    <string name="gpodnetauth_login_butLabel">Prihlásiť sa</string>
-    <string name="synchronization_credentials_explanation">Prosím, poskytnite prihlasovacie údaje vášho účtu na synchronizačnom serveri.</string>
-    <string name="gpodnetauth_encryption_warning">Heslo a údaje nie sú šifrované!</string>
     <string name="username_label">Používateľské meno</string>
     <string name="password_label">Heslo</string>
-    <string name="synchronization_login_butLabel">Prihlásiť sa</string>
-    <string name="synchronization_selectDevice_explanation">Tu vyberte zariadenie, ktoré ste vytvorili na synchronizačnom serveri alebo vytvorte nové.</string>
-    <string name="gpodnetauth_device_name">Názov zariadenia</string>
-    <string name="gpodnetauth_device_name_default">AntennaPod na %1$s</string>
-    <string name="gpodnetauth_existing_devices">Existujúce zariadenia</string>
-    <string name="gpodnetauth_create_device">Vytvoriť zariadenie</string>
-    <string name="gpodnetauth_finish_descr">Gratulujeme! Váš gpodder.net účet je teraz prepojený s vašim zariadením. AntennaPod bude odteraz automaticky synchronizovať odbery vo vašom zariadení s vašim gpodder.net účtom.</string>
-    <string name="pref_gpodnet_setlogin_information_title">Zmena prihlasovacích údajov</string>
-    <string name="pref_gpodnet_setlogin_information_sum">Zmení prihlasovacie údaje k vášmu gpodder.net účtu.</string>
-    <string name="synchronization_sync_changes_title">Synchronizovať teraz</string>
-    <string name="synchronization_sync_summary">Synchronizovať odbery a zmeny stavu epizódy</string>
-    <string name="synchronization_full_sync_title">Vynútiť úplnú synchronizáciu</string>
-    <string name="synchronization_force_sync_summary">Znovu synchronizovať všetky odbery a stavy epizód</string>
-    <string name="synchronization_logout">Odhlásiť</string>
-    <string name="synchronization_login_status">Prihlásený ako %1$s na %2$s\n\nVášho poskytovateľa si môžete vybrať synchronizácie opäť, keď sa odhlásite.</string>
-    <string name="pref_synchronization_logout_toast">Úspešne odhlásený</string>
-    <string name="gpodnetsync_error_title">Chyba synchronizácie s gpodder.net</string>
-    <string name="gpodnetsync_error_descr">"Počas synchronizácie sa vyskytla chyba: "</string>
-    <string name="gpodnetsync_pref_report_successful">Úspešné</string>
-    <string name="gpodnetsync_pref_report_failed">Neúspešné</string>
-    <string name="gpodnetsync_username_characters_error">Používateľské mená môžu obsahovať iba písmena, číslice, spojovníky a podčiarkovníky.</string>
     <!--Directory chooser-->
   <string name="choose_data_directory">Zvoľte priečinok na ukladanie</string>
     <string name="choose_data_directory_message">Vyberte hlavný priečinok pre ukladanie súborov. Aplikácia AntennaPod vytvorí ďalšie príslušné podpriečinky.</string>
@@ -739,7 +697,6 @@
     <string name="shortcut_subscription_label">Skratka odberu</string>
     <string name="shortcut_select_subscription">Vybrať odber</string>
     <string name="add_shortcut">Pridať skratku</string>
-    <string name="sync_status_wait_for_downloads">Čaká sa na obnovenie odberov…</string>
     <string name="pref_nav_drawer_items_sum">Zmeňte, ktoré položky sa zobrazia v navigačnom vysúvacom paneli alebo v spodnej navigácii</string>
     <string name="home_no_recent_unplayed_episodes_text">Všetky epizódy ste už prehrali. Nemáme vás čím novým prekvapiť ;)</string>
     <string name="home_continue_empty_text">Epizódy môžete pridať ich stiahnutím alebo dlhým stlačením a výberom možnosti „Pridať do poradia“.</string>
@@ -760,7 +717,6 @@
     <string name="home_new_empty_text">Tu sa zobrazia nové epizódy. Neskôr sa môžete rozhodnúť, či o ne máte záujem.</string>
     <string name="discover_more">Objavte viac »</string>
     <string name="null_value_podcast_error">Odkaz, na ktorý ste klikli, neobsahuje platnú webovú adresu podcastu. Overte odkaz a skúste to znova, alebo vyhľadajte podcast manuálne.</string>
-    <string name="nextcloud_login_error_generic">Nedá sa prihlásiť do vášho Nextcloud účtu\n\n- Skontrolujte si sieťové pripojenie.\n- Potvrďte, že používate správnu adresu servera.\n- Uistite sa, že doplnok Gpodder Sync Nextcloud je nainštalovaný.</string>
     <string name="statistics_view_all">Všetky podcasty »</string>
     <string name="episode_download_failed">Sťahovanie epizódy zlyhalo</string>
     <string name="statistics_episodes_space">veľkosť</string>

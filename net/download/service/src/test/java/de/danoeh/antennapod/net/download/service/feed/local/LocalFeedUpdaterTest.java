@@ -16,7 +16,6 @@ import de.danoeh.antennapod.net.download.serviceinterface.DownloadServiceInterfa
 import de.danoeh.antennapod.model.feed.Feed;
 import de.danoeh.antennapod.model.feed.FeedItem;
 import de.danoeh.antennapod.storage.database.PodDBAdapter;
-import de.danoeh.antennapod.storage.preferences.SynchronizationSettings;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -71,7 +70,6 @@ public class LocalFeedUpdaterTest {
         context = InstrumentationRegistry.getInstrumentation().getContext();
         UserPreferences.init(context);
         PlaybackPreferences.init(context);
-        SynchronizationSettings.init(context);
         DownloadServiceInterface.setImpl(new DownloadServiceInterfaceStub());
 
         // Initialize database

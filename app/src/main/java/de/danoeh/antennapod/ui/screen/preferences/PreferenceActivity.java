@@ -40,7 +40,6 @@ import de.danoeh.antennapod.ui.preferences.screen.AutoDownloadPreferencesFragmen
 import de.danoeh.antennapod.ui.preferences.screen.AutomaticDeletionPreferencesFragment;
 import de.danoeh.antennapod.ui.preferences.screen.NotificationPreferencesFragment;
 import de.danoeh.antennapod.ui.preferences.screen.about.AboutFragment;
-import de.danoeh.antennapod.ui.preferences.screen.synchronization.SynchronizationPreferencesFragment;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -58,7 +57,6 @@ public class PreferenceActivity extends ToolbarActivity implements SearchPrefere
     public static final String OPEN_DOWNLOADS_SCREEN = "OpenDownloadsScreen";
     public static final String OPEN_PLAYBACK_SCREEN = "OpenPlaybackScreen";
     public static final String OPEN_IMPORT_EXPORT = "OpenImportExport";
-    public static final String OPEN_SYNC = "OpenSync";
     public static final String OPEN_ABOUT = "OpenAbout";
     public static final String OPEN_SCREEN = "OpenScreen";
     public static final String HIGHLIGHT_KEY = "HighlightKey";
@@ -196,8 +194,6 @@ public class PreferenceActivity extends ToolbarActivity implements SearchPrefere
             return getPreferenceScreen(R.xml.preferences_playback);
         } else if (intent.getBooleanExtra(OPEN_IMPORT_EXPORT, false)) {
             return getPreferenceScreen(R.xml.preferences_import_export);
-        } else if (intent.getBooleanExtra(OPEN_SYNC, false)) {
-            return getPreferenceScreen(R.xml.preferences_synchronization);
         } else if (intent.getBooleanExtra(OPEN_ABOUT, false)) {
             return new AboutFragment();
         }
@@ -215,8 +211,6 @@ public class PreferenceActivity extends ToolbarActivity implements SearchPrefere
             prefFragment = new ImportExportPreferencesFragment();
         } else if (screen == R.xml.preferences_autodownload) {
             prefFragment = new AutoDownloadPreferencesFragment();
-        } else if (screen == R.xml.preferences_synchronization) {
-            prefFragment = new SynchronizationPreferencesFragment();
         } else if (screen == R.xml.preferences_playback) {
             prefFragment = new PlaybackPreferencesFragment();
         } else if (screen == R.xml.preferences_notifications) {
@@ -242,8 +236,6 @@ public class PreferenceActivity extends ToolbarActivity implements SearchPrefere
             return R.string.import_export_pref;
         } else if (preferences == R.xml.preferences_user_interface) {
             return R.string.user_interface_label;
-        } else if (preferences == R.xml.preferences_synchronization) {
-            return R.string.synchronization_pref;
         } else if (preferences == R.xml.preferences_notifications) {
             return R.string.notification_pref_fragment;
         } else if (preferences == R.xml.feed_settings) {

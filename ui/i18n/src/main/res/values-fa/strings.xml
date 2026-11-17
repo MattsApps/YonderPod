@@ -285,8 +285,6 @@
     <string name="no_subscriptions_label">برای اشتراک در یک پادپخش، نقشک مثبت را در زیر بزنید.</string>
     <!--Preferences-->
   <string name="project_pref">پروژه</string>
-    <string name="synchronization_pref">همگام‌سازی</string>
-    <string name="synchronization_sum">همگام‌سازی با دیگر دستگاه‌ها</string>
     <string name="automation">خودکارسازی</string>
     <string name="download_pref_details">جزییات</string>
     <string name="import_export_pref">پشتیبان و بازگردانی</string>
@@ -437,13 +435,6 @@
     <string name="no_results_for_query">هیچ نتیجه ای برای \"%1$s\" یافت نشد</string>
     <string name="search_online">جستجوی برخط</string>
     <!--Synchronization-->
-  <string name="sync_status_started">همگام‌سازی شروع شد</string>
-    <string name="sync_status_episodes_upload">بارگذاری تغییرات قسمت…</string>
-    <string name="sync_status_episodes_download">بارگیری تغییرات قسمت…</string>
-    <string name="sync_status_upload_played">بار گذاشتن وضعیت پخش شده…</string>
-    <string name="sync_status_subscriptions">همگام‌سازی اشتراک‌ها…</string>
-    <string name="sync_status_success">همگام‌سازی موفقیت آمیز</string>
-    <string name="sync_status_error">همگا‌م‌سازی ناموفقیت آمیز</string>
     <!--import and export-->
   <string name="import_export_summary">اشتراک ها و صف را به دستگاه دیگری منتقل کنید</string>
     <string name="database">پایگاه داده</string>
@@ -494,41 +485,8 @@
     <string name="auto_enable_change_times">زمان‌های تعویض</string>
     <string name="sleep_timer_enabled_label">زمان‌سنج خواب به کار افتاد</string>
     <!--Synchronisation-->
-  <string name="synchronization_choose_title">گزینش فراهم‌کننده همگام سازی</string>
-    <string name="synchronization_summary_unchoosen">می‌توانید چند فراهم‌کننده را برای همگام سازی اشتراک‌ها و وضعیت پخش قسمت‌هایتان برگزینید</string>
-    <string name="dialog_choose_sync_service_title">گزینش فراهم‌کننده همگام سازی</string>
-    <string name="gpodnet_description">Gpodder.net خدمت همگام‌سازی پادپخش آزادی است که می‌توانید روی کارساز خودتان نصبش کنید. جی‌پادر دات نت مستقل از پروژهٔ آنتناپاد است.</string>
-    <string name="synchronization_summary_nextcloud">هم‌گام سازی جی‌پادر کارهٔ نکست‌کلودی آزادیست که می‌توانید به سادگی روی کارساز خودتان نصبش کنید. هم‌گام سازی جی‌پادر مستقل از پروژهٔ آنتناپاد است.</string>
-    <string name="synchronization_host_explanation">می‌توانید کارساز خودتان را برای همگام‌سازی برگزینید. لطفاً پس از مشخص کردن کارساز همگام‌سازی ترجیحیتان، نشانی‌اش را اینجا وارد کنید.</string>
-    <string name="synchronization_host_label">نشانی کارساز</string>
-    <string name="proceed_to_login_butLabel">برای ورود به سیستم اقدام کنید</string>
-    <string name="synchronization_nextcloud_authenticate_browser">با استفاده از مرورگر وب باز شده دسترسی بدهید و به آنتناپاد برگردید.</string>
-    <string name="gpodnetauth_login_butLabel">ورود</string>
-    <string name="synchronization_credentials_explanation">لطفاً گواهی‌های حسابتان روی کارساز همگام‌سازی را فراهم کنید.</string>
-    <string name="gpodnetauth_encryption_warning">گذرواژه و داده‌ها رمزنگاری نمی‌شوند!</string>
     <string name="username_label">نام کاربری</string>
     <string name="password_label">گذرواژه</string>
-    <string name="synchronization_login_butLabel">وارد شدن</string>
-    <string name="synchronization_selectDevice_explanation">لطفاً دستگاهی که روی کارساز همگام‌سازی ساخته‌اید را گزیده یا یکی جدید بسازید.</string>
-    <string name="gpodnetauth_device_name">نام دستگاه</string>
-    <string name="gpodnetauth_device_name_default">آنتناپاد برروی %1$s</string>
-    <string name="gpodnetauth_existing_devices">دستگاههای موجود</string>
-    <string name="gpodnetauth_create_device">ساخت دستگاه</string>
-    <string name="gpodnetauth_finish_descr">تبریک می گویم! حساب gpodder.net شما اکنون با دستگاه شما پیوند داده شده. آنتناپاد از این پس اشتراک های دستگاه شما را با حساب gpodder.net خود به طور خودکار همگام سازی می کند.</string>
-    <string name="pref_gpodnet_setlogin_information_title">تغییر اطلاعات ورود</string>
-    <string name="pref_gpodnet_setlogin_information_sum">اطلاعات ورود به سیستم حساب gpodder.net خود را تغییر دهید.</string>
-    <string name="synchronization_sync_changes_title">اکنون همگام‌سازی کنید</string>
-    <string name="synchronization_sync_summary">اشتراک و تغییرات وضعیت قسمت را همگام کنید</string>
-    <string name="synchronization_full_sync_title">اجبار به همگام‌سازی کامل</string>
-    <string name="synchronization_force_sync_summary">همه اشتراک‌ها و وضعیت‌های قسمت را دوباره همگام‌سازی کنید</string>
-    <string name="synchronization_logout">خروج</string>
-    <string name="synchronization_login_status">وارد شده به عنوان %1$s روی %2$s.\n\nپس از خروج می‌توانید فراهمگر همگام‌سازی‌تان را برگزینید.</string>
-    <string name="pref_synchronization_logout_toast">خروج موفقیت آمیز بود</string>
-    <string name="gpodnetsync_error_title">خطای همگام‌سازی gpodder.net</string>
-    <string name="gpodnetsync_error_descr">"هنگام همگام‌سازی خطایی رخ داد: "</string>
-    <string name="gpodnetsync_pref_report_successful">موفق</string>
-    <string name="gpodnetsync_pref_report_failed">شکست خورد</string>
-    <string name="gpodnetsync_username_characters_error">نام‌های کاربری فقط می‌توانند شامل حروف، ارقام، خط‌های تیره و زیرخط‌ها باشند.</string>
     <!--Directory chooser-->
   <string name="choose_data_directory">گزینش پوشه داده</string>
     <string name="choose_data_directory_available_space">%1$s از %2$s آزاد</string>
@@ -702,7 +660,6 @@
     <string name="pref_fast_forward_sum">سفارشی سازی تعداد ثانیه‌ها برای پرش به پیش هنگام زدن دکمهٔ پیشبرد</string>
     <string name="pref_show_subscription_title">نمایش عنوان‌ها</string>
     <string name="episode_information">اطّلاعات قسمت</string>
-    <string name="sync_status_wait_for_downloads">منتظر نوسازی اشتراک‌ها…</string>
     <string name="subscription_display_list">فهرست</string>
     <string name="section_shown">نمایش داده شده</string>
     <string name="delete_downloads_played_confirmation">لطفاً تأیید کنید که می‌خواهید همهٔ بارگیری‌های پخش شده را پاک کنید.</string>
@@ -740,7 +697,6 @@
         <item quantity="one">%d دقیقه</item>
         <item quantity="other">%d دقیقه</item>
     </plurals>
-    <string name="nextcloud_login_error_generic">ناتوان در ورود به نکست‌کلودتان.\n\n- بررسی اتّصال شبکه‌تان.\n- تأیید درستی نشانی کارساز.\n- اطمینان از نصب بودن افزایهٔ هم‌گام سازی جی‌پادر روی نکست‌کلود.</string>
     <string name="transcript">ترانوشته</string>
     <string name="button_action_fast_forward">پیشبرد سریع</string>
     <string name="no_transcript_label">بدون ترانوشته</string>

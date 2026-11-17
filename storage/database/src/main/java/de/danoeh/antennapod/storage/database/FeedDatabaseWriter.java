@@ -10,8 +10,6 @@ import de.danoeh.antennapod.model.feed.FeedItem;
 import de.danoeh.antennapod.model.feed.FeedItemFilter;
 import de.danoeh.antennapod.model.feed.FeedPreferences;
 import de.danoeh.antennapod.model.feed.SortOrder;
-import de.danoeh.antennapod.net.sync.serviceinterface.EpisodeAction;
-import de.danoeh.antennapod.net.sync.serviceinterface.SynchronizationQueue;
 import de.danoeh.antennapod.storage.preferences.UserPreferences;
 import org.greenrobot.eventbus.EventBus;
 
@@ -126,17 +124,6 @@ public abstract class FeedDatabaseWriter {
                                         + "\n\nOriginal episode:\n" + duplicateEpisodeDetails(oldItem)
                                         + "\n\nNow the feed contains:\n" + duplicateEpisodeDetails(item)));
                         oldItem.setItemIdentifier(item.getItemIdentifier());
-
-                        if (oldItem.isPlayed() && oldItem.getMedia() != null
-                                && savedFeed.getState() != Feed.STATE_NOT_SUBSCRIBED) {
-                            EpisodeAction action = new EpisodeAction.Builder(oldItem, EpisodeAction.PLAY)
-                                    .currentTimestamp()
-                                    .started(oldItem.getMedia().getDuration() / 1000)
-                                    .position(oldItem.getMedia().getDuration() / 1000)
-                                    .total(oldItem.getMedia().getDuration() / 1000)
-                                    .build();
-                            SynchronizationQueue.getInstance().enqueueEpisodeAction(action);
-                        }
                     }
                 }
 

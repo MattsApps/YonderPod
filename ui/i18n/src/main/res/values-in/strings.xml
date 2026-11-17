@@ -209,8 +209,6 @@
     <string name="no_subscriptions_label">Untuk berlangganan siniar, tekan ikon tanda tambah di bawah.</string>
     <!--Preferences-->
   <string name="project_pref">Proyek</string>
-    <string name="synchronization_pref">Penyinkronan</string>
-    <string name="synchronization_sum">Sinkronisasikan dengan perangkat lain</string>
     <string name="automation">Otomatisasi</string>
     <string name="download_pref_details">Rincian</string>
     <string name="import_export_pref">Cadangkan &amp; pulihkan</string>
@@ -330,13 +328,6 @@
     <string name="search_label">Telusuri</string>
     <string name="no_results_for_query">Hasil \"%1$s\" tidak ditemukan</string>
     <!--Synchronization-->
-  <string name="sync_status_started">Penyinkronan dimulai</string>
-    <string name="sync_status_episodes_upload">Mengunggah perubahan episode…</string>
-    <string name="sync_status_episodes_download">Mengunduh episode sedang berlangsung…</string>
-    <string name="sync_status_upload_played">Mengunggah status yang telah diputar…</string>
-    <string name="sync_status_subscriptions">Sedang menyinkronkan langganan…</string>
-    <string name="sync_status_success">Penyinkronan berhasil</string>
-    <string name="sync_status_error">Penyinkronan gagal</string>
     <!--import and export-->
   <string name="import_export_summary">Pindahkan langganan dan antrean ke perangkat lain</string>
     <string name="database">Database</string>
@@ -381,41 +372,8 @@
     <string name="auto_enable_change_times">Ubah jangka waktu</string>
     <string name="sleep_timer_enabled_label">Pewaktu tidur diaktifkan</string>
     <!--Synchronisation-->
-  <string name="synchronization_choose_title">Pilih layanan penyedia penyinkronan</string>
-    <string name="synchronization_summary_unchoosen">Anda dapat memilih dari beberapa penyedia untuk menyinkronkan langganan dan status pemutaran episode Anda dengan</string>
-    <string name="dialog_choose_sync_service_title">Pilih layanan penyedia penyinkronan</string>
-    <string name="gpodnet_description">Gpodder.net adalah layanan penyinkronan siniar bersumber terbuka yang bisa Anda pasang pada peladen Anda sendiri. Gpodder.net tidak bergantung kepada proyek AntennaPod.</string>
-    <string name="synchronization_summary_nextcloud">Gpodder Sync adalah aplikasi Nextcloud sumber terbuka yang dapat Anda instal dengan mudah di server Anda sendiri. Gpodder Sync tidak terkait dengan proyek AntennaPod.</string>
-    <string name="synchronization_host_explanation">Anda dapat memilih peladen sendiri untuk menyinkronkan siniar. Saat sudah memilih peladen yang diinginkan, masukkan alamat pelanden Anda di sini.</string>
-    <string name="synchronization_host_label">Alamat peladen</string>
-    <string name="proceed_to_login_butLabel">Masuk</string>
-    <string name="synchronization_nextcloud_authenticate_browser">Berikan akses untuk membuka peramban dan kembali ke AntennaPod.</string>
-    <string name="gpodnetauth_login_butLabel">Masuk</string>
-    <string name="synchronization_credentials_explanation">Mohon sediakan kredensial dari akun Anda pada peladen penyinkronan yang dipilih.</string>
-    <string name="gpodnetauth_encryption_warning">Kata sandi dan data tidak terenkripsi!</string>
     <string name="username_label">Nama pengguna</string>
     <string name="password_label">Kata sandi</string>
-    <string name="synchronization_login_butLabel">Masuk</string>
-    <string name="synchronization_selectDevice_explanation">Mohon pilih perangkat yang Anda buat di peladen penyinkronan atau buat yang baru.</string>
-    <string name="gpodnetauth_device_name">Nama perangkat</string>
-    <string name="gpodnetauth_device_name_default">AntennaPod pada %1$s</string>
-    <string name="gpodnetauth_existing_devices">Perangkat yang sudah ada</string>
-    <string name="gpodnetauth_create_device">Buat perangkat</string>
-    <string name="gpodnetauth_finish_descr">Selamat! Akun gpodder.net Anda sekarang terhubung dengan perangkat Anda. AntennaPod sekarang akan secara otomatis menyinkronkan langganan pada perangkat Anda dengan akun gpodder.net Anda.</string>
-    <string name="pref_gpodnet_setlogin_information_title">Ubah informasi masuk</string>
-    <string name="pref_gpodnet_setlogin_information_sum">Ubah informasi masuk akun gpodder.net Anda.</string>
-    <string name="synchronization_sync_changes_title">Sinkronkan sekarang</string>
-    <string name="synchronization_sync_summary">Sinkronikan langganan dan perubahan status episode</string>
-    <string name="synchronization_full_sync_title">Paksa penyinkronan menyeluruh</string>
-    <string name="synchronization_force_sync_summary">Sinkronkan ulang semua langganan dan status episode</string>
-    <string name="synchronization_logout">Keluar</string>
-    <string name="synchronization_login_status">Masuk sebagai %1$s pada %2$s.\n\nAnda dapat memilih penyedia penyinkronan kembali saat Anda keluar.</string>
-    <string name="pref_synchronization_logout_toast">Sudah keluar</string>
-    <string name="gpodnetsync_error_title">Galat penyinkronan gpodder.net</string>
-    <string name="gpodnetsync_error_descr">"Sebuah galat terjadi selama penyinkronan: "</string>
-    <string name="gpodnetsync_pref_report_successful">Berhasil</string>
-    <string name="gpodnetsync_pref_report_failed">Gagal</string>
-    <string name="gpodnetsync_username_characters_error">Nama pengguna hanya dapat terdiri atas huruf, angka, tanda penghubung, dan garis bawah.</string>
     <!--Directory chooser-->
   <string name="choose_data_directory">Pilih folder data</string>
     <string name="choose_data_directory_available_space">%1$s dari %2$s kosong</string>
@@ -663,7 +621,6 @@
     <string name="pref_fast_forward_sum">Ubah suaikan lama detik yang dilewati ketika tombol maju-lekas diklik</string>
     <string name="pref_expandNotify_title">Notifikasi prioritas atas</string>
     <string name="pref_show_subscription_title">Tampilkan judul</string>
-    <string name="sync_status_wait_for_downloads">Menunggu penyegaran langganan…</string>
     <string name="automatic_database_export_label">Ekspor pangkalan data secara otomatis</string>
     <plurals name="time_seconds_quantified">
         <item quantity="other">%d detik</item>
@@ -692,7 +649,6 @@
     <plurals name="statistics_episodes_started">
         <item quantity="other">dimulai</item>
     </plurals>
-    <string name="nextcloud_login_error_generic">Tidak dapat masuk ke Nextcloud Anda.\n\n- Periksa koneksi jaringan Anda.\n- Pastikan Anda menggunakan alamat server yang benar.\n- Pastikan plugin Gpodder Sync Nextcloud telah terpasang.</string>
     <string name="statistics_years_barchart_description">Waktu pemutaran per bulan</string>
     <string name="statistics_episodes_space">ruang terisi</string>
     <string name="statistics_release_next">episode selanjutnya (perkiraan)</string>

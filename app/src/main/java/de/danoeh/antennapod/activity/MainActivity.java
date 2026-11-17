@@ -51,7 +51,6 @@ import de.danoeh.antennapod.net.download.service.feed.FeedUpdateManagerImpl;
 import de.danoeh.antennapod.net.download.serviceinterface.DownloadServiceInterface;
 import de.danoeh.antennapod.net.download.serviceinterface.FeedUpdateManager;
 import de.danoeh.antennapod.net.common.NetworkUtils;
-import de.danoeh.antennapod.net.sync.serviceinterface.SynchronizationQueue;
 import de.danoeh.antennapod.playback.cast.CastEnabledActivity;
 import de.danoeh.antennapod.playback.service.PlaybackController;
 import de.danoeh.antennapod.storage.databasemaintenanceservice.DatabaseMaintenanceWorker;
@@ -270,7 +269,6 @@ public class MainActivity extends CastEnabledActivity implements NavigationToolb
         bottomSheetBackPressedCallback = new BottomSheetBackPressedCallback(false, sheetBehavior, bottomSheet);
 
         FeedUpdateManager.getInstance().restartUpdateAlarm(this, false);
-        SynchronizationQueue.getInstance().syncIfNotSyncedRecently();
         AutomaticDatabaseExportWorker.enqueueIfNeeded(this, false);
         YonderBackupWorker.schedule(this, false);
         if (savedInstanceState == null) {

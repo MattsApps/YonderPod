@@ -298,8 +298,6 @@
     <string name="no_subscriptions_label">Pro ti sutascrìere a unu podcast, toca s\'icona \"+\" in bàsciu.</string>
     <!--Preferences-->
   <string name="project_pref">Progetu</string>
-    <string name="synchronization_pref">Sincronizatzione</string>
-    <string name="synchronization_sum">Sincroniza cun àteros dispositivos</string>
     <string name="automation">Automatizatzione</string>
     <string name="download_pref_details">Detàllios</string>
     <string name="import_export_pref">Còpia de seguresa e recùperu</string>
@@ -463,13 +461,6 @@
     <string name="no_results_for_query">Nissunu resurtadu pro \"%1$s\"</string>
     <string name="search_online">Chirca in lìnia</string>
     <!--Synchronization-->
-  <string name="sync_status_started">Sincronizatzione aviada</string>
-    <string name="sync_status_episodes_upload">Carrighende modìficas de s\'episòdiu…</string>
-    <string name="sync_status_episodes_download">Iscarrighende modìficas de s\'episòdiu…</string>
-    <string name="sync_status_upload_played">Carrighende s\'istadu de riprodutzione…</string>
-    <string name="sync_status_subscriptions">Sincronizende sutiscritziones…</string>
-    <string name="sync_status_success">Sincronizatzione cumpletada</string>
-    <string name="sync_status_error">Errore in sa sincronizatzione</string>
     <!--import and export-->
   <string name="import_export_summary">Move is sutiscritziones e sa lista a un\'àteru dispositivu</string>
     <string name="database">Base de datos</string>
@@ -536,41 +527,8 @@
     <string name="auto_enable_change_times">Modìfica su perìodu temporale</string>
     <string name="sleep_timer_enabled_label">Temporizadore ativu</string>
     <!--Synchronisation-->
-  <string name="synchronization_choose_title">Sèbera frunidore de sincronizatzione</string>
-    <string name="synchronization_summary_unchoosen">Podes seberare intre unos cantos frunidores pro sa sincronizatzione de is sutiscritziones e de s\'istadu de riprodutzione</string>
-    <string name="dialog_choose_sync_service_title">Sèbera unu frunidore de sincronizatzione</string>
-    <string name="gpodnet_description">Gpodder.net est unu servìtziu de còdighe abertu de sincronizatzione de podcasts chi podes installare in unu serbidore pròpiu. Gpodder.net est indipendente de su progetu AntennaPod.</string>
-    <string name="synchronization_summary_nextcloud">Gpodder Sync est un\'aplicatzione de Nextcloud de còdighe abertu chi podes installare in unu serbidore pròpiu in manera simpre. Gpodder Sync est indipendente de su progetu AntennaPod.</string>
-    <string name="synchronization_host_explanation">Podes seletzionare su serbidore tuo de sincronizare. Cando apas identificadu su serbidore de sincronizatzione chi preferis, inserta·nce s\'indiritzu inoghe.</string>
-    <string name="synchronization_host_label">Indiritzu de su serbidore</string>
-    <string name="proceed_to_login_butLabel">Sighi a s\'identificatzione</string>
-    <string name="synchronization_nextcloud_authenticate_browser">Dona atzessu impreende su navigadore web chi tenes abertu e torra a AntennaPod.</string>
-    <string name="gpodnetauth_login_butLabel">Intra</string>
-    <string name="synchronization_credentials_explanation">Fruni is credentziales de su contu tuo in su serbidore de sincronizatzione.</string>
-    <string name="gpodnetauth_encryption_warning">Sa crae e is datos non sunt tzifrados!</string>
     <string name="username_label">Nòmine de utente</string>
     <string name="password_label">Crae</string>
-    <string name="synchronization_login_butLabel">Intra</string>
-    <string name="synchronization_selectDevice_explanation">Seletziona su dispositivu chi as creadu in su serbidore de sincronizatzione o crea·nde unu nou.</string>
-    <string name="gpodnetauth_device_name">Nòmine de su dispositivu</string>
-    <string name="gpodnetauth_device_name_default">AntennaPod in %1$s</string>
-    <string name="gpodnetauth_existing_devices">Dispositivos giai cunfigurados</string>
-    <string name="gpodnetauth_create_device">Crea unu dispositivu</string>
-    <string name="gpodnetauth_finish_descr">Augùrios. As connètidu su dispositivu tuo cun su contu de gpodder.net. AntennaPod at a sincronizare in automàticu totu is sutiscritziones de su dispositivu tuo cun su contu de gpodder.net tuo.</string>
-    <string name="pref_gpodnet_setlogin_information_title">Modìfica s\'informatzione de identificatzione</string>
-    <string name="pref_gpodnet_setlogin_information_sum">Modìfica s\'informatzione de identificatzione a su contu gpodder.net tuo.</string>
-    <string name="synchronization_sync_changes_title">Sincroniza immoe</string>
-    <string name="synchronization_sync_summary">Sincroniza is sutiscritziones e is càmbios in s\'istadu de is episòdios</string>
-    <string name="synchronization_full_sync_title">Fortza una sincronizatzione cumpleta</string>
-    <string name="synchronization_force_sync_summary">Torra a sincronizare totu is sutiscritziones e is istados de is episòdios</string>
-    <string name="synchronization_logout">Essi</string>
-    <string name="synchronization_login_status">Identificadu comente %1$s in %2$s.\n\nPodes torrare a seberare unu frunidore de sincronizatziones una borta disconnètidu.</string>
-    <string name="pref_synchronization_logout_toast">Essida cumpletada</string>
-    <string name="gpodnetsync_error_title">errore de sincronizatzione cun gpodder.net</string>
-    <string name="gpodnetsync_error_descr">"Errore in sa sincronizatzione: "</string>
-    <string name="gpodnetsync_pref_report_successful">Fatu</string>
-    <string name="gpodnetsync_pref_report_failed">Faddidu</string>
-    <string name="gpodnetsync_username_characters_error">Is nòmines de utente podent cuntènnere isceti lìteras, nùmeros, tratigheddos e linieddas bàscias.</string>
     <!--Directory chooser-->
   <string name="choose_data_directory">Sèbera sa cartella de datos</string>
     <string name="choose_data_directory_message">Sèbera sa base de sa cartella de datos tua. AntennaPod at a creare is sutacartellas netzessàrias.</string>
@@ -727,7 +685,6 @@
     <string name="add_shortcut">Agiunghe collegamentu curtzu</string>
     <string name="statistics_years_barchart_description">Tempus de riprodutzione a su mese</string>
     <string name="pref_nav_drawer_items_title">Personaliza sa navigatzione</string>
-    <string name="sync_status_wait_for_downloads">Abetende s\'atualizatzione de is sutiscritziones…</string>
     <string name="pref_nav_drawer_items_sum">Modifica cale elementos ant a èssere visualizados in su pannellu o in sa navigatzione inferiore</string>
     <string name="statistics_view_all">Totu is podcasts »</string>
     <string name="discover_more">Iscoberi·nde àteros »</string>
@@ -740,7 +697,6 @@
     <string name="delete_downloads_played_confirmation">Cunfirma chi boles cantzellare totu is iscarrigamentos riproduidos.</string>
     <string name="bottom_navigation">Navigatzione inferiore</string>
     <string name="bottom_navigation_summary">Atzede a is ischermos de prus importu dae onni logu, cun unu tocu isceti</string>
-    <string name="nextcloud_login_error_generic">Impossìbile atzèdere a su Nextcloud tuo.\n\n- Controlla sa connessione de rete.\n- Cunfirma chi ses impreende s\'indiritzu de su serbidore curretu.\n- Assegura·ti chi su cumplementu Gpodder Sync de Nextcloud siat installadu.</string>
     <string name="statistics_release_schedule">programmatzione de is publicatziones</string>
     <string name="statistics_release_next">episòdiu imbeniente (istimadu)</string>
     <string name="statistics_episodes_space">ispàtziu ocupadu</string>

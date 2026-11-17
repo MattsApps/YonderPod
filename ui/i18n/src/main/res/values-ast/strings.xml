@@ -128,7 +128,6 @@
     <string name="no_subscriptions_label">Pa soscribise a un podcast, primi\'l botón + .</string>
     <!--Preferences-->
   <string name="project_pref">Proyeutu</string>
-    <string name="synchronization_pref">Sincronización</string>
     <string name="automation">Automatización</string>
     <string name="download_pref_details">Detalles</string>
     <string name="import_export_pref">Importación/Esportación</string>
@@ -196,9 +195,6 @@
   <string name="search_status_no_results">Nun s\'atoparon resultaos</string>
     <string name="search_label">Buscar</string>
     <string name="no_results_for_query">Nun s\'atoparon resultaos pa «%1$s»</string>
-    <string name="sync_status_episodes_download">Baxando los cambeos de los episodios…</string>
-    <string name="sync_status_subscriptions">Sincronizando les soscripciones…</string>
-    <string name="sync_status_success">La sincronización fízose correutamente</string>
     <!--import and export-->
   <string name="import_export_summary">Movi les soscripciones y la cola a otru preséu</string>
     <string name="database">Base de datos</string>
@@ -229,21 +225,8 @@
     <string name="time_seconds">segundos</string>
     <string name="time_minutes">minutos</string>
     <string name="time_hours">hores</string>
-    <string name="gpodnetauth_login_butLabel">Aniciar sesión</string>
-    <string name="gpodnetauth_encryption_warning">¡Los datos y la contraseña nun tán cifraos!</string>
     <string name="username_label">Nome d\'usuariu</string>
     <string name="password_label">Contraseña</string>
-    <string name="gpodnetauth_device_name">Nome del preséu</string>
-    <string name="gpodnetauth_device_name_default">AntennaPod en «%1$s»</string>
-    <string name="gpodnetauth_existing_devices">Preseos esistentes</string>
-    <string name="gpodnetauth_create_device">Crear el preséu</string>
-    <string name="gpodnetauth_finish_descr">¡Norabona! La to cuenta de gpodder.net ta enllaciada col preséu. Dende agora, AntennaPod va sincronizar automáticamente les soscripciones del preséu con esta cuenta.</string>
-    <string name="pref_gpodnet_setlogin_information_title">Camudar la información del aniciu de sesión</string>
-    <string name="pref_gpodnet_setlogin_information_sum">Camuda la información d\'aniciu de sesión de la to cuenta de gpodder.net .</string>
-    <string name="gpodnetsync_error_descr">"Asocedió un fallu demientres la sincronización: "</string>
-    <string name="gpodnetsync_pref_report_successful">Sincronización correuta</string>
-    <string name="gpodnetsync_pref_report_failed">Sincronización fallida</string>
-    <string name="gpodnetsync_username_characters_error">Los nomes d\'usuariu namás puen contener lletres, díxitos, guiones y guiones baxos.</string>
     <!--Online feed view-->
   <string name="subscribe_label">Soscribise</string>
     <string name="rewind_label">Rebobinar</string>

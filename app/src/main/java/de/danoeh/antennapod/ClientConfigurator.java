@@ -6,10 +6,6 @@ import android.content.pm.PackageManager;
 import de.danoeh.antennapod.playback.service.LiveBuffer;
 import de.danoeh.antennapod.net.download.serviceinterface.AutoDownloadManager;
 import de.danoeh.antennapod.net.download.serviceinterface.FeedUpdateManager;
-import de.danoeh.antennapod.net.sync.service.SynchronizationQueueImpl;
-import de.danoeh.antennapod.net.sync.serviceinterface.SynchronizationQueue;
-import de.danoeh.antennapod.storage.preferences.SynchronizationSettings;
-import de.danoeh.antennapod.storage.preferences.SynchronizationCredentials;
 import de.danoeh.antennapod.storage.preferences.PlaybackPreferences;
 import de.danoeh.antennapod.storage.preferences.ControlsPreferences;
 import de.danoeh.antennapod.storage.preferences.NextUpPreferences;
@@ -51,8 +47,6 @@ public class ClientConfigurator {
         }
         PodDBAdapter.init(context);
         UserPreferences.init(context);
-        SynchronizationCredentials.init(context);
-        SynchronizationSettings.init(context);
         UsageStatistics.init(context);
         PlaybackPreferences.init(context);
         boolean wasPlaying = PlaybackPreferences.getCurrentPlayerStatus() == PlaybackPreferences.PLAYER_STATUS_PLAYING;
@@ -64,7 +58,6 @@ public class ClientConfigurator {
         DownloadServiceInterface.setImpl(new DownloadServiceInterfaceImpl());
         FeedUpdateManager.setInstance(new YonderFeedUpdateManager());
         AutoDownloadManager.setInstance(new YonderAutoDownloadManager(context));
-        SynchronizationQueue.setInstance(new SynchronizationQueueImpl(context));
         AntennapodHttpClient.setCacheDirectory(new File(context.getCacheDir(), "okhttp"));
         AntennapodHttpClient.setProxyConfig(UserPreferences.getProxyConfig());
         SleepTimerPreferences.init(context);

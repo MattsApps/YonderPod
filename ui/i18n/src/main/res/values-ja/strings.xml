@@ -278,8 +278,6 @@
     <string name="no_subscriptions_label">ポッドキャストを購読するには、下のプラスアイコンを押してください。</string>
     <!--Preferences-->
   <string name="project_pref">プロジェクト</string>
-    <string name="synchronization_pref">同期</string>
-    <string name="synchronization_sum">他のデバイスと同期</string>
     <string name="automation">自動</string>
     <string name="download_pref_details">詳細</string>
     <string name="import_export_pref">インポート/エクスポート</string>
@@ -430,13 +428,6 @@
     <string name="no_results_for_query">\"%1$s\" の結果は見つかりませんでした</string>
     <string name="search_online">オンラインで検索</string>
     <!--Synchronization-->
-  <string name="sync_status_started">同期開始</string>
-    <string name="sync_status_episodes_upload">エピソードの変更をアップロード中…</string>
-    <string name="sync_status_episodes_download">エピソードの変更をダウンロード中…</string>
-    <string name="sync_status_upload_played">再生状態をアップロード中…</string>
-    <string name="sync_status_subscriptions">購読を同期中…</string>
-    <string name="sync_status_success">同期しました</string>
-    <string name="sync_status_error">同期に失敗しました</string>
     <!--import and export-->
   <string name="import_export_summary">購読とキューを別のデバイスに移動する</string>
     <string name="database">データベース</string>
@@ -487,41 +478,8 @@
     <string name="auto_enable_change_times">時間の間隔を変更</string>
     <string name="sleep_timer_enabled_label">スリープタイマーを有効にしました</string>
     <!--Synchronisation-->
-  <string name="synchronization_choose_title">同期プロバイダーを選択</string>
-    <string name="synchronization_summary_unchoosen">複数のプロバイダーから選択して、購読とエピソードの再生状態を同期できます</string>
-    <string name="dialog_choose_sync_service_title">同期プロバイダーの選択</string>
-    <string name="gpodnet_description">Gpodder.netは、自身のサーバーにインストールできるオープンソースのポッドキャスト同期サービスです。Gpodder.netは、AntennaPodプロジェクトから独立しています。</string>
-    <string name="synchronization_summary_nextcloud">Gpoddersyncは、自身のサーバーに簡単にインストールできるオープンソースのNextcloudアプリです。このアプリは、AntennaPodプロジェクトから独立しています。</string>
-    <string name="synchronization_host_explanation">同期するサーバーを自分で選ぶことができます。同期したいサーバーが決まりましたら、そのアドレスをここに入力してください。</string>
-    <string name="synchronization_host_label">サーバーアドレス</string>
-    <string name="proceed_to_login_butLabel">ログインに進む</string>
-    <string name="synchronization_nextcloud_authenticate_browser">開いた Web ブラウザーを使用してアクセスを許可し、AntennaPod に戻ります。</string>
-    <string name="gpodnetauth_login_butLabel">ログイン</string>
-    <string name="synchronization_credentials_explanation">同期サーバー用のアカウント情報を提供してください。</string>
-    <string name="gpodnetauth_encryption_warning">パスワードやデータは暗号化されません！</string>
     <string name="username_label">ユーザー名</string>
     <string name="password_label">パスワード</string>
-    <string name="synchronization_login_butLabel">ログイン</string>
-    <string name="synchronization_selectDevice_explanation">同期サーバーで作成したデバイスを選択するか、新しいデバイスを作成してください。</string>
-    <string name="gpodnetauth_device_name">デバイス名</string>
-    <string name="gpodnetauth_device_name_default">%1$s の AntennaPod</string>
-    <string name="gpodnetauth_existing_devices">既存のデバイス</string>
-    <string name="gpodnetauth_create_device">デバイスの作成</string>
-    <string name="gpodnetauth_finish_descr">おめでとうございます！gpodder.netアカウントが今お使いのデバイスとリンクされました。 AntennaPodは今から自動的にgpodder.netアカウントを使用してデバイスの購読を同期します。</string>
-    <string name="pref_gpodnet_setlogin_information_title">ログイン情報を変更</string>
-    <string name="pref_gpodnet_setlogin_information_sum">gpodder.netアカウントのログイン情報を変更します。</string>
-    <string name="synchronization_sync_changes_title">今すぐ同期する</string>
-    <string name="synchronization_sync_summary">購読とエピソードの状態の変更を同期する</string>
-    <string name="synchronization_full_sync_title">完全同期を強制する</string>
-    <string name="synchronization_force_sync_summary">購読とエピソードの状態をすべて再同期する</string>
-    <string name="synchronization_logout">ログアウト</string>
-    <string name="synchronization_login_status">%2$s に %1$s としてログインしました。\n\nログアウトすると、同期プロバイダーを再度選択できます。</string>
-    <string name="pref_synchronization_logout_toast">ログアウトしました</string>
-    <string name="gpodnetsync_error_title">gpodder.net 同期エラー</string>
-    <string name="gpodnetsync_error_descr">"同期中にエラーが発生しました: "</string>
-    <string name="gpodnetsync_pref_report_successful">成功しました</string>
-    <string name="gpodnetsync_pref_report_failed">失敗しました</string>
-    <string name="gpodnetsync_username_characters_error">ユーザー名には文字、数字、ハイフン、下線のみ含めることができます。</string>
     <!--Directory chooser-->
   <string name="choose_data_directory">データフォルダーの選択</string>
     <string name="choose_data_directory_available_space">%1$s / %2$s 空き</string>
@@ -750,7 +708,6 @@
     <string name="echo_thanks_large">ありがとう</string>
     <string name="echo_thanks_now_favorite">それでは、お気に入りのポッドキャストを見てみましょう…</string>
     <string name="echo_share_heading">お気に入りのポッドキャスト</string>
-    <string name="nextcloud_login_error_generic">NextCloudにログインできません。\n\n- ネットワーク接続を確認してください。\n- 正しいサーバーアドレスを使用していることを確認してください。\n- gpoddersync Nextcloud プラグインがインストールされていることを確認してください。</string>
     <string name="episode_download_failed">エピソードのダウンロードが失敗しました</string>
     <string name="overflow_more">もっと見る</string>
     <string name="bottom_navigation_summary">ベータ機能: 1回のタップで最も重要な箇所にどこからでもアクセス</string>
@@ -760,7 +717,6 @@
     <string name="pref_episode_cache_summary">この数に達した場合に自動ダウンロードを停止します</string>
     <string name="pref_downloads_button_action_sum">ダウンロード画面で削除ボタンの代わりに再生ボタンを表示する</string>
     <string name="pref_show_subscription_title">タイトルを表示</string>
-    <string name="sync_status_wait_for_downloads">購読の更新を待機中…</string>
     <string name="choose_data_directory_message">データフォルダのベースを選択してください。AntennaPod が適切なサブディレクトリを作成します。</string>
     <string name="subscription_display_list">リスト</string>
     <string name="notification_channel_refreshing">ポッドキャストの更新中</string>

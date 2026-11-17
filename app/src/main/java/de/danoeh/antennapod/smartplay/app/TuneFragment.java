@@ -157,7 +157,6 @@ public class TuneFragment extends Fragment {
 
         heading(sections, R.string.tune_backup);
         row(sections, R.string.tune_import_export, "", () -> TendRows.open(this, new BackupFragment()));
-        row(sections, R.string.tune_sync, "", () -> openSettings(PreferenceActivity.OPEN_SYNC));
 
         heading(sections, R.string.tune_help);
         row(sections, R.string.tune_welcome, "", () -> WelcomeActivity.show(requireActivity()));

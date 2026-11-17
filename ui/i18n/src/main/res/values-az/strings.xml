@@ -108,14 +108,8 @@
     <string name="disable_sleeptimer_label">Yuxu taymerini keçir</string>
     <string name="sleep_timer_label">Yuxu taymeri</string>
     <string name="time_dialog_invalid_input">Yanlış yazi. Vaxt təkçə rəqmlərlə yazılır</string>
-    <string name="gpodnetauth_login_butLabel">Giriş</string>
     <string name="username_label">İstifadəçi adı</string>
     <string name="password_label">Şifrə</string>
-    <string name="gpodnetauth_finish_descr">Təbriklər! Gpodder hesabınız ilə cihazınız arasında əlaqə yarandə. Bundan sonra AntennaPod cihazınızdakı abunəlikləri gpodder.net hesabınız ilə eyniləşdiriləcək.</string>
-    <string name="pref_gpodnet_setlogin_information_title">Giriş məlumatını dəyişin</string>
-    <string name="pref_gpodnet_setlogin_information_sum">Gpodder.net hesabınız üçün giriş məlumatını dəyişin.</string>
-    <string name="gpodnetsync_error_title">gpodder.net ilə eyniləşdirmə xətası</string>
-    <string name="gpodnetsync_error_descr">"Eyniləşdirmə zamanı xəta baş verdi: "</string>
     <string name="current_playing_episode">İndiki</string>
     <string name="is_played">Dinlənmiş</string>
     <string name="prev_chapter">Əvvəlki fəsil</string>
@@ -295,7 +289,6 @@
     <string name="pref_favorite_keeps_episodes_sum">Sevimli işarələnmiş bölümləri saxla</string>
     <string name="pref_favorite_keeps_episodes_title">Sevimli bölümləri saxla</string>
     <string name="pref_smart_mark_as_played_disabled">Deaktiv</string>
-    <string name="sync_status_upload_played">Dinləmə statusu yüklənir…</string>
     <string name="rating_tagline">%1$s bəri Siz %2$s%3$d%4$s saat podkast dinləmisiniz.</string>
     <string name="is_favorite_label">Sevimli kimi işarələnib</string>
     <string name="statistics_years_barchart_description">Ay üzrə dinləmə vaxtı</string>

@@ -292,8 +292,6 @@
     <string name="no_subscriptions_label">Pro přihlášení odběru podcastu stiskněte ikonu plus níže.</string>
     <!--Preferences-->
   <string name="project_pref">Projekt</string>
-    <string name="synchronization_pref">Synchronizace</string>
-    <string name="synchronization_sum">Synchronizovat s jinými zařízeními</string>
     <string name="automation">Automatizace</string>
     <string name="download_pref_details">Detaily</string>
     <string name="import_export_pref">Záloha a obnovení</string>
@@ -444,13 +442,6 @@
     <string name="no_results_for_query">Nebyly nalezeny žádné výsledky pro \"%1$s\"</string>
     <string name="search_online">Prohledat online</string>
     <!--Synchronization-->
-  <string name="sync_status_started">Synchronizace započala</string>
-    <string name="sync_status_episodes_upload">Nahrávají se změny epizod…</string>
-    <string name="sync_status_episodes_download">Stahují se změny epizod…</string>
-    <string name="sync_status_upload_played">Nahrává se stav poslechnutí…</string>
-    <string name="sync_status_subscriptions">Synchronizuji odběry…</string>
-    <string name="sync_status_success">Synchronizace proběhla úspěšně</string>
-    <string name="sync_status_error">Synchronizace selhala</string>
     <!--import and export-->
   <string name="import_export_summary">Přesunout odběry a frontu do jiného zařízení</string>
     <string name="database">Databáze</string>
@@ -501,41 +492,8 @@
     <string name="auto_enable_change_times">Změna časového rozmezí</string>
     <string name="sleep_timer_enabled_label">Časovač vypnutí povolen</string>
     <!--Synchronisation-->
-  <string name="synchronization_choose_title">Vyberte poskytovatele synchronizace</string>
-    <string name="synchronization_summary_unchoosen">K synchronizaci odběrů a stavu přehrávání epizod si můžete vybrat z více poskytovatelů</string>
-    <string name="dialog_choose_sync_service_title">Vyberte poskytovatele synchronizace</string>
-    <string name="gpodnet_description">Gpodder.net je open-source služba pro synchronizaci podcastů, kterou si můžete nainstalovat na vlastní server. Gpodder.net je nezávislý na projektu AntennaPod.</string>
-    <string name="synchronization_summary_nextcloud">Gpodder Sync je open-source aplikace Nextcloud, kterou můžete snadno nainstalovat na svůj vlastní server. Gpodder Sync je nezávislý na projektu AntennaPod.</string>
-    <string name="synchronization_host_explanation">Lze si zvolit vlastní server k synchronizaci. Po volbě preferovaného serveru synchronizace, sem prosím zadejte jeho adresu.</string>
-    <string name="synchronization_host_label">Adresa serveru</string>
-    <string name="proceed_to_login_butLabel">Pokračovat k přihlášení</string>
-    <string name="synchronization_nextcloud_authenticate_browser">Povolte přístup pomocí otevřeného webového prohlížeče a pak se vraťte do AntennaPodu.</string>
-    <string name="gpodnetauth_login_butLabel">Přihlásit se</string>
-    <string name="synchronization_credentials_explanation">Prosím, uveďte přihlašovací údaje k synchronizovanému serveru.</string>
-    <string name="gpodnetauth_encryption_warning">Heslo a data nejsou šifrována!</string>
     <string name="username_label">Uživatelské jméno</string>
     <string name="password_label">Heslo</string>
-    <string name="synchronization_login_butLabel">Přihlásit se</string>
-    <string name="synchronization_selectDevice_explanation">Zde prosím vyberte zařízení již vytvořené na sychronizovaném serveru, nebo zde vytvořte nové.</string>
-    <string name="gpodnetauth_device_name">Název zařízení</string>
-    <string name="gpodnetauth_device_name_default">AntennaPod na %1$s</string>
-    <string name="gpodnetauth_existing_devices">Existující zařízení</string>
-    <string name="gpodnetauth_create_device">Vytvořit zařízení</string>
-    <string name="gpodnetauth_finish_descr">Gratulujeme! Váš gpodder.net účet je nyní úspěšně propojen s vaším zařízením. AntennaPod bude automaticky synchronizovat odebírané podcasty s nastaveným účtem na gpodder.net.</string>
-    <string name="pref_gpodnet_setlogin_information_title">Změna přihlašovacích údajů</string>
-    <string name="pref_gpodnet_setlogin_information_sum">Změní přihlašovací údaje k vašemu gpodder.net účtu.</string>
-    <string name="synchronization_sync_changes_title">Synchronizovat nyní</string>
-    <string name="synchronization_sync_summary">Synchronizace změn stavu odběrů a epizod</string>
-    <string name="synchronization_full_sync_title">Vynutit úplnou synchronizaci</string>
-    <string name="synchronization_force_sync_summary">Opětovná synchronizace všech odběrů a stavů epizod</string>
-    <string name="synchronization_logout">Odhlásit se</string>
-    <string name="synchronization_login_status">Přihlášen jako %1$s na %2$s.\n\nPo odhlášení můžete znovu zvolit poskytovatele synchronizace.</string>
-    <string name="pref_synchronization_logout_toast">Úspěšně odhlášeno</string>
-    <string name="gpodnetsync_error_title">gpodder.net synchronizace selhala</string>
-    <string name="gpodnetsync_error_descr">"V průběhu synchronizace nastala chyba: "</string>
-    <string name="gpodnetsync_pref_report_successful">Úspěšné</string>
-    <string name="gpodnetsync_pref_report_failed">Selhalo</string>
-    <string name="gpodnetsync_username_characters_error">Uživatelské jméno může obsahovat pouze písmena, čísla, pomlčky a podtržítka.</string>
     <!--Directory chooser-->
   <string name="choose_data_directory">Vybrat umístění dat</string>
     <string name="choose_data_directory_available_space">%1$s z %2$s volných</string>
@@ -743,7 +701,6 @@
     <string name="episode_lists">Seznamy epizod</string>
     <string name="pref_downloads_button_action_sum">Zobrazení tlačítka přehrát místo tlačítka smazat na obrazovce stahování souborů</string>
     <string name="pref_downloads_button_action_title">Přehrát z obrazovky stahování</string>
-    <string name="sync_status_wait_for_downloads">Čekání na aktualizaci odběrů…</string>
     <plurals name="time_days_quantified">
         <item quantity="one">%d den</item>
         <item quantity="few">%d dny</item>
@@ -789,7 +746,6 @@
         <item quantity="other">%d hodin</item>
     </plurals>
     <string name="episode_download_failed">Stažení epizody selhalo</string>
-    <string name="nextcloud_login_error_generic">Nelze se přihlásit do vašeho Nextcloudu.\n\n- Zkontrolujte síťové připojení.\n- Zkontrolujte, zda používáte správnou adresu serveru.\n- Ujistěte se, že je nainstalován Nextcloud plugin gGpodders Sync.</string>
     <string name="preference_search_clear_input">Vymazat</string>
     <string name="overflow_more">Více</string>
     <string name="button_action_fast_forward">Rychlý posun vpřed</string>

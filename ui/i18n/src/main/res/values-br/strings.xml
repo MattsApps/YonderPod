@@ -294,8 +294,6 @@
     <string name="no_subscriptions_label">Evit koumanantiñ d\'ur podskignad, pouezit war an arlun mui.</string>
     <!--Preferences-->
   <string name="project_pref">Raktres</string>
-    <string name="synchronization_pref">Goubredañ</string>
-    <string name="synchronization_sum">Goubredañ gant binvioù all</string>
     <string name="automation">Emgefreekañ</string>
     <string name="download_pref_details">Munudoù</string>
     <string name="import_export_pref">Enporzhiadur / Ezporzhiadur</string>
@@ -439,13 +437,6 @@
     <string name="no_results_for_query">N\'eus bet kavet disoc\'h ebet evit \"%1$s\"</string>
     <string name="search_online">Klask enlinenn</string>
     <!--Synchronization-->
-  <string name="sync_status_started">Goubredañ loc\'het</string>
-    <string name="sync_status_episodes_upload">Oc\'h uskargañ kemmoù ar rannoù</string>
-    <string name="sync_status_episodes_download">O pellgargañ kemmoù ar rannoù</string>
-    <string name="sync_status_upload_played">Oc\'h uskargañ ar statudoù lenn…</string>
-    <string name="sync_status_subscriptions">O c\'houbredañ ar c\'houmanantoù…</string>
-    <string name="sync_status_success">Goubredet gant berzh</string>
-    <string name="sync_status_error">C\'hwitadenn en ur c\'houbredañ</string>
     <!--import and export-->
   <string name="import_export_summary">Dilec\'hiañ ar c\'houmanantoù ha lakaat e lost ur benveg all</string>
     <string name="database">Stlennvon</string>
@@ -492,38 +483,8 @@
     <string name="auto_enable_change_times">Kemmañ an tachad eurioù</string>
     <string name="sleep_timer_enabled_label">Harzh emgefreek gweredekaet</string>
     <!--Synchronisation-->
-  <string name="synchronization_choose_title">Dibab ur pourchaser goubredañ</string>
-    <string name="synchronization_summary_unchoosen">Gallout a rit dibab etre meur a bourvezer evit sikronaat ho koumanantoù ha stad lenn ho rannoù</string>
-    <string name="dialog_choose_sync_service_title">Dibab ur pourchaser goubredañ</string>
-    <string name="gpodnet_description">Gpodder.net a zo ur servij mammenn digor evit sinkronaat podskignadoù a c\'hell bezañ staliet war ho servijer deoc\'h. Gpodder.net a zo dizalc\'h eus ar raktres AntennaPod.</string>
-    <string name="synchronization_summary_nextcloud">Gpoddersync a zo un arload mammenn digor evit Nextcloud a c\'hell bezañ staliet war ho servijer en un doare aes. An arload-mañ a zo distag eus ar raktres AntennaPod.</string>
-    <string name="synchronization_host_label">Chomlec\'h ar servijer</string>
-    <string name="proceed_to_login_butLabel">Kenderc\'hel gant ar c\'hevreañ</string>
-    <string name="synchronization_nextcloud_authenticate_browser">Roit aotre ar moned war ar merdeer web digoret ha deuit en-dro da AntennaPod.</string>
-    <string name="gpodnetauth_login_butLabel">Kennaskañ</string>
-    <string name="gpodnetauth_encryption_warning">Ar ger-tremen hag ar roadennoù n\'int ket sifret!</string>
     <string name="username_label">Anv implijer</string>
     <string name="password_label">Ger-tremen</string>
-    <string name="synchronization_login_butLabel">Kevreañ</string>
-    <string name="gpodnetauth_device_name">Anv ar benveg</string>
-    <string name="gpodnetauth_device_name_default">AntennaPod war %1$s</string>
-    <string name="gpodnetauth_existing_devices">Binviji a zo anezho</string>
-    <string name="gpodnetauth_create_device">Krouiñ ur benveg</string>
-    <string name="gpodnetauth_finish_descr">Gourc\'hemennoù! Liammet eo ho kont gpodder.net gant ho penveg. Goubredet e vo ent emgefreek ar c\'houmanantoù war ho penveg gant ho kont gpodder.net.</string>
-    <string name="pref_gpodnet_setlogin_information_title">Kemmañ an titouroù kennaskañ</string>
-    <string name="pref_gpodnet_setlogin_information_sum">Kemmañ ho titouroù kennaskañ evit ho kont gpodder.net.</string>
-    <string name="synchronization_sync_changes_title">Goubredañ bremañ</string>
-    <string name="synchronization_sync_summary">Goubredañ ar c\'houmanantoù hag ar c\'hemmoù e stad ar rannoù</string>
-    <string name="synchronization_full_sync_title">Rediañ ur goubredañ klok</string>
-    <string name="synchronization_force_sync_summary">Goubredañ en-dro an holl goumanantoù ha stad ar rannoù</string>
-    <string name="synchronization_logout">Digennaskañ</string>
-    <string name="synchronization_login_status"><![CDATA[Kennasket evel <i>%1$s</i> war <i>%2$s</i>. <br/><br/>Ho pourchaser a c\'hellot dibab en-dro pa vioc\'h digennasket]]></string>
-    <string name="pref_synchronization_logout_toast">Digennasket gant berzh</string>
-    <string name="gpodnetsync_error_title">fazi goubredañ gpodder.net</string>
-    <string name="gpodnetsync_error_descr">"Degouezhet ez eus bet ur fazi en ur c\'houbredañ: "</string>
-    <string name="gpodnetsync_pref_report_successful">Berzh</string>
-    <string name="gpodnetsync_pref_report_failed">C\'hwitet</string>
-    <string name="gpodnetsync_username_characters_error">Gallout a rit lakaat lizherennoù, niveroù pe tiredoù en anv arveriad hepken.</string>
     <!--Directory chooser-->
   <string name="choose_data_directory">Dibab teuliad ar roadennoù</string>
     <string name="choose_data_directory_available_space">%1$s war %2$s dieub</string>

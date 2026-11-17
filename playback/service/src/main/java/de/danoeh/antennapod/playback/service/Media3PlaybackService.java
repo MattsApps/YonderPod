@@ -67,7 +67,6 @@ import de.danoeh.antennapod.model.feed.FeedPreferences;
 import de.danoeh.antennapod.model.feed.VolumeAdaptionSetting;
 import de.danoeh.antennapod.net.common.NetworkUtils;
 import de.danoeh.antennapod.net.download.serviceinterface.AutoDownloadManager;
-import de.danoeh.antennapod.net.sync.serviceinterface.SynchronizationQueue;
 import de.danoeh.antennapod.playback.base.LiveBehind;
 import de.danoeh.antennapod.playback.base.MediaItemAdapter;
 import de.danoeh.antennapod.playback.base.PlayerStatus;
@@ -631,10 +630,6 @@ public class Media3PlaybackService extends MediaLibraryService {
             } else {
                 cancelPositionObserver();
                 saveCurrentPosition();
-                if (currentPlayable != null) {
-                    SynchronizationQueue.getInstance().enqueueEpisodePlayed(currentPlayable,
-                            playbackStartPosition, false);
-                }
             }
             WidgetUpdater.WidgetState widgetState = new WidgetUpdater.WidgetState(currentPlayable,
                     PlaybackService.isRunning ? PlayerStatus.PLAYING : PlayerStatus.PAUSED,
@@ -1450,7 +1445,6 @@ public class Media3PlaybackService extends MediaLibraryService {
                     + EpisodeEndLog.describe(media.getPosition(), media.getDuration())
                     + (playingNext ? ", another episode was picked" : ""));
         }
-        SynchronizationQueue.getInstance().enqueueEpisodePlayed(media, startPosition, ended || almostEnded);
         if (item != null) {
             boolean recording = item.getFeed() != null && item.getFeed().getDownloadUrl() != null
                     && item.getFeed().getDownloadUrl().startsWith(Feed.RECORDINGS_URL_PREFIX);

@@ -276,8 +276,6 @@
     <string name="no_subscriptions_label">Tilataksesi podcastin, paina plus-kuvaketta alla.</string>
     <!--Preferences-->
   <string name="project_pref">Projekti</string>
-    <string name="synchronization_pref">Synkronointi</string>
-    <string name="synchronization_sum">Synkronoi muiden laitteiden kanssa</string>
     <string name="automation">Automaatio</string>
     <string name="download_pref_details">Tietoja</string>
     <string name="import_export_pref">Varmuuskopiointi ja palautus</string>
@@ -412,13 +410,6 @@
     <string name="search_label">Etsi</string>
     <string name="no_results_for_query">Ei löydetty tuloksia \"%1$s\"</string>
     <!--Synchronization-->
-  <string name="sync_status_started">Synkronointi aloitettu</string>
-    <string name="sync_status_episodes_upload">Ulosladataan jakson muutokset…</string>
-    <string name="sync_status_episodes_download">Ladataan jakson muutokset…</string>
-    <string name="sync_status_upload_played">Ladataan toistettua tilaa…</string>
-    <string name="sync_status_subscriptions">Synkronoidaan tilauksia…</string>
-    <string name="sync_status_success">Synkronointi onnistui</string>
-    <string name="sync_status_error">Synkronointi epäonnistui</string>
     <!--import and export-->
   <string name="import_export_summary">Siirrä tilaukset ja jono toiselle laitteelle</string>
     <string name="database">Tietokanta</string>
@@ -462,41 +453,8 @@
     <string name="time_hours">tuntia</string>
     <string name="sleep_timer_enabled_label">Uniajastin asetettu</string>
     <!--Synchronisation-->
-  <string name="synchronization_choose_title">Valitse synkronointipalveluntarjoaja</string>
-    <string name="synchronization_summary_unchoosen">Voit valita useista palveluntarjoajista, joiden kanssa voit synkronoida tilauksesi ja jaksojen toistotilan</string>
-    <string name="dialog_choose_sync_service_title">Valitse synkronointipalveluntarjoaja</string>
-    <string name="gpodnet_description">Gpodder.net on avoimen lähdekoodin podcast-synkronointipalvelu, jonka voit asentaa omalle palvelimellesi. Gpodder.net on riippumaton AntennaPod-projektista.</string>
-    <string name="synchronization_summary_nextcloud">Gpodder Sync on avoimen lähdekoodin Nextcloud-sovellus, jonka voit helposti asentaa omalle palvelimellesi. Gpodder Sync on riippumaton AntennaPod-projektista.</string>
-    <string name="synchronization_host_explanation">Voit valita oman synkronointipalvelimesi. Kun olet tunnistanut mieluisen synkronointipalvelimesi, anna sen osoite tässä.</string>
-    <string name="synchronization_host_label">Palvelimen osoite</string>
-    <string name="proceed_to_login_butLabel">Jatka kirjautumaan</string>
-    <string name="synchronization_nextcloud_authenticate_browser">Myönnä käyttöoikeus avatun verkkoselaimen avulla ja palaa AntennaPodiin.</string>
-    <string name="gpodnetauth_login_butLabel">Sisäänkirjautuminen</string>
-    <string name="synchronization_credentials_explanation">Anna synkronointipalvelimen tilisi kirjautumistiedot.</string>
-    <string name="gpodnetauth_encryption_warning">Salasanaa ja tietoja ei salata!</string>
     <string name="username_label">Käyttäjätunnus</string>
     <string name="password_label">Salasana</string>
-    <string name="synchronization_login_butLabel">Kirjaudu</string>
-    <string name="synchronization_selectDevice_explanation">Valitse laite, jonka loit synkronointipalvelimella, tai luo uusi.</string>
-    <string name="gpodnetauth_device_name">Laitteen nimi</string>
-    <string name="gpodnetauth_device_name_default">AntennaPod laitteella %1$s</string>
-    <string name="gpodnetauth_existing_devices">Olemassaolevat laitteet</string>
-    <string name="gpodnetauth_create_device">Luo laite</string>
-    <string name="gpodnetauth_finish_descr">Onneksi olkoon! Sinun gpodder.net tili on liitetty laitteeseesi. AntennaPod alkaa automaattisesti synkronoimaan gpodder.net tiliisi.</string>
-    <string name="pref_gpodnet_setlogin_information_title">Vaihda kirjautumistietoja</string>
-    <string name="pref_gpodnet_setlogin_information_sum">Vaihda kirjautumistietoja gpodder.net tiliisi.</string>
-    <string name="synchronization_sync_changes_title">Synkronoi nyt</string>
-    <string name="synchronization_sync_summary">Synkronoi tilausten ja jaksojen tilojen muutokset</string>
-    <string name="synchronization_full_sync_title">Pakota täysi synkronointi</string>
-    <string name="synchronization_force_sync_summary">Uudelleensynkronoi kaikki tilaukset ja jaksojen tilat</string>
-    <string name="synchronization_logout">Kirjaudu ulos</string>
-    <string name="synchronization_login_status">Kirjautunut sisään käyttäjänä %1$s %2$s:lla.\n\nVoit valita synkronointitarjoajan uudelleen, kun olet kirjautunut ulos.</string>
-    <string name="pref_synchronization_logout_toast">Uloskirjautuminen onnistui</string>
-    <string name="gpodnetsync_error_title">gpodder.net synkrointivirhe</string>
-    <string name="gpodnetsync_error_descr">"Synkronointivirhe: "</string>
-    <string name="gpodnetsync_pref_report_successful">Onnistui</string>
-    <string name="gpodnetsync_pref_report_failed">Epäonnistui</string>
-    <string name="gpodnetsync_username_characters_error">Käyttäjätunnukset saavat sisältää vain kirjaimia, numeroita, viivoja ja aliviivoja.</string>
     <!--Directory chooser-->
   <string name="choose_data_directory">Valitse datahakemisto</string>
     <string name="choose_data_directory_available_space">%1$s / %2$s vapaana</string>
@@ -631,7 +589,6 @@
     <string name="shortcut_select_subscription">Valitse tilaus</string>
     <string name="add_shortcut">Lisää pikakuvake</string>
     <string name="episode_information">Jakson tiedot</string>
-    <string name="sync_status_wait_for_downloads">Odotetaan tilausten päivitystä…</string>
     <string name="automatic_database_export_label">Automaattinen tietokannan vienti</string>
     <string name="automatic_database_export_error">Virhe automaattisen tietokannan varmuuskopioinnin aikana</string>
     <string name="choose_data_directory_message">Valitse tietokansiosi perusta. AntennaPod luo asianmukaiset alihakemistot.</string>
@@ -717,7 +674,6 @@
     <string name="delete_downloads_played_confirmation">Vahvista, että haluat poistaa kaikki toistetut lataukset.</string>
     <string name="bottom_navigation">Alareunanavigointi</string>
     <string name="bottom_navigation_summary">Pääset tärkeimpiin näyttöihin mistä tahansa, yhdellä napautuksella</string>
-    <string name="nextcloud_login_error_generic">Nextcloudiin sisäänkirjautuminen ei onnistu.\n\n- Tarkista verkkoyhteytesi.\n- Varmista, että käytät oikeaa palvelinosoitetta.\n- Varmista, että Gpodder Sync Nextcloud -liitännäinen on asennettu.</string>
     <string name="statistics_episodes_space">käytetty tila</string>
     <string name="statistics_release_next">seuraava jakso (arvio)</string>
     <string name="statistics_years_barchart_description">Toistoaika kuukaudessa</string>

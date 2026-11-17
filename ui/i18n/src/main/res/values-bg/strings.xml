@@ -236,7 +236,6 @@
     <string name="time_seconds">секунди</string>
     <string name="time_minutes">минути</string>
     <string name="time_hours">часа</string>
-    <string name="gpodnetauth_login_butLabel">Вход</string>
     <string name="username_label">Потребителско име</string>
     <string name="password_label">Парола</string>
     <string name="search_fyyd_label">Търсене във fyyd</string>

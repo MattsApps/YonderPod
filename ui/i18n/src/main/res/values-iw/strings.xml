@@ -307,8 +307,6 @@
     <string name="no_subscriptions_label">כדי להירשם להסכת, יש ללחוץ על סימן הפלוס שלהלן.</string>
     <!--Preferences-->
   <string name="project_pref">מיזם</string>
-    <string name="synchronization_pref">סנכרון</string>
-    <string name="synchronization_sum">סנכרון עם מכשירים אחרים</string>
     <string name="automation">אוטומציה</string>
     <string name="download_pref_details">פרטים</string>
     <string name="import_export_pref">גיבוי ושחזור</string>
@@ -472,13 +470,6 @@
     <string name="no_results_for_query">לא נמצאו תוצאות עבור „%1$s”</string>
     <string name="search_online">חיפוש מקוון</string>
     <!--Synchronization-->
-  <string name="sync_status_started">הסנכרון החל</string>
-    <string name="sync_status_episodes_upload">השינויים לפרק נשלחים…</string>
-    <string name="sync_status_episodes_download">השינויים לפרק מתקבלים…</string>
-    <string name="sync_status_upload_played">מצב הנגינה נשלח…</string>
-    <string name="sync_status_subscriptions">המינויים מסונכרנים…</string>
-    <string name="sync_status_success">הסנכרון הצליח</string>
-    <string name="sync_status_error">הסנכרון נכשל</string>
     <!--import and export-->
   <string name="import_export_summary">העברת מינויים ותור למכשיר אחר</string>
     <string name="database">מסד נתונים</string>
@@ -549,41 +540,8 @@
     <string name="auto_enable_change_times">שינוי טווח הזמן</string>
     <string name="sleep_timer_enabled_label">מתזמן השינה פעיל</string>
     <!--Synchronisation-->
-  <string name="synchronization_choose_title">בחירת ספק סנכרון</string>
-    <string name="synchronization_summary_unchoosen">אפשר לבחור בין מגוון ספקית לסנכרון המינויים ומצב נגינ הפרקים שלך עם</string>
-    <string name="dialog_choose_sync_service_title">בחירת ספק סנכרון</string>
-    <string name="gpodnet_description">Gpodder.net הוא שירות סנכרון הסכתים בקוד פתוח שניתן להתקין על שרת משלך. ל־Gpodder.net אין לו קשר למיזם אנטנה־פּוֹד.</string>
-    <string name="synchronization_summary_nextcloud">Gpodder Sync הוא יישומון Nextcloud בקוד פתוח שניתן להתקין בקלות בשרת שלך. Gpodder Sync אינו תלוי במיזם אנטנה־פּוֹד.</string>
-    <string name="synchronization_host_explanation">אפשר לבחור שרת משלך להסתנכרן מולו. כשזיהית את שרת הסנכרון המועדף עליך, נא למלא את הכתובת שלו כאן.</string>
-    <string name="synchronization_host_label">כתובת שרת</string>
-    <string name="proceed_to_login_butLabel">המשך לכניסה</string>
-    <string name="synchronization_nextcloud_authenticate_browser">יש להעניק גישה באמצעות הדפדפן שנפתח ולחזור ל־AntennaPod.</string>
-    <string name="gpodnetauth_login_butLabel">כניסה</string>
-    <string name="synchronization_credentials_explanation">נא לספק את פרטי הגישה לחשבון שלך בשרת הסנכרון.</string>
-    <string name="gpodnetauth_encryption_warning">הססמה והנתונים אינם מוצפנים!</string>
     <string name="username_label">שם משתמש</string>
     <string name="password_label">ססמה</string>
-    <string name="synchronization_login_butLabel">כניסה</string>
-    <string name="synchronization_selectDevice_explanation">נא לבחור את המכשיר שיצרת בשרת הסנכרון או ליצור אחד חדש.</string>
-    <string name="gpodnetauth_device_name">שם המכשיר</string>
-    <string name="gpodnetauth_device_name_default">אנטנה־פּוֹד על %1$s</string>
-    <string name="gpodnetauth_existing_devices">מכשירים קיימים</string>
-    <string name="gpodnetauth_create_device">יצירת מכשיר</string>
-    <string name="gpodnetauth_finish_descr">מזל טוב! חשבון ה־gpodder.net שלך מקושר כעת עם המכשיר שלך. מעתה כל המינויים שלך יסונכרנו אוטומטית על ידי אנטנה־פּוֹד מהמכשיר שלך לחשבון ה־gpodder.net שלך.</string>
-    <string name="pref_gpodnet_setlogin_information_title">שינוי פרטי הכניסה</string>
-    <string name="pref_gpodnet_setlogin_information_sum">שינוי פרטי הכניסה לחשבון ה־gpodder.net שלך.</string>
-    <string name="synchronization_sync_changes_title">לסנכרן עכשיו</string>
-    <string name="synchronization_sync_summary">סנכרון המינוי ושינויי מצב הפרקים</string>
-    <string name="synchronization_full_sync_title">אילוץ סנכרון מלא</string>
-    <string name="synchronization_force_sync_summary">סנכרון המינוי ושינויי מצב הפרקים מחדש</string>
-    <string name="synchronization_logout">יציאה</string>
-    <string name="synchronization_login_status">נכנסת בתור %1$s אל %2$s.\n\nאפשר לבחור את ספק הסנכרון שלך שוב לאחר היציאה מהחשבון.</string>
-    <string name="pref_synchronization_logout_toast">היציאה הצליחה</string>
-    <string name="gpodnetsync_error_title">שגיאת סנכרון מול gpodder.net</string>
-    <string name="gpodnetsync_error_descr">"שגיאה במהלך סינכרון: "</string>
-    <string name="gpodnetsync_pref_report_successful">מוצלח</string>
-    <string name="gpodnetsync_pref_report_failed">נכשל</string>
-    <string name="gpodnetsync_username_characters_error">שמות המשתמשים יכולים להכיל אותיות, ספרות, מינוסים וקווים תחתיים בלבד.</string>
     <!--Directory chooser-->
   <string name="choose_data_directory">בחירת תיקיית נתונים</string>
     <string name="choose_data_directory_message">נא לבחור את בסיס תיקיית הנתונים שלך. אנטנה־פּוֹד ייצור את תת־התיקיות בהתאמה.</string>
@@ -756,7 +714,6 @@
         <item quantity="other">מתבצעת הורדה דרך חיבור נתונים סלולרי למשך %d הדקות הקרובות</item>
     </plurals>
     <string name="statistics_release_schedule">לו״ז הוצאה לאור</string>
-    <string name="nextcloud_login_error_generic">לא ניתן להיכנס ל־Nextcloud שלך.\n\n- נא לבדוק שהחיבור שלך לרשת תקין.\n- לוודא שזאת כתובת השרת הנכונה.\n- לבדוק שתוסף Nextcloud בשם Gpodder Sync מותקן.</string>
     <string name="statistics_release_next">הפרק הבא (הערכה)</string>
     <string name="statistics_years_barchart_description">זמן השמעה בחודש</string>
     <string name="home_no_recent_unplayed_episodes_text">כבר ניגנת את כל הפרקים האחרונים. אין יותר איך להפתיע אותך ؛)</string>
@@ -776,7 +733,6 @@
     </plurals>
     <string name="statistics_episodes_space">מקום תפוס</string>
     <string name="pref_nav_drawer_items_sum">נא לבחור אילו פריטים מופיעים במגירת הניווט או בניווט התחתון</string>
-    <string name="sync_status_wait_for_downloads">בהמתנה לרענון המינויים…</string>
     <plurals name="statistics_episodes_downloaded">
         <item quantity="one">ירד</item>
         <item quantity="two">ירדו</item>

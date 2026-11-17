@@ -166,13 +166,8 @@
     <string name="time_seconds">সেকেন্ড</string>
     <string name="time_minutes">মিনিট</string>
     <string name="time_hours">ঘন্টা</string>
-    <string name="gpodnetauth_login_butLabel">লগইন করুন</string>
     <string name="username_label">ব্যবহারকারীর নাম</string>
     <string name="password_label">পাসওয়ার্ড দিন</string>
-    <string name="synchronization_login_butLabel">লগইন করুন</string>
-    <string name="gpodnetauth_device_name">ডিভাইসের নাম</string>
-    <string name="gpodnetauth_create_device">ডিভাইস তৈরি করুন</string>
-    <string name="pref_gpodnet_setlogin_information_title">লগইন তথ্য পরিবর্তন করুন</string>
     <!--Rating dialog-->
   <string name="rating_tagline">%1$s থেকে, আপনি %2$s%3$d%4$s ঘন্টা পডকাস্ট শুনেছেন।</string>
     <string name="rating_rate">AntennaPod রেটিং করুন</string>

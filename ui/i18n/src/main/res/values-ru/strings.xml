@@ -316,8 +316,6 @@
     <string name="no_subscriptions_label">Чтобы подписаться на подкаст, нажмите значок «плюс» внизу.</string>
     <!--Preferences-->
   <string name="project_pref">Проект</string>
-    <string name="synchronization_pref">Синхронизация</string>
-    <string name="synchronization_sum">Синхронизация с другими устройствами</string>
     <string name="automation">Автоматизация</string>
     <string name="download_pref_details">Подробнее</string>
     <string name="import_export_pref">Резервная копия и восстановление</string>
@@ -481,13 +479,6 @@
     <string name="no_results_for_query">По запросу «%1$s» ничего не найдено</string>
     <string name="search_online">Поиск в сети</string>
     <!--Synchronization-->
-  <string name="sync_status_started">Синхронизация запущена</string>
-    <string name="sync_status_episodes_upload">Отправка изменений по выпускам…</string>
-    <string name="sync_status_episodes_download">Загрузка изменений по выпускам…</string>
-    <string name="sync_status_upload_played">Отправка состояния прослушивания…</string>
-    <string name="sync_status_subscriptions">Синхронизация подписок…</string>
-    <string name="sync_status_success">Синхронизация выполнена</string>
-    <string name="sync_status_error">Синхронизация не удалась</string>
     <!--import and export-->
   <string name="import_export_summary">Перенести подписку и очередь на другое устройство</string>
     <string name="database">База данных</string>
@@ -562,41 +553,8 @@
     <string name="auto_enable_change_times">Сменить интервал</string>
     <string name="sleep_timer_enabled_label">Таймер сна включён</string>
     <!--Synchronisation-->
-  <string name="synchronization_choose_title">Выбрать провайдера синхронизации</string>
-    <string name="synchronization_summary_unchoosen">Вы можете выбрать из нескольких провайдеров для синхронизации подписок и состояния воспроизведения выпусков</string>
-    <string name="dialog_choose_sync_service_title">Выбрать провайдера синхронизации</string>
-    <string name="gpodnet_description">Gpodder.net — сервис синхронизации подкастов с открытым исходным кодом, который можно развернуть на собственном сервере. Gpodder.net не связан с проектом AntennaPod.</string>
-    <string name="synchronization_summary_nextcloud">Gpodder Sync — приложение с открытым исходным кодом для Nextcloud, которое вы можете установить на свой сервер. Это приложение не связано с проектом AntennaPod.</string>
-    <string name="synchronization_host_explanation">Можно выбрать собственный сервер для синхронизации. Определившись с предпочтительным сервером синхронизации, введите его адрес здесь.</string>
-    <string name="synchronization_host_label">Адрес сервера</string>
-    <string name="proceed_to_login_butLabel">Авторизоваться</string>
-    <string name="synchronization_nextcloud_authenticate_browser">Предоставить доступ, открыв веб-браузер, и вернуться в AntennaPod.</string>
-    <string name="gpodnetauth_login_butLabel">Войти</string>
-    <string name="synchronization_credentials_explanation">Пожалуйста, укажите данные своей учётной записи на сервере синхронизации.</string>
-    <string name="gpodnetauth_encryption_warning">Пароль и данные не зашифрованы!</string>
     <string name="username_label">Имя пользователя</string>
     <string name="password_label">Пароль</string>
-    <string name="synchronization_login_butLabel">Войти</string>
-    <string name="synchronization_selectDevice_explanation">Пожалуйста, выберите устройство с сервера синхронизации, либо создайте новое.</string>
-    <string name="gpodnetauth_device_name">Название устройства</string>
-    <string name="gpodnetauth_device_name_default">AntennaPod на %1$s</string>
-    <string name="gpodnetauth_existing_devices">Существующие устройства</string>
-    <string name="gpodnetauth_create_device">Создать устройство</string>
-    <string name="gpodnetauth_finish_descr">Поздравляем! Ваша учётная запись gpodder.net связана с устройством. AntennaPod будет автоматически синхронизировать ваши подписки с учётной записью gpodder.net.</string>
-    <string name="pref_gpodnet_setlogin_information_title">Изменить информацию авторизации</string>
-    <string name="pref_gpodnet_setlogin_information_sum">Изменить информацию авторизации для аккаунта gpodder.net.</string>
-    <string name="synchronization_sync_changes_title">Синхронизировать сейчас</string>
-    <string name="synchronization_sync_summary">Синхронизировать подписки и состояние выпусков</string>
-    <string name="synchronization_full_sync_title">Выполнить полную синхронизацию</string>
-    <string name="synchronization_force_sync_summary">Принудительно синхронизировать все подписки и состояние выпусков</string>
-    <string name="synchronization_logout">Выйти</string>
-    <string name="synchronization_login_status">Выполнен вход в %2$s как %1$s.\n\nВы можете сменить провайдера синхронизации после выхода из системы.</string>
-    <string name="pref_synchronization_logout_toast">Выход успешно выполнен</string>
-    <string name="gpodnetsync_error_title">Ошибка синхронизации с gpodder.net</string>
-    <string name="gpodnetsync_error_descr">"Произошла ошибка во время синхронизации: "</string>
-    <string name="gpodnetsync_pref_report_successful">Успешно</string>
-    <string name="gpodnetsync_pref_report_failed">Неудачно</string>
-    <string name="gpodnetsync_username_characters_error">Имя пользователя может содержать только буквы, цифры, дефисы и символы подчёркивания.</string>
     <!--Directory chooser-->
   <string name="choose_data_directory">Выбрать папку для хранения данных</string>
     <string name="choose_data_directory_message">Укажите корневой каталог для хранения данных. AntennaPod создаст необходимые подкаталоги.</string>
@@ -768,14 +726,12 @@
         <item quantity="other">Размер %d выпусков на устройстве</item>
     </plurals>
     <string name="pref_nav_drawer_items_sum">Выберите пункты в меню навигации</string>
-    <string name="sync_status_wait_for_downloads">Подписки обновляются…</string>
     <string name="statistics_view_all">Все подкасты</string>
     <string name="discover_more">Найти новое</string>
     <string name="section_shown">Отображаемые</string>
     <string name="delete_downloads_played">Удалить прослушанные</string>
     <string name="bottom_navigation">Навигация внизу</string>
     <string name="bottom_navigation_summary">Доступ к важным страницам отовсюду, в одно нажатие</string>
-    <string name="nextcloud_login_error_generic">Не удалось войти в Nextcloud.\n\n— Проверьте соединение с интернетом.\n— Удостоверьтесь, что указан правильный адрес сервера.\n— Удостоверьтесь, что Gpodder Sync установлен в Nextcloud.</string>
     <string name="episode_download_failed">Не удалось скачать выпуск</string>
     <string name="delete_downloads_played_confirmation">Подтвердите, что вы хотите удалить все прослушанные скачанные выпуски.</string>
     <string name="preference_search_clear_input">Очистить</string>

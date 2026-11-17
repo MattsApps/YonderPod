@@ -8,8 +8,6 @@ import de.danoeh.antennapod.model.feed.FeedItem;
 import de.danoeh.antennapod.model.feed.FeedItemFilter;
 import de.danoeh.antennapod.model.feed.FeedMedia;
 import de.danoeh.antennapod.model.feed.SortOrder;
-import de.danoeh.antennapod.net.sync.serviceinterface.SynchronizationQueue;
-import de.danoeh.antennapod.net.sync.serviceinterface.SynchronizationQueueStub;
 import de.danoeh.antennapod.storage.preferences.UserPreferences;
 import org.junit.Before;
 import org.junit.Test;
@@ -43,7 +41,6 @@ public class FeedDatabaseWriterTest {
         PodDBAdapter adapter = PodDBAdapter.getInstance();
         adapter.open();
         adapter.close();
-        SynchronizationQueue.setInstance(new SynchronizationQueueStub());
     }
 
     @Test

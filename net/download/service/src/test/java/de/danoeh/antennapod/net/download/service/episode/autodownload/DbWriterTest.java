@@ -13,8 +13,6 @@ import de.danoeh.antennapod.model.feed.FeedItemFilter;
 import de.danoeh.antennapod.model.feed.SortOrder;
 import de.danoeh.antennapod.net.download.serviceinterface.DownloadServiceInterface;
 import de.danoeh.antennapod.net.download.serviceinterface.DownloadServiceInterfaceStub;
-import de.danoeh.antennapod.net.sync.serviceinterface.SynchronizationQueue;
-import de.danoeh.antennapod.net.sync.serviceinterface.SynchronizationQueueStub;
 import de.danoeh.antennapod.storage.database.DBReader;
 import de.danoeh.antennapod.storage.database.DBWriter;
 import de.danoeh.antennapod.storage.database.PodDBAdapter;
@@ -64,7 +62,6 @@ public class DbWriterTest {
         UserPreferences.init(context);
         PlaybackPreferences.init(context);
         DownloadServiceInterface.setImpl(new DownloadServiceInterfaceStub());
-        SynchronizationQueue.setInstance(new SynchronizationQueueStub());
 
         // create new database
         PodDBAdapter.init(context);

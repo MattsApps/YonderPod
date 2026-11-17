@@ -12,8 +12,8 @@ android {
         applicationId "com.mattsapps.yonderpod"
         // Version code schema (kept above AntennaPod's 3120395 so test builds install over it):
         // "0.9.0" -> 4000900, "0.9.1" -> 4000901, "1.0.0" -> 4010000
-        versionCode 4000934
-        versionName "0.9.32"
+        versionCode 4000935
+        versionName "0.9.33"
     }
 
     signingConfigs {
@@ -71,7 +71,6 @@ dependencies {
     implementation project(':net:download:service-interface')
     implementation project(':net:download:service')
     implementation project(':net:ssl')
-    implementation project(':net:sync:service')
     playImplementation project(':net:sync:wear-interface')
     implementation project(':parser:feed')
     implementation project(':parser:transcript')
@@ -93,7 +92,6 @@ dependencies {
     implementation project(':ui:widget')
     implementation project(':ui:preferences')
     implementation project(':ui:statistics')
-    implementation project(':net:sync:service-interface')
     implementation project(':playback:service')
     implementation project(':ui:chapters')
     implementation project(':ui:transcript')

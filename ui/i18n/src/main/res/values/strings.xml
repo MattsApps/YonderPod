@@ -448,8 +448,6 @@
 
     <!-- Preferences -->
     <string name="project_pref">Project</string>
-    <string name="synchronization_pref">Sync</string>
-    <string name="synchronization_sum">Sync with your other devices</string>
     <string name="automation">Automation</string>
     <string name="download_pref_details">Details</string>
     <string name="import_export_pref">Back up and restore</string>
@@ -955,16 +953,6 @@
     <string name="no_results_for_query">No results were found for \"%1$s\"</string>
     <string name="search_online">Search online</string>
 
-    <!-- Synchronization -->
-    <string name="sync_status_started">Sync started</string>
-    <string name="sync_status_episodes_upload">Uploading episode changes…</string>
-    <string name="sync_status_episodes_download">Downloading episode changes…</string>
-    <string name="sync_status_upload_played">Uploading played status…</string>
-    <string name="sync_status_subscriptions">Synchronizing subscriptions…</string>
-    <string name="sync_status_wait_for_downloads">Waiting for subscriptions refresh…</string>
-    <string name="sync_status_wait_for_wifi">Waiting for Wi-Fi to sync subscriptions…</string>
-    <string name="sync_status_success">Synchronization successful</string>
-    <string name="sync_status_error">Synchronization failed</string>
 
     <!-- import and export -->
     <string name="import_export_summary">Move subscriptions and queue to another device</string>
@@ -1048,48 +1036,10 @@
     <string name="auto_enable_change_times">Change time range</string>
     <string name="sleep_timer_enabled_label">Sleep timer enabled</string>
 
-    <!-- Synchronisation -->
-    <string name="synchronization_choose_title">Choose synchronization provider</string>
-    <string name="synchronization_summary_unchoosen">You can choose from multiple providers to synchronize your subscriptions and episode play state with</string>
-    <string name="dialog_choose_sync_service_title">Choose synchronization provider</string>
-    <string name="gpodnet_description">Gpodder.net is an open-source podcast synchronization service that you can install on your own server. Gpodder.net is independent of the Yonder project.</string>
-    <string name="synchronization_summary_nextcloud">Gpodder Sync is an open-source Nextcloud app that you can easily install on your own server. Gpodder Sync is independent of the Yonder project.</string>
-    <string name="synchronization_host_explanation">You can pick your own server to synchronize with. When you have identified your preferred synchronization server, please enter its address here.</string>
-    <string name="synchronization_provider_chooser_explanation">Devices need a central server to synchronize. Yonder does not offer such a central synchronization server, but allows you to connect with the different types of servers listed below.</string>
-    <string name="back_label">Back</string>
-    <string name="synchronization_more_information">More information</string>
-    <string name="synchronization_host_label">Server address</string>
-    <string name="proceed_to_login_butLabel">Proceed to login</string>
-    <string name="synchronization_nextcloud_authenticate_browser">Grant access using the opened web browser and come back to Yonder.</string>
-    <string name="gpodnetauth_login_butLabel">Login</string>
-    <string name="synchronization_credentials_explanation">Please provide the credentials of your account on the synchronization server.</string>
-    <string name="gpodnetauth_encryption_warning">Password and data are not encrypted!</string>
     <string name="username_label">Username</string>
     <string name="password_label">Password</string>
     <string name="wrong_password">Wrong password</string>
     <string name="show_password_accessibility">Show password</string>
-    <string name="synchronization_login_butLabel">Log in</string>
-    <string name="synchronization_selectDevice_explanation">Please select the device that you created on the synchronization server or create a new one.</string>
-    <string name="gpodnetauth_device_name">Device name</string>
-    <string name="gpodnetauth_device_name_default">Yonder on %1$s</string>
-    <string name="gpodnetauth_existing_devices">Existing devices</string>
-    <string name="gpodnetauth_create_device">Create device</string>
-    <string name="gpodnetauth_finish_descr">Congratulations! Your gpodder.net account is now linked with your device. Yonder will from now on automatically sync subscriptions on your device with your gpodder.net account.</string>
-    <string name="pref_gpodnet_setlogin_information_title">Change login information</string>
-    <string name="pref_gpodnet_setlogin_information_sum">Change the login information for your gpodder.net account.</string>
-    <string name="synchronization_sync_changes_title">Synchronize now</string>
-    <string name="synchronization_sync_summary">Synchronize subscription and episode state changes</string>
-    <string name="synchronization_full_sync_title">Force full synchronization</string>
-    <string name="synchronization_force_sync_summary">Re-synchronize all subscriptions and episode states</string>
-    <string name="synchronization_logout">Logout</string>
-    <string name="synchronization_login_status">Logged in as %1$s on %2$s.\n\nYou can choose your synchronization provider again once you have logged out.</string>
-    <string name="pref_synchronization_logout_toast">Logout was successful</string>
-    <string name="gpodnetsync_error_title">gpodder.net sync error</string>
-    <string name="gpodnetsync_error_descr">An error occurred during syncing:\u0020</string>
-    <string name="gpodnetsync_pref_report_successful">Successful</string>
-    <string name="gpodnetsync_pref_report_failed">Failed</string>
-    <string name="gpodnetsync_username_characters_error">Usernames may only contain letters, digits, hyphens and underscores.</string>
-    <string name="nextcloud_login_error_generic">Unable to log into your Nextcloud.\n\n- Check your network connection.\n- Confirm that you are using the correct server address.\n- Make sure that the Gpodder Sync Nextcloud plugin is installed.</string>
 
     <!-- Directory chooser -->
     <string name="choose_data_directory">Choose data folder</string>
@@ -1979,7 +1929,6 @@
     <string name="moving_spotify_only_unknown">Yonder couldn\'t find this show outside Spotify.</string>
     <string name="tune_backup">backup</string>
     <string name="tune_import_export">Back up and restore</string>
-    <string name="tune_sync">Sync</string>
     <string name="tune_about">about</string>
     <string name="tune_about_app">About Yonder</string>
     <string name="tune_episodes">episodes</string>
@@ -2108,7 +2057,6 @@
     <string name="help_words_wallpaper">wallpaper, colour, color, palette, match</string>
     <string name="help_words_language">language, english, translate</string>
     <string name="help_words_backup">backup, back up, restore, save, new phone, export, import, file</string>
-    <string name="help_words_sync">sync, devices, gpodder, nextcloud</string>
     <string name="help_words_welcome">tour, welcome, intro, start, how to, beginner</string>
     <string name="help_words_moving">beyondpod, pocket casts, podcast addict, import, opml, switch, move</string>
     <string name="help_words_about">about, version, credits, open source</string>

@@ -297,8 +297,6 @@
     <string name="no_subscriptions_label">Pentru a vă abona la un podcast, apăsați pe butonul \"plus\" de mai jos.</string>
     <!--Preferences-->
   <string name="project_pref">Proiect</string>
-    <string name="synchronization_pref">Sincronizare</string>
-    <string name="synchronization_sum">Sincronizare cu alte dispozitive</string>
     <string name="automation">Automatizare</string>
     <string name="download_pref_details">Detalii</string>
     <string name="import_export_pref">Importă &amp; Exportă</string>
@@ -462,13 +460,6 @@
     <string name="no_results_for_query">Nu au fost găsite rezultate pentru \"%1$s\"</string>
     <string name="search_online">Caută online</string>
     <!--Synchronization-->
-  <string name="sync_status_started">Sincronizarea a început</string>
-    <string name="sync_status_episodes_upload">Se încarcă schimbările episoadelor…</string>
-    <string name="sync_status_episodes_download">Se descarcă modificările episodului…</string>
-    <string name="sync_status_upload_played">Se încarcă starea podcasturilor redate…</string>
-    <string name="sync_status_subscriptions">Se sincronizează abonamentele…</string>
-    <string name="sync_status_success">Sincronizarea a reușit</string>
-    <string name="sync_status_error">Sincronizarea a eșuat</string>
     <!--import and export-->
   <string name="import_export_summary">Mută abonamentele și coada de redare către alt dispozitiv</string>
     <string name="database">Bază de date</string>
@@ -519,41 +510,8 @@
     <string name="auto_enable_change_times">Schimbă intervalul de timp</string>
     <string name="sleep_timer_enabled_label">Cronometru pentru somn pornit</string>
     <!--Synchronisation-->
-  <string name="synchronization_choose_title">Alege furnizorul de sincronizare</string>
-    <string name="synchronization_summary_unchoosen">Puteți alege dintre furnizori multipli pentru a vă sincroniza abonamentele dumneavoastră și starea episoadelor</string>
-    <string name="dialog_choose_sync_service_title">Alege furnizorul de sincronizare</string>
-    <string name="gpodnet_description">Gpodder.net este un serviciu de sincronizare cu sursă deschisă, ce poate fi instalat pe propriul server. Gpodder.net este independent de proiectul AntennaPod.</string>
-    <string name="synchronization_summary_nextcloud">Gpoddersync este o aplicație Nextcould cu sursă deschisă ce poate fii instalată cu ușurință pe serverul dumneavoastră. Această aplicație este independentă de proiectul AntennaPod.</string>
-    <string name="synchronization_host_explanation">Poți să îți alegi propriul tău server pentru a sincroniza datele. Când ai găsit un server de sincronizare poți introduce adresa aici.</string>
-    <string name="synchronization_host_label">Adresă server</string>
-    <string name="proceed_to_login_butLabel">Continuă spre autentificare</string>
-    <string name="synchronization_nextcloud_authenticate_browser">Oferă acces folosint web browserul deschis și întorcețivă la AntennaPod.</string>
-    <string name="gpodnetauth_login_butLabel">Conectare</string>
-    <string name="synchronization_credentials_explanation">Te rugăm să introduci datele de autentificare pentru serverul de sincronizare.</string>
-    <string name="gpodnetauth_encryption_warning">Parola și datele nu sunt criptate!</string>
     <string name="username_label">Utilizator</string>
     <string name="password_label">Parolă</string>
-    <string name="synchronization_login_butLabel">Autentificare</string>
-    <string name="synchronization_selectDevice_explanation">Te rugăm să selectezi dispozitivul creat pe server sau să creezi un dispozitiv nou.</string>
-    <string name="gpodnetauth_device_name">Device name</string>
-    <string name="gpodnetauth_device_name_default">AntennaPod pe %1$s</string>
-    <string name="gpodnetauth_existing_devices">Dispozitive existente</string>
-    <string name="gpodnetauth_create_device">Creează un dispozitiv</string>
-    <string name="gpodnetauth_finish_descr">Felicitări! contul tău gpodder.net este acum conectat cu dispozitivul tău. AntennaPod va sincroniza automat toate abonamentele de pe dispozitivul dumneavoastră cu contul gpodder.net.</string>
-    <string name="pref_gpodnet_setlogin_information_title">Schimbă informațiile de autentificare</string>
-    <string name="pref_gpodnet_setlogin_information_sum">Schimbă informațiile de autentificare pentru contul tău gpodder.net.</string>
-    <string name="synchronization_sync_changes_title">Sincronizează acum</string>
-    <string name="synchronization_sync_summary">Sincronizează schimbările abonamentelor și starea episoadelor</string>
-    <string name="synchronization_full_sync_title">Forțează sincronizarea completă</string>
-    <string name="synchronization_force_sync_summary">Resincronizează toate abonamentele și starea episoadelor</string>
-    <string name="synchronization_logout">Deconectare</string>
-    <string name="synchronization_login_status">Autentificat ca %1$s pe %2$s.\n\nPuteți să vă alegeți furnizorul de sincronizare din nou, după ce v-ați deconectat.</string>
-    <string name="pref_synchronization_logout_toast">Deconectarea a reușit</string>
-    <string name="gpodnetsync_error_title">eroare de sincronizare gpodder.net</string>
-    <string name="gpodnetsync_error_descr">"A apărut o eroare în timpul sincronizării: "</string>
-    <string name="gpodnetsync_pref_report_successful">Succes</string>
-    <string name="gpodnetsync_pref_report_failed">Eșuat</string>
-    <string name="gpodnetsync_username_characters_error">Numele contului poate conține numai litere, numere, cratime și bară jos.</string>
     <!--Directory chooser-->
   <string name="choose_data_directory">Alege fișier date</string>
     <string name="choose_data_directory_message">Te rugăm să selectezi folderul de date. AntennaPod va creea subfolderele corespunzătoare.</string>
@@ -748,7 +706,6 @@
     <string name="pref_automatic_download_global_description">Descarcă automat episoadele noi din inbox. Poate fi suprascris per podcast.</string>
     <string name="pref_downloads_button_action_sum">Afișează butonul de redare in locul butonului de ștergere pe pagina de descărcări</string>
     <string name="pref_downloads_button_action_title">Redare din ecranul de descărcări</string>
-    <string name="sync_status_wait_for_downloads">Se așteaptă pentru reîmprospătarea abonamentelor…</string>
     <plurals name="episode_cleanup_days_after_listening">
         <item quantity="one">O zi după finalizare</item>
         <item quantity="few">%d zile după finalizare</item>
@@ -760,7 +717,6 @@
         <item quantity="other">%d de secunde</item>
     </plurals>
     <string name="episode_download_failed">Descărcarea episodului a eșuat</string>
-    <string name="nextcloud_login_error_generic">Nu am reușit sa ne autentificăm pe serverul tău Nextcloud.\n\n- verifică conxiunea la rețea.\n- confirmă că folosești adresa corectă a serverului.\n- asigură-te că pluginul gpoddersync este instalat.</string>
     <string name="home_downloads_empty_text">Poți să descarci orice episod pentru a-l asculta offline.</string>
     <string name="pref_automatic_download_queue_description">Descarcă automat episoadele din queue</string>
     <string name="delete_tag_label">Șterge eticheta</string>

@@ -289,8 +289,6 @@
     <string name="no_subscriptions_label">点按下方的+号按钮来订阅播客。</string>
     <!--Preferences-->
   <string name="project_pref">项目</string>
-    <string name="synchronization_pref">同步</string>
-    <string name="synchronization_sum">和其他设备同步</string>
     <string name="automation">自动化</string>
     <string name="download_pref_details">详细信息</string>
     <string name="import_export_pref">备份和恢复</string>
@@ -454,13 +452,6 @@
     <string name="no_results_for_query">未找到“%1$s”的结果</string>
     <string name="search_online">在线搜索</string>
     <!--Synchronization-->
-  <string name="sync_status_started">同步已开始</string>
-    <string name="sync_status_episodes_upload">正在上传单集更改…</string>
-    <string name="sync_status_episodes_download">正在下载单集更改…</string>
-    <string name="sync_status_upload_played">正在上传播放状态…</string>
-    <string name="sync_status_subscriptions">正在同步订阅…</string>
-    <string name="sync_status_success">同步成功</string>
-    <string name="sync_status_error">同步失败</string>
     <!--import and export-->
   <string name="import_export_summary">将订阅和队列转移到其他设备</string>
     <string name="database">数据库</string>
@@ -523,41 +514,8 @@
     <string name="auto_enable_change_times">更改时间范围</string>
     <string name="sleep_timer_enabled_label">睡眠定时器已启用</string>
     <!--Synchronisation-->
-  <string name="synchronization_choose_title">选择同步提供者</string>
-    <string name="synchronization_summary_unchoosen">您可以从多个服务提供者中选择，以同步您的订阅和单集播放状态</string>
-    <string name="dialog_choose_sync_service_title">选择同步提供者</string>
-    <string name="gpodnet_description">Gpodder.net 是开源的播客同步服务，您可以将其安装在自己的服务器上。Gpodder.net 独立于 AntennaPod 项目。</string>
-    <string name="synchronization_summary_nextcloud">Gpodder Sync 是开源的 Nextcloud 应用，您可以轻松安装在自己的服务器上。Gpodder Sync 独立于 AntennaPod 项目。</string>
-    <string name="synchronization_host_explanation">您可以选择自己的服务器进行同步。确定首选同步服务器后，请在此处输入其地址。</string>
-    <string name="synchronization_host_label">服务器地址</string>
-    <string name="proceed_to_login_butLabel">继续登录</string>
-    <string name="synchronization_nextcloud_authenticate_browser">使用打开的网络浏览器授予访问权限，然后返回到 AntennaPod。</string>
-    <string name="gpodnetauth_login_butLabel">登录</string>
-    <string name="synchronization_credentials_explanation">请提供您在同步服务器上的账号凭据。</string>
-    <string name="gpodnetauth_encryption_warning">密码和数据未加密！</string>
     <string name="username_label">用户名</string>
     <string name="password_label">密码</string>
-    <string name="synchronization_login_butLabel">登录</string>
-    <string name="synchronization_selectDevice_explanation">请选择您在同步服务器上创建的设备或创建新设备。</string>
-    <string name="gpodnetauth_device_name">设备名称</string>
-    <string name="gpodnetauth_device_name_default">%1$s 上的 AntennaPod</string>
-    <string name="gpodnetauth_existing_devices">现有设备</string>
-    <string name="gpodnetauth_create_device">创建设备</string>
-    <string name="gpodnetauth_finish_descr">恭喜！您的 gpodder.net 账号现已与设备关联。AntennaPod 今后将自动把设备上的订阅同步至 gpodder.net 账号。</string>
-    <string name="pref_gpodnet_setlogin_information_title">更改登录信息</string>
-    <string name="pref_gpodnet_setlogin_information_sum">更改 gpodder.net 账号的登录信息。</string>
-    <string name="synchronization_sync_changes_title">立即同步</string>
-    <string name="synchronization_sync_summary">同步订阅和单集状态更改</string>
-    <string name="synchronization_full_sync_title">强制完整同步</string>
-    <string name="synchronization_force_sync_summary">重新同步所有订阅和单集状态</string>
-    <string name="synchronization_logout">登出</string>
-    <string name="synchronization_login_status">已使用 %1$s 身份登录 %2$s。\n\n登出后，您可以再次选择同步提供者。</string>
-    <string name="pref_synchronization_logout_toast">登出成功</string>
-    <string name="gpodnetsync_error_title">gpodder.net 同步错误</string>
-    <string name="gpodnetsync_error_descr">"同步过程中出错： "</string>
-    <string name="gpodnetsync_pref_report_successful">成功</string>
-    <string name="gpodnetsync_pref_report_failed">失败</string>
-    <string name="gpodnetsync_username_characters_error">用户名只能包含字母、数字、连字符和下划线。</string>
     <!--Directory chooser-->
   <string name="choose_data_directory">选择数据文件夹</string>
     <string name="choose_data_directory_message">请选择用于 AntennaPod 的数据根目录， AntennaPod 将会创建合适的子目录。</string>
@@ -718,7 +676,6 @@
     </plurals>
     <string name="null_value_podcast_error">您轻按的链接不包含有效的播客 URL。请验证该链接并重试，或者手动搜索该播客。</string>
     <string name="pref_nav_drawer_items_sum">更改在抽屉式导航栏或底部导航中显示的项目</string>
-    <string name="sync_status_wait_for_downloads">正在等待订阅刷新…</string>
     <string name="statistics_view_all">所有播客 »</string>
     <string name="discover_more">发现更多 »</string>
     <string name="home_continue_empty_text">您可以通过下载单集或长按单集并选择“添加到队列”来添加单集。</string>
@@ -737,7 +694,6 @@
     <string name="statistics_release_next">下一单集（预估）</string>
     <string name="statistics_years_barchart_description">每月播放时间</string>
     <string name="episode_download_failed">单集下载失败</string>
-    <string name="nextcloud_login_error_generic">无法登录您的 Nextcloud。\n\n- 请检查您的网络连接。\n- 确认您使用的是正确的服务器地址。\n- 确保已安装 Gpodder Sync Nextcloud 插件。</string>
     <string name="home_no_recent_unplayed_episodes_text">您已播放完所有最新单集，完全不必惊讶啦 ;)</string>
     <string name="mobile_download_notice">接下去 %d 分钟将使用移动数据连接下载</string>
     <string name="add_feed_label_short">添加</string>

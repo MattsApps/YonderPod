@@ -298,8 +298,6 @@
     <string name="no_subscriptions_label">Για να εγγραφείτε σε ένα podcast, πατήστε το εικονίδιο + παρακάτω.</string>
     <!--Preferences-->
   <string name="project_pref">Πρότζεκτ</string>
-    <string name="synchronization_pref">Συγχρονισμός</string>
-    <string name="synchronization_sum">Συγχρονισμός με άλλες συσκευές</string>
     <string name="automation">Αυτοματοποίηση</string>
     <string name="download_pref_details">Λεπτομέρειες</string>
     <string name="import_export_pref">Αντίγραφο ασφαλείας και επαναφορά</string>
@@ -463,13 +461,6 @@
     <string name="no_results_for_query">Δεν βρέθηκαν αποτελέσματα για «%1$s»</string>
     <string name="search_online">Αναζήτηση στο διαδίκτυο</string>
     <!--Synchronization-->
-  <string name="sync_status_started">Ο συγχρονισμός ξεκίνησε</string>
-    <string name="sync_status_episodes_upload">Γίνεται μεταφόρτωση των αλλαγών στα επεισόδια…</string>
-    <string name="sync_status_episodes_download">Γίνεται λήψη των αλλαγών στα επεισόδια…</string>
-    <string name="sync_status_upload_played">Γίνεται μεταφόρτωση της κατάστασης αναπαραγωγής…</string>
-    <string name="sync_status_subscriptions">Γίνεται συγχρονισμός συνδρομών…</string>
-    <string name="sync_status_success">Επιτυχής συγχρονισμός</string>
-    <string name="sync_status_error">Αποτυχία συγχρονισμού</string>
     <!--import and export-->
   <string name="import_export_summary">Μετακίνηση συνδρομών και ουράς σε άλλη συσκευή</string>
     <string name="database">Βάση δεδομένων</string>
@@ -536,41 +527,8 @@
     <string name="auto_enable_change_times">Αλλαγή χρονικού διαστήματος</string>
     <string name="sleep_timer_enabled_label">Χρονοδιακόπτη ύπνου ενεργός</string>
     <!--Synchronisation-->
-  <string name="synchronization_choose_title">Επιλογή παρόχου συγχρονισμού</string>
-    <string name="synchronization_summary_unchoosen">Μπορείτε να επιλέξετε μεταξύ πολλών παρόχων για να συγχρονίσετε τις συνδρομές και την κατάσταση αναπαραγωγής των επεισοδίων σας</string>
-    <string name="dialog_choose_sync_service_title">Επιλογή παρόχου συγχρονισμού</string>
-    <string name="gpodnet_description">Το gpodder.net είναι μια υπηρεσία συγχρονισμού podcast ανοικτού κώδικα, την οποία μπορείτε να εγκαταστήσετε στον δικό σας διακομιστή. Το gpodder.net είναι ανεξάρτητο από το έργο AntennaPod.</string>
-    <string name="synchronization_summary_nextcloud">Το Gpodder Sync είναι μια εφαρμογή ανοικτού κώδικα για το Nextcloud, την οποία μπορείτε να εγκαταστήσετε εύκολα στον δικό σας διακομιστή. Το Gpodder Sync είναι ανεξάρτητο από το έργο AntennaPod.</string>
-    <string name="synchronization_host_explanation">Μπορείτε να επιλέξετε τον δικό σας διακομιστή για συγχρονισμό. Μόλις προσδιορίσετε τον διακομιστή συγχρονισμού που προτιμάτε, εισαγάγετε τη διεύθυνσή του εδώ.</string>
-    <string name="synchronization_host_label">Διεύθυνση διακομιστή</string>
-    <string name="proceed_to_login_butLabel">Μετάβαση στη σύνδεση</string>
-    <string name="synchronization_nextcloud_authenticate_browser">Παραχωρήστε πρόσβαση χρησιμοποιώντας το πρόγραμμα περιήγησης ιστού που ανοίξατε και επιστρέψτε στο AntennaPod.</string>
-    <string name="gpodnetauth_login_butLabel">Σύνδεση</string>
-    <string name="synchronization_credentials_explanation">Εισαγάγετε τα διαπιστευτήρια του λογαριασμού σας στον διακομιστή συγχρονισμού.</string>
-    <string name="gpodnetauth_encryption_warning">Οι κωδικοί πρόσβασης και τα δεδομένα δεν είναι κρυπτογραφημένα!</string>
     <string name="username_label">Όνομα χρήστη</string>
     <string name="password_label">Κωδικός πρόσβασης</string>
-    <string name="synchronization_login_butLabel">Σύνδεση</string>
-    <string name="synchronization_selectDevice_explanation">Επιλέξτε τη συσκευή που δημιουργήσατε στον διακομιστή συγχρονισμού ή δημιουργήστε μια νέα.</string>
-    <string name="gpodnetauth_device_name">Όνομα συσκευής</string>
-    <string name="gpodnetauth_device_name_default">AntennaPod στο %1$s</string>
-    <string name="gpodnetauth_existing_devices">Υπάρχουσες συσκευές</string>
-    <string name="gpodnetauth_create_device">Δημιουργία συσκευής</string>
-    <string name="gpodnetauth_finish_descr">Συγχαρητήρια! Ο λογαριασμός σας στο gpodder.net συνδέθηκε με τη συσκευή σας. Το AntennaPod θα συγχρονίζει πλέον αυτόματα τις συνδρομές στη συσκευή σας με τον λογαριασμό σας στο gpodder.net.</string>
-    <string name="pref_gpodnet_setlogin_information_title">Αλλαγή στοιχείων σύνδεσης</string>
-    <string name="pref_gpodnet_setlogin_information_sum">Αλλάξτε τα στοιχεία σύνδεσης για τον λογαριασμό σας στο gpodder.net.</string>
-    <string name="synchronization_sync_changes_title">Συγχρονισμός τώρα</string>
-    <string name="synchronization_sync_summary">Συγχρονισμός αλλαγών κατάστασης συνδρομών και επεισοδίων</string>
-    <string name="synchronization_full_sync_title">Επιβολή πλήρους συγχρονισμού</string>
-    <string name="synchronization_force_sync_summary">Επανεκτέλεση συγχρονισμού όλων των συνδρομών και των καταστάσεων επεισοδίων</string>
-    <string name="synchronization_logout">Αποσύνδεση</string>
-    <string name="synchronization_login_status">Έχετε συνδεθεί ως %1$s στο %2$s.\n\nΜπορείτε να επιλέξετε ξανά τον πάροχο συγχρονισμού αφού αποσυνδεθείτε.</string>
-    <string name="pref_synchronization_logout_toast">Η αποσύνδεση ήταν επιτυχής</string>
-    <string name="gpodnetsync_error_title">σφάλμα συγχρονισμού με το gpodder.net</string>
-    <string name="gpodnetsync_error_descr">"Παρουσιάστηκε σφάλμα κατά το συγχρονισμό: "</string>
-    <string name="gpodnetsync_pref_report_successful">Επιτυχής</string>
-    <string name="gpodnetsync_pref_report_failed">Απέτυχε</string>
-    <string name="gpodnetsync_username_characters_error">Τα ονόματα χρήστη επιτρέπεται να περιέχουν μόνο γράμματα, ψηφία, παύλες και κάτω παύλες.</string>
     <!--Directory chooser-->
   <string name="choose_data_directory">Επιλογή φακέλου δεδομένων</string>
     <string name="choose_data_directory_message">Επιλέξτε τη βάση του φακέλου δεδομένων σας. Το AntennaPod θα δημιουργήσει τους κατάλληλους υποκαταλόγους.</string>
@@ -742,8 +700,6 @@
     <string name="bottom_navigation">Κάτω πλοήγηση</string>
     <string name="episode_lists">Λίστες επεισοδίων</string>
     <string name="pref_downloads_button_action_title">Αναπαραγωγή από την οθόνη λήψεων</string>
-    <string name="sync_status_wait_for_downloads">Αναμονή για ανανέωση συνδρομών…</string>
-    <string name="nextcloud_login_error_generic">Δεν ήταν δυνατή η σύνδεση στο Nextcloud.\n\n- Ελέγξτε τη σύνδεσή σας στο διαδίκτυο.\n- Βεβαιωθείτε ότι χρησιμοποιείτε τη σωστή διεύθυνση διακομιστή.\n- Βεβαιωθείτε ότι είναι εγκατεστημένο το πρόσθετο Gpodder Sync για το Nextcloud.</string>
     <string name="fast_forward_label">Γρήγορη προώθηση</string>
     <string name="rss_address">Διεύθυνση RSS</string>
     <string name="echo_home_header">Ανασκόπηση του έτους</string>

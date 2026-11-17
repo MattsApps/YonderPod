@@ -20,7 +20,6 @@ dependencies {
     implementation project(':model')
     implementation project(':net:common')
     implementation project(':net:download:service-interface')
-    implementation project(':net:sync:service-interface')
     implementation project(':playback:base')
     implementation project(':playback:cast')
     implementation project(':smartplay')

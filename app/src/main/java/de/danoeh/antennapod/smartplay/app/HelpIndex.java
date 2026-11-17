@@ -251,8 +251,6 @@ public final class HelpIndex {
                 R.string.tune_title, R.string.tune_look);
         setting(R.string.tune_import_export, R.string.help_words_backup, OPEN_TUNE,
                 R.string.tune_title, R.string.tune_backup);
-        setting(R.string.tune_sync, R.string.help_words_sync, OPEN_TUNE,
-                R.string.tune_title, R.string.tune_backup);
         setting(R.string.tune_welcome, R.string.help_words_welcome, OPEN_WELCOME,
                 R.string.tune_title, R.string.tune_help);
         setting(R.string.moving_title, R.string.help_words_moving, OPEN_TUNE,
@@ -272,7 +270,6 @@ public final class HelpIndex {
         parse(R.xml.preferences_downloads, downloads);
         parse(R.xml.preferences_autodownload, downloads + separator + page(R.xml.preferences_autodownload));
         parse(R.xml.preferences_auto_deletion, downloads + separator + page(R.xml.preferences_auto_deletion));
-        parse(R.xml.preferences_synchronization, advanced + separator + page(R.xml.preferences_synchronization));
         parse(R.xml.preferences_import_export, advanced + separator + page(R.xml.preferences_import_export));
     }
 

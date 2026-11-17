@@ -1,4 +1,4 @@
-package de.danoeh.antennapod.ui.preferences.screen.synchronization;
+package de.danoeh.antennapod.ui.preferences.screen;
 
 import android.content.Context;
 import android.text.method.HideReturnsTransformationMethod;

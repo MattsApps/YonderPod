@@ -54,7 +54,6 @@
     <string name="random">Случаен</string>
     <!--Preferences-->
   <string name="project_pref">Проект</string>
-    <string name="synchronization_pref">Синхронизација</string>
     <string name="automation">Автомација</string>
     <string name="download_pref_details">Детали</string>
     <string name="import_export_pref">Импорт/Експорт</string>

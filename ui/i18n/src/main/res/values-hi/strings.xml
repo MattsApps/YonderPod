@@ -288,8 +288,6 @@
     <string name="no_subscriptions_label">पॉडकास्ट को सब्सक्राइब करने के लिए, नीचे वाला प्लस आइकन दबाएं।</string>
     <!--Preferences-->
   <string name="project_pref">प्रोजेक्ट</string>
-    <string name="synchronization_pref">सिंक</string>
-    <string name="synchronization_sum">दूसरे डिवाइस से सिंक करें</string>
     <string name="automation">ऑटोमेशन</string>
     <string name="download_pref_details">जानकारी</string>
     <string name="import_export_pref">बैकअप और रिस्टोर करना</string>
@@ -437,13 +435,6 @@
     <string name="no_results_for_query">\"%1$s\" के लिए कोई नतीजा नहीं मिला</string>
     <string name="search_online">ऑनलाइन खोजें</string>
     <!--Synchronization-->
-  <string name="sync_status_started">सिंक शुरू हुआ</string>
-    <string name="sync_status_episodes_upload">एपिसोड के बदलाव अपलोड कर रहे…</string>
-    <string name="sync_status_episodes_download">एपिसोड के बदलाव डाउनलोड कर रहे…</string>
-    <string name="sync_status_upload_played">सुनने का स्टेटस अपडेट कर रहे…</string>
-    <string name="sync_status_subscriptions">सब्सक्रिप्शन को सिंक कर रहे…</string>
-    <string name="sync_status_success">सिंक हो गया</string>
-    <string name="sync_status_error">सिंक नहीं हो पाया</string>
     <!--import and export-->
   <string name="import_export_summary">सब्सक्रिप्शन और कतार को दूसरे डिवाइस पर ले जाएं</string>
     <string name="database">डाटाबेस</string>
@@ -489,41 +480,8 @@
     <string name="auto_enable_change_times">टाइम रेंज बदलें</string>
     <string name="sleep_timer_enabled_label">नींद घड़ी ऑन है</string>
     <!--Synchronisation-->
-  <string name="synchronization_choose_title">सिंक प्रोवाइडर चुनें</string>
-    <string name="synchronization_summary_unchoosen">आप अपनी सब्सक्रिप्शन और एपिसोड प्ले स्टेटस को सिंक करने के लिए कई प्रोवाइडरों में से चुन सकते हैं</string>
-    <string name="dialog_choose_sync_service_title">सिंक प्रोवाइडर चुनें</string>
-    <string name="gpodnet_description">Gpodder.net एक ओपन सोर्स पॉडकास्ट सिंक सर्विस है जिसे आप अपने सर्वर पर इंस्टॉल कर सकते हैं। Gpodder.net और AnteenaPod प्रोजेक्ट के बीच कोई रिश्ता नहीं है।</string>
-    <string name="synchronization_summary_nextcloud">Gpodder Sync एक ओपन सोर्स Nextcloud ऐप है जिसे आप अपने सर्वर पर इंस्टॉल कर सकते हैं। Gpodder Sync और AnteenaPod प्रोजेक्ट के बीच कोई रिश्ता नहीं है।</string>
-    <string name="synchronization_host_explanation">अपने पसंद के सर्वर के साथ सिंक करें। जब मनपसंद सिंक सर्वर मिल जाए, तब उसका पता यहां डालें।</string>
-    <string name="synchronization_host_label">सर्वर पता</string>
-    <string name="proceed_to_login_butLabel">लॉगइन करें</string>
-    <string name="synchronization_nextcloud_authenticate_browser">खुले हुए वेब ब्राउज़र से अनुमति दें और AntennaPod पर वापस आएं।</string>
-    <string name="gpodnetauth_login_butLabel">लॉगइन करें</string>
-    <string name="synchronization_credentials_explanation">सिंक सर्वर के अपने खाते का क्रेडेंशियल दें।</string>
-    <string name="gpodnetauth_encryption_warning">पासवर्ड और डाटा पर एन्क्रिप्शन नहीं है!</string>
     <string name="username_label">यूज़रनेम</string>
     <string name="password_label">पासवर्ड</string>
-    <string name="synchronization_login_butLabel">लॉगइन करें</string>
-    <string name="synchronization_selectDevice_explanation">आपने सिंक सर्वर पर जो डिवाइस बनाया था वो चुनें या एक नया बनाएं।</string>
-    <string name="gpodnetauth_device_name">डिवाइस नाम</string>
-    <string name="gpodnetauth_device_name_default">AntennaPod %1$s पर</string>
-    <string name="gpodnetauth_existing_devices">मौजूदा डिवाइस</string>
-    <string name="gpodnetauth_create_device">डिवाइस बनाएं</string>
-    <string name="gpodnetauth_finish_descr">बधाई हो! आपका gpodder.net अकाउंट अब आपके डिवाइस के साथ लिंक हो चुका हैं। अब AntennaPod आपके डिवाइस पर सब्सक्रिप्शन को अपने-आप gpodder.net अकाउंट के साथ सिंक करेगा।</string>
-    <string name="pref_gpodnet_setlogin_information_title">लॉगइन जानकारी बदलें</string>
-    <string name="pref_gpodnet_setlogin_information_sum">अपने gpodder.net खाते के लिए लॉगइन जानकारी बदलें।</string>
-    <string name="synchronization_sync_changes_title">अभी सिंक करें</string>
-    <string name="synchronization_sync_summary">सब्सक्रिप्शन और एपिसोड स्टेटस के बदलावों को सिंक करें</string>
-    <string name="synchronization_full_sync_title">ज़बरदस्ती पूरा सिंक करें</string>
-    <string name="synchronization_force_sync_summary">सभी सब्सक्रिप्शन और एपिसोड स्टेटस को वापस सिंक करें</string>
-    <string name="synchronization_logout">लॉगआउट करें</string>
-    <string name="synchronization_login_status">%2$s पर %1$s से लॉगइन हैं।\n\nलॉगआउट करके आप अपना सिंक प्रोवाइडर वापस चुन सकते हैं।</string>
-    <string name="pref_synchronization_logout_toast">लॉगआउट हो गए</string>
-    <string name="gpodnetsync_error_title">gpodder.net सिंक गड़बड़</string>
-    <string name="gpodnetsync_error_descr">"सिंक करते टाइम एक गड़बड़ हुई: "</string>
-    <string name="gpodnetsync_pref_report_successful">हो गया</string>
-    <string name="gpodnetsync_pref_report_failed">नहीं हो पाया</string>
-    <string name="gpodnetsync_username_characters_error">यूजरनेम में सिर्फ अक्षर, नंबर, हायफन (-), और अंडरस्कोर (_) हो सकते है।</string>
     <!--Directory chooser-->
   <string name="choose_data_directory">डाटा फोल्डर चुनें</string>
     <string name="choose_data_directory_available_space">%2$s में से %1$s खाली</string>
@@ -797,7 +755,6 @@
     <string name="report_bug_crash_log_message">बनाया गया: %1$s।</string>
     <string name="report_bug_forum_title">फॉरम</string>
     <string name="report_bug_github_title">GitHub</string>
-    <string name="sync_status_wait_for_downloads">सब्सक्रिप्शन रिफ्रेश करने का इंतज़ार कर रहे…</string>
     <string name="opml_reader_error">फाइल पढ़ते वक्त गड़बड़ हुई। देखें कि आपने OPML फाइल ही चुना हैं या और कि फाइल सही हैं या नहीं।</string>
     <string name="automatic_database_export_label">ऑटोमैटिक डाटाबेस निर्यात</string>
     <string name="automatic_database_export_summary">हर 3 दिन में AntennaPod डाटाबेस का बैकअप लें। लेटेस्ट 5 बैकअप रखे जाएंगे।</string>
@@ -832,7 +789,6 @@
         <item quantity="other">%d दिन</item>
     </plurals>
     <string name="auto_enable_label_with_times">%1$s से %2$s के बीच में प्ले बटन दबाने पर अपने-आप नींद घड़ी ऑन करें</string>
-    <string name="nextcloud_login_error_generic">आपके Nextcloud में लॉगइन नहीं कर पा रहे\n\n- अपना इंटरनेट कनेक्शन देखें।\n- देखें कि आप सही सर्वर सर्टिफिकेट इस्तेमाल कर रहे हैं या नहीं।\n- देखें कि आपने Gpodder Sync का Nextcloud प्लगइन इंस्टाल किया हैं या नहीं।</string>
     <string name="choose_data_directory_message">अपने डाटा फोल्डर का बेस चुनें। AntennaPod ज़रूरी सबफोल्डर बना देगा।</string>
     <string name="rating_tagline">%1$s से, आपने %2$s%3$d%4$s घंटे पॉडकास्ट सुना हैं।</string>
     <string name="rating_contribute_label">जुड़ना चाहते हैं? चाहे आपको अनुवाद करना है, सपोर्ट देना है, डिज़ाइन बनाना है, या कोड करना है, हमें हर तरह से खुशी होगी!</string>

@@ -2,14 +2,18 @@ package de.danoeh.antennapod;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 import android.view.KeyEvent;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.preference.PreferenceManager;
+import androidx.work.WorkManager;
 
 import de.danoeh.antennapod.system.CrashReportWriter;
 import de.danoeh.antennapod.net.download.serviceinterface.FeedUpdateManager;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import de.danoeh.antennapod.storage.preferences.SleepTimerPreferences;
@@ -144,7 +148,6 @@ public class PreferenceUpgrader {
                         .putBoolean(UserPreferences.PREF_THEME_BLACK, true)
                         .apply();
             }
-            UserPreferences.setAllowMobileSync(true);
             if (prefs.getString(UserPreferences.PREF_UPDATE_INTERVAL_MINUTES, ":").contains(":")) {
                 // Unset or "time of day"
                 prefs.edit().putString(UserPreferences.PREF_UPDATE_INTERVAL_MINUTES, "12").apply();
@@ -186,6 +189,35 @@ public class PreferenceUpgrader {
         }
         if (oldVersion < 3130000) {
             UserPreferences.setBottomNavigationEnabled(true);
+        }
+        if (oldVersion < 4000935) {
+            removeOldSync(context);
+        }
+    }
+
+    /**
+     * 0.9.33 removed gpodder.net/Nextcloud sync. On the first start after updating, delete what it
+     * left on the phone, once: the saved login (gpodder.net), the chosen provider, timestamps and
+     * queued episode actions (synchronization), its notification switch, "sync" in the mobile data
+     * list, and its scheduled job.
+     */
+    private static void removeOldSync(Context context) {
+        for (String name : new String[] {"gpodder.net", "synchronization"}) {
+            context.getSharedPreferences(name, Context.MODE_PRIVATE).edit().clear().commit();
+            context.deleteSharedPreferences(name);
+        }
+        SharedPreferences.Editor editor = prefs.edit().remove("pref_gpodnet_notifications");
+        Set<String> mobile = prefs.getStringSet(UserPreferences.PREF_MOBILE_UPDATE, null);
+        if (mobile != null && mobile.contains("sync")) {
+            Set<String> kept = new HashSet<>(mobile);
+            kept.remove("sync");
+            editor.putStringSet(UserPreferences.PREF_MOBILE_UPDATE, kept);
+        }
+        editor.apply();
+        try {
+            WorkManager.getInstance(context).cancelUniqueWork("SyncServiceWorkId");
+        } catch (Exception e) {
+            Log.e("PreferenceUpgrader", "Could not cancel the old sync job", e);
         }
     }
 }

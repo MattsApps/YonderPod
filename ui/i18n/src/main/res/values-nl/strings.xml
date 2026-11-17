@@ -285,8 +285,6 @@
     <string name="no_subscriptions_label">Tik op het plus-pictogram om je te abonneren op een podcast.</string>
     <!--Preferences-->
   <string name="project_pref">Project</string>
-    <string name="synchronization_pref">Synchronisatie</string>
-    <string name="synchronization_sum">Synchroniseren met andere apparaten</string>
     <string name="automation">Automatische acties</string>
     <string name="download_pref_details">Details</string>
     <string name="import_export_pref">Back-up maken en herstellen</string>
@@ -437,13 +435,6 @@
     <string name="no_results_for_query">Geen resultaten gevonden voor \"%1$s\"</string>
     <string name="search_online">Zoek online</string>
     <!--Synchronization-->
-  <string name="sync_status_started">Synchronisatie gestart</string>
-    <string name="sync_status_episodes_upload">Bezig met uploaden van aflevering veranderingen…</string>
-    <string name="sync_status_episodes_download">Bezig met downloaden van aflevering veranderingen…</string>
-    <string name="sync_status_upload_played">Afspeelstatus aan het uploaden …</string>
-    <string name="sync_status_subscriptions">Abonnementen aan het synchroniseren…</string>
-    <string name="sync_status_success">Synchronisatie afgerond</string>
-    <string name="sync_status_error">Synchronisatie mislukt</string>
     <!--import and export-->
   <string name="import_export_summary">Abonnementen en wachtrij naar een ander toestel verplaatsen</string>
     <string name="database">Database</string>
@@ -494,41 +485,8 @@
     <string name="auto_enable_change_times">Verander tijdsduur</string>
     <string name="sleep_timer_enabled_label">Slaaptimer ingeschakeld</string>
     <!--Synchronisation-->
-  <string name="synchronization_choose_title">Kies een synchronisatiedienst</string>
-    <string name="synchronization_summary_unchoosen">Er is keuze uit meerdere aanbieders om de abonnementen en aflevering-stand mee te synchroniseren</string>
-    <string name="dialog_choose_sync_service_title">Kies een synchronisatiedienst</string>
-    <string name="gpodnet_description">Gpodder.net is een opensource-podcastsynchronisatiedienst die je op je eigen server kunt installeren. Let op: Gpodder.net is niet verbonden aan het AntennaPod-project.</string>
-    <string name="synchronization_summary_nextcloud">Gpodder Sync kan als open source Nextcloud-app op een eigen server geïnstalleerd worden. Gpodder Sync is niet betrokken bij het AntennaPod-project.</string>
-    <string name="synchronization_host_explanation">Je kunt je eigen synchronisatieserver kiezen. Als je voorkeur voor een bepaalde server hebt, voer dan hier het adres ervan in.</string>
-    <string name="synchronization_host_label">Serveradres</string>
-    <string name="proceed_to_login_butLabel">Doorgaan met inloggen</string>
-    <string name="synchronization_nextcloud_authenticate_browser">Verleen toegang in de geopende webbrowser en keer terug naar AntennaPod.</string>
-    <string name="gpodnetauth_login_butLabel">Inloggen</string>
-    <string name="synchronization_credentials_explanation">Voer de inloggegevens van je serveraccount in.</string>
-    <string name="gpodnetauth_encryption_warning">Het wachtwoord en de gegevens zijn onversleuteld!</string>
     <string name="username_label">Gebruikersnaam</string>
     <string name="password_label">Wachtwoord</string>
-    <string name="synchronization_login_butLabel">Inloggen</string>
-    <string name="synchronization_selectDevice_explanation">Kies het op de server toegevoegde apparaat of voeg een nieuw apparaat toe.</string>
-    <string name="gpodnetauth_device_name">Toestelnaam</string>
-    <string name="gpodnetauth_device_name_default">AntennaPod op %1$s</string>
-    <string name="gpodnetauth_existing_devices">Bestaande toestellen</string>
-    <string name="gpodnetauth_create_device">Toestel toevoegen</string>
-    <string name="gpodnetauth_finish_descr">Gefeliciteerd! Je gpodder.net-account is nu gekoppeld met dit apparaat. AntennaPod synchroniseert voortaan de abonnementen op dit apparaat automatisch met je gpodder.net-account.</string>
-    <string name="pref_gpodnet_setlogin_information_title">Inloggegevens wijzigen</string>
-    <string name="pref_gpodnet_setlogin_information_sum">Wijzig de inloggegevens van je gpodder.net-account.</string>
-    <string name="synchronization_sync_changes_title">Nu synchroniseren</string>
-    <string name="synchronization_sync_summary">Alle gewijzigde abonnementen en afspeelstatussen opnieuw synchroniseren</string>
-    <string name="synchronization_full_sync_title">Volledige synchronisatie afdwingen</string>
-    <string name="synchronization_force_sync_summary">Alle abonnementen en afspeelstatussen opnieuw synchroniseren</string>
-    <string name="synchronization_logout">Uitloggen</string>
-    <string name="synchronization_login_status">Ingelogd als %1$s op %2$s.\n\nNa uitloggen is het weer mogelijk een synchronisatie provider te kiezen.</string>
-    <string name="pref_synchronization_logout_toast">Uitloggen geslaagd</string>
-    <string name="gpodnetsync_error_title">gpodder.net - synchronisatiefout</string>
-    <string name="gpodnetsync_error_descr">"Er is een fout opgetreden tijdens het synchroniseren: "</string>
-    <string name="gpodnetsync_pref_report_successful">Voltooid</string>
-    <string name="gpodnetsync_pref_report_failed">Mislukt</string>
-    <string name="gpodnetsync_username_characters_error">Gebruikersnamen mogen alleen letters, cijfers en (onderliggende) streepjes bevatten.</string>
     <!--Directory chooser-->
   <string name="choose_data_directory">Kies gevevensmap</string>
     <string name="choose_data_directory_available_space">%1$s van %2$s beschikbaar</string>
@@ -736,12 +694,10 @@
     <string name="pref_auto_delete_playback_title">Verwijder na afspelen</string>
     <string name="pref_auto_delete_playback_sum">Verwijder aflevering nadat hij afgespeeld is</string>
     <string name="pref_episode_cache_title">Afleveringslimiet</string>
-    <string name="sync_status_wait_for_downloads">Aan het wachten tot abonnementen ververst zijn…</string>
     <plurals name="time_days_quantified">
         <item quantity="one">%d dag</item>
         <item quantity="other">%d dagen</item>
     </plurals>
-    <string name="nextcloud_login_error_generic">Kan niet inloggen in je Nextcloud.\n\n- Check je netwerkverbinding.\n- Controleer dat je het juiste server adres gebruikt.\n- Zorg dat de Gpodder Sync Nextcloud plugin is geïnstalleerd.</string>
     <string name="choose_data_directory_message">Kies de basis van je data-map. AntennaPod zal de passende submappen aanmaken.</string>
     <string name="rating_volunteers_label">AntennaPod wordt door vrijwilligers ontwikkeld, in hun vrije tijd. Deel je waardering van hun werk door een mooie beoordeling achter te laten.</string>
     <string name="state_deleted_not_subscribed">Je bent nog niet geabonneerd op deze podcast. Abonneer je gratis om er makkelijker toegang toe te krijgen en afspeelgeschiedenis bij te houden.</string>

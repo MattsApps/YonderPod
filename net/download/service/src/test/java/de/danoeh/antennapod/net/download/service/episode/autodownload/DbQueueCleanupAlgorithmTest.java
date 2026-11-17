@@ -8,8 +8,6 @@ import java.util.List;
 import de.danoeh.antennapod.model.feed.Feed;
 import de.danoeh.antennapod.model.feed.FeedItem;
 import de.danoeh.antennapod.net.download.serviceinterface.AutoDownloadManager;
-import de.danoeh.antennapod.net.sync.serviceinterface.SynchronizationQueue;
-import de.danoeh.antennapod.net.sync.serviceinterface.SynchronizationQueueStub;
 import de.danoeh.antennapod.storage.preferences.UserPreferences;
 
 import org.junit.Test;
@@ -28,7 +26,6 @@ public class DbQueueCleanupAlgorithmTest extends DbCleanupTests {
     public DbQueueCleanupAlgorithmTest() {
         setCleanupAlgorithm(UserPreferences.EPISODE_CLEANUP_QUEUE);
         AutoDownloadManager.setInstance(new AutoDownloadManagerImpl());
-        SynchronizationQueue.setInstance(new SynchronizationQueueStub());
     }
 
     /**

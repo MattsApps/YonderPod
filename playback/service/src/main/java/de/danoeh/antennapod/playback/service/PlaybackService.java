@@ -55,7 +55,6 @@ import androidx.media.MediaBrowserServiceCompat;
 import androidx.media.utils.MediaConstants;
 
 import de.danoeh.antennapod.event.PlayerStatusEvent;
-import de.danoeh.antennapod.net.sync.serviceinterface.SynchronizationQueue;
 import de.danoeh.antennapod.playback.base.BuildConfig;
 import de.danoeh.antennapod.playback.service.internal.ClockSleepTimer;
 import de.danoeh.antennapod.playback.service.internal.EpisodeSleepTimer;
@@ -977,7 +976,6 @@ public class PlaybackService extends MediaBrowserServiceCompat {
                     // Don't store position after position is already reset
                     saveCurrentPosition(position == Playable.INVALID_TIME, playable, position);
                 }
-                SynchronizationQueue.getInstance().enqueueEpisodePlayed(media, -1, false);
             }
         }
 
@@ -1200,7 +1198,6 @@ public class PlaybackService extends MediaBrowserServiceCompat {
             autoSkipped = true;
         }
 
-        SynchronizationQueue.getInstance().enqueueEpisodePlayed(media, -1, ended || almostEnded);
         if (item != null) {
             if (ended || almostEnded
                     || autoSkipped

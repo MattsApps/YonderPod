@@ -123,7 +123,6 @@ public abstract class UserPreferences {
     private static final String PREF_PROXY_PASSWORD = "prefProxyPassword";
 
     // Services
-    private static final String PREF_GPODNET_NOTIFICATIONS = "pref_gpodnet_notifications";
 
     // Other
     private static final String PREF_DATA_FOLDER = "prefDataFolder";
@@ -601,10 +600,6 @@ public abstract class UserPreferences {
         return isAllowMobileFor("feed_refresh");
     }
 
-    public static boolean isAllowMobileSync() {
-        return isAllowMobileFor("sync");
-    }
-
     public static boolean isAllowMobileEpisodeDownload() {
         return isAllowMobileFor("episode_download");
     }
@@ -652,10 +647,6 @@ public abstract class UserPreferences {
 
     public static void setAllowMobileImages(boolean allow) {
         setAllowMobileFor("images", allow);
-    }
-
-    public static void setAllowMobileSync(boolean allow) {
-        setAllowMobileFor("sync", allow);
     }
 
     /**
@@ -751,24 +742,6 @@ public abstract class UserPreferences {
             jsonArray.put(speedFormat.format(speed));
         }
         prefs.edit().putString(PREF_PLAYBACK_SPEED_ARRAY, jsonArray.toString()).apply();
-    }
-
-    public static boolean gpodnetNotificationsEnabled() {
-        if (Build.VERSION.SDK_INT >= 26) {
-            return true; // System handles notification preferences
-        }
-        return prefs.getBoolean(PREF_GPODNET_NOTIFICATIONS, true);
-    }
-
-    /**
-     * Used for migration of the preference to system notification channels.
-     */
-    public static boolean getGpodnetNotificationsEnabledRaw() {
-        return prefs.getBoolean(PREF_GPODNET_NOTIFICATIONS, true);
-    }
-
-    public static void setGpodnetNotificationsEnabled() {
-        prefs.edit().putBoolean(PREF_GPODNET_NOTIFICATIONS, true).apply();
     }
 
     public static void setFullNotificationButtons(List<Integer> items) {

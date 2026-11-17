@@ -285,8 +285,6 @@
     <string name="no_subscriptions_label">Taskuhäälingu tellimiseks vajuta all plussmärgil.</string>
     <!--Preferences-->
   <string name="project_pref">Projekt</string>
-    <string name="synchronization_pref">Sünkroonimine</string>
-    <string name="synchronization_sum">Sünkrooni teiste seadmetega</string>
     <string name="automation">Automaatika</string>
     <string name="download_pref_details">Üksikasjad</string>
     <string name="import_export_pref">Varunda ja taasta</string>
@@ -437,13 +435,6 @@
     <string name="no_results_for_query">\"%1$s\" otsimine ei andnud tulemusi</string>
     <string name="search_online">Otsi internetist</string>
     <!--Synchronization-->
-  <string name="sync_status_started">Sünkroonimine algas</string>
-    <string name="sync_status_episodes_upload">Osade muudatuse üleslaadimine…</string>
-    <string name="sync_status_episodes_download">Osade muudatuste allalaadimine…</string>
-    <string name="sync_status_upload_played">\'Kuulatud\' oleku uuendamine…</string>
-    <string name="sync_status_subscriptions">Tellimuste sünkroonimine…</string>
-    <string name="sync_status_success">Sünkroonimine õnnestus</string>
-    <string name="sync_status_error">Sünkroonimine nurjus</string>
     <!--import and export-->
   <string name="import_export_summary">Tellimuste ja ootejärjekorra liigutamine teise seadmesse</string>
     <string name="database">Andmebaas</string>
@@ -494,41 +485,8 @@
     <string name="auto_enable_change_times">Muuda ajavahemikku</string>
     <string name="sleep_timer_enabled_label">Unetaimer on sisse lülitatud</string>
     <!--Synchronisation-->
-  <string name="synchronization_choose_title">Vali sünkroonimise pakkuja</string>
-    <string name="synchronization_summary_unchoosen">Võid valida erinevate pakkujate vahel oma tellimuste ja osade esitatud olekute sünkroonimiseks</string>
-    <string name="dialog_choose_sync_service_title">Vali sünkroonimise pakkuja</string>
-    <string name="gpodnet_description">Gpodder.net on avatud lähtekoodiga taskuhäälingute sünkroniseerimise teenus, mida on võimalik ka ise majutada. Gpodder.net on sõltumatu AntennaPod projektist.</string>
-    <string name="synchronization_summary_nextcloud">Gpoddersync on avatud lähtekoodiga Nextcloudi rakendus, mille võid oma serverile lihtsalt paigaldada. Rakendus on AntennaPodist sõltumatu projekt.</string>
-    <string name="synchronization_host_explanation">Võid sünkroonimiseks valida oma serveri. Sisesta oma eelistatud sünkroonimisserveri aadress siia.</string>
-    <string name="synchronization_host_label">Serveri aadress</string>
-    <string name="proceed_to_login_butLabel">Jätka sisselogimisega</string>
-    <string name="synchronization_nextcloud_authenticate_browser">Luba avatud brauserist juurdepääs ja tule tagasi AntennaPodi.</string>
-    <string name="gpodnetauth_login_butLabel">Logi sisse</string>
-    <string name="synchronization_credentials_explanation">Sisesta oma sünkroonimisserveri ligipääsu andmed.</string>
-    <string name="gpodnetauth_encryption_warning">Salasõna ja andmed ei ole krüptitud!</string>
     <string name="username_label">Kasutajanimi</string>
     <string name="password_label">Salasõna</string>
-    <string name="synchronization_login_butLabel">Logi sisse</string>
-    <string name="synchronization_selectDevice_explanation">Vali sünkroonimisserveril olev seade või loo uus.</string>
-    <string name="gpodnetauth_device_name">Seadme nimi</string>
-    <string name="gpodnetauth_device_name_default">AntennaPod %1$s seadmel</string>
-    <string name="gpodnetauth_existing_devices">Olemasolevad seadmed</string>
-    <string name="gpodnetauth_create_device">Loo uus seade</string>
-    <string name="gpodnetauth_finish_descr">Palju õnne! Sinu gpodder.net konto on nüüd lingitud sinu seadmega. AntennaPod süngib nüüdsest tellimused sinu seadmes gpodder.net-i kontoga.</string>
-    <string name="pref_gpodnet_setlogin_information_title">Muuda kasutajakonto infot</string>
-    <string name="pref_gpodnet_setlogin_information_sum">Muuda oma gpodder.net konto sisselogimise andmeid.</string>
-    <string name="synchronization_sync_changes_title">Sünkrooni nüüd</string>
-    <string name="synchronization_sync_summary">Sünkrooni tellimused ja osade esitatuse olekud</string>
-    <string name="synchronization_full_sync_title">Nõua täielikku sünkroonimist</string>
-    <string name="synchronization_force_sync_summary">Sünkrooni kõik tellimused ja osade olekud uuesti</string>
-    <string name="synchronization_logout">Logi välja</string>
-    <string name="synchronization_login_status">Sisse logitud kui %1$s serveril %2$s.\n\nVõid sünkroonimispakkuja uuesti valida pärast välja logimist.</string>
-    <string name="pref_synchronization_logout_toast">Väljalogimine oli edukas</string>
-    <string name="gpodnetsync_error_title">gpodder.net sünkroonimise viga</string>
-    <string name="gpodnetsync_error_descr">"Sünkroonimise ajal tekkis viga: "</string>
-    <string name="gpodnetsync_pref_report_successful">Korras</string>
-    <string name="gpodnetsync_pref_report_failed">Ebaõnnestus</string>
-    <string name="gpodnetsync_username_characters_error">Kasutajanimi võib sisaldada ainult tähti, numbreid, side- ja allkriipsu.</string>
     <!--Directory chooser-->
   <string name="choose_data_directory">Vali andmete kaust</string>
     <string name="choose_data_directory_available_space">vaba on %1$s %2$s-st</string>
@@ -775,7 +733,6 @@
         <item quantity="one">%d päev</item>
         <item quantity="other">%d päeva</item>
     </plurals>
-    <string name="sync_status_wait_for_downloads">Tellimuste värskenduse ootel…</string>
     <plurals name="time_seconds_quantified">
         <item quantity="one">%d sekund</item>
         <item quantity="other">%d sekundit</item>
@@ -789,7 +746,6 @@
         <item quantity="one">%d tund</item>
         <item quantity="other">%d tundi</item>
     </plurals>
-    <string name="nextcloud_login_error_generic">Nextcloudi ei saa sisse logida.\n\n- Kontrolli võrguühendust.\n- Veendu, et kasutad õiget serveri aadressi.\n- Veendu, et gpoddersync Nextcloud plugin oleks paigaldatud.</string>
     <string name="pref_fast_forward_sum">Kohanda, mitu sekundit edasikerimise nupul klõpsamisel hüpatakse</string>
     <string name="preference_search_clear_input">Tühjenda</string>
     <string name="pref_downloads_button_action_sum">Kuva allalaadimisaknal kustutamisnupu asemel esitusnupp</string>

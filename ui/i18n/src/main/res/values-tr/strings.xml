@@ -298,8 +298,6 @@
     <string name="no_subscriptions_label">Bir Podcaste abone olmak için, aşağıdaki Artı simgesine tıklayın.</string>
     <!--Preferences-->
   <string name="project_pref">Proje</string>
-    <string name="synchronization_pref">Senkronizasyon</string>
-    <string name="synchronization_sum">Diğer cihazlarla senkronize et</string>
     <string name="automation">Otomasyon</string>
     <string name="download_pref_details">Detaylar</string>
     <string name="import_export_pref">Yedekle ve geri yükle</string>
@@ -463,13 +461,6 @@
     <string name="no_results_for_query">\"%1$s\" için bir sonuç bulunamadı</string>
     <string name="search_online">Çevrimiçi ara</string>
     <!--Synchronization-->
-  <string name="sync_status_started">Senkronizasyon başlatıldı</string>
-    <string name="sync_status_episodes_upload">Bölüm değişiklikleri yükleniyor…</string>
-    <string name="sync_status_episodes_download">Bölüm değişiklikleri indiriliyor…</string>
-    <string name="sync_status_upload_played">Oynama durumu yükleniyor…</string>
-    <string name="sync_status_subscriptions">Abonelikler senkronize ediliyor…</string>
-    <string name="sync_status_success">Eşzamanlama başarılı</string>
-    <string name="sync_status_error">Senkronizasyon başarısız oldu</string>
     <!--import and export-->
   <string name="import_export_summary">Abonelikleri ve kuyruğu başka bir cihaza taşıma</string>
     <string name="database">Veri tabanı</string>
@@ -536,41 +527,8 @@
     <string name="auto_enable_change_times">Zaman aralığını değiştir</string>
     <string name="sleep_timer_enabled_label">Uyku zamanlayıcısı açıldı</string>
     <!--Synchronisation-->
-  <string name="synchronization_choose_title">Senkronizasyon sağlayıcınızı seçin</string>
-    <string name="synchronization_summary_unchoosen">Aboneliklerinizi ve bölüm oynatma durumunuzu senkronize etmek için birden fazla sağlayıcı arasından seçim yapabilirsiniz</string>
-    <string name="dialog_choose_sync_service_title">Senkronizasyon sağlayıcınızı seçin</string>
-    <string name="gpodnet_description">Gpodder.net, kendi sunucunuza yükleyebileceğiniz açık kaynaklı bir podcast senkronizasyon hizmetidir. Gpodder.net, AntennaPod projesinden bağımsızdır.</string>
-    <string name="synchronization_summary_nextcloud">Gpodder Sync, kendi sunucunuza kolayca yükleyebileceğiniz açık kaynaklı bir Nextcloud uygulamasıdır. Gpodder Sync, AntennaPod projesinden bağımsızdır.</string>
-    <string name="synchronization_host_explanation">Senkronize etmek için kendi sunucunuzu seçebilirsiniz. Tercih ettiğiniz senkronizasyon sunucusu adresini lütfen buraya girin.</string>
-    <string name="synchronization_host_label">Sunucu adresi</string>
-    <string name="proceed_to_login_butLabel">Oturum açmak için ilerleyin</string>
-    <string name="synchronization_nextcloud_authenticate_browser">Açılan web tarayıcısını kullanarak erişim izni verin ve AntennaPod\'a geri dönün.</string>
-    <string name="gpodnetauth_login_butLabel">Giriş</string>
-    <string name="synchronization_credentials_explanation">Lütfen senkronizasyon sunucusundaki hesabınızın kimlik bilgilerini girin.</string>
-    <string name="gpodnetauth_encryption_warning">Parola ve veri şifrelenmedi!</string>
     <string name="username_label">Kullanıcı adı</string>
     <string name="password_label">Parola</string>
-    <string name="synchronization_login_butLabel">Giriş yap</string>
-    <string name="synchronization_selectDevice_explanation">Lütfen senkronizasyon sunucusunda oluşturduğunuz cihazı seçin veya yenisini oluşturun.</string>
-    <string name="gpodnetauth_device_name">Cihaz ismi</string>
-    <string name="gpodnetauth_device_name_default">AntennaPod\'da %1$s</string>
-    <string name="gpodnetauth_existing_devices">Mevcut cihazlar</string>
-    <string name="gpodnetauth_create_device">Cihaz oluştur</string>
-    <string name="gpodnetauth_finish_descr">Tebrikler! gpodder.net hesabınız cihazınızla ilişkilendirildi. AntennaPod bundan sonra gpodder.net hesabınızla üyeliklerinizi otomatik olarak senkronize edecek.</string>
-    <string name="pref_gpodnet_setlogin_information_title">Giriş bilgisini değiştir</string>
-    <string name="pref_gpodnet_setlogin_information_sum">gpodder.net hesabınız için giriş bilgisini değiştirin.</string>
-    <string name="synchronization_sync_changes_title">Şimdi senkronize et</string>
-    <string name="synchronization_sync_summary">Abonelik ve bölüm durum değişikliklerini senkronize et</string>
-    <string name="synchronization_full_sync_title">Tam senkronizasyona zorla</string>
-    <string name="synchronization_force_sync_summary">Bütün abonelikleri ve bölüm durumlarını tekrardan senkronize et</string>
-    <string name="synchronization_logout">Çıkış yap</string>
-    <string name="synchronization_login_status">%1$s üzerinde %2$s olarak oturum açıldı.\n\nÇıkış yaptığınızda tekrar senkronizasyon sağlayıcınızı seçebilirsiniz.</string>
-    <string name="pref_synchronization_logout_toast">Çıkış başarılı</string>
-    <string name="gpodnetsync_error_title">gpodder.net senkronizasyon hatası</string>
-    <string name="gpodnetsync_error_descr">"Senkronize edilirken bir hata oluştu: "</string>
-    <string name="gpodnetsync_pref_report_successful">Başarılı</string>
-    <string name="gpodnetsync_pref_report_failed">Başarısız</string>
-    <string name="gpodnetsync_username_characters_error">Kullanıcı adları yalnızca harfleri, rakamları, kısa çizgileri ve alt çizgileri içerebilir.</string>
     <!--Directory chooser-->
   <string name="choose_data_directory">Veri klasörünü seçin</string>
     <string name="choose_data_directory_message">Lütfen veri klasörünüzün tabanını seçin. AntennaPod uygun alt dizinleri oluşturacaktır.</string>
@@ -725,7 +683,6 @@
     <string name="shortcut_subscription_label">Abonelik kısayolu</string>
     <string name="shortcut_select_subscription">Abonelik seçiniz</string>
     <string name="add_shortcut">Kısayol ekle</string>
-    <string name="sync_status_wait_for_downloads">Aboneliklerin yenilenmesi bekleniyor …</string>
     <string name="home_new_empty_text">Yeni bölümler burada gösterilecek. Daha sonra bunlarla ilgilenip ilgilenmediğinize karar verebilirsiniz.</string>
     <string name="home_no_recent_unplayed_episodes_text">Zaten son bölümlerin hepsini oynadın. Burada şaşılacak bir şey yok ;)</string>
     <string name="home_continue_empty_text">Bölümleri indirerek veya uzun basarak ve \" Sıraya ekle\" seçeneğini seçerek ekleyebilirsiniz .</string>
@@ -787,7 +744,6 @@
     <string name="pref_automatic_download_global_description">Gelen kutusundaki bölümleri otomatik olarak indir. Podcast başına istisna eklenebilir.</string>
     <string name="pref_automatic_download_queue_title">İndirme sıraya eklendi</string>
     <string name="pref_automatic_download_queue_description">Sıradaki bölümleri otomatik olarak indir</string>
-    <string name="nextcloud_login_error_generic">Nextcloud hesabınıza giriş yapılamadı.\n\n- Ağ bağlantınızı kontrol edin.\n- Doğru sunucu adresini kullandığınızı doğrulayın.\n- Gpodder Sync Nextcloud eklentisinin yüklü olduğundan emin olun.</string>
     <string name="playback_history_label_short">Geçmiş</string>
     <string name="download_error_unsupported_type_html_manual">Girdiğiniz adres bir website adresi, podcast RSS adresi değil.</string>
     <string name="delete_tag_label">Etiketi sil</string>

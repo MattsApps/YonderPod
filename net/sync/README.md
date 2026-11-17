@@ -1,4 +1,3 @@
 # :net:sync
 
-This folder contains modules related to external services for synchronization. The module `model` provides the basic interfaces for implementing a synchronization backend. The other modules contains backends for specific synchronization services.
-Local changes are queued in `SynchronizationQueue` and flushed to the active backend by `SyncService`.
+Only `wear-interface` is left here: the link between the phone app and AntennaPod's Wear OS app. Yonder removed gpodder.net and Nextcloud sync (the backends, `SynchronizationQueue` and `SyncService`) in 0.9.33.

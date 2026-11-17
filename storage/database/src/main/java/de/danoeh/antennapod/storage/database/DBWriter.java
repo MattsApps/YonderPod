@@ -14,11 +14,9 @@ import androidx.documentfile.provider.DocumentFile;
 import com.google.common.util.concurrent.Futures;
 import de.danoeh.antennapod.event.DownloadLogEvent;
 
-import de.danoeh.antennapod.model.feed.FeedItemFilter;
 import de.danoeh.antennapod.net.download.serviceinterface.AutoDownloadManager;
 import de.danoeh.antennapod.net.download.serviceinterface.DownloadServiceInterface;
 import de.danoeh.antennapod.net.download.serviceinterface.FeedUpdateManager;
-import de.danoeh.antennapod.net.sync.serviceinterface.SynchronizationQueue;
 import de.danoeh.antennapod.ui.appstartintent.MediaButtonStarter;
 import org.greenrobot.eventbus.EventBus;
 
@@ -49,7 +47,6 @@ import de.danoeh.antennapod.model.feed.FeedMedia;
 import de.danoeh.antennapod.model.feed.FeedPreferences;
 import de.danoeh.antennapod.model.feed.SortOrder;
 import de.danoeh.antennapod.model.playback.Playable;
-import de.danoeh.antennapod.net.sync.serviceinterface.EpisodeAction;
 
 /**
  * Provides methods for writing data to AntennaPod's database.
@@ -164,13 +161,6 @@ public class DBWriter {
         if (localDelete) {
             // Do full update of this feed to get rid of the item
             FeedUpdateManager.getInstance().runOnce(context, media.getItem().getFeed());
-        } else {
-            if (media.getItem().getFeed().getState() != Feed.STATE_NOT_SUBSCRIBED) {
-                SynchronizationQueue.getInstance().enqueueEpisodeAction(
-                        new EpisodeAction.Builder(media.getItem(), EpisodeAction.DELETE)
-                            .currentTimestamp()
-                            .build());
-            }
         }
     }
 
@@ -195,9 +185,6 @@ public class DBWriter {
             adapter.removeFeed(feed);
             adapter.close();
 
-            if (!feed.isLocalFeed() && feed.getState() != Feed.STATE_NOT_SUBSCRIBED) {
-                SynchronizationQueue.getInstance().enqueueFeedRemoved(feed.getDownloadUrl());
-            }
             EventBus.getDefault().post(new FeedListUpdateEvent(feed));
         });
     }
@@ -745,12 +732,6 @@ public class DBWriter {
             adapter.setCompleteFeed(feeds);
             adapter.close();
 
-            for (Feed feed : feeds) {
-                if (!feed.isLocalFeed() && feed.getState() != Feed.STATE_NOT_SUBSCRIBED) {
-                    SynchronizationQueue.getInstance().enqueueFeedAdded(feed.getDownloadUrl());
-                }
-            }
-
             BackupManager backupManager = new BackupManager(context);
             backupManager.dataChanged();
         });
@@ -915,14 +896,6 @@ public class DBWriter {
                 feed.getPreferences().setKeepUpdated(true);
                 DBWriter.setFeedPreferences(feed.getPreferences());
                 FeedUpdateManager.getInstance().runOnceOrAsk(context, feed);
-                SynchronizationQueue.getInstance().enqueueFeedAdded(feed.getDownloadUrl());
-                DBReader.getFeedItemList(feed, FeedItemFilter.unfiltered(),
-                        SortOrder.DATE_NEW_OLD, 0, Integer.MAX_VALUE);
-                for (FeedItem item : feed.getItems()) {
-                    if (item.isPlayed()) {
-                        SynchronizationQueue.getInstance().enqueueEpisodePlayed(item.getMedia(), -1, true);
-                    }
-                }
             }
             adapter.close();
             EventBus.getDefault().post(new FeedListUpdateEvent(feed));

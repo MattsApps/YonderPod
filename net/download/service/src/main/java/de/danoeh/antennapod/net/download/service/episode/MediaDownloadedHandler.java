@@ -7,8 +7,6 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import de.danoeh.antennapod.model.MediaMetadataRetrieverCompat;
-import de.danoeh.antennapod.model.feed.Feed;
-import de.danoeh.antennapod.net.sync.serviceinterface.SynchronizationQueue;
 import de.danoeh.antennapod.ui.chapters.ChapterUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -23,7 +21,6 @@ import de.danoeh.antennapod.storage.database.DBWriter;
 import de.danoeh.antennapod.model.download.DownloadError;
 import de.danoeh.antennapod.model.feed.FeedItem;
 import de.danoeh.antennapod.model.feed.FeedMedia;
-import de.danoeh.antennapod.net.sync.serviceinterface.EpisodeAction;
 import de.danoeh.antennapod.ui.transcript.TranscriptUtils;
 
 /**
@@ -107,13 +104,6 @@ public class MediaDownloadedHandler implements Runnable {
             Log.e(TAG, "ExecutionException in MediaHandlerThread: " + e.getMessage());
             updatedStatus = new DownloadResult(media.getEpisodeTitle(), media.getId(),
                     FeedMedia.FEEDFILETYPE_FEEDMEDIA, false, DownloadError.ERROR_DB_ACCESS_ERROR, e.getMessage());
-        }
-
-        if (item != null && item.getFeed().getState() != Feed.STATE_NOT_SUBSCRIBED) {
-            SynchronizationQueue.getInstance().enqueueEpisodeAction(
-                    new EpisodeAction.Builder(item, EpisodeAction.DOWNLOAD)
-                        .currentTimestamp()
-                        .build());
         }
     }
 

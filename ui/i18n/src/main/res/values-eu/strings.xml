@@ -285,8 +285,6 @@
     <string name="no_subscriptions_label">Podcast batera harpidetzeko, sakatu beheko plus ikonoa.</string>
     <!--Preferences-->
   <string name="project_pref">Proiektua</string>
-    <string name="synchronization_pref">Sinkronizazioa</string>
-    <string name="synchronization_sum">Sinkronizatu beste gailuekin</string>
     <string name="automation">Automatizazioa</string>
     <string name="download_pref_details">Xehetasunak</string>
     <string name="import_export_pref">Babeskopia eta leheneratzea</string>
@@ -437,13 +435,6 @@
     <string name="no_results_for_query">Ez da emaitzarik aurkitu honentzat: \"%1$s\"</string>
     <string name="search_online">Bilatu online</string>
     <!--Synchronization-->
-  <string name="sync_status_started">Sinkronizatzen hasi da</string>
-    <string name="sync_status_episodes_upload">Saioen aldaketak kargatzen…</string>
-    <string name="sync_status_episodes_download">Saioen aldaketak deskargatzen…</string>
-    <string name="sync_status_upload_played">Ikusitakoen egoera kargatzen…</string>
-    <string name="sync_status_subscriptions">Harpidetzak sinkronizatzen…</string>
-    <string name="sync_status_success">Sinkronizazioa arrakastaz osatu da</string>
-    <string name="sync_status_error">Sinkronizazioak huts egin du</string>
     <!--import and export-->
   <string name="import_export_summary">Kopiatu harpidetza eta irakurketa zerrenda beste gailu batean</string>
     <string name="database">Datu-basea</string>
@@ -494,41 +485,8 @@
     <string name="auto_enable_change_times">Aldatu denbora tartea</string>
     <string name="sleep_timer_enabled_label">Tenporizadorea gaituta</string>
     <!--Synchronisation-->
-  <string name="synchronization_choose_title">Aukeratu sinkronizazio-hornitzailea</string>
-    <string name="synchronization_summary_unchoosen">Hainbat hornitzaileren artean hauta dezakezu zure harpidetzak eta saioen erreprodukzioaren egoera sinkronizatzeko</string>
-    <string name="dialog_choose_sync_service_title">Aukeratu sinkronizazio-hornitzailea</string>
-    <string name="gpodnet_description">Gpodder.net kode irekiko podcastak sinkronizatzeko zerbitzu bat da, zure zerbitzarian bertan instala dezakezuna. Gpodder.net AntennaPod proiektutik independentea da.</string>
-    <string name="synchronization_summary_nextcloud">Gpodder Sync Nextcloud aplikazio kode irekikoa da, zure zerbitzarian erraz instala dezakezuna. Gpodder Sync AntennaPod proiektutik independentea da.</string>
-    <string name="synchronization_host_explanation">Zure zerbitzari propioa aukeratu dezakezu sinkronizatzeko. Zure gustuko sinkronizazio-zerbitzaria hautatu ondoren, sartu bere helbidea hemen.</string>
-    <string name="synchronization_host_label">Zerbitzariaren helbidea</string>
-    <string name="proceed_to_login_butLabel">Jarraitu saio hasierara</string>
-    <string name="synchronization_nextcloud_authenticate_browser">Eman sarbidea irekitako web nabigatzailearen bidez eta itzuli AntennaPodera.</string>
-    <string name="gpodnetauth_login_butLabel">Hasi saioa</string>
-    <string name="synchronization_credentials_explanation">Eman sinkronizazio-zerbitzariko zure kontuaren kredentzialak.</string>
-    <string name="gpodnetauth_encryption_warning">Pasahitza eta datuak ez daude enkriptaturik!</string>
     <string name="username_label">Erabiltzaile-izena</string>
     <string name="password_label">Pasahitza</string>
-    <string name="synchronization_login_butLabel">Hasi saioa</string>
-    <string name="synchronization_selectDevice_explanation">Hautatu sinkronizazio-zerbitzarian sortu zenuen gailua edo sortu berri bat.</string>
-    <string name="gpodnetauth_device_name">Gailuaren izena</string>
-    <string name="gpodnetauth_device_name_default">AntennaPod hemen: %1$s</string>
-    <string name="gpodnetauth_existing_devices">Dauden gailuak</string>
-    <string name="gpodnetauth_create_device">Sortu gailua</string>
-    <string name="gpodnetauth_finish_descr">Zorionak! Zure gpodder.net kontua zure gailuarekin lotuta dago orain. Hemendik aurrera, AntennaPodek automatikoki sinkronizatuko ditu zure gailuaren harpidetzak zure gpodder.net kontuarekin.</string>
-    <string name="pref_gpodnet_setlogin_information_title">Aldatu saio hasieraren informazioa</string>
-    <string name="pref_gpodnet_setlogin_information_sum">Aldatu saio hasierako datuak zure gpodder.net-en kontuan.</string>
-    <string name="synchronization_sync_changes_title">Sinkronizatu orain</string>
-    <string name="synchronization_sync_summary">Sinkronizatu harpidetzak eta saioen egoeren aldaketak</string>
-    <string name="synchronization_full_sync_title">Behartu sinkronizazio osoa</string>
-    <string name="synchronization_force_sync_summary">Birsinkronizatu harpidetza eta saioen egoera guztiak</string>
-    <string name="synchronization_logout">Itxi saioa</string>
-    <string name="synchronization_login_status">%1$s bezala logeatuta hemen: %2$s.\n\nSaioa amaitu ondoren berriro sinkronizazio-hornitzailea hauta dezakezu.</string>
-    <string name="pref_synchronization_logout_toast">Saioaren itxiera arrakastatsua izan da</string>
-    <string name="gpodnetsync_error_title">Sinkronizazio errorea gpodder.net-en</string>
-    <string name="gpodnetsync_error_descr">"Errore bat gertatu da sinkronizatzean: "</string>
-    <string name="gpodnetsync_pref_report_successful">Arrakastatsua</string>
-    <string name="gpodnetsync_pref_report_failed">Huts egin du</string>
-    <string name="gpodnetsync_username_characters_error">Erabiltzaile-izenek letrak, digituak, marratxoak eta azpimarrak baino ezin dituzte eduki.</string>
     <!--Directory chooser-->
   <string name="choose_data_directory">Aukeratu datu-karpeta</string>
     <string name="choose_data_directory_available_space">%1$s / %2$s libre</string>
@@ -682,7 +640,6 @@
     <string name="theming">Gaiak</string>
     <string name="button_action_fast_forward">Aurrera bizkor</string>
     <string name="episode_information">Atalari buruzko informazioa</string>
-    <string name="nextcloud_login_error_generic">Ezinezkoa zure Nextcloud-en logeatzea.\n\n- Egiazta ezazu zure sareko konexioa.\n- Berretsi zerbitzariaren helbide zuzena erabiltzen ari zarela.\n- Ziurtatu Gpodder Sync Nextcloud hedapena instalatuta dagoela.</string>
     <string name="statistics_episodes_space">hartutako espazioa</string>
     <string name="state_deleted_not_subscribed">Oraindik ez zaude podcast honetara harpidetuta. Harpidetu doan, errazago sartzeko eta erreprodukzio-historia mantentzeko.</string>
     <string name="fast_forward_label">Aurrera bizkor</string>
@@ -749,7 +706,6 @@
     <string name="download_completed_talkback">Deskarga osatu da %1$s-entzat</string>
     <string name="statistics_release_next">hurrengo atala (aurreikuspena)</string>
     <string name="edit_url_confirmation_msg">RSS helbidea aldatzeak erraz hautsi ditzake podcastaren erreprodukzio-egoera eta pasarte-zerrendak. EZ dugu aldatzea gomendatzen eta EZ dugu laguntza emango zerbait gaizki gertatzen bada. Hau ezin da desegin. Hautsitako harpidetza EZIN DA konpondu helbidea berriro aldatuz. Jarraitu aurretik, babeskopia sortzea gomendatzen dugu.</string>
-    <string name="sync_status_wait_for_downloads">Harpidetzak freskatzeko zain…</string>
     <string name="inbox_label_short">Sarrera ontzia</string>
     <string name="statistics_time_played">erreproduzituta</string>
     <string name="downloads_label_short">Deskargak</string>

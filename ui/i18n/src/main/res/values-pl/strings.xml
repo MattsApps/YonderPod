@@ -302,8 +302,6 @@
     <string name="no_subscriptions_label">Aby subskrybować podcast naciśnij znak plus poniżej.</string>
     <!--Preferences-->
   <string name="project_pref">Projekt</string>
-    <string name="synchronization_pref">Synchronizacja</string>
-    <string name="synchronization_sum">Synchronizuj z innymi urządzeniami</string>
     <string name="automation">Automatyzacja</string>
     <string name="download_pref_details">Szczegóły</string>
     <string name="import_export_pref">Kopia zapasowa i przywracanie</string>
@@ -463,13 +461,6 @@
     <string name="no_results_for_query">Brak wyników dla \"%1$s\"</string>
     <string name="search_online">Szukaj online</string>
     <!--Synchronization-->
-  <string name="sync_status_started">Rozpoczęto synchronizację</string>
-    <string name="sync_status_episodes_upload">Wysyłanie zmian odcinków…</string>
-    <string name="sync_status_episodes_download">Pobieranie zmian odcinków…</string>
-    <string name="sync_status_upload_played">Wysyłanie statusu odtworzeń…</string>
-    <string name="sync_status_subscriptions">Synchronizowanie subskrypcji…</string>
-    <string name="sync_status_success">Synchronizacja udana</string>
-    <string name="sync_status_error">Synchronizacja nie powiodła się</string>
     <!--import and export-->
   <string name="import_export_summary">Przenieś subskrypcje i kolejkę na inne urządzenie</string>
     <string name="database">Baza danych</string>
@@ -517,41 +508,8 @@
     <string name="auto_enable_change_times">Zmień zakres czasowy</string>
     <string name="sleep_timer_enabled_label">Wyłącznik czasowy włączony</string>
     <!--Synchronisation-->
-  <string name="synchronization_choose_title">Wybierz dostawcę synchronizacji</string>
-    <string name="synchronization_summary_unchoosen">Możesz wybrać synchronizację subskrypcji i stanu odtwarzania odcinków z pomocą kilku dostawców</string>
-    <string name="dialog_choose_sync_service_title">Wybierz dostawcę synchronizacji</string>
-    <string name="gpodnet_description">Gpodder.net to serwis open-source do synchronizacji podcastów, który możesz zainstalować na własnym serwerze. Gpodder.net nie jest powiązany z projektem AntennaPod.</string>
-    <string name="synchronization_summary_nextcloud">Gpodder Sync to aplikacja Nextcloud typu open-source, którą możesz łatwo zainstalować na swój serwer. Aplikacja nie jest powiązana z projektem AntennaPod.</string>
-    <string name="synchronization_host_explanation">Możesz wybrać swój własny serwer do synchronizacji. Po zidentyfikowaniu preferowanego serwera synchronizacji, wpisz tutaj jego adres.</string>
-    <string name="synchronization_host_label">Adres serwera</string>
-    <string name="proceed_to_login_butLabel">Przejdź do logowania</string>
-    <string name="synchronization_nextcloud_authenticate_browser">Zezwól na dostęp w otwartym oknie przeglądarki i wróć do aplikacji AntennaPod.</string>
-    <string name="gpodnetauth_login_butLabel">Login</string>
-    <string name="synchronization_credentials_explanation">Podaj dane uwierzytelniające swojego konta na serwerze synchronizacji.</string>
-    <string name="gpodnetauth_encryption_warning">Hasło i dane nie są zaszyfrowane!</string>
     <string name="username_label">Nazwa użytkownika</string>
     <string name="password_label">Hasło</string>
-    <string name="synchronization_login_butLabel">Zaloguj się</string>
-    <string name="synchronization_selectDevice_explanation">Wybierz urządzenie, które zostało utworzone na serwerze synchronizacji lub utwórz nowe.</string>
-    <string name="gpodnetauth_device_name">Nazwa urządzenia</string>
-    <string name="gpodnetauth_device_name_default">AntennaPod na %1$s</string>
-    <string name="gpodnetauth_existing_devices">Istniejące urządzenia</string>
-    <string name="gpodnetauth_create_device">Utwórz urządzenie</string>
-    <string name="gpodnetauth_finish_descr">Gratulacje! Twoje konto na gpodder.net jest połączone z urządzeniem. AntennaPod będzie automatycznie synchronizować subskrypcje na urządzeniu z kontem na gpodder.net.</string>
-    <string name="pref_gpodnet_setlogin_information_title">Zmień informacje logowania</string>
-    <string name="pref_gpodnet_setlogin_information_sum">Zmień dane logowania konta gpodder.net.</string>
-    <string name="synchronization_sync_changes_title">Synchronizuj teraz</string>
-    <string name="synchronization_sync_summary">Zsynchronizuj zmiany stanu subskrypcji i odcinka</string>
-    <string name="synchronization_full_sync_title">Wymuś pełną synchronizację</string>
-    <string name="synchronization_force_sync_summary">Ponownie zsynchronizuj stan wszystkich subskrypcji i odcinków</string>
-    <string name="synchronization_logout">Wyloguj</string>
-    <string name="synchronization_login_status">Zalogowany jako %1$s za pośrednictwem %2$s.\n\nPo wylogowaniu się możesz ponownie wybrać dostawcę synchronizacji.</string>
-    <string name="pref_synchronization_logout_toast">Wylogowanie się powiodło</string>
-    <string name="gpodnetsync_error_title">Błąd synchronizacji z gpodder.net</string>
-    <string name="gpodnetsync_error_descr">"Wystąpił błąd podczas synchronizacji: "</string>
-    <string name="gpodnetsync_pref_report_successful">Sukces</string>
-    <string name="gpodnetsync_pref_report_failed">Porażka</string>
-    <string name="gpodnetsync_username_characters_error">Nazwa użytkownika może zawierać tylko litery, cyfry, myślniki i podkreślniki.</string>
     <!--Directory chooser-->
   <string name="choose_data_directory">Wybierz folder danych</string>
     <string name="choose_data_directory_available_space">%1$s z %2$s wolnych</string>
@@ -731,7 +689,6 @@
     <string name="pref_compact_notification_buttons_dialog_error_exact">Musisz zaznaczyć dokładnie dwa elementy</string>
     <string name="pref_full_notification_buttons_title">Ustaw przyciski powiadomienia</string>
     <string name="pref_full_notification_buttons_sum">Zmień przyciski na odtwarzaczu w powiadomieniu</string>
-    <string name="sync_status_wait_for_downloads">Czekanie na odświeżenie subskrypcji…</string>
     <string name="opml_reader_error">Wystąpił błąd podczas czytania pliku. Upewnij się, że naprawdę wybrałeś plik OPML i jest on prawidłowy.</string>
     <string name="automatic_database_export_error">Błąd podczas automatycznej kopii zapasowej bazy danych</string>
     <plurals name="time_days_quantified">
@@ -767,7 +724,6 @@
         <item quantity="other">%d dni po zakończeniu</item>
     </plurals>
     <string name="episode_download_failed">Pobieranie odcinka nie powiodło się</string>
-    <string name="nextcloud_login_error_generic">Nie udało się zalogować do twojego Nextclouda.\n\n- Sprawdź swoje połączenie internetowe.\n- Upewnij się, że używasz poprawnego adresu serwera.\n- Upewnij się, że wtyczka Gpodder Sync jest zainstalowana na twoim serwerze Nextcloud.</string>
     <string name="home_continue_empty_text">Możesz dodawać odcinki poprzez pobieranie ich lub długie przytrzymanie ich i zaznaczenie \"Dodaj do kolejki\".</string>
     <plurals name="total_size_downloaded_podcasts">
         <item quantity="one">Rozmiar %d odcinka na urządzeniu</item>
