@@ -617,8 +617,6 @@
     <string name="notification_channel_playing_description">Tillater å styre avspilling. Dette er hovedvarslingen du ser mens en podkast spilles av.</string>
     <string name="notification_channel_download_error">Nedlastingen feilet</string>
     <string name="notification_channel_download_error_description">Vist når nedlastingen eller oppdatering av strøm feilet.</string>
-    <string name="notification_channel_sync_error">Synkronisering feilet</string>
-    <string name="notification_channel_sync_error_description">Vises når synkronisering mot gpodder feiler.</string>
     <string name="notification_channel_new_episode">Ny episode</string>
     <string name="notification_channel_new_episode_description">Vist når det er funnet en ny episode av podkasten, om varslinger er skrudd på</string>
     <!--Widget settings-->

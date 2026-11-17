@@ -669,8 +669,6 @@
     <string name="notification_channel_playing_description">Permet controlar la reproducció. Aquesta és la notificació principal que veureu durant la reproducció d\'un pòdcast.</string>
     <string name="notification_channel_download_error">Descàrrega fallida</string>
     <string name="notification_channel_download_error_description">Mostrat quan falla la descàrrega o l\'actualització del feed.</string>
-    <string name="notification_channel_sync_error">Sincronització fallida</string>
-    <string name="notification_channel_sync_error_description">Mostrat quan falla la sincronització de gpodder.</string>
     <string name="notification_channel_new_episode">Episodi nou</string>
     <string name="notification_channel_new_episode_description">Mostrat quan es troba un nou episodi d\'un pòdcast, on les notificacions estan activades</string>
     <!--Widget settings-->

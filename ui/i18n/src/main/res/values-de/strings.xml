@@ -668,8 +668,6 @@
     <string name="notification_channel_playing_description">Ermöglicht es, die Wiedergabe zu steuern. Dies ist die Hauptbenachrichtigung, die du siehst, während ein Podcast abgespielt wird.</string>
     <string name="notification_channel_download_error">Download fehlgeschlagen</string>
     <string name="notification_channel_download_error_description">Wird angezeigt, wenn der Download oder die Feed-Aktualisierung fehlschlägt.</string>
-    <string name="notification_channel_sync_error">Synchronisation fehlgeschlagen</string>
-    <string name="notification_channel_sync_error_description">Wird angezeigt, wenn die gpodder-Synchronisierung fehlschlägt.</string>
     <string name="notification_channel_new_episode">Neue Episode</string>
     <string name="notification_channel_new_episode_description">Wird angezeigt, wenn eine neue Episode eines Podcasts gefunden wurde, bei dem Benachrichtigungen aktiviert sind</string>
     <!--Widget settings-->

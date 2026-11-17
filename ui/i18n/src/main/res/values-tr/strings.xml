@@ -668,8 +668,6 @@
     <string name="notification_channel_playing_description">Oynatmayı kontrol etmeyi sağlar. Bu, bir podcast oynatırken gördüğünüz ana bildirimdir.</string>
     <string name="notification_channel_download_error">İndirme başarısız</string>
     <string name="notification_channel_download_error_description">İndirme veya besleme güncellemesi başarısız olduğunda gösterilir.</string>
-    <string name="notification_channel_sync_error">Senkronizasyon başarısız</string>
-    <string name="notification_channel_sync_error_description">gpodder senkronizasyonu başarısız olduğunda gösterilir.</string>
     <string name="notification_channel_new_episode">Yeni bölüm</string>
     <string name="notification_channel_new_episode_description">Bildirimler etkinleştirildiği takdirde, podcastin yeni bir bölümü bulunduğunda gösterilir</string>
     <!--Widget settings-->

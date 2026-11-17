@@ -573,8 +573,6 @@
     <string name="notification_channel_playing_description">Sallii toiston kontrollit. Tämä on pääilmoitus, jonka näet, kun podcast toistetaan.</string>
     <string name="notification_channel_download_error">Lataus epäonnistui</string>
     <string name="notification_channel_download_error_description">Näytetään, kun lataus tai syötteen päivitys epäonnistuu.</string>
-    <string name="notification_channel_sync_error">Synkronointi epäonnistui</string>
-    <string name="notification_channel_sync_error_description">Näytetään, kun gpodder-synkronointi epäonnistuu.</string>
     <string name="notification_channel_new_episode">Uusi jakso</string>
     <string name="notification_channel_new_episode_description">Näytetään ilmoitusten ollessa käytössä, kun podcastin uusi jakso löytyy</string>
     <!--Widget settings-->

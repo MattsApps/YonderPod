@@ -655,8 +655,6 @@
     <string name="notification_channel_playing_description">允許播放控制。這是你在播放 Podcast 時會看到的主要通知。</string>
     <string name="notification_channel_download_error">下載失敗</string>
     <string name="notification_channel_download_error_description">當下載或更新出錯時顯示。</string>
-    <string name="notification_channel_sync_error">同步失敗</string>
-    <string name="notification_channel_sync_error_description">在 gpodder 同步發生錯誤時顯示。</string>
     <string name="notification_channel_new_episode">新單集</string>
     <string name="notification_channel_new_episode_description">啟用通知的情形下，有新單集上架時顯示通知訊息</string>
     <!--Widget settings-->

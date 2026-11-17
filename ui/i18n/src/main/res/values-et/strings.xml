@@ -617,8 +617,6 @@
     <string name="notification_channel_playing_description">Võimaldab esitust juhtida. See on saate kuulamise ajal peamine teade.</string>
     <string name="notification_channel_download_error">Allalaadimine ebaõnnestus</string>
     <string name="notification_channel_download_error_description">Näita, kui allalaadimine või uudivoo uuendamine ebaõnnestus.</string>
-    <string name="notification_channel_sync_error">Sünkroonimine nurjus</string>
-    <string name="notification_channel_sync_error_description">Näidatakse, kui gpodder sünkroniseerimine ebaõnnestub.</string>
     <string name="notification_channel_new_episode">Uus osa</string>
     <string name="notification_channel_new_episode_description">Kuvatakse uue saate leidmisel, kui märguanded on lubatud</string>
     <!--Widget settings-->

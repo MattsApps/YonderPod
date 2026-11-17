@@ -288,8 +288,6 @@
     <string name="notification_channel_playing">En reproducción</string>
     <string name="notification_channel_playing_description">Permite controlar la reproducción. Esti ye l\'avisu principal que ves mentanto reproduces un podcast.</string>
     <string name="notification_channel_download_error">Descargues fallíes</string>
-    <string name="notification_channel_sync_error">Sincronización fallida</string>
-    <string name="notification_channel_sync_error_description">Apaez cuando falla la sincronización con gpodder.</string>
     <string name="notification_channel_new_episode_description">Apaez al atopar l\'episodiu nuevu d\'un podcast si los avisos tán disponibles</string>
     <!--Widget settings-->
   <string name="widget_settings">Axustes del widget</string>

@@ -395,8 +395,6 @@
     <string name="notification_channel_playing_description">Leidžia valdyti atkūrimą. Tai pagrindinis pranešimas matomas tinklalaidės atkūrimo metu.</string>
     <string name="notification_channel_download_error">Nepavykęs atsiuntimas</string>
     <string name="notification_channel_download_error_description">Rodomas, kai atsiuntimas ar sklaidos kanalo atnaujinimas nepavyksta.</string>
-    <string name="notification_channel_sync_error">Nepavykęs sinchronizavimas</string>
-    <string name="notification_channel_sync_error_description">Rodomas nepavykus sinchronizavimui su „gpodder“.</string>
     <string name="notification_channel_new_episode_description">Rodomas, kai randamas naujas prenumeratos, kuriai įjungti pranešimai, epizodas</string>
     <!--Widget settings-->
   <string name="widget_settings">Valdiklio nustatymai</string>

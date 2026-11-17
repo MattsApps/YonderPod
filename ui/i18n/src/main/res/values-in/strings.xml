@@ -468,8 +468,6 @@
     <string name="notification_channel_playing_description">Mengizinkan kontrol pemutaran. Pilihan Ini merupakan notifikasi utama yang Anda lihat ketika memutar sebuah siniar.</string>
     <string name="notification_channel_download_error">Pengunduhan gagal</string>
     <string name="notification_channel_download_error_description">Ditampilkan saat pemutakhiran pengunduhan atau umpan gagal.</string>
-    <string name="notification_channel_sync_error">Penyinkronan gagal</string>
-    <string name="notification_channel_sync_error_description">Ditampilkan saat penyinkronan GPodder.net gagal.</string>
     <string name="notification_channel_new_episode_description">Ditampilkan saat episode baru dari podcast ditemukan, jika notifikasi diaktifkan</string>
     <!--Widget settings-->
   <string name="widget_settings">Pengaturan gawit</string>

@@ -682,8 +682,6 @@
     <string name="notification_channel_playing_description">Permet de contrôler la lecture. C\'est la notification principale pendant la lecture d\'un podcast.</string>
     <string name="notification_channel_download_error">Erreur de téléchargement</string>
     <string name="notification_channel_download_error_description">S\'affiche quand un téléchargement ou la mise un jour d\'un abonnement échoue.</string>
-    <string name="notification_channel_sync_error">Échec de la synchronisation</string>
-    <string name="notification_channel_sync_error_description">S\'affiche quand la synchronisation avec gpodder échoue.</string>
     <string name="notification_channel_new_episode">Nouveaux épisodes</string>
     <string name="notification_channel_new_episode_description">S\'affiche quand de nouveaux épisodes sont disponible pour les podcasts dont la notification a été activée</string>
     <!--Widget settings-->

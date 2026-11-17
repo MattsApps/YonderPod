@@ -291,8 +291,6 @@
     <string name="notification_channel_playing">В момента слушаш</string>
     <string name="notification_channel_playing_description">Позволява да се контролира възпройзвеждането. Това е главното известие, което виждаш, докато слушаш подкаст.</string>
     <string name="notification_channel_download_error">Тегленето не беше успешно</string>
-    <string name="notification_channel_sync_error">Синхронизацията не беше успешна</string>
-    <string name="notification_channel_sync_error_description">Показано, когато gpodder синхронизацията не е успешна.</string>
     <string name="notification_channel_new_episode">Нов епизод</string>
     <string name="widget_opacity">Непрозрачност</string>
     <!--On-Demand configuration-->

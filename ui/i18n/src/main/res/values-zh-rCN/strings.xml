@@ -655,8 +655,6 @@
     <string name="notification_channel_playing_description">允许控制播放。这是您在播放播客时看到的主要通知。</string>
     <string name="notification_channel_download_error">下载失败</string>
     <string name="notification_channel_download_error_description">当下载或源更新失败时显示。</string>
-    <string name="notification_channel_sync_error">同步失败</string>
-    <string name="notification_channel_sync_error_description">当 gpodder 同步失败时显示。</string>
     <string name="notification_channel_new_episode">新单集</string>
     <string name="notification_channel_new_episode_description">当发现播客新单集且通知启用时显示</string>
     <!--Widget settings-->

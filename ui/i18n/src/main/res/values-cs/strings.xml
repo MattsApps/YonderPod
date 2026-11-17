@@ -624,8 +624,6 @@
     <string name="notification_channel_playing_description">Umožňuje ovládat přehrávání. Toto je to hlavní oznámení, které uvidité při přehrávání podcastu.</string>
     <string name="notification_channel_download_error">Stahování selhalo</string>
     <string name="notification_channel_download_error_description">Zobrazeno pokud selže stahování či aktualizace odebíraného kanálu.</string>
-    <string name="notification_channel_sync_error">Synchronizace selhala</string>
-    <string name="notification_channel_sync_error_description">Zobrazovat chybu synchronizace s gpodder.</string>
     <string name="notification_channel_new_episode">Nová epizoda</string>
     <string name="notification_channel_new_episode_description">Zobrazeno pokud bude nalezena nová epizoda podcastu a upozornění jsou zapnuta</string>
     <!--Widget settings-->

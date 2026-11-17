@@ -720,8 +720,6 @@
     <string name="notification_channel_playing_description">تسمح بتحكم التشغيل. هذا الاشعار الرئيسي الذي تراه عند تشغيل المسموعيَّة.</string>
     <string name="notification_channel_download_error">فشل التنزيل</string>
     <string name="notification_channel_download_error_description">يظهر عند فشل التنزيل أو تحديث القناة.</string>
-    <string name="notification_channel_sync_error">فشلت المزامنة</string>
-    <string name="notification_channel_sync_error_description">أظهر عندما تفشل مزامنة gpodder.</string>
     <string name="notification_channel_new_episode">يوجد حلقة جديدة</string>
     <string name="notification_channel_new_episode_description">تظهر عند العثور على حلقة جديدة من مسموعيَّة ما، حيث تُمَكَّن الإشعارات</string>
     <!--Widget settings-->

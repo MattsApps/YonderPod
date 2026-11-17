@@ -681,8 +681,6 @@
     <string name="notification_channel_playing_description">מאפשר לשלוט בנגינה. זאת ההתראה הראשית שמופיעה בעת נגינת הסכת.</string>
     <string name="notification_channel_download_error">ההורדה נכשלה</string>
     <string name="notification_channel_download_error_description">מופיע כאשר הורדה או עדכון הזנה נכשלים.</string>
-    <string name="notification_channel_sync_error">הסנכרון נכשל</string>
-    <string name="notification_channel_sync_error_description">מופיע כאשר הסנכרון מול gpodder נכשל.</string>
     <string name="notification_channel_new_episode">פרק חדש</string>
     <string name="notification_channel_new_episode_description">מופיע כאשר נמצא פרק חדש בהסכת, וההתראות פעילות</string>
     <!--Widget settings-->

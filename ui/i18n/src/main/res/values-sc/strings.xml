@@ -668,8 +668,6 @@
     <string name="notification_channel_playing_description">Permitit de controllare sa riprodutzione. Custa est sa notìfica printzipale chi est ammustrada durante sa riprodutzione de is podcasts.</string>
     <string name="notification_channel_download_error">Errore in s\'iscarrigamentu</string>
     <string name="notification_channel_download_error_description">Ammustradu cando un\'iscarrigamentu o un\'atualizatzione de canale resurtant in errore.</string>
-    <string name="notification_channel_sync_error">Errore in sa sincronizatzione</string>
-    <string name="notification_channel_sync_error_description">Ammustradu cando sa sincronizatzione de gpodder resurtat in errore.</string>
     <string name="notification_channel_new_episode">Episòdiu nou</string>
     <string name="notification_channel_new_episode_description">Ammustradu cando s\'agatat un\'episòdiu de unu podcast, semper chi is notìficas siant ativadas</string>
     <!--Widget settings-->

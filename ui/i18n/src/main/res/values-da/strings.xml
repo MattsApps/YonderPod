@@ -668,8 +668,6 @@
     <string name="notification_channel_playing_description">Giver adgang til at kontrollere afspilning. Dette er den mest normale notifikation du vil se, mens du afspiller en podcast.</string>
     <string name="notification_channel_download_error">Overførsel mislykkedes</string>
     <string name="notification_channel_download_error_description">Vis når overførsel eller opdatering af feed mislykkes.</string>
-    <string name="notification_channel_sync_error">Synkronisering mislykkedes</string>
-    <string name="notification_channel_sync_error_description">Vises når gpodder-synkronisering fejler.</string>
     <string name="notification_channel_new_episode">Nyt afsnit</string>
     <string name="notification_channel_new_episode_description">Vises, når der er fundet et nyt afsnit af en podcast, hvor notifikationer er aktiveret</string>
     <!--Widget settings-->

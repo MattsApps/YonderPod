@@ -694,8 +694,6 @@
     <string name="notification_channel_playing_description">Позволяет управлять воспроизведением. Основное уведомление, показывается при воспроизведении подкаста.</string>
     <string name="notification_channel_download_error">Загрузка не удалась</string>
     <string name="notification_channel_download_error_description">Отображается, когда загрузка или обновление канала завершилось с ошибкой.</string>
-    <string name="notification_channel_sync_error">Синхронизация не удалась</string>
-    <string name="notification_channel_sync_error_description">Отображается, если сбоит синхронизация gpodder.</string>
     <string name="notification_channel_new_episode">Новый выпуск</string>
     <string name="notification_channel_new_episode_description">Отображается, когда появился новый выпуск подкаста, для которого включены уведомления</string>
     <!--Widget settings-->

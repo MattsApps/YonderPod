@@ -435,7 +435,6 @@
     <string name="release_schedule_thursday">Чет</string>
     <string name="share_playback_position_dialog_label">Обухвати позицију репродукције</string>
     <string name="share_dialog_episode_website_label">Веб-страница епизоде</string>
-    <string name="notification_channel_sync_error_description">Приказује се када синхронизација са gpodder не успе.</string>
     <string name="notification_channel_new_episode">Нова епизода</string>
     <string name="widget_settings">Подешавања виџета</string>
     <string name="widget_create_button">Направи виџет</string>
@@ -681,7 +680,6 @@
     <string name="pref_unpauseOnBluetoothReconnect_sum">Наставите репродукцију када је Bluetooth поново укључен</string>
     <string name="echo_thanks_we_are_glad_new">што сте нам се придружили ове године!\n\nБило да сте прешли са друге апликације или сте започели своју подкаст авантуру са нама: драго нам је што вас имамо!</string>
     <string name="hide_downloaded_episodes_label">Преузето</string>
-    <string name="notification_channel_sync_error">Синхронизација неуспешна</string>
     <plurals name="statistics_episodes_downloaded">
         <item quantity="one">преузето</item>
         <item quantity="few">преузето</item>

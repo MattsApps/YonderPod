@@ -590,8 +590,6 @@
     <string name="notification_channel_playing_description">Omogoča nadzor predvajanja. To je glavno obvestilo, ki ga vidite med predvajanjem poddaje.</string>
     <string name="notification_channel_download_error">Prenos ne uspešen</string>
     <string name="notification_channel_download_error_description">Prikazano, ko prenos ali posodobitev vira ne uspe.</string>
-    <string name="notification_channel_sync_error">Sinhronizacija ni uspela</string>
-    <string name="notification_channel_sync_error_description">Prikazano, ko sinhronizacija gpodderja ne uspe.</string>
     <string name="notification_channel_new_episode">Nova epizoda</string>
     <string name="notification_channel_new_episode_description">Prikazano, ko je najdena nova epizoda poddaje, kjer so omogočena obvestila</string>
     <!--Widget settings-->

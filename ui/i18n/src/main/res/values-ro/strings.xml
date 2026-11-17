@@ -651,8 +651,6 @@
     <string name="notification_channel_playing_description">Permite controlul redării. Aceasta este notificarea principală afișată în timpul redării unui podcast.</string>
     <string name="notification_channel_download_error">Descărcarea a eșuat</string>
     <string name="notification_channel_download_error_description">Afișate când descărcarea sau reîmprospătarea fluxului de date a eșuat.</string>
-    <string name="notification_channel_sync_error">Sincronizarea a eșuat</string>
-    <string name="notification_channel_sync_error_description">Indicată când sincronizarea cu gpodder eșuează.</string>
     <string name="notification_channel_new_episode">Episod nou</string>
     <string name="notification_channel_new_episode_description">Afișată când un episod nou a fost găsit, când notificările sunt pornite</string>
     <!--Widget settings-->

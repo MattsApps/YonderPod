@@ -826,8 +826,6 @@
     <string name="notification_channel_playing_description">Permite o controlo da reprodução. Esta será a notificação que verá ao reproduzir um podcast.</string>
     <string name="notification_channel_download_error">Erro ao transferir</string>
     <string name="notification_channel_download_error_description">Mostrar se ocorrerem erros ao transferir/atualizar.</string>
-    <string name="notification_channel_sync_error">Erro de sincronização</string>
-    <string name="notification_channel_sync_error_description">Mostrar se não for possível sincronizar com gpodder.</string>
     <string name="notification_channel_new_episode">Novo episódio</string>
     <string name="notification_channel_new_episode_description">Mostra notificações quando é encontrado um novo episódio de um podcast para o qual as notificações estão ativas</string>
     <string name="widget_settings">Definições do widget</string>

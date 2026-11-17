@@ -617,8 +617,6 @@
     <string name="notification_channel_playing_description">Hiermee kun je het afspelen bedienen. Dit is de voornaamste melding tijdens het afspelen van een podcast.</string>
     <string name="notification_channel_download_error">Downloaden mislukt</string>
     <string name="notification_channel_download_error_description">Getoond als er iets misgaat, zoals het downloaden of het bijwerken van de feed.</string>
-    <string name="notification_channel_sync_error">Synchronisatie mislukt</string>
-    <string name="notification_channel_sync_error_description">Getoond als gpodder-synchronisatie mislukt.</string>
     <string name="notification_channel_new_episode">Nieuwe aflevering</string>
     <string name="notification_channel_new_episode_description">Getoond als een nieuwe aflevering is gevonden, waarbij meldingen zijn ingeschakeld</string>
     <!--Widget settings-->

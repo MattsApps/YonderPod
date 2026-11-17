@@ -617,8 +617,6 @@
     <string name="notification_channel_playing_description">Erreprodukzioa kontrolatzeko aukera ematen du. Podcast bat erreproduzitzen den bitartean ikusten den jakinarazpen nagusia da.</string>
     <string name="notification_channel_download_error">Deskargak huts egin du</string>
     <string name="notification_channel_download_error_description">Deskargak edo jarioen eguneratzeak huts egiten duenean erakusten da.</string>
-    <string name="notification_channel_sync_error">Sinkronizazioak huts egin du</string>
-    <string name="notification_channel_sync_error_description">gpodder sinkronizazioak huts egitean erakusten da.</string>
     <string name="notification_channel_new_episode">Saio berria</string>
     <string name="notification_channel_new_episode_description">Saio berriak eskuragarri daudenean eta jakinarazpenak aktibatu direnean erakusten da</string>
     <!--Widget settings-->

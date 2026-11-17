@@ -681,8 +681,6 @@
     <string name="notification_channel_playing_description">Permite controlar la reproducción. Es la notificación principal que se ve mientras se reproduce un pódcast.</string>
     <string name="notification_channel_download_error">Descarga fallida</string>
     <string name="notification_channel_download_error_description">Muestra cuando falla la descarga o la actualización del canal.</string>
-    <string name="notification_channel_sync_error">Sincronización fallida</string>
-    <string name="notification_channel_sync_error_description">Mostrar cuando falle la sincronización de gpodder.</string>
     <string name="notification_channel_new_episode">Episodio nuevo</string>
     <string name="notification_channel_new_episode_description">Se muestra al encontrar un nuevo episodio de un podcast, si las notificaciones están activadas</string>
     <!--Widget settings-->

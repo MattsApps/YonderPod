@@ -617,8 +617,6 @@
     <string name="notification_channel_playing_description">دادن اجازهٔ هدایت پخش. این آگاه‌ساز اصلی است که هنگام پخش یک پادپخش می‌بینید.</string>
     <string name="notification_channel_download_error">دریافت ناموفق</string>
     <string name="notification_channel_download_error_description">نمایش به هنگامی که بارگیری یا بروزرسانی فید با شکست مواجه می شود.</string>
-    <string name="notification_channel_sync_error">همگام‌سازی ناموفقیت آمیز</string>
-    <string name="notification_channel_sync_error_description">هنگامی که همگام‌سازی gpodder انجام نشد نمایش داده می‌شود.</string>
     <string name="notification_channel_new_episode">قسمت جدید</string>
     <string name="notification_channel_new_episode_description">هنگامی که قسمتی جدید از یک پادپخش یافت شود نمایش داده می‌شود، جایی که آگاه‌سازی روشن باشد</string>
     <!--Widget settings-->

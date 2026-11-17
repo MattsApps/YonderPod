@@ -588,8 +588,6 @@
     <string name="notification_channel_playing_description">प्लेबैक कंट्रोल करने देता है। ये मेन नोटिफिकेशन पॉडकास्ट चलाते टाइम दिखता है।</string>
     <string name="notification_channel_download_error">डाउनलोड पूरा नहीं हुआ</string>
     <string name="notification_channel_download_error_description">डाउनलोड या फीड अपडेट पूरा नहीं होने पर दिखाया जाएगा।</string>
-    <string name="notification_channel_sync_error">सिंक पूरा नहीं हुआ</string>
-    <string name="notification_channel_sync_error_description">gpodder सिंक पूरा नहीं होने पर दिखाया जाएगा।</string>
     <string name="notification_channel_new_episode">नया एपिसोड</string>
     <string name="notification_channel_new_episode_description">किसी पॉडकास्ट का नया एपिसोड मिलने पर दिखाया जाएगा, जब नोटिफिकेशन ऑन हो</string>
     <!--Widget settings-->

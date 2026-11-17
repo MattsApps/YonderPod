@@ -610,8 +610,6 @@
     <string name="notification_channel_playing_description">再生をコントロールできます。これはポッドキャスト再生中のメイン通知です。</string>
     <string name="notification_channel_download_error">ダウンロードの失敗</string>
     <string name="notification_channel_download_error_description">フィードのダウンロードや更新に失敗したときに表示されます。</string>
-    <string name="notification_channel_sync_error">同期の失敗</string>
-    <string name="notification_channel_sync_error_description">gpodderの同期に失敗した時に表示されます。</string>
     <string name="notification_channel_new_episode">新規エピソード</string>
     <string name="notification_channel_new_episode_description">通知が有効な場合、ポッドキャストの新しいエピソードが見つかったときに表示されます</string>
     <!--Widget settings-->

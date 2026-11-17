@@ -592,8 +592,6 @@
     <string name="notification_channel_playing_description">Evit reoliañ al lenn. Ar rebuzadur pennañ an hini eo pa lennit ur podskignat.</string>
     <string name="notification_channel_download_error">C\'hwitadenn en ur bellgargañ</string>
     <string name="notification_channel_download_error_description">Diskouezet pa vez c\'hwitet en ur bellgargañ pe en ur hizivaat.</string>
-    <string name="notification_channel_sync_error">C\'hwitadenn en ur c\'houbredañ</string>
-    <string name="notification_channel_sync_error_description">Diskouezet pa vez c\'hwitet en ur c\'houbredañ gant gpodder.</string>
     <string name="notification_channel_new_episode">Rannoù nevez</string>
     <string name="notification_channel_new_episode_description">Diskouezet pa vez kavet ur rann nevez eus ur podskignad e lec\'h ma vez gweredekaet rebuzadurioù</string>
     <!--Widget settings-->

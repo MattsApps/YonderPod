@@ -668,8 +668,6 @@
     <string name="notification_channel_playing_description">Tillåt kontroll över uppspelning. Detta är huvudaviseringen som du ser när en podcast spelas.</string>
     <string name="notification_channel_download_error">Nedladdning misslyckades</string>
     <string name="notification_channel_download_error_description">Visas när nedladdning eller flödesuppdatering misslyckas.</string>
-    <string name="notification_channel_sync_error">Synkronisering misslyckades</string>
-    <string name="notification_channel_sync_error_description">Visas när synkronisering med gpodder misslyckas.</string>
     <string name="notification_channel_new_episode">Nytt avsnitt</string>
     <string name="notification_channel_new_episode_description">Visas när ett nytt avsnitt av en podcast hittades, när aviseringar är aktiverade</string>
     <!--Widget settings-->

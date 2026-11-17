@@ -694,8 +694,6 @@
     <string name="notification_channel_playing_description">Дозволяє керувати відтворенням. Це сповіщення, яке ви бачите під час відтворення подкасту.</string>
     <string name="notification_channel_download_error">Не вдалося завантажити</string>
     <string name="notification_channel_download_error_description">Відображається, коли не вдається завантажити або оновити канал.</string>
-    <string name="notification_channel_sync_error">Не вдалося синхронізувати</string>
-    <string name="notification_channel_sync_error_description">Відображається, коли не вдається синхронізувати gpodder.</string>
     <string name="notification_channel_new_episode">Новий випуск</string>
     <string name="notification_channel_new_episode_description">Відображається, коли був знайдений новий випуск подкасту, де увімкнено сповіщення</string>
     <!--Widget settings-->

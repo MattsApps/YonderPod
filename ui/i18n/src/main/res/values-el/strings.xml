@@ -667,8 +667,6 @@
     <string name="notification_channel_playing_description">Επιτρέπει τον έλεγχο της αναπαραγωγής. Αυτή είναι η κύρια ειδοποίηση που εμφανίζεται κατά την αναπαραγωγή ενός podcast.</string>
     <string name="notification_channel_download_error">Η λήψη απέτυχε</string>
     <string name="notification_channel_download_error_description">Εμφανίζεται όταν αποτυγχάνει η λήψη ή η ενημέρωση της τροφοδοσίας.</string>
-    <string name="notification_channel_sync_error">Ο συγχρονισμός απέτυχε</string>
-    <string name="notification_channel_sync_error_description">Εμφανίζεται όταν αποτυγχάνει ο συγχρονισμός με το gpodder.</string>
     <string name="notification_channel_new_episode">Νέο επεισόδιο</string>
     <string name="notification_channel_new_episode_description">Εμφανίζεται όταν εντοπίζεται νέο επεισόδιο ενός podcast, για το οποίο έχουν ενεργοποιηθεί οι ειδοποιήσεις</string>
     <!--Widget settings-->

@@ -639,8 +639,6 @@
     <string name="notification_channel_playing_description">Pozwala na kontrolowanie odtwarzania. To jest główne powiadomienie, które zobaczysz podczas odtwarzania podcastu.</string>
     <string name="notification_channel_download_error">Błąd pobierania</string>
     <string name="notification_channel_download_error_description">Pokazywane, gdy wystąpi błąd pobierania lub aktualizacji.</string>
-    <string name="notification_channel_sync_error">Błąd synchronizacji</string>
-    <string name="notification_channel_sync_error_description">Pokazywane, gdy synchronizacja z gpodder się nie powiedzie.</string>
     <string name="notification_channel_new_episode">Nowy odcinek</string>
     <string name="notification_channel_new_episode_description">Pokazywane, gdy pojawi się nowy odcinek podcastu, gdzie włączono powiadomienia</string>
     <!--Widget settings-->
