@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='utf-8' standalone='yes' ?>
+<map>
+    <boolean name="everTipped" value="true" />
+    <long name="thanksAt" value="1794820508717" />
+    <boolean name="testMonthPassed" value="true" />
+    <boolean name="supporter" value="false" />
+</map>
+<?xml version='1.0' encoding='utf-8' standalone='yes' ?>
+<map>
+    <long name="firstSeen" value="1794135955620" />
+    <boolean name="wasDue" value="true" />
+</map>

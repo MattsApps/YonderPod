@@ -215,6 +215,11 @@ public final class Tip {
         changed();
     }
 
+    /** When the last thank-you started, or 0. */
+    static long thanksAt(Context context) {
+        return local(context).getLong(KEY_THANKS_AT, 0);
+    }
+
     /** Milliseconds of thank-you left to show, or 0. */
     static long thanksLeft(Context context) {
         long at = local(context).getLong(KEY_THANKS_AT, 0);

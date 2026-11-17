@@ -24,12 +24,27 @@ import de.danoeh.antennapod.R;
 public class TipFragment extends Fragment {
     private static final int[] CHOICES = {R.id.tipChoice0, R.id.tipChoice1, R.id.tipChoice2, R.id.tipChoice3};
     private static final long CLOSE_AFTER_THANKS = 1500;
+    private static final String KEY_OPENED_AT = "openedAt";
 
     private View root;
     @Nullable
     private ProductDetails details;
     private boolean loaded;
     private boolean closing;
+    private long openedAt;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        openedAt = savedInstanceState != null ? savedInstanceState.getLong(KEY_OPENED_AT)
+                : System.currentTimeMillis();
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putLong(KEY_OPENED_AT, openedAt);
+    }
 
     @Nullable
     @Override
@@ -77,7 +92,7 @@ public class TipFragment extends Fragment {
         if (root == null || getContext() == null) {
             return;
         }
-        if (Tip.thanksLeft(requireContext()) > 0 && !closing) {
+        if (Tip.thanksLeft(requireContext()) > 0 && Tip.thanksAt(requireContext()) >= openedAt && !closing) {
             closing = true;
             TextView title = root.findViewById(R.id.pageTitle);
             title.setText(R.string.tip_thanks_title);

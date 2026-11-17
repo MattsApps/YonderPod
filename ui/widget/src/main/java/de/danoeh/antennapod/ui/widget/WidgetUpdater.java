@@ -43,6 +43,13 @@ public abstract class WidgetUpdater {
     private static final float WIDE_PAD = 14;
     private static final float STOP_BOX = 78;
     private static final float SLIM_PAD = 10;
+    private static final float SLIM_STOP_BOX = 48;
+    private static final float SLIM_STOP_CENTRE = 16;
+    private static final float SLIM_STOP_RADIUS = 32;
+    private static final float SLIM_LIVE_DOT = 28;
+    private static final float SLIM_LIVE_TOP = 8;
+    private static final float SLIM_LIVE_END = 52;
+    private static final float SLIM_LIVE_GAP = 14;
     private static final float WIDE_MIN_WIDTH = 250;
     private static final float WIDE_MIN_HEIGHT = 110;
     private static final float SLIM_MIN_HEIGHT = 40;
@@ -265,12 +272,23 @@ public abstract class WidgetUpdater {
      */
     private static void fillSlimBehind(Context context, RemoteViews views, Palette palette, boolean behind) {
         views.setViewVisibility(R.id.txtvBehind, behind ? View.VISIBLE : View.GONE);
+        views.setViewVisibility(R.id.butSkip, behind ? View.GONE : View.VISIBLE);
+        views.setViewVisibility(R.id.slimLiveBox, behind ? View.VISIBLE : View.GONE);
+        views.setViewVisibility(R.id.slimStopBox, behind ? View.VISIBLE : View.GONE);
         views.setInt(R.id.txtvTitle, "setMaxLines", behind ? 1 : 2);
         if (!behind) {
             views.setTextViewText(R.id.txtvBehind, "");
             return;
         }
         views.setTextColor(R.id.txtvBehind, palette.secondary);
+        views.setInt(R.id.slimLiveCircle, "setColorFilter", palette.accent);
+        views.setTextColor(R.id.slimLiveText, palette.onAccent);
+        views.setInt(R.id.slimStopCircle, "setColorFilter", palette.text);
+        views.setInt(R.id.slimStop, "setColorFilter", palette.background);
+        views.setOnClickPendingIntent(R.id.slimLiveBox,
+                MediaButtonStarter.createPendingIntent(context, Player.COMMAND_SEEK_TO_NEXT));
+        views.setOnClickPendingIntent(R.id.slimStopBox,
+                MediaButtonStarter.createPendingIntent(context, Player.COMMAND_STOP));
         int minutes = LiveBehind.minutes();
         views.setTextViewText(R.id.txtvBehind, LiveBehind.isPaused()
                 ? context.getString(R.string.live_pause_widget_paused, minutes)
@@ -290,6 +308,35 @@ public abstract class WidgetUpdater {
         }
         int inset = px(context, button * 0.27f);
         views.setViewPadding(R.id.butSkip, inset, inset, inset, inset);
+        placeSlimLive(context, views, heightDp, button, behind);
+    }
+
+    /**
+     * Slim widget, live pause: the stop circle hangs off the bottom-right corner (a fixed box, like the play
+     * circle); a smaller live circle sits up and to its left, fully inside, as far right as it can go while
+     * keeping a gap from the stop circle. The title keeps clear of both.
+     */
+    private static void placeSlimLive(Context context, RemoteViews views, float heightDp, float button,
+                                      boolean behind) {
+        float dot = SLIM_LIVE_DOT;
+        float top = SLIM_LIVE_TOP;
+        float end = SLIM_LIVE_END;
+        if (Build.VERSION.SDK_INT >= 31) {
+            dot = Math.min(button * 0.55f, heightDp * 0.42f);
+            top = heightDp * 0.12f;
+            float clear = SLIM_STOP_RADIUS + dot / 2 + SLIM_LIVE_GAP;
+            float down = heightDp - SLIM_STOP_CENTRE - (top + dot / 2);
+            float across = (float) Math.sqrt(Math.max(0, clear * clear - Math.max(0, down) * down));
+            end = Math.max(top, across + SLIM_STOP_CENTRE - dot / 2);
+            views.setViewLayoutWidth(R.id.slimLiveBox, dot, TypedValue.COMPLEX_UNIT_DIP);
+            views.setViewLayoutHeight(R.id.slimLiveBox, dot, TypedValue.COMPLEX_UNIT_DIP);
+            views.setViewLayoutMargin(R.id.slimLiveBox, RemoteViews.MARGIN_TOP, top, TypedValue.COMPLEX_UNIT_DIP);
+            views.setViewLayoutMargin(R.id.slimLiveBox, RemoteViews.MARGIN_END, end, TypedValue.COMPLEX_UNIT_DIP);
+            textSize(views, R.id.slimLiveText, dot * 0.3f);
+        }
+        float textEnd = Math.max(end + dot, SLIM_STOP_BOX) + SLIM_LIVE_GAP;
+        views.setViewPadding(R.id.widgetLayout, px(context, SLIM_PAD), 0,
+                px(context, behind ? textEnd : SLIM_PAD), 0);
     }
 
     private static void textSize(RemoteViews views, int id, float dp) {

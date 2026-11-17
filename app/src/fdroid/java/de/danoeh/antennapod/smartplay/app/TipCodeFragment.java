@@ -1,10 +1,12 @@
 package de.danoeh.antennapod.smartplay.app;
 
 import android.content.Context;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
@@ -13,6 +15,10 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.color.MaterialColors;
@@ -29,16 +35,49 @@ import de.danoeh.antennapod.ui.common.IntentUtils;
 public class TipCodeFragment extends Fragment {
     private static final int[] CHOICES = {R.id.tipChoice0, R.id.tipChoice1, R.id.tipChoice2, R.id.tipChoice3};
     private static final long CLOSE_AFTER_THANKS = 1500;
+    private static final String KEY_OPENED_AT = "openedAt";
 
     private View root;
     private boolean wrong;
     private boolean closing;
+    private long openedAt;
+    private int softInputBefore = -1;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        openedAt = savedInstanceState != null ? savedInstanceState.getLong(KEY_OPENED_AT)
+                : System.currentTimeMillis();
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putLong(KEY_OPENED_AT, openedAt);
+    }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         root = inflater.inflate(R.layout.backup_fragment, container, false);
+        ViewCompat.setOnApplyWindowInsetsListener(root, (v, insets) -> {
+            Insets bars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            Insets ime = insets.getInsets(WindowInsetsCompat.Type.ime());
+            boolean keyboard = insets.isVisible(WindowInsetsCompat.Type.ime());
+            int bottom = bars.bottom;
+            if (keyboard) {
+                int[] at = new int[2];
+                v.getLocationOnScreen(at);
+                int below = Math.max(0, v.getRootView().getHeight() - (at[1] + v.getHeight()));
+                bottom = Math.max(bars.bottom, ime.bottom - below);
+            }
+            v.setPadding(bars.left, bars.top, bars.right, bottom);
+            if (keyboard) {
+                v.post(this::showField);
+            }
+            return WindowInsetsCompat.CONSUMED;
+        });
         ((TextView) root.findViewById(R.id.pageTitle)).setText(R.string.tip_title);
         ((TextView) root.findViewById(R.id.pageIntro)).setText(R.string.tip_line);
         root.findViewById(R.id.pageAction).setVisibility(View.GONE);
@@ -76,6 +115,44 @@ public class TipCodeFragment extends Fragment {
         });
         show();
         return root;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        // The keyboard makes room inside this screen, rather than sliding the whole screen up.
+        WindowManager.LayoutParams attributes = requireActivity().getWindow().getAttributes();
+        softInputBefore = attributes.softInputMode;
+        requireActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
+                | (softInputBefore & WindowManager.LayoutParams.SOFT_INPUT_MASK_STATE));
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (softInputBefore != -1) {
+            requireActivity().getWindow().setSoftInputMode(softInputBefore);
+            softInputBefore = -1;
+        }
+    }
+
+    /** With the keyboard up, scrolls just enough to show the code field and its enter button above it. */
+    private void showField() {
+        if (!(root instanceof NestedScrollView) || getContext() == null) {
+            return;
+        }
+        View field = root.findViewById(R.id.tipCodeField);
+        if (!field.hasFocus()) {
+            return;
+        }
+        Rect rect = new Rect();
+        field.getDrawingRect(rect);
+        ((ViewGroup) root).offsetDescendantRectToMyCoords(field, rect);
+        int gap = Math.round(16 * getResources().getDisplayMetrics().density);
+        int target = rect.bottom + gap - (root.getHeight() - root.getPaddingBottom());
+        if (target > root.getScrollY()) {
+            ((NestedScrollView) root).smoothScrollTo(0, target);
+        }
     }
 
     @Override
@@ -117,7 +194,7 @@ public class TipCodeFragment extends Fragment {
         if (root == null || getContext() == null) {
             return;
         }
-        if (Tip.thanksLeft(requireContext()) > 0 && !closing) {
+        if (Tip.thanksLeft(requireContext()) > 0 && Tip.thanksAt(requireContext()) >= openedAt && !closing) {
             closing = true;
             TextView title = root.findViewById(R.id.pageTitle);
             title.setText(R.string.tip_thanks_title);

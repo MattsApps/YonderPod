@@ -1,0 +1,92 @@
+== kills ==
+          timestamp=2026-11-14 21:18:35.840 pid=27853 realUid=99562 packageUid=10430 definingUid=10226 user=0
+          process=com.google.android.webview:sandboxed_process0:org.chromium.content.app.SandboxedProcessService0:0 reason=3 (LOW_MEMORY) subreason=0 (UNKNOWN) status=0
+          importance=125 pss=0.00 rss=32MB description=null state=empty trace=null
+          timestamp=2026-11-17 04:14:32.144 pid=14144 realUid=10430 packageUid=10430 definingUid=10430 user=0
+          process=com.mattsapps.yonderpod reason=3 (LOW_MEMORY) subreason=0 (UNKNOWN) status=0
+          importance=400 pss=0.00 rss=68MB description=null state=empty trace=null
+          timestamp=2026-11-17 01:11:09.997 pid=11201 realUid=10430 packageUid=10430 definingUid=10430 user=0
+          process=com.mattsapps.yonderpod reason=3 (LOW_MEMORY) subreason=0 (UNKNOWN) status=0
+          importance=300 pss=0.00 rss=36MB description=null state=71 bytes trace=null
+          timestamp=2026-11-16 23:37:38.921 pid=25007 realUid=99198 packageUid=10430 definingUid=10226 user=0
+          process=com.google.android.webview:sandboxed_process0:org.chromium.content.app.SandboxedProcessService0:0 reason=13 (OTHER KILLS BY SYSTEM) subreason=17 (ISOLATED NOT NEEDED) status=0
+          importance=300 pss=0.00 rss=28MB description=isolated not needed state=empty trace=null
+          timestamp=2026-11-16 23:37:38.871 pid=24674 realUid=10430 packageUid=10430 definingUid=10430 user=0
+          process=com.mattsapps.yonderpod reason=16 (PACKAGE UPDATED) subreason=0 (UNKNOWN) status=0
+          importance=125 pss=0.00 rss=118MB description=stop com.mattsapps.yonderpod due to installPackageLI state=71 bytes trace=null
+          timestamp=2026-11-16 22:09:48.848 pid=24247 realUid=99195 packageUid=10430 definingUid=10226 user=0
+          process=com.google.android.webview:sandboxed_process0:org.chromium.content.app.SandboxedProcessService0:0 reason=13 (OTHER KILLS BY SYSTEM) subreason=17 (ISOLATED NOT NEEDED) status=0
+          importance=300 pss=0.00 rss=57MB description=isolated not needed state=empty trace=null
+          timestamp=2026-11-16 22:09:48.821 pid=24052 realUid=10430 packageUid=10430 definingUid=10430 user=0
+          process=com.mattsapps.yonderpod reason=16 (PACKAGE UPDATED) subreason=0 (UNKNOWN) status=0
+          importance=400 pss=0.00 rss=375MB description=stop com.mattsapps.yonderpod due to installPackageLI state=71 bytes trace=null
+          timestamp=2026-11-16 22:07:33.132 pid=19104 realUid=10430 packageUid=10430 definingUid=10430 user=0
+          process=com.mattsapps.yonderpod reason=16 (PACKAGE UPDATED) subreason=0 (UNKNOWN) status=0
+          importance=100 pss=0.00 rss=88MB description=stop com.mattsapps.yonderpod due to installPackageLI state=71 bytes trace=null
+          timestamp=2026-11-16 21:50:15.579 pid=21614 realUid=10430 packageUid=10430 definingUid=10430 user=0
+          process=com.mattsapps.yonderpod reason=3 (LOW_MEMORY) subreason=0 (UNKNOWN) status=0
+          importance=400 pss=0.00 rss=72MB description=null state=empty trace=null
+          timestamp=2026-11-16 10:42:14.314 pid=2183 realUid=10430 packageUid=10430 definingUid=10430 user=0
+          process=com.mattsapps.yonderpod reason=3 (LOW_MEMORY) subreason=0 (UNKNOWN) status=0
+          importance=400 pss=0.00 rss=41MB description=null state=empty trace=null
+          timestamp=2026-11-16 10:00:20.299 pid=18407 realUid=99131 packageUid=10430 definingUid=10226 user=0
+          process=com.google.android.webview:sandboxed_process0:org.chromium.content.app.SandboxedProcessService0:0 reason=13 (OTHER KILLS BY SYSTEM) subreason=17 (ISOLATED NOT NEEDED) status=0
+          importance=300 pss=0.00 rss=27MB description=isolated not needed state=empty trace=null
+          timestamp=2026-11-16 10:00:20.277 pid=17595 realUid=10430 packageUid=10430 definingUid=10430 user=0
+          process=com.mattsapps.yonderpod reason=3 (LOW_MEMORY) subreason=0 (UNKNOWN) status=0
+          importance=400 pss=0.00 rss=84MB description=null state=71 bytes trace=null
+          timestamp=2026-11-16 08:00:42.670 pid=18597 realUid=10430 packageUid=10430 definingUid=10430 user=0
+          process=com.mattsapps.yonderpod reason=16 (PACKAGE UPDATED) subreason=0 (UNKNOWN) status=0
+          importance=400 pss=0.00 rss=97MB description=stop com.mattsapps.yonderpod due to installPackageLI state=empty trace=null
+          timestamp=2026-11-16 05:32:19.686 pid=16648 realUid=10430 packageUid=10430 definingUid=10430 user=0
+          process=com.mattsapps.yonderpod reason=3 (LOW_MEMORY) subreason=0 (UNKNOWN) status=0
+          importance=400 pss=0.00 rss=116MB description=null state=empty trace=null
+          timestamp=2026-11-15 23:48:15.660 pid=26668 realUid=10430 packageUid=10430 definingUid=10430 user=0
+          process=com.mattsapps.yonderpod reason=3 (LOW_MEMORY) subreason=0 (UNKNOWN) status=0
+          importance=400 pss=0.00 rss=155MB description=null state=empty trace=null
+          timestamp=2026-11-15 23:21:43.099 pid=21429 realUid=99106 packageUid=10430 definingUid=10226 user=0
+          process=com.google.android.webview:sandboxed_process0:org.chromium.content.app.SandboxedProcessService0:0 reason=13 (OTHER KILLS BY SYSTEM) subreason=17 (ISOLATED NOT NEEDED) status=0
+          importance=300 pss=0.00 rss=45MB description=isolated not needed state=empty trace=null
+          timestamp=2026-11-15 23:21:43.093 pid=21371 realUid=10430 packageUid=10430 definingUid=10430 user=0
+          process=com.mattsapps.yonderpod reason=3 (LOW_MEMORY) subreason=0 (UNKNOWN) status=0
+          importance=400 pss=0.00 rss=85MB description=null state=71 bytes trace=null
+          timestamp=2026-11-15 09:04:55.875 pid=12619 realUid=99027 packageUid=10430 definingUid=10226 user=0
+          process=com.google.android.webview:sandboxed_process0:org.chromium.content.app.SandboxedProcessService0:0 reason=1 (EXIT_SELF) subreason=0 (UNKNOWN) status=0
+          importance=400 pss=0.00 rss=44MB description=null state=empty trace=null
+          timestamp=2026-11-15 09:10:57.341 pid=14074 realUid=99028 packageUid=10430 definingUid=10226 user=0
+          process=com.google.android.webview:sandboxed_process0:org.chromium.content.app.SandboxedProcessService0:0 reason=1 (EXIT_SELF) subreason=0 (UNKNOWN) status=0
+          importance=300 pss=0.00 rss=52MB description=null state=empty trace=null
+          timestamp=2026-11-15 17:34:22.567 pid=6821 realUid=99069 packageUid=10430 definingUid=10226 user=0
+          process=com.google.android.webview:sandboxed_process0:org.chromium.content.app.SandboxedProcessService0:0 reason=1 (EXIT_SELF) subreason=0 (UNKNOWN) status=0
+          importance=300 pss=0.00 rss=43MB description=null state=empty trace=null
+          timestamp=2026-11-15 17:38:41.405 pid=8490 realUid=99072 packageUid=10430 definingUid=10226 user=0
+          process=com.google.android.webview:sandboxed_process0:org.chromium.content.app.SandboxedProcessService0:0 reason=1 (EXIT_SELF) subreason=0 (UNKNOWN) status=0
+          importance=300 pss=0.00 rss=55MB description=null state=empty trace=null
+          timestamp=2026-11-15 17:51:58.393 pid=15003 realUid=99077 packageUid=10430 definingUid=10226 user=0
+          process=com.google.android.webview:sandboxed_process0:org.chromium.content.app.SandboxedProcessService0:0 reason=1 (EXIT_SELF) subreason=0 (UNKNOWN) status=0
+          importance=300 pss=0.00 rss=62MB description=null state=empty trace=null
+          timestamp=2026-11-15 18:06:53.643 pid=16605 realUid=99080 packageUid=10430 definingUid=10226 user=0
+          process=com.google.android.webview:sandboxed_process0:org.chromium.content.app.SandboxedProcessService0:0 reason=1 (EXIT_SELF) subreason=0 (UNKNOWN) status=0
+          importance=300 pss=0.00 rss=55MB description=null state=empty trace=null
+          timestamp=2026-11-15 18:22:43.942 pid=20567 realUid=99082 packageUid=10430 definingUid=10226 user=0
+          process=com.google.android.webview:sandboxed_process0:org.chromium.content.app.SandboxedProcessService0:0 reason=3 (LOW_MEMORY) subreason=0 (UNKNOWN) status=0
+          importance=400 pss=0.00 rss=34MB description=null state=empty trace=null
+          timestamp=2026-11-15 19:27:50.831 pid=28915 realUid=99086 packageUid=10430 definingUid=10226 user=0
+          process=com.google.android.webview:sandboxed_process0:org.chromium.content.app.SandboxedProcessService0:0 reason=3 (LOW_MEMORY) subreason=0 (UNKNOWN) status=0
+          importance=400 pss=0.00 rss=46MB description=null state=empty trace=null
+          timestamp=2026-11-15 21:37:58.298 pid=5977 realUid=99096 packageUid=10430 definingUid=10226 user=0
+          process=com.google.android.webview:sandboxed_process0:org.chromium.content.app.SandboxedProcessService0:0 reason=1 (EXIT_SELF) subreason=0 (UNKNOWN) status=0
+          importance=300 pss=0.00 rss=29MB description=null state=empty trace=null
+          timestamp=2026-11-16 22:07:33.466 pid=19278 realUid=99193 packageUid=10430 definingUid=10226 user=0
+          process=com.google.android.webview:sandboxed_process0:org.chromium.content.app.SandboxedProcessService0:0 reason=1 (EXIT_SELF) subreason=0 (UNKNOWN) status=0
+          importance=300 pss=0.00 rss=58MB description=null state=empty trace=null
+          timestamp=2026-11-17 00:22:21.063 pid=12214 realUid=99205 packageUid=10430 definingUid=10226 user=0
+          process=com.google.android.webview:sandboxed_process0:org.chromium.content.app.SandboxedProcessService0:0 reason=3 (LOW_MEMORY) subreason=0 (UNKNOWN) status=0
+          importance=230 pss=0.00 rss=18MB description=null state=empty trace=null
+== restarts ==
+11-17 04:09:03.941 I/ActivityManager(10298): Start proc 14144:com.mattsapps.yonderpod/u0a430 for service {com.mattsapps.yonderpod/androidx.work.impl.background.systemjob.SystemJobService}
+11-17 06:41:58.672 I/ActivityManager(10298): Start proc 11573:com.mattsapps.yonderpod/u0a430 for broadcast {com.mattsapps.yonderpod/de.danoeh.antennapod.ui.widget.PlayerWidget}
+11-17 06:42:03.625 I/ActivityManager(10298): Start proc 12134:com.google.android.webview:sandboxed_process0:org.chromium.content.app.SandboxedProcessService0:0/u0i228 for  {com.mattsapps.yonderpod/org.chromium.content.app.SandboxedProcessService0:0}
+== events ==
+11-17 06:41:58.672 I/am_proc_start(10298): [0,11573,10430,com.mattsapps.yonderpod,broadcast,{com.mattsapps.yonderpod/de.danoeh.antennapod.ui.widget.PlayerWidget}]
+11-17 06:42:03.625 I/am_proc_start(10298): [0,12134,99228,com.google.android.webview:sandboxed_process0:org.chromium.content.app.SandboxedProcessService0:0,,{com.mattsapps.yonderpod/org.chromium.content.app.SandboxedProcessService0:0}]

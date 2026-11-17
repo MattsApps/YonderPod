@@ -24,8 +24,8 @@
 
         <FrameLayout
             android:id="@+id/playBox"
-            android:layout_width="39dp"
-            android:layout_height="39dp"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:layout_gravity="top"
             android:layout_marginStart="-10dp">
 
@@ -38,8 +38,8 @@
 
             <ImageView
                 android:id="@+id/butPlay"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
                 android:layout_gravity="top|start"
                 android:layout_marginStart="1dp"
                 android:layout_marginTop="1dp"
@@ -87,5 +87,62 @@
             android:src="@drawable/wildink_next" />
 
     </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/slimLiveBox"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:layout_gravity="top|end"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="52dp"
+        android:contentDescription="@string/live_pause_go_live_description"
+        android:visibility="gone">
+
+        <ImageView
+            android:id="@+id/slimLiveCircle"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:importantForAccessibility="no"
+            android:src="@drawable/wildink_dot" />
+
+        <TextView
+            android:id="@+id/slimLiveText"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fontFamily="sans-serif-black"
+            android:gravity="center"
+            android:importantForAccessibility="no"
+            android:maxLines="1"
+            android:text="@string/live_pause_go_live"
+            android:textSize="9sp" />
+
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/slimStopBox"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_gravity="bottom|end"
+        android:contentDescription="@string/live_pause_stop_description"
+        android:visibility="gone">
+
+        <ImageView
+            android:id="@+id/slimStopCircle"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:importantForAccessibility="no"
+            android:src="@drawable/widget_wildink_corner_circle_slim_end" />
+
+        <ImageView
+            android:id="@+id/slimStop"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="bottom|end"
+            android:layout_marginEnd="1dp"
+            android:layout_marginBottom="1dp"
+            android:importantForAccessibility="no"
+            android:src="@drawable/wildink_stop_square" />
+
+    </FrameLayout>
 
 </FrameLayout>
