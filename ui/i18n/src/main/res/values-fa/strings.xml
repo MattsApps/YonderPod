@@ -147,7 +147,6 @@
     <string name="show_feed_settings_label">نمایش تنظیمات پادپخش</string>
     <string name="feed_settings_label">تنظیمات پادپخش</string>
     <string name="rename_feed_label">تغییر نام</string>
-    <string name="remove_feed_label">لغو اشتراک</string>
     <string name="share_label">هم‌رسانی</string>
     <string name="share_file_label">هم‌رسانی پرونده</string>
     <string name="load_complete_feed">نوسازی پادپخش کامل</string>
@@ -835,16 +834,8 @@
     <string name="statistics_expected_next_episode_any_time">همین الآن‌ها</string>
     <string name="release_schedule_multiple_per_day">چند بار در روز</string>
     <string name="cover_as_background">طرح جلد در پس‌زمینه</string>
-    <plurals name="num_subscriptions">
-        <item quantity="one">%d اشتراک</item>
-        <item quantity="other">%d اشتراک</item>
-    </plurals>
-    <string name="archive_feed_label_verb">بایگانی</string>
     <string name="archive_feed_label_noun">بایگانی</string>
     <string name="restore_archive_label">بازگردانی</string>
-    <string name="remove_archive_feed_label">بایگانی یا لغو اشتراک</string>
-    <string name="feed_delete_explanation_delete">لغو کردن اشتراک تمامی قسمت‌ها، بارگیری‌ها، تاریخچهٔ پخش و آمارهایش را برمی‌دارد.</string>
-    <string name="feed_delete_explanation_archive">بایگانی کردن اشتراک را از سیاهه نهفته و گشتن به دنبال قسمت‌های جدید را متوقّف می‌کند. بارگیری‌ها، آمارها و وضعیت پخش نگه داشته خواهد شد.</string>
     <string name="tag_untagged">برچسب نخورده</string>
     <string name="no_archive_head_label">هیچ چیزی بایگانی نشده</string>
     <string name="no_archive_label">می توانید پادپخش‌ها را از صفحهٔ اشتراک اصلی بایگانی کنید.</string>
@@ -869,8 +860,6 @@
     <string name="sleep_timer_without_continuous_playback_change_hours">تغییر ساعت‌ها</string>
     <string name="pref_global_default_episode_list_sort_order_title">ترتیب چینش پیش‌گزیده</string>
     <string name="sleep_timer_without_continuous_playback">از کار انداختن پخش ادامه دار</string>
-    <string name="archiving_podcast_progress">بایگانی کردن پادپخش %1$d از %2$d…</string>
-    <string name="deleting_podcast_progress">لغو کردن اشتراک پادپخش %1$d از %2$d…</string>
     <string name="no_following_in_queue">آخرین قسمت در صف بود</string>
     <string name="pref_global_default_episode_list_sort_order_sum">گزینش ترتیب پیش‌گزیدهٔ قسمت‌ها روی صفحهٔ پادپخش</string>
     <string name="multiple_sleep_episodes_while_continuous_playback_disabled">پخش ادامه دار در تنظیمات از کار افتاده. همواره در پایان قسمت‌ها متوقّف می‌شود.</string>
@@ -887,8 +876,6 @@
     <string name="statistics_label_short">آمارها</string>
     <string name="favorite_episodes_label_short">برگزیده‌ها</string>
     <string name="feed_new_episodes_action_snackbar">نمی‌تواند هنگام به کار افتادن بارگیری خودکار تغییر کند.</string>
-    <string name="remove_restore_feed_label">بازگردانی یا لغو اشتراک</string>
-    <string name="restoring_podcast_progress">بازگردانی پادپخش %1$d از %2$d…</string>
     <plurals name="added_to_favorites_message">
         <item quantity="one">%d قسمت به برگزیده‌ها افزوده شد.</item>
         <item quantity="other">%d قسمت به برگزیده‌ها افزوده شدند.</item>

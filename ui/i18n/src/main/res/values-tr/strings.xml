@@ -155,7 +155,6 @@
     <string name="show_feed_settings_label">Podcast ayarlarını göster</string>
     <string name="feed_settings_label">Podcast ayarları</string>
     <string name="rename_feed_label">Yeniden adlandır</string>
-    <string name="remove_feed_label">Abonelikten çık</string>
     <string name="share_label">Paylaş</string>
     <string name="share_file_label">Dosyaları paylaşın</string>
     <string name="load_complete_feed">Tüm Podcastleri yenile</string>
@@ -801,16 +800,8 @@
         <item quantity="one">%d bölüm oynatılmadı olarak işaretlendi.</item>
         <item quantity="other">%d bölüm oynatılmadı olarak işaretlendi.</item>
     </plurals>
-    <plurals name="num_subscriptions">
-        <item quantity="one">%d abonelik</item>
-        <item quantity="other">%d abonelik</item>
-    </plurals>
-    <string name="archive_feed_label_verb">Arşivle</string>
     <string name="archive_feed_label_noun">Arşiv</string>
     <string name="restore_archive_label">Geri yükle</string>
-    <string name="remove_archive_feed_label">Abonelikten çık / arşivle</string>
-    <string name="feed_delete_explanation_delete">Silme işlemi tüm bölümleri, indirmeleri, oynatma geçmişini ve istatistikleri de içeren aboneliği kaldırır.</string>
-    <string name="feed_delete_explanation_archive">Arşivleme işlemi, aboneliği listeden gizler ve yeni bölümleri aramayı durdurur. İndirmeler, istatistikler ve oynatma durumu korunur.</string>
     <string name="please_wait_before_refreshing">Podcastleri yeniden yenilemek için lütfen bir süre bekleyin.</string>
     <plurals name="downloading_episodes_message">
         <item quantity="one">%d bölüm indiriliyor.</item>
@@ -850,15 +841,11 @@
     <string name="no_archive_label">Podcast\'leri ana abonelik ekranında arşivleyebilirsiniz.</string>
     <string name="general_expand_button">Genişlet</string>
     <string name="general_collapse_button">Daralt</string>
-    <string name="archiving_podcast_progress">%1$d podcastin %2$d tanesi arşivleniyor…</string>
-    <string name="deleting_podcast_progress">%1$d podcastin %2$d tanesi siliniyor…</string>
     <string name="download_log_details_human_readable_reason_title">Durum</string>
     <string name="download_log_details_file_url_title">Dosya adresi</string>
     <string name="download_log_open_feed">Aç</string>
     <string name="statistics_label_short">Değerler</string>
     <string name="favorite_episodes_label_short">Gözdeler</string>
-    <string name="remove_restore_feed_label">Abonelikten çık / geri yükle</string>
-    <string name="restoring_podcast_progress">%2$d podcast\'ten %1$d tanesi geri yükleniyor…</string>
     <plurals name="added_to_favorites_message">
         <item quantity="one">%d bölüm gözdelere eklendi.</item>
         <item quantity="other">%d bölüm gözdelere eklendi.</item>

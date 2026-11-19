@@ -177,10 +177,6 @@
         <item quantity="one">%d episode</item>
         <item quantity="other">%d episodes</item>
     </plurals>
-    <plurals name="num_subscriptions">
-        <item quantity="one">%d subscription</item>
-        <item quantity="other">%d subscriptions</item>
-    </plurals>
     <string name="episode_notification">Episode notifications</string>
     <string name="episode_notification_summary">Show a notification when a new episode is released</string>
     <plurals name="new_episode_notification_message">
@@ -203,20 +199,11 @@
     <string name="show_feed_settings_label">Show podcast settings</string>
     <string name="feed_settings_label">Podcast settings</string>
     <string name="rename_feed_label">Rename</string>
-    <string name="archive_feed_label_verb">Archive</string>
     <string name="archive_feed_label_noun">Archive</string>
     <string name="restore_archive_label">Restore</string>
-    <string name="remove_archive_feed_label">Unsubscribe / archive</string>
-    <string name="remove_restore_feed_label">Unsubscribe / restore</string>
-    <string name="remove_feed_label">Unsubscribe</string>
     <string name="share_label">Share</string>
     <string name="share_file_label">Share file</string>
     <string name="share_not_supported_local_feed">Sharing is not supported for local folders</string>
-    <string name="feed_delete_explanation_delete">Unsubscribing removes the subscription including all its episodes, downloads, playback history, and statistics.</string>
-    <string name="feed_delete_explanation_archive">Archiving hides the subscription from the list and stops looking for new episodes. Downloads, statistics and playback state are kept.</string>
-    <string name="archiving_podcast_progress">Archiving podcast %1$d of %2$d…</string>
-    <string name="restoring_podcast_progress">Restoring podcast %1$d of %2$d…</string>
-    <string name="deleting_podcast_progress">Unsubscribing from podcast %1$d of %2$d…</string>
     <string name="load_complete_feed">Refresh complete podcast</string>
     <string name="multi_select">Multi select</string>
     <string name="select_all_above">Select all above</string>
@@ -1376,7 +1363,13 @@
     <string name="radio_edit">Edit station</string>
     <string name="radio_delete">Delete station</string>
     <string name="radio_delete_question">Delete %1$s?</string>
-    <string name="radio_delete_playing">Stop this station before deleting it.</string>
+    <!-- A show's list (0.9.34): the long press in Podcasts Tend and the show page's menu -->
+    <string name="show_menu_refresh">Refresh</string>
+    <string name="show_menu_download_settings">Download settings</string>
+    <string name="show_menu_category">Category</string>
+    <string name="show_menu_delete">Delete show</string>
+    <string name="show_refreshing">Checking %1$s for new episodes…</string>
+    <string name="show_delete_question">Delete %1$s?</string>
     <string name="radio_bitrate">%1$d kbps %2$s</string>
     <string name="radio_playing">Playing</string>
     <string name="radio_quality_title">Quality, when the station offers a choice</string>
@@ -2108,6 +2101,8 @@
     <string name="help_about_find_station">Search the station directory or paste a stream link. Some stations are offline or only play in their own country.</string>
     <string name="help_topic_subscriptions">How following a show works</string>
     <string name="help_about_subscriptions">What following means, the new and downloaded counts beside each show, and why episodes list newest first (change it in Tune → Defaults for new shows, or with Sort on a show\'s page).</string>
+    <string name="help_topic_show_menu">Refreshing, changing or deleting a show</string>
+    <string name="help_about_show_menu">Long-press a show in Podcasts Tend, or use ⋮ on its page: Refresh checks it now and downloads by its own download settings; Download settings; Category; Delete show. Deleting stops it straight away if it\'s playing and deletes its downloads at once.</string>
     <string name="help_topic_categories">Categories</string>
     <string name="help_about_categories">Tag shows with categories, sort several at once, and use categories in Smart Play.</string>
     <string name="help_topic_download_modes">Download modes</string>

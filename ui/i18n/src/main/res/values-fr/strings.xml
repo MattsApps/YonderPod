@@ -162,7 +162,6 @@
     <string name="show_feed_settings_label">Paramètres du podcast</string>
     <string name="feed_settings_label">Paramètres du podcast</string>
     <string name="rename_feed_label">Renommer</string>
-    <string name="remove_feed_label">Se désabonner</string>
     <string name="share_label">Partager</string>
     <string name="share_file_label">Partager le fichier</string>
     <string name="load_complete_feed">Mettre à jour tout le podcast</string>
@@ -864,24 +863,13 @@
     <string name="statistics_expected_next_episode_any_time">À tout moment</string>
     <string name="release_schedule_multiple_per_day">plusieurs fois par jour</string>
     <string name="cover_as_background">Image de l\'épisode en fonds</string>
-    <plurals name="num_subscriptions">
-        <item quantity="one">%d abonnement</item>
-        <item quantity="many">%d abonnements</item>
-        <item quantity="other">%d abonnements</item>
-    </plurals>
-    <string name="archive_feed_label_verb">Archiver</string>
     <string name="archive_feed_label_noun">Archives</string>
-    <string name="remove_archive_feed_label">Se désabonner / archiver</string>
-    <string name="feed_delete_explanation_delete">Se désabonner efface le podcast avec tous ses épisodes, ses téléchargements, son historique de lecture et ses statistiques.</string>
-    <string name="feed_delete_explanation_archive">Archiver cache le podcast de la liste des abonnements et désactive sa mise à jour. Ses téléchargements, son historique de lecture et ses statistiques sont conservés.</string>
     <string name="tag_untagged">Sans tag</string>
     <string name="restore_archive_label">Désarchiver</string>
     <string name="no_archive_head_label">Aucune archive</string>
     <string name="no_archive_label">Vous pouvez archiver des podcasts depuis l\'écran des abonnements.</string>
     <string name="general_expand_button">Afficher plus</string>
     <string name="general_collapse_button">Réduire</string>
-    <string name="archiving_podcast_progress">Archivage du podcast %1$d sur %2$d…</string>
-    <string name="deleting_podcast_progress">Désabonnement du podcast %1$d sur %2$d…</string>
     <string name="download_log_details_human_readable_reason_title">Statut</string>
     <string name="download_log_details_technical_reason_title">Détails techniques</string>
     <string name="download_log_details_file_url_title">Lien du flux</string>
@@ -918,8 +906,6 @@
     </plurals>
     <string name="statistics_label_short">Stats</string>
     <string name="favorite_episodes_label_short">Favoris</string>
-    <string name="remove_restore_feed_label">Se désabonner / désarchiver</string>
-    <string name="restoring_podcast_progress">Désarchivage du podcast %1$d sur %2$d…</string>
     <plurals name="added_to_favorites_message">
         <item quantity="one">%d épisode ajouté aux favoris.</item>
         <item quantity="many">%d épisodes ajoutés aux favoris.</item>

@@ -147,7 +147,6 @@
     <string name="show_feed_settings_label">Erakutsi podcastaren ezarpenak</string>
     <string name="feed_settings_label">Podcastaren ezarpenak</string>
     <string name="rename_feed_label">Berrizendatu</string>
-    <string name="remove_feed_label">Harpidegabetu</string>
     <string name="share_label">Partekatu</string>
     <string name="share_file_label">Partekatu fitxategia</string>
     <string name="load_complete_feed">Eguneratu podcast osoa</string>
@@ -819,16 +818,8 @@
     <string name="statistics_expected_next_episode_any_time">Edozein unetan</string>
     <string name="release_schedule_multiple_per_day">egunean hainbat aldiz</string>
     <string name="cover_as_background">Azala atzeko plano gisa</string>
-    <plurals name="num_subscriptions">
-        <item quantity="one">%d harpidetza</item>
-        <item quantity="other">%d harpidetzak</item>
-    </plurals>
-    <string name="archive_feed_label_verb">Artxiboa</string>
     <string name="archive_feed_label_noun">Artxiboa</string>
     <string name="restore_archive_label">Berrezarri</string>
-    <string name="remove_archive_feed_label">Hrpidegabetu / artxiboa</string>
-    <string name="feed_delete_explanation_delete">Harpidetza kentzeak harpidetza ezabatzen du, atal, deskarga, erreprodukzio-historia eta estatistikak barne.</string>
-    <string name="feed_delete_explanation_archive">Artxibatzeak harpidetza zerrendatik ezkutatzen du eta atal berriak bilatzeari uzten dio. Deskargak, estatistikak eta erreprodukzio-egoera gordetzen dira.</string>
     <string name="tag_untagged">Etiketarik gabe</string>
     <plurals name="mobile_download_notice">
         <item quantity="one">Hurrengo %d minutuz datu mugikorren konexioaren bidez deskargatzen</item>
@@ -850,8 +841,6 @@
     </plurals>
     <string name="general_expand_button">Hedatu</string>
     <string name="general_collapse_button">Tolestu</string>
-    <string name="archiving_podcast_progress">%2$d-tik %1$d podcasta artxibatzen…</string>
-    <string name="deleting_podcast_progress">%2$d-tik %1$d podcastetik harpidegabetzen…</string>
     <string name="download_log_details_human_readable_reason_title">Egoera</string>
     <string name="download_log_details_technical_reason_title">Xehetasun teknikoak</string>
     <string name="download_log_details_file_url_title">URL fitxategia</string>
@@ -887,8 +876,6 @@
     <string name="statistics_label_short">Estatistikak</string>
     <string name="favorite_episodes_label_short">Gustokoenak</string>
     <string name="feed_new_episodes_action_snackbar">Ezin da aldatu deskarga automatikoa gaituta dagoenean.</string>
-    <string name="remove_restore_feed_label">Harpidegabetu / berrezarri</string>
-    <string name="restoring_podcast_progress">Podcast-a berrezartzen%2$dtik %1$d…</string>
     <plurals name="added_to_favorites_message">
         <item quantity="one">atalaren %d gustokoenetara gehituta.</item>
         <item quantity="other">atalen %d gustokoenetara gehituta.</item>

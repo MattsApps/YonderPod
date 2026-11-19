@@ -142,7 +142,6 @@
     <string name="show_feed_settings_label">Näytä podcastin asetukset</string>
     <string name="feed_settings_label">Podcastin asetukset</string>
     <string name="rename_feed_label">Nimeä uudelleen</string>
-    <string name="remove_feed_label">Peruuta tilaus</string>
     <string name="share_label">Jaa</string>
     <string name="share_file_label">Jaa tietodosto</string>
     <string name="load_complete_feed">Päivitä podcast</string>
@@ -817,16 +816,8 @@
     <string name="statistics_expected_next_episode_any_time">Milloin vain nyt</string>
     <string name="release_schedule_multiple_per_day">useita kertoja päivässä</string>
     <string name="cover_as_background">Kansi taustana</string>
-    <plurals name="num_subscriptions">
-        <item quantity="one">%d tilaus</item>
-        <item quantity="other">%d tilausta</item>
-    </plurals>
-    <string name="archive_feed_label_verb">Arkistoi</string>
     <string name="archive_feed_label_noun">Arkisto</string>
     <string name="restore_archive_label">Palauta</string>
-    <string name="remove_archive_feed_label">Peruuta tilaus / arkistoi</string>
-    <string name="feed_delete_explanation_delete">Tilauksen peruuttaminen poistaa tilauksen mukaanlukien jaksot sekä niiden lataukset, toistohistorian ja tilastot.</string>
-    <string name="feed_delete_explanation_archive">Arkistointi piilottaa podcastin tilausluettelosta ja lopettaa sen päivitykset. Lataukset, tilastot ja toistotila säilytetään.</string>
     <plurals name="mobile_download_notice">
         <item quantity="one">Ladataan mobiiliyhteydellä seuraava %d minuutti</item>
         <item quantity="other">Ladataan mobiiliyhteydellä seuraavat %d minuuttia</item>
@@ -848,8 +839,6 @@
     </plurals>
     <string name="general_expand_button">Laajenna</string>
     <string name="general_collapse_button">Pienennä</string>
-    <string name="archiving_podcast_progress">Arkistoidaan podcastia %1$d %2$dsta…</string>
-    <string name="deleting_podcast_progress">Peruutetaan tilausta podcastilta %1$d %2$dsta…</string>
     <string name="download_log_details_human_readable_reason_title">Status</string>
     <string name="download_log_details_technical_reason_title">Tekniset tiedot</string>
     <string name="download_log_details_file_url_title">Tiedoston URL</string>
@@ -885,8 +874,6 @@
     <string name="statistics_label_short">Tilastot</string>
     <string name="favorite_episodes_label_short">Suosikit</string>
     <string name="feed_new_episodes_action_snackbar">Ei voida muuttaa kun automaattiset lataukset ovat käytössä.</string>
-    <string name="remove_restore_feed_label">Peruuta tilaus / palauta</string>
-    <string name="restoring_podcast_progress">Palautetaan podcastia %1$d %2$dsta…</string>
     <plurals name="added_to_favorites_message">
         <item quantity="one">%d jakso lisättiin suosikkeihin.</item>
         <item quantity="other">%d jaksoa lisättiin suosikkeihin.</item>

@@ -507,6 +507,10 @@ public class Media3PlaybackService extends MediaLibraryService {
                     MediaLibrarySessionCallback.SESSION_COMMAND_STOP_LIVE.customAction)) {
                 player.stop();
                 return Futures.immediateFuture(new SessionResult(SessionResult.RESULT_SUCCESS));
+            } else if (customCommand.customAction.equals(
+                    MediaLibrarySessionCallback.SESSION_COMMAND_UNLOAD.customAction)) {
+                unloadNow();
+                return Futures.immediateFuture(new SessionResult(SessionResult.RESULT_SUCCESS));
             }
             return super.onCustomCommand(session, controller, customCommand, args);
         }
@@ -1771,6 +1775,22 @@ public class Media3PlaybackService extends MediaLibraryService {
                             EpisodeEndLog.note(this, "After " + media.getEpisodeTitle()
                                     + ": couldn't load what plays next, " + error);
                         });
+    }
+
+    /**
+     * What's loaded is being deleted (a show or station deleted while it plays, 0.9.34): stop now, end any live
+     * pause (its buffer is deleted), and unload it with nothing next, so Yonder is left paused and responsive,
+     * the same as after Android kills it. The next play asks the "what plays next" rule as usual.
+     */
+    private void unloadNow() {
+        EpisodeEndLog.note(this, "Deleted while loaded: stopping "
+                + (currentPlayable != null ? currentPlayable.getEpisodeTitle() : "nothing") + ", nothing next");
+        player.stop();
+        stopWithNothingNext(false);
+        if (mediaLoaderDisposable != null) {
+            // Ending live pause puts the live item back; don't let its loading bring the station back.
+            mediaLoaderDisposable.dispose();
+        }
     }
 
     private void stopWithNothingNext(boolean wasSkipped) {

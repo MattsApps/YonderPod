@@ -155,7 +155,6 @@
     <string name="show_feed_settings_label">Visa podcastinställningar</string>
     <string name="feed_settings_label">Podcastinställningar</string>
     <string name="rename_feed_label">Byt namn</string>
-    <string name="remove_feed_label">Avprenumerera</string>
     <string name="share_label">Dela</string>
     <string name="share_file_label">Dela fil</string>
     <string name="load_complete_feed">Uppdatera hela podcasten</string>
@@ -809,14 +808,8 @@
     <string name="no_items_selected_message">Inga objekt har valts</string>
     <string name="no_queue_items_inbox_has_items_label">Inga avsnitt är köade, men det finns nya avsnitt som väntar dig!</string>
     <string name="transcript_follow_audio_label">Följ ljuduppspelning</string>
-    <plurals name="num_subscriptions">
-        <item quantity="one">%d prenumeration</item>
-        <item quantity="other">%d prenumerationer</item>
-    </plurals>
-    <string name="archive_feed_label_verb">Arkivera</string>
     <string name="archive_feed_label_noun">Arkiv</string>
     <string name="restore_archive_label">Återställ</string>
-    <string name="remove_archive_feed_label">Avprenumerera / arkivera</string>
     <plurals name="marked_as_unplayed_message">
         <item quantity="one">%d avsnitt markerat som ospelat.</item>
         <item quantity="other">%d avsnitt markerade som ospelade.</item>
@@ -839,8 +832,6 @@
     <string name="statistics_expected_next_episode_any_time">När som helst nu</string>
     <string name="release_schedule_multiple_per_day">flera gånger om dagen</string>
     <string name="cover_as_background">Omslagsbild som bakgrund</string>
-    <string name="feed_delete_explanation_delete">När du avprenumererar tas prenumerationen bort tillsammans med alla avsnitt, nedladdningar, uppspelningshistorik och statistik.</string>
-    <string name="feed_delete_explanation_archive">När du arkiverar döljs prenumerationen i listan och AntennaPod slutar söka efter nya avsnitt. Nedladdningar, statistik och uppspelningsstatus behålls.</string>
     <string name="please_wait_before_refreshing">Vänligen vänta en stund innan du uppdaterar poddarna igen.</string>
     <plurals name="mobile_download_notice">
         <item quantity="one">Laddar ned via mobildata under den kommande %d minuten</item>
@@ -849,8 +840,6 @@
     <string name="no_archive_label">Du kan arkivera poddar från huvudskärmen för prenumerationer.</string>
     <string name="tag_untagged">Utan etikett</string>
     <string name="general_collapse_button">Fäll ihop</string>
-    <string name="archiving_podcast_progress">Arkiverar podcast %1$d av %2$d…</string>
-    <string name="deleting_podcast_progress">Avprenumererar från podcast %1$d av %2$d…</string>
     <string name="download_log_details_human_readable_reason_title">Status</string>
     <string name="download_log_details_technical_reason_title">Tekniska detaljer</string>
     <string name="download_log_details_file_url_title">Fil URL</string>
@@ -887,8 +876,6 @@
     <string name="statistics_label_short">Statistik</string>
     <string name="favorite_episodes_label_short">Favoriter</string>
     <string name="feed_new_episodes_action_snackbar">Kan inte ändras när automatisk nedladdning är igång.</string>
-    <string name="remove_restore_feed_label">Avprenumerera / återställ</string>
-    <string name="restoring_podcast_progress">Återställer podcast %1$d av %2$d…</string>
     <plurals name="added_to_favorites_message">
         <item quantity="one">%d avsnitt har lagts till i favoriter.</item>
         <item quantity="other">%d avsnitt har lagts till i favoriter.</item>

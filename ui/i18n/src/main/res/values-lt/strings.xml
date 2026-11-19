@@ -88,7 +88,6 @@
     <string name="show_feed_settings_label">Rodyti tinklalaidės nustatymus</string>
     <string name="feed_settings_label">Tinklalaidės nustatymai</string>
     <string name="rename_feed_label">Pervadinti</string>
-    <string name="remove_feed_label">Nebeprenumeruoti</string>
     <string name="share_label">Dalintis</string>
     <string name="load_complete_feed">Atnaujinti visą tinklalaidę</string>
     <string name="multi_select">Pažymėti keletą</string>
@@ -834,18 +833,8 @@
     <string name="statistics_expected_next_episode_any_time">Netrukus</string>
     <string name="release_schedule_multiple_per_day">keliskart per dieną</string>
     <string name="cover_as_background">Viršelis kaip fonas</string>
-    <plurals name="num_subscriptions">
-        <item quantity="one">%d prenumerata</item>
-        <item quantity="few">%d prenumeratos</item>
-        <item quantity="many">%d prenumeratų</item>
-        <item quantity="other">%d prenumeratų</item>
-    </plurals>
-    <string name="archive_feed_label_verb">Archyvuoti</string>
     <string name="archive_feed_label_noun">Archyvas</string>
     <string name="restore_archive_label">Atstatyti</string>
-    <string name="remove_archive_feed_label">Nebeprenumeruoti / archyvuoti</string>
-    <string name="feed_delete_explanation_delete">Nutraukus prenumeratą pašalinami visi tos tinklalaidės epizodai, įskaitant atsisiuntimus, atkūrimo istoriją ir statistiką.</string>
-    <string name="feed_delete_explanation_archive">Archyvavus ji neberodoma prenumeratų sąraše ir negaunami nauji epizodai. Išsaugojami atsisiuntimai, statistika ir atkūrimo būsena.</string>
     <plurals name="mobile_download_notice">
         <item quantity="one">Atsiunčiama naudojant mobiliųjų duomenų ryšį dar %d minutę</item>
         <item quantity="few">Atsiunčiama naudojant mobiliųjų duomenų ryšį dar %d minutes</item>
@@ -878,10 +867,6 @@
     <string name="statistics_label_short">Statistika</string>
     <string name="favorite_episodes_label_short">Mėgstami</string>
     <string name="feed_new_episodes_action_snackbar">Negalima keisti, kai įjungtas automatinis atsiuntimas.</string>
-    <string name="remove_restore_feed_label">Nebeprenumeruoti / atstatyti</string>
-    <string name="archiving_podcast_progress">Archyvuojama tinklalaidė, %1$d iš %2$d…</string>
-    <string name="restoring_podcast_progress">Atstatoma tinklalaidė, %1$d iš %2$d…</string>
-    <string name="deleting_podcast_progress">Nutraukiama tinklalaidžių prenumerata, %1$d iš %2$d…</string>
     <plurals name="added_to_favorites_message">
         <item quantity="one">%d epizodas pridėtas į mėgstamiausius.</item>
         <item quantity="few">%d epizodai pridėti į mėgstamiausius.</item>

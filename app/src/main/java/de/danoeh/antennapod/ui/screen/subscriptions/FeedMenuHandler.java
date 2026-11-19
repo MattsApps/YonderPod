@@ -7,7 +7,6 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.model.feed.Feed;
-import de.danoeh.antennapod.ui.screen.feed.RemoveFeedDialog;
 import de.danoeh.antennapod.ui.screen.feed.RenameFeedDialog;
 import de.danoeh.antennapod.ui.screen.feed.preferences.TagSettingsDialog;
 import de.danoeh.antennapod.ui.share.ShareUtils;
@@ -24,18 +23,12 @@ public abstract class FeedMenuHandler {
             return false;
         }
         boolean allSubscribed = true;
-        boolean allArchived = true;
         for (Feed feed : selectedItems) {
             if (feed.getState() != Feed.STATE_SUBSCRIBED) {
                 allSubscribed = false;
             }
-            if (feed.getState() != Feed.STATE_ARCHIVED) {
-                allArchived = false;
-            }
         }
         setItemVisibility(menu, R.id.remove_all_inbox_item, allSubscribed);
-        setItemVisibility(menu, R.id.remove_archive_feed, !allArchived && allSubscribed);
-        setItemVisibility(menu, R.id.remove_restore_feed, allArchived);
         boolean singleNonLocalFeedSelected = selectedItems.size() == 1 && !selectedItems.get(0).isLocalFeed();
         setItemVisibility(menu, R.id.share_feed, singleNonLocalFeedSelected);
         return true;
@@ -59,9 +52,6 @@ public abstract class FeedMenuHandler {
         } else if (menuItemId == R.id.edit_tags) {
             TagSettingsDialog.newInstance(Collections.singletonList(selectedFeed.getPreferences()))
                     .show(fragment.getChildFragmentManager(), TagSettingsDialog.TAG);
-        } else if (menuItemId == R.id.remove_archive_feed || menuItemId == R.id.remove_restore_feed) {
-            new RemoveFeedDialog(Collections.singletonList(selectedFeed))
-                    .show(fragment.getChildFragmentManager(), null);
         } else if (menuItemId == R.id.share_feed) {
             ShareUtils.shareFeedLink(context, selectedFeed);
         } else {

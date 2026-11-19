@@ -155,7 +155,6 @@
     <string name="show_feed_settings_label">Pokaż ustawienia podcastu</string>
     <string name="feed_settings_label">Ustawienia podcastu</string>
     <string name="rename_feed_label">Zmień nazwę</string>
-    <string name="remove_feed_label">Usuń</string>
     <string name="share_label">Udostępnij</string>
     <string name="share_file_label">Udostępnij plik</string>
     <string name="load_complete_feed">Odśwież cały podcast</string>
@@ -848,18 +847,8 @@
     <string name="no_queue_items_inbox_has_items_label">Brak odcinków w kolejce, ale czekają na Ciebie nowe!</string>
     <string name="no_archive_label">Podcasty można archiwizować z poziomu głównego ekranu subskrypcji.</string>
     <string name="no_archive_head_label">Niczego nie zarchiwizowano</string>
-    <plurals name="num_subscriptions">
-        <item quantity="one">%d subskrybcja</item>
-        <item quantity="few">%d subskrybcji</item>
-        <item quantity="many">%d subskrybcji</item>
-        <item quantity="other">%d subskrybcji</item>
-    </plurals>
-    <string name="archive_feed_label_verb">Archiwizuj</string>
     <string name="archive_feed_label_noun">Archiwum</string>
     <string name="restore_archive_label">Przywróć</string>
-    <string name="remove_archive_feed_label">Usuń / Archiwizuj</string>
-    <string name="feed_delete_explanation_delete">Usunięcie kasuje subskrypcję, wszystkie jej odcinki, w tym pobrane pliki, historię odtwarzania i statystyki.</string>
-    <string name="feed_delete_explanation_archive">Archiwizacja spowoduje ukrycie podcastu na liście subskrypcji i nie będzie on aktualizowany. Pobrane pliki, statystyki i stan odtwarzania zostaną zachowane.</string>
     <string name="please_wait_before_refreshing">Odczekaj chwilę przed ponownym odświeżeniem podcastów.</string>
     <plurals name="marked_as_played_message">
         <item quantity="one">%d odcinek oznaczony jako odtworzony.</item>
@@ -907,8 +896,6 @@
     <string name="echo_thanks_we_are_glad_old">za bycie z nami w tym roku!\n\nTwój pierwszy odcinek został odtworzony %1$s. To dla nas zaszczyt służyć Ci od tego czasu.</string>
     <string name="general_expand_button">Rozwiń</string>
     <string name="general_collapse_button">Zwiń</string>
-    <string name="archiving_podcast_progress">Archiwizacja podcastu %1$d z %2$d…</string>
-    <string name="deleting_podcast_progress">Usuwanie podcastu %1$d z %2$d…</string>
     <string name="download_log_details_human_readable_reason_title">Status</string>
     <string name="download_log_details_technical_reason_title">Szczegóły techniczne</string>
     <string name="download_log_details_file_url_title">Adres URL pliku</string>

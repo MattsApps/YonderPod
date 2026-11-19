@@ -93,7 +93,6 @@
     <string name="feed_auto_download_never">ಎಂದಿಗೂ</string>
     <string name="episode_cleanup_never">ಎಂದಿಗೂ</string>
     <string name="show_info_label">ಮಾಹಿತಿ ತೋರಿಸಿ</string>
-    <string name="remove_feed_label">ಪಾಡ್ಕ್ಯಾಸ್ಟನ್ನು ತೆಗೆದುಹಾಕಿ</string>
     <!--actions on feeditems-->
   <string name="download_label">ಡೌನ್ಲೋಡ್</string>
     <string name="play_label">ಚಾಲನೆಗೊಳಿಸಿ</string>

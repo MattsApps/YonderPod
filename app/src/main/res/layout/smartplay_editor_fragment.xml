@@ -8,6 +8,7 @@
     android:orientation="vertical">
 
     <androidx.core.widget.NestedScrollView
+        android:id="@+id/smartplay_scroll"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1">
@@ -33,6 +34,7 @@
                 android:background="@drawable/wildink_name_underline"
                 android:fontFamily="@font/bricolage_extrabold"
                 android:hint="@string/smartplay_name_hint"
+                android:imeOptions="actionDone"
                 android:importantForAutofill="no"
                 android:inputType="textCapSentences"
                 android:letterSpacing="-0.04"

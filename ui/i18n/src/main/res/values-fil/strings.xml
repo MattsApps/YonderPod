@@ -150,10 +150,6 @@
         <item quantity="one">%d kabanata</item>
         <item quantity="other">%d mga kabanata</item>
     </plurals>
-    <plurals name="num_subscriptions">
-        <item quantity="one">%d subscription</item>
-        <item quantity="other">%d mga subscription</item>
-    </plurals>
     <string name="episode_notification">Mga abiso ng kabanata</string>
     <string name="episode_notification_summary">Ipakita ang abiso kapag may bagong inilabas na kabanata</string>
     <plurals name="new_episode_notification_message">
@@ -175,16 +171,8 @@
     <string name="feed_settings_label">Mga setting ng podcast</string>
     <string name="rename_feed_label">Palitan ang pangalan</string>
     <string name="restore_archive_label">Ibalik</string>
-    <string name="remove_archive_feed_label">I-unsubscribe / archive</string>
-    <string name="remove_restore_feed_label">I-unsubscribe / ibalik</string>
-    <string name="remove_feed_label">I-unsubscribe</string>
     <string name="share_label">Ibahagi</string>
     <string name="share_file_label">Ibahagi ang file</string>
-    <string name="feed_delete_explanation_delete">Ang pag-unsubscribe ay nag-aalis ng subscription kasama ang lahat ng mga kabanata, pag-download, kasaysayan ng pag-playback, at istatistika nito.</string>
-    <string name="feed_delete_explanation_archive">Itinatago ng pag-archive ang subscription mula sa listahan at hihinto sa paghahanap ng mga bagong kabanata. Ang mga pag-download, istatistika at estado ng pag-playback ay pinapanatili.</string>
-    <string name="archiving_podcast_progress">Ina-archive ang podcast %1$d ng %2$d…</string>
-    <string name="restoring_podcast_progress">Ibinabalik ang podcast %1$d ng %2$d…</string>
-    <string name="deleting_podcast_progress">Nag-unsubscribe mula sa podcast %1$d ng %2$d…</string>
     <string name="load_complete_feed">I-refresh ang kumpletong podcast</string>
     <string name="multi_select">Maramihang pili</string>
     <string name="select_all_above">Piliin ang lahat sa itaas</string>

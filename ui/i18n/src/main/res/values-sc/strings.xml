@@ -155,7 +155,6 @@
     <string name="show_feed_settings_label">Ammustra sa cunfiguratzione de su podcast</string>
     <string name="feed_settings_label">Cunfiguratzione de su podcast</string>
     <string name="rename_feed_label">Muda su nòmine</string>
-    <string name="remove_feed_label">Cantzella</string>
     <string name="share_label">Cumpartzi</string>
     <string name="share_file_label">Cumpartzi s\'archìviu</string>
     <string name="load_complete_feed">Atualiza su podcast intreu</string>
@@ -769,15 +768,8 @@
     <string name="general_expand_button">Ismànnia</string>
     <string name="general_collapse_button">Mìnima</string>
     <string name="feed_new_episodes_action_summary_autodownload">Iscarrigamentu automàticu ativadu. Is episòdios sunt agiuntos a sa cartella de intrada e pustis mòvidos a s\'elencu una borta iscarrigados.</string>
-    <plurals name="num_subscriptions">
-        <item quantity="one">%d sutiscritzione</item>
-        <item quantity="other">%d sutiscritziones</item>
-    </plurals>
-    <string name="archive_feed_label_verb">Archìvia</string>
     <string name="archive_feed_label_noun">Archìviu</string>
     <string name="restore_archive_label">Recùpera</string>
-    <string name="remove_archive_feed_label">Cantzella / archìvia</string>
-    <string name="deleting_podcast_progress">Cantzellende podcast %1$d de %2$d…</string>
     <string name="reset_playback_position_label">Ripristina sa positzione de riprodutzione</string>
     <string name="no_items_selected_message">Nissunu elementu seletzionadu</string>
     <string name="delete_local_feed_confirmation_dialog_message">A cantzellare un\'episòdiu ddu bogat dae AntennaPod e cantzellat s\'archìviu multimediale dae s\'ispàtziu de archiviatzione de su dispositivu. Non podet èssere torradu a iscarrigare pro mèdiu de AntennaPod.</string>
@@ -846,9 +838,6 @@
     <string name="statistics_expected_next_episode_any_time">In cale si siat momentu</string>
     <string name="release_schedule_multiple_per_day">prus bortas a sa die</string>
     <string name="rss_address">Indiritzu RSS</string>
-    <string name="feed_delete_explanation_delete">Sa cantzelladura annullat sa sutiscritzione, includende totu is episòdios, is iscarrigamentos, sa cronologia de riprodutzione e is istatìsticas.</string>
-    <string name="feed_delete_explanation_archive">S\'archiviatzione cuat sa sutiscritzione dae sa lista e tzessat de chircare episòdios noos. Si cunservant is iscarrigamentos, is istatìsticas e s\'istadu de riprodutzione.</string>
-    <string name="archiving_podcast_progress">Archiviatzione in cursu de %1$d podcast de %2$d…</string>
     <string name="please_wait_before_refreshing">Abeta unu pagu in antis de torrare a atualizare is podcasts.</string>
     <plurals name="downloading_episodes_message">
         <item quantity="one">Iscarrigamentu in cursu de un\'episòdiu.</item>

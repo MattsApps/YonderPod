@@ -161,7 +161,6 @@
     <string name="show_feed_settings_label">Mostra impostazioni podcast</string>
     <string name="feed_settings_label">Impostazioni podcast</string>
     <string name="rename_feed_label">Rinomina</string>
-    <string name="remove_feed_label">Disiscriviti</string>
     <string name="share_label">Condividi</string>
     <string name="share_file_label">Condividi il file</string>
     <string name="load_complete_feed">Aggiorna podcast completo</string>
@@ -863,24 +862,13 @@
     <string name="statistics_expected_next_episode_any_time">A breve</string>
     <string name="release_schedule_multiple_per_day">più volte al giorno</string>
     <string name="cover_as_background">Copertina come sfondo</string>
-    <plurals name="num_subscriptions">
-        <item quantity="one">%d iscrizione</item>
-        <item quantity="many">%d di iscrizioni</item>
-        <item quantity="other">%d iscrizioni</item>
-    </plurals>
-    <string name="archive_feed_label_verb">Archivia</string>
     <string name="archive_feed_label_noun">Archivio</string>
     <string name="restore_archive_label">Ripristina</string>
-    <string name="remove_archive_feed_label">Disiscriviti / Archivia</string>
-    <string name="feed_delete_explanation_delete">Disiscrivendoti rimuoverai l\'iscrizione, compresi tutti i suoi episodi, download, cronologia riproduzioni e statistiche.</string>
-    <string name="feed_delete_explanation_archive">Archiviandola nasconderai l\'iscrizione dall\'elenco e smetterai di cercarne nuovi episodi. Download, statistiche e stato di riproduzione saranno mantenuti.</string>
     <string name="tag_untagged">Senza tag</string>
     <string name="no_archive_label">È possibile archiviare i podcast dalla schermata principale delle iscrizioni.</string>
     <string name="no_archive_head_label">Niente archiviato</string>
     <string name="general_expand_button">Espandi</string>
     <string name="general_collapse_button">Comprimi</string>
-    <string name="archiving_podcast_progress">Archiviando podcast %1$d di %2$d…</string>
-    <string name="deleting_podcast_progress">Disiscrizione dal podcast %1$d di %2$d in corso…</string>
     <string name="download_log_details_human_readable_reason_title">Stato</string>
     <string name="download_log_details_technical_reason_title">Dettagli tecnici</string>
     <string name="download_log_details_file_url_title">URL del file</string>
@@ -918,8 +906,6 @@
     <string name="statistics_label_short">Statistiche</string>
     <string name="favorite_episodes_label_short">Preferiti</string>
     <string name="feed_new_episodes_action_snackbar">Non può essere modificato quando il download automatico è abilitato.</string>
-    <string name="remove_restore_feed_label">Disiscriviti / Ripristina</string>
-    <string name="restoring_podcast_progress">Ripristino podcast %1$d di %2$d in corso…</string>
     <plurals name="added_to_favorites_message">
         <item quantity="one">%d episodio aggiunto ai preferiti.</item>
         <item quantity="many">%d di episodi aggiunti ai preferiti.</item>

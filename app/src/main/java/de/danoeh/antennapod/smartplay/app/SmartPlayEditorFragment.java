@@ -5,6 +5,7 @@ import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.text.TextUtils;
 import android.text.format.DateFormat;
 import android.util.Log;
@@ -12,6 +13,8 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -24,6 +27,9 @@ import androidx.annotation.NonNull;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.Nullable;
 import androidx.core.content.res.ResourcesCompat;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -86,6 +92,9 @@ public class SmartPlayEditorFragment extends Fragment {
 
     private long smartPlayId;
     private EditText nameView;
+    private TextView saveButton;
+    private boolean keyboardUp = false;
+    private long ignoreSaveUntil = 0;
     private TextView coverageWarning;
     private ChipGroup neverTags;
     private TextView hoursSummary;
@@ -173,10 +182,42 @@ public class SmartPlayEditorFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         smartPlayId = getArguments() != null ? getArguments().getLong(ARG_ID, -1) : -1;
         View root = inflater.inflate(R.layout.smartplay_editor_fragment, container, false);
-        root.findViewById(R.id.smartplay_save_button).setOnClickListener(v -> save());
+        saveButton = root.findViewById(R.id.smartplay_save_button);
+        saveButton.setOnClickListener(v -> {
+            if (isNaming()) {
+                hideKeyboard();
+            } else if (SystemClock.uptimeMillis() >= ignoreSaveUntil) {
+                save();
+            }
+        });
         root.findViewById(R.id.smartplay_cancel_button).setOnClickListener(v -> handleExit());
 
         nameView = root.findViewById(R.id.smartplay_name);
+        nameView.setOnFocusChangeListener((v, hasFocus) -> updateSaveButton());
+        nameView.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                hideKeyboard();
+                return true;
+            }
+            return false;
+        });
+        root.findViewById(R.id.smartplay_scroll).setOnTouchListener((v, event) -> {
+            if (event.getActionMasked() == MotionEvent.ACTION_MOVE && nameView.hasFocus()) {
+                hideKeyboard();
+            }
+            return false;
+        });
+        ViewCompat.setOnApplyWindowInsetsListener(root, (v, insets) -> {
+            Insets bars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            int ime = insets.getInsets(WindowInsetsCompat.Type.ime()).bottom;
+            keyboardUp = insets.isVisible(WindowInsetsCompat.Type.ime());
+            updateSaveButton();
+            int[] location = new int[2];
+            v.getLocationOnScreen(location);
+            int belowRoot = v.getRootView().getHeight() - (location[1] + v.getHeight());
+            v.setPadding(bars.left, bars.top, bars.right, Math.max(bars.bottom, ime - belowRoot));
+            return WindowInsetsCompat.CONSUMED;
+        });
         coverageWarning = root.findViewById(R.id.smartplay_coverage_warning);
         neverTags = root.findViewById(R.id.smartplay_never_tags);
         priorityContainer = root.findViewById(R.id.smartplay_priority_container);
@@ -279,7 +320,38 @@ public class SmartPlayEditorFragment extends Fragment {
         return loaded && nameView != null && !snapshot().equals(savedSnapshot);
     }
 
+    private boolean isNaming() {
+        return keyboardUp && nameView != null && nameView.hasFocus();
+    }
+
+    private void updateSaveButton() {
+        if (saveButton == null) {
+            return;
+        }
+        boolean naming = isNaming();
+        String label = getString(naming ? R.string.yonder_button_done : R.string.smartplay_save_lower);
+        if (!label.contentEquals(saveButton.getText())) {
+            saveButton.setText(label);
+            if (!naming) {
+                ignoreSaveUntil = SystemClock.uptimeMillis() + 500;
+            }
+        }
+    }
+
+    private void hideKeyboard() {
+        if (nameView == null) {
+            return;
+        }
+        InputMethodManager imm = (InputMethodManager) nameView.getContext()
+                .getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (imm != null) {
+            imm.hideSoftInputFromWindow(nameView.getWindowToken(), 0);
+        }
+        nameView.clearFocus();
+    }
+
     private void handleExit() {
+        hideKeyboard();
         if (!isDirty()) {
             clearDraft();
             leave();
@@ -381,6 +453,7 @@ public class SmartPlayEditorFragment extends Fragment {
     }
 
     private void leave() {
+        hideKeyboard();
         if (backCallback != null) {
             backCallback.setEnabled(false);
         }
@@ -407,7 +480,8 @@ public class SmartPlayEditorFragment extends Fragment {
             LoadResult result = new LoadResult();
             result.stored = smartPlayId >= 0 ? SmartPlayStore.getInstance(requireContext()).get(smartPlayId) : null;
             List<Feed> subscribed = new ArrayList<>();
-            result.allTitles = new HashMap<>();
+            // Shows deleted since 0.9.34 keep their name here, so rules still say "⚠ name (no longer subscribed)".
+            result.allTitles = new HashMap<>(DeletedShows.titles(requireContext()));
             for (Feed feed : DBReader.getFeedList()) {
                 result.allTitles.put(feed.getId(), title(feed));
                 if (feed.getState() == Feed.STATE_SUBSCRIBED) {

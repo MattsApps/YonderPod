@@ -143,7 +143,6 @@
     <string name="show_feed_settings_label">ポッドキャスト設定を表示</string>
     <string name="feed_settings_label">ポッドキャスト設定</string>
     <string name="rename_feed_label">ポッドキャスト名を変更</string>
-    <string name="remove_feed_label">ポッドキャストを削除</string>
     <string name="share_label">共有</string>
     <string name="share_file_label">ファイルを共有</string>
     <string name="load_complete_feed">ポッドキャストをすべて更新</string>

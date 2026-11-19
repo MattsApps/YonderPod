@@ -149,7 +149,6 @@
     <string name="show_feed_settings_label">顯示 Podcast 設定</string>
     <string name="feed_settings_label">Podcast 設定</string>
     <string name="rename_feed_label">重新命名</string>
-    <string name="remove_feed_label">取消訂閱</string>
     <string name="share_label">分享</string>
     <string name="share_file_label">分享檔案</string>
     <string name="load_complete_feed">更新所有 Podcast</string>
@@ -800,15 +799,8 @@
     </plurals>
     <string name="no_queue_items_inbox_has_items_label">暫無已排定的單集，但有新單集等著你！</string>
     <string name="no_queue_items_inbox_has_items_button_label">移至最新單集</string>
-    <plurals name="num_subscriptions">
-        <item quantity="other">%d 個訂閱</item>
-    </plurals>
-    <string name="archive_feed_label_verb">封存</string>
     <string name="archive_feed_label_noun">封存</string>
     <string name="restore_archive_label">復原</string>
-    <string name="remove_archive_feed_label">取消訂閱 / 封存</string>
-    <string name="feed_delete_explanation_delete">取消訂閱將移除包括其所有集數、下載內容、播放紀錄和統計資料。</string>
-    <string name="feed_delete_explanation_archive">封存會將訂閱從清單中隱藏，並停止尋找新集數。下載、統計資料和播放狀態將被保留。</string>
     <string name="please_wait_before_refreshing">請等待一段時間後再重新載入 Podcasts 。</string>
     <string name="transcript_follow_audio_label">跟隨音訊</string>
     <string name="already_downloaded">單集已下載</string>
@@ -821,8 +813,6 @@
     <string name="no_archive_label">你可以在主要的訂閱頁面中封存 Podcast 節目。</string>
     <string name="general_expand_button">展開</string>
     <string name="general_collapse_button">收合</string>
-    <string name="archiving_podcast_progress">正在歸檔第 %1$d 個 Podcast，共 %2$d 個…</string>
-    <string name="deleting_podcast_progress">正在取消訂閱第 %1$d 個 Podcast，共 %2$d 個…</string>
     <string name="download_log_details_human_readable_reason_title">狀態</string>
     <string name="download_log_details_technical_reason_title">技術細節</string>
     <string name="download_log_details_file_url_title">檔案 URL</string>
@@ -856,8 +846,6 @@
     <string name="statistics_label_short">統計</string>
     <string name="favorite_episodes_label_short">最愛</string>
     <string name="feed_new_episodes_action_snackbar">啟用自動下載時無法更改。</string>
-    <string name="remove_restore_feed_label">取消訂閱 / 恢復</string>
-    <string name="restoring_podcast_progress">正在還原第 %1$d 個 Podcast，共 %2$d 個…</string>
     <plurals name="added_to_favorites_message">
         <item quantity="other">已將 %d 集加入最愛。</item>
     </plurals>

@@ -535,4 +535,46 @@ public abstract class PlaybackController {
         }, MoreExecutors.directExecutor());
 
     }
+
+    /**
+     * Deleting a show or station while something of it is loaded (0.9.34): tells the player to stop at once and
+     * unload it with nothing next, then runs {@code then} on the main thread. {@code then} always runs, once:
+     * after the player has answered, or after 3 seconds if it doesn't (deleting also stops it as a backup).
+     * Call on the main thread.
+     */
+    public static void unloadThen(Context context, Runnable then) {
+        Context app = context.getApplicationContext();
+        android.os.Handler main = new android.os.Handler(android.os.Looper.getMainLooper());
+        boolean[] done = {false};
+        Runnable finish = () -> {
+            if (!done[0]) {
+                done[0] = true;
+                then.run();
+            }
+        };
+        main.postDelayed(finish, 3000);
+        SessionToken sessionToken = new SessionToken(app, new ComponentName(app, Media3PlaybackService.class));
+        ListenableFuture<MediaController> controllerFuture = new MediaController.Builder(app, sessionToken)
+                .buildAsync();
+        controllerFuture.addListener(() -> {
+            MediaController connected = null;
+            try {
+                connected = controllerFuture.get();
+            } catch (ExecutionException | InterruptedException e) {
+                Log.e(TAG, "Unload: couldn't reach the player", e);
+            }
+            if (connected == null) {
+                finish.run();
+                return;
+            }
+            final MediaController controller = connected;
+            ListenableFuture<androidx.media3.session.SessionResult> result = controller.sendCustomCommand(
+                    de.danoeh.antennapod.playback.service.internal.MediaLibrarySessionCallback
+                            .SESSION_COMMAND_UNLOAD, android.os.Bundle.EMPTY);
+            result.addListener(() -> {
+                controller.release();
+                finish.run();
+            }, ContextCompat.getMainExecutor(app));
+        }, ContextCompat.getMainExecutor(app));
+    }
 }

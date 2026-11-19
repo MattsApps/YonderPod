@@ -146,7 +146,6 @@
     <string name="show_feed_settings_label">Покажи настройки за подкаста</string>
     <string name="feed_settings_label">Настройки за подкаста</string>
     <string name="rename_feed_label">Преименувай</string>
-    <string name="remove_feed_label">Отписване</string>
     <string name="share_label">Сподели</string>
     <string name="share_file_label">Сподели файл</string>
     <string name="load_complete_feed">Обнови целия подкаст</string>
@@ -323,11 +322,8 @@
     <string name="favorite_episodes_label_short">Любими</string>
     <string name="feed_new_episodes_action_nothing">Няма нищо</string>
     <string name="feed_new_episodes_action_snackbar">Не може да бъде променено докато автоматичното изтегляне е включено.</string>
-    <string name="archive_feed_label_verb">Архивирай</string>
     <string name="archive_feed_label_noun">Архив</string>
     <string name="restore_archive_label">Реставриране</string>
-    <string name="remove_archive_feed_label">Отписване / Архивиране</string>
-    <string name="remove_restore_feed_label">Отписване / Реставрация</string>
     <string name="delete_tag_confirmation">Моля потвърдете, че искате да изтриете тага \"%1$s\".</string>
     <string name="delete_downloads_played">Изтрий гледани</string>
     <string name="delete_downloads_played_confirmation">Моля потвърдете, че искате да изтриете всички от гледаните изтеглени.</string>

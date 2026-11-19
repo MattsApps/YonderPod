@@ -62,7 +62,6 @@
     <string name="retry_label">Yenidən cəhd edin</string>
     <string name="auto_download_label">Avtomatik yükləməyə daxil edin</string>
     <string name="show_info_label">Məlumatı göstər</string>
-    <string name="remove_feed_label">Podcastı silin</string>
     <!--actions on feeditems-->
   <string name="download_label">Yüklə</string>
     <string name="play_label">Dinlə</string>

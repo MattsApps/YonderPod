@@ -155,7 +155,6 @@
     <string name="show_feed_settings_label">Vis podcast-indstillinger</string>
     <string name="feed_settings_label">Podcast-indstillinger</string>
     <string name="rename_feed_label">Omdøb</string>
-    <string name="remove_feed_label">Afmeld</string>
     <string name="share_label">Del</string>
     <string name="share_file_label">Del fil</string>
     <string name="load_complete_feed">Opdater hele podcasten</string>
@@ -819,16 +818,8 @@
     <string name="statistics_expected_next_episode_any_time">Når som helst nu</string>
     <string name="release_schedule_multiple_per_day">flere gange om dagen</string>
     <string name="cover_as_background">Cover som baggrund</string>
-    <plurals name="num_subscriptions">
-        <item quantity="one">%d abonnement</item>
-        <item quantity="other">%d abonnementer</item>
-    </plurals>
-    <string name="archive_feed_label_verb">Arkivér</string>
     <string name="archive_feed_label_noun">Arkiv</string>
     <string name="restore_archive_label">Gendan</string>
-    <string name="remove_archive_feed_label">Afmeld / arkivér</string>
-    <string name="feed_delete_explanation_delete">Afmelding fjerner abonnementet, herunder alle dets afsnit, overførsler, afspilningshistorik og statistikker.</string>
-    <string name="feed_delete_explanation_archive">Arkivering skjuler abonnementet fra listen og stopper med at søge efter nye afsnit. Overførsler, statistik og afspilningsstatus bevares.</string>
     <string name="tag_untagged">Uden etikette</string>
     <plurals name="mobile_download_notice">
         <item quantity="one">Overfører via mobildataforbindelse i det næste %d minut</item>
@@ -850,8 +841,6 @@
     </plurals>
     <string name="general_expand_button">Udvid</string>
     <string name="general_collapse_button">Fold sammen</string>
-    <string name="archiving_podcast_progress">Arkiverer podcast %1$d af %2$d…</string>
-    <string name="deleting_podcast_progress">Afmelder fra podcast %1$d af %2$d…</string>
     <string name="download_log_details_human_readable_reason_title">Status</string>
     <string name="download_log_details_technical_reason_title">Tekniske detaljer</string>
     <string name="download_log_details_file_url_title">Fil-URL</string>
@@ -886,8 +875,6 @@
     </plurals>
     <string name="favorite_episodes_label_short">Favoritter</string>
     <string name="feed_new_episodes_action_snackbar">Kan ikke ændres, når automatisk overførsel er aktiveret.</string>
-    <string name="remove_restore_feed_label">Afmeld / gendan</string>
-    <string name="restoring_podcast_progress">Gendanner podcast %1$d af %2$d…</string>
     <plurals name="added_to_favorites_message">
         <item quantity="one">%d afsnit tilføjet til favoritter.</item>
         <item quantity="other">%d afsnit tilføjet til favoritter.</item>

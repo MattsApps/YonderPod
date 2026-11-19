@@ -32,6 +32,7 @@ import de.danoeh.antennapod.smartplay.app.RadioSurface;
 import de.danoeh.antennapod.smartplay.app.RecordShowDialog;
 import de.danoeh.antennapod.smartplay.app.RecordingStore;
 import de.danoeh.antennapod.smartplay.app.Recordings;
+import de.danoeh.antennapod.smartplay.app.ShowActions;
 import de.danoeh.antennapod.smartplay.app.CategoryChips;
 import de.danoeh.antennapod.smartplay.app.CategoryPrompt;
 import de.danoeh.antennapod.ui.screen.feed.preferences.TagSettingsDialog;
@@ -297,7 +298,6 @@ public class FeedItemlistFragment extends Fragment implements AdapterView.OnItem
         }
         if (feed.getState() == Feed.STATE_NOT_SUBSCRIBED) {
             viewBinding.toolbar.getMenu().findItem(R.id.sort_items).setVisible(false);
-            viewBinding.toolbar.getMenu().findItem(R.id.refresh_item).setVisible(false);
             viewBinding.toolbar.getMenu().findItem(R.id.action_search).setVisible(false);
         } else if (feed.getState() == Feed.STATE_ARCHIVED) {
             viewBinding.toolbar.getMenu().findItem(R.id.sort_items).setVisible(false);
@@ -310,12 +310,13 @@ public class FeedItemlistFragment extends Fragment implements AdapterView.OnItem
         viewBinding.toolbar.getMenu().findItem(R.id.record_stop).setVisible(recordings)
                 .setTitle(recordingStopped ? R.string.record_start_show : R.string.record_stop_show);
         viewBinding.toolbar.getMenu().findItem(R.id.record_play_in).setVisible(recordings);
-        if (recordings) {
-            // A recorded show is deleted through Yonder's own path, the same as the station page's long press.
-            viewBinding.toolbar.getMenu().findItem(R.id.remove_archive_feed).setVisible(true)
-                    .setTitle(R.string.record_delete_show);
-            viewBinding.toolbar.getMenu().findItem(R.id.remove_restore_feed).setVisible(false);
-        }
+        // A show's list (0.9.34): the same four items as the long press in Podcasts Tend (ShowActions).
+        boolean showList = ShowActions.applies(feed);
+        viewBinding.toolbar.getMenu().findItem(R.id.show_refresh).setVisible(showList);
+        viewBinding.toolbar.getMenu().findItem(R.id.show_download_settings).setVisible(showList);
+        viewBinding.toolbar.getMenu().findItem(R.id.show_category).setVisible(showList);
+        viewBinding.toolbar.getMenu().findItem(R.id.show_delete).setVisible(showList || recordings)
+                .setTitle(recordings ? R.string.record_delete_show : R.string.show_menu_delete);
         viewBinding.toolbar.getMenu().findItem(R.id.book_mark).setVisible(subscribed).setChecked(isBook);
         viewBinding.toolbar.getMenu().findItem(R.id.book_mark_finished).setVisible(subscribed && isBook);
     }
@@ -338,9 +339,6 @@ public class FeedItemlistFragment extends Fragment implements AdapterView.OnItem
         if (item.getItemId() == R.id.visit_website_item) {
             IntentUtils.openInBrowser(getContext(), feed.getLink());
             return true;
-        } else if (item.getItemId() == R.id.refresh_item) {
-            FeedUpdateManager.getInstance().runOnceOrAsk(getContext(), feed);
-            return true;
         } else if (item.getItemId() == R.id.refresh_complete_item) {
             new Thread(() -> {
                 feed.setNextPageLink(feed.getDownloadUrl());
@@ -356,13 +354,12 @@ public class FeedItemlistFragment extends Fragment implements AdapterView.OnItem
         } else if (item.getItemId() == R.id.sort_items) {
             SingleFeedSortDialog.newInstance(feed).show(getChildFragmentManager(), "SortDialog");
             return true;
-        } else if ((item.getItemId() == R.id.remove_archive_feed || item.getItemId() == R.id.remove_restore_feed)
-                && Recordings.isRecordingsFeed(feed)) {
-            handleRecordingMenu(R.id.remove_archive_feed);
+        } else if (item.getItemId() == R.id.show_delete && Recordings.isRecordingsFeed(feed)) {
+            // A recorded show is deleted through Yonder's own path, the same as the station page's long press.
+            handleRecordingMenu(R.id.show_delete);
             return true;
-        } else if (item.getItemId() == R.id.remove_archive_feed || item.getItemId() == R.id.remove_restore_feed) {
-            new RemoveFeedDialogClose(Collections.singletonList(feed)).show(getParentFragmentManager(), null);
-            return true;
+        } else if (ShowActions.isShowAction(item.getItemId())) {
+            return ShowActions.handle(this, item.getItemId(), feed, showListener);
         } else if (item.getItemId() == R.id.record_edit || item.getItemId() == R.id.record_stop
                 || item.getItemId() == R.id.record_play_in) {
             handleRecordingMenu(item.getItemId());
@@ -395,7 +392,7 @@ public class FeedItemlistFragment extends Fragment implements AdapterView.OnItem
                         Toast.makeText(appContext, R.string.recording_stopped, Toast.LENGTH_LONG).show();
                     } else if (itemId == R.id.record_edit) {
                         RecordShowDialog.edit(requireContext(), show);
-                    } else if (itemId == R.id.remove_archive_feed) {
+                    } else if (itemId == R.id.show_delete) {
                         RecordShowDialog.confirmRemove(requireContext(), show, () -> {
                             if (isAdded() && getActivity() != null
                                     && getActivity().getSupportFragmentManager().getBackStackEntryCount() > 0) {
@@ -411,27 +408,29 @@ public class FeedItemlistFragment extends Fragment implements AdapterView.OnItem
                 }, error -> Log.e(TAG, Log.getStackTraceString(error)));
     }
 
-    public static class RemoveFeedDialogClose extends RemoveFeedDialog {
-        public RemoveFeedDialogClose(@NonNull List<Feed> feeds) {
-            super(feeds);
-        }
-
-        public RemoveFeedDialogClose() {
-            super();
+    private final ShowActions.Listener showListener = new ShowActions.Listener() {
+        @Override
+        public void onChanged() {
+            // Download settings: nothing on this page shows them. Categories update through FeedListUpdateEvent.
         }
 
         @Override
-        protected void onRemoveButtonPressed() {
-            // Make sure fragment is hidden before actually starting to delete
+        public void onRefreshing() {
+        }
+
+        @Override
+        public void onDeleting() {
+            // Close this page before the show goes, as AntennaPod's sheet did.
+            if (!isAdded() || getActivity() == null) {
+                return;
+            }
             if (getActivity().getSupportFragmentManager().getBackStackEntryCount() > 0) {
                 getActivity().getSupportFragmentManager().popBackStack();
             } else {
                 ((MainActivity) getActivity()).loadFragment(UserPreferences.getDefaultPage(), null);
             }
-            getActivity().getSupportFragmentManager().executePendingTransactions();
-            super.onRemoveButtonPressed();
         }
-    }
+    };
 
     @Override
     public boolean onContextItemSelected(@NonNull MenuItem item) {

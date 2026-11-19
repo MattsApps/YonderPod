@@ -45,7 +45,6 @@
     <string name="show_feed_settings_label">Покажи подесувања на подкаст</string>
     <string name="feed_settings_label">Подкаст подешувања</string>
     <string name="rename_feed_label">Преименувај подкаст</string>
-    <string name="remove_feed_label">Извади подкаст</string>
     <string name="delete_label">Избриши</string>
     <string name="skip_episode_label">Прескокни епизода</string>
     <string name="download_error_details">Детали</string>

@@ -35,6 +35,7 @@ import de.danoeh.antennapod.playback.service.PlaybackServiceStarter;
 import de.danoeh.antennapod.smartplay.radio.StreamLinks;
 import de.danoeh.antennapod.storage.preferences.RadioPreferences;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.Completable;
 import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.disposables.Disposable;
@@ -220,15 +221,15 @@ public class RadioFragment extends Fragment {
         new MaterialAlertDialogBuilder(requireContext())
                 .setTitle(getString(R.string.radio_delete_question, station.getTitle()))
                 .setPositiveButton(R.string.yonder_button_delete_station, (dialog, which) ->
-                        disposables.add(Single.fromCallable(() -> Radio.delete(app, station))
-                                .subscribeOn(Schedulers.io())
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe(deleted -> {
-                                    if (!deleted) {
-                                        Toast.makeText(app, R.string.radio_delete_playing, Toast.LENGTH_LONG).show();
-                                    }
-                                    load();
-                                }, error -> Log.e(TAG, Log.getStackTraceString(error)))))
+                        // Playing live, behind live, a recording of it, or recording now: all stop at once (0.9.34).
+                        StopNow.ifLoadedThen(app, media -> Radio.isLoadedFrom(app, station, media), () -> {
+                            Disposable ignored = Completable.fromAction(() -> Radio.delete(app, station))
+                                    .subscribeOn(Schedulers.io())
+                                    .observeOn(AndroidSchedulers.mainThread())
+                                    // Radio.delete posts Radio.ChangedEvent, which reloads the list.
+                                    .subscribe(() -> Log.d(TAG, "Deleted " + station.getTitle()),
+                                            error -> Log.e(TAG, Log.getStackTraceString(error)));
+                        }))
                 .setNegativeButton(R.string.yonder_button_cancel, null)
                 .show();
     }

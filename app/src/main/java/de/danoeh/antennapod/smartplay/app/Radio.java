@@ -131,22 +131,44 @@ public final class Radio {
         EventBus.getDefault().post(new ChangedEvent());
     }
 
-    public static boolean delete(Context context, FeedItem station) {
-        if (isPlaying(station)) {
-            return false;
+    /**
+     * Deletes a station and everything recorded from it, now (0.9.34). Callers stop playback first (live, live
+     * pause or one of its recordings: see RadioFragment). For each recorded show: a recording running now is
+     * thrown away, its schedule and alarms are cancelled, held and saved recordings are deleted with their files,
+     * and the show's page goes (Recordings.remove, the same as "delete this show").
+     */
+    public static void delete(Context context, FeedItem station) {
+        for (RecordingStore.Show show : Recordings.showsFor(context, station.getId())) {
+            try {
+                Recordings.remove(context, show);
+            } catch (Exception e) {
+                Log.e(TAG, "Could not delete recorded show " + show.name, e);
+            }
         }
         try {
             DBWriter.deleteFeedItems(context, Collections.singletonList(station)).get();
             RadioPreferences.remove(station.getId());
-            for (RecordingStore.Show show : Recordings.showsFor(context, station.getId())) {
-                Recordings.forget(context, show);
-            }
             Recordings.dropDeadEntries();
         } catch (Exception e) {
             Log.e(TAG, "Could not delete station", e);
         }
         EventBus.getDefault().post(new ChangedEvent());
-        return true;
+    }
+
+    /** True if what's loaded is this station, live or behind live, or one of its recordings. Off the main thread. */
+    static boolean isLoadedFrom(Context context, FeedItem station, FeedMedia loaded) {
+        if (loaded.getItem() == null) {
+            return false;
+        }
+        if (loaded.getItem().getId() == station.getId()) {
+            return true;
+        }
+        for (RecordingStore.Show show : Recordings.showsFor(context, station.getId())) {
+            if (loaded.getItem().getFeedId() == show.feedId) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private static final String STATE_PREFS = "YonderRadioState";

@@ -167,7 +167,6 @@
     <string name="show_feed_settings_label">Показать настройки подкаста</string>
     <string name="feed_settings_label">Настройки подкаста</string>
     <string name="rename_feed_label">Переименовать</string>
-    <string name="remove_feed_label">Отписаться</string>
     <string name="share_label">Поделиться</string>
     <string name="share_file_label">Поделиться файлом</string>
     <string name="load_complete_feed">Обновить весь подкаст</string>
@@ -849,12 +848,8 @@
     <string name="play_this_to_seek_position_message">Чтобы перейти к определённой позиции, необходимо воспроизвести выпуск</string>
     <string name="transcript_follow_audio_label">Следовать за аудио</string>
     <string name="no_queue_items_inbox_has_items_label">Нет выпусков на очереди, но у вас есть новые выпуски!</string>
-    <string name="remove_archive_feed_label">Отписаться / Архивировать</string>
-    <string name="archive_feed_label_verb">Архивировать</string>
     <string name="archive_feed_label_noun">Архив</string>
     <string name="restore_archive_label">Восстанановить</string>
-    <string name="feed_delete_explanation_delete">При удалении подписка будет удалена вместе со всеми выпусками, загрузками, историей прослушивания и статистикой.</string>
-    <string name="feed_delete_explanation_archive">Архивация скрывает подписку из списка и прекращает поиск новых серий. Сохраняются загрузки, статистика и состояние воспроизведения.</string>
     <string name="please_wait_before_refreshing">Пожалуйста, подождите некоторое время, прежде чем снова обновлять подкасты.</string>
     <string name="download_log_details_human_readable_reason_title">Статус</string>
     <string name="download_log_details_technical_reason_title">Технические детали</string>
@@ -883,14 +878,6 @@
     <string name="statistics_expected_next_episode_any_time">В любое время</string>
     <string name="release_schedule_multiple_per_day">несколько раз в день</string>
     <string name="cover_as_background">Обложка в качестве фона</string>
-    <string name="archiving_podcast_progress">Архивирование подкаста %1$d из %2$d…</string>
-    <string name="deleting_podcast_progress">Отписка от %1$d подкаста из %2$d…</string>
-    <plurals name="num_subscriptions">
-        <item quantity="one">%d подписка</item>
-        <item quantity="few">%d подписки</item>
-        <item quantity="many">%d подписок</item>
-        <item quantity="other">%d подписок</item>
-    </plurals>
     <string name="report_bug_crash_log_message">Создано: %1$s.</string>
     <string name="general_expand_button">Расширить</string>
     <string name="general_collapse_button">Уменьшить</string>
@@ -949,8 +936,6 @@
     <string name="statistics_label_short">Данные</string>
     <string name="favorite_episodes_label_short">Избранное</string>
     <string name="feed_new_episodes_action_snackbar">Нельзя изменить при включённой автозагрузке.</string>
-    <string name="remove_restore_feed_label">Отписаться / Восстановить</string>
-    <string name="restoring_podcast_progress">Восстановление %1$d подкаста из %2$d…</string>
     <plurals name="added_to_favorites_message">
         <item quantity="one">%d выпуск добавлен в избранное.</item>
         <item quantity="few">%d выпуска добавлено в избранное.</item>

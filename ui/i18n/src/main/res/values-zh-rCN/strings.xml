@@ -149,7 +149,6 @@
     <string name="show_feed_settings_label">显示播客设置</string>
     <string name="feed_settings_label">播客设置</string>
     <string name="rename_feed_label">重命名</string>
-    <string name="remove_feed_label">取消订阅</string>
     <string name="share_label">分享</string>
     <string name="share_file_label">分享文件</string>
     <string name="load_complete_feed">刷新所有播客</string>
@@ -799,22 +798,13 @@
     <string name="statistics_expected_next_episode_any_time">现在随时</string>
     <string name="release_schedule_multiple_per_day">每天多次</string>
     <string name="cover_as_background">封面作为背景</string>
-    <plurals name="num_subscriptions">
-        <item quantity="other">%d 个订阅</item>
-    </plurals>
-    <string name="archive_feed_label_verb">归档</string>
     <string name="archive_feed_label_noun">归档</string>
     <string name="restore_archive_label">恢复</string>
-    <string name="remove_archive_feed_label">取消订阅/归档</string>
     <string name="tag_untagged">无标签</string>
-    <string name="feed_delete_explanation_delete">取消订阅会移除订阅，包括所有单集、下载内容、播放记录和统计数据。</string>
-    <string name="feed_delete_explanation_archive">归档操作会将订阅从列表中隐藏并停止查找新单集。下载内容、统计数据和播放状态将保留。</string>
     <string name="no_archive_head_label">无归档内容</string>
     <string name="no_archive_label">您可以从主订阅屏幕归档播客。</string>
     <string name="general_expand_button">展开</string>
     <string name="general_collapse_button">收起</string>
-    <string name="archiving_podcast_progress">正在归档第 %1$d 个播客，共 %2$d 个…</string>
-    <string name="deleting_podcast_progress">正在取消订阅第 %1$d 个播客，共 %2$d 个…</string>
     <string name="download_log_details_human_readable_reason_title">状态</string>
     <string name="download_log_details_technical_reason_title">技术详情</string>
     <string name="download_log_details_file_url_title">文件 URL</string>
@@ -848,8 +838,6 @@
     <string name="statistics_label_short">统计数字</string>
     <string name="favorite_episodes_label_short">收藏</string>
     <string name="feed_new_episodes_action_snackbar">启用自动下载时无法更改。</string>
-    <string name="remove_restore_feed_label">取消订阅/恢复</string>
-    <string name="restoring_podcast_progress">正在恢复第 %1$d 个播客，共 %2$d 个…</string>
     <plurals name="added_to_favorites_message">
         <item quantity="other">%d 个单集已添加到收藏。</item>
     </plurals>

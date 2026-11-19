@@ -8,6 +8,10 @@ import androidx.core.app.NotificationManagerCompat;
 import androidx.preference.PreferenceManager;
 import androidx.work.WorkManager;
 
+import de.danoeh.antennapod.model.feed.Feed;
+import de.danoeh.antennapod.smartplay.app.DeletedShows;
+import de.danoeh.antennapod.storage.database.DBReader;
+import de.danoeh.antennapod.storage.database.DBWriter;
 import de.danoeh.antennapod.system.CrashReportWriter;
 import de.danoeh.antennapod.net.download.serviceinterface.FeedUpdateManager;
 import org.apache.commons.lang3.StringUtils;
@@ -193,6 +197,33 @@ public class PreferenceUpgrader {
         if (oldVersion < 4000935) {
             removeOldSync(context);
         }
+        if (oldVersion < 4000936) {
+            deleteArchivedShows(context);
+        }
+    }
+
+    /**
+     * 0.9.34 removed archiving (Matt, 18 Nov: archived shows should be deleted). On the first start after
+     * updating, any show archived with AntennaPod's old sheet is deleted like any other deleted show: its
+     * episodes leave Up Next, its downloads are deleted and the show goes. Its name is kept for Smart Play
+     * rules that point at it. Runs off the main thread, once.
+     */
+    private static void deleteArchivedShows(Context context) {
+        Context app = context.getApplicationContext();
+        new Thread(() -> {
+            try {
+                for (Feed feed : DBReader.getFeedList()) {
+                    if (feed.getState() != Feed.STATE_ARCHIVED) {
+                        continue;
+                    }
+                    Log.d("PreferenceUpgrader", "Deleting archived show " + feed.getTitle());
+                    DeletedShows.remember(app, feed.getId(), feed.getTitle());
+                    DBWriter.deleteFeed(app, feed.getId()).get();
+                }
+            } catch (Exception e) {
+                Log.e("PreferenceUpgrader", "Could not delete archived shows", e);
+            }
+        }, "DeleteArchivedShows").start();
     }
 
     /**

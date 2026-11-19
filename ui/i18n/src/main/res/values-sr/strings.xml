@@ -123,7 +123,6 @@
     <string name="show_feed_settings_label">Прикажи подешавања подкаста</string>
     <string name="feed_settings_label">Подешавања подкаста</string>
     <string name="rename_feed_label">Преименуј</string>
-    <string name="remove_feed_label">Обриши</string>
     <string name="load_complete_feed">Освежи цео подкаст</string>
     <string name="multi_select">Вишеструки избор</string>
     <string name="select_all_above">Изабери све изнад</string>
@@ -810,19 +809,8 @@
     <string name="no_queue_items_inbox_has_items_button_label">Иди у сандуче</string>
     <string name="general_expand_button">Прошири</string>
     <string name="general_collapse_button">Умањи</string>
-    <plurals name="num_subscriptions">
-        <item quantity="one">%d претплата</item>
-        <item quantity="few">%d претплате</item>
-        <item quantity="other">%d претплата</item>
-    </plurals>
-    <string name="archive_feed_label_verb">Архивирај</string>
     <string name="archive_feed_label_noun">Архива</string>
     <string name="restore_archive_label">Поврати</string>
-    <string name="remove_archive_feed_label">Обриши или архивирај</string>
-    <string name="feed_delete_explanation_delete">Брисање уклања претплату укључујући све њене епизоде, преузимања, историју репродукције и статистике.</string>
-    <string name="feed_delete_explanation_archive">Архивирање сакрива претплату са листе и прекида тражење нових епизода. Преузимања, статистике и стање репродукције су сачувани.</string>
-    <string name="archiving_podcast_progress">Архивира се поткаст %1$d од %2$d…</string>
-    <string name="deleting_podcast_progress">Брише се поткаст %1$d oд %2$d…</string>
     <string name="please_wait_before_refreshing">Молимо те да сачекаш неко време пре поновног освежавања поткаста.</string>
     <plurals name="marked_as_played_message">
         <item quantity="one">%d епизода означена као репродукована.</item>

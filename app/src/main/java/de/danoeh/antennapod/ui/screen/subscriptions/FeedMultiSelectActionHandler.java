@@ -18,7 +18,6 @@ import de.danoeh.antennapod.smartplay.app.DownloadSettingsDialog;
 import de.danoeh.antennapod.storage.database.DBWriter;
 import de.danoeh.antennapod.databinding.PlaybackSpeedFeedSettingDialogBinding;
 import de.danoeh.antennapod.ui.common.ConfirmationDialog;
-import de.danoeh.antennapod.ui.screen.feed.RemoveFeedDialog;
 import de.danoeh.antennapod.ui.screen.feed.preferences.TagSettingsDialog;
 import de.danoeh.antennapod.model.feed.Feed;
 import de.danoeh.antennapod.model.feed.FeedPreferences;
@@ -45,9 +44,7 @@ public class FeedMultiSelectActionHandler {
         if (selectedItems.isEmpty()) {
             return;
         }
-        if (id == R.id.remove_archive_feed || id == R.id.remove_restore_feed) {
-            new RemoveFeedDialog(selectedItems).show(activity.getSupportFragmentManager(), null);
-        } else if (id == R.id.notify_new_episodes) {
+        if (id == R.id.notify_new_episodes) {
             notifyNewEpisodesPrefHandler();
         } else if (id == R.id.keep_updated) {
             keepUpdatedPrefHandler();

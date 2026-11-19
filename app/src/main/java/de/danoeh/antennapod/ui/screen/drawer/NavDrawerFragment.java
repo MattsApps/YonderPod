@@ -58,7 +58,6 @@ import de.danoeh.antennapod.ui.MenuItemUtils;
 import de.danoeh.antennapod.storage.database.DBReader;
 import de.danoeh.antennapod.storage.database.NavDrawerData;
 import de.danoeh.antennapod.smartplay.app.ScheduleText;
-import de.danoeh.antennapod.ui.screen.feed.RemoveFeedDialog;
 import de.danoeh.antennapod.ui.screen.feed.RenameFeedDialog;
 import de.danoeh.antennapod.ui.screen.subscriptions.SubscriptionsFilterDialog;
 import de.danoeh.antennapod.event.FeedItemEvent;
@@ -197,34 +196,10 @@ public class NavDrawerFragment extends Fragment implements SharedPreferences.OnS
 
     private boolean onFeedContextMenuClicked(Feed feed, MenuItem item) {
         final int itemId = item.getItemId();
-        if (itemId == R.id.remove_archive_feed || itemId == R.id.remove_restore_feed) {
-            new RemoveFeedDialogClose(Collections.singletonList(feed)).show(getParentFragmentManager(), null);
-            return true;
-        }
         if (FeedMenuHandler.onMenuItemClicked(this, itemId, feed)) {
             return true;
         }
         return super.onContextItemSelected(item);
-    }
-
-    public static class RemoveFeedDialogClose extends RemoveFeedDialog {
-        public RemoveFeedDialogClose(@NonNull List<Feed> feeds) {
-            super(feeds);
-        }
-
-        public RemoveFeedDialogClose() {
-            super();
-        }
-
-        @Override
-        protected void onRemoveButtonPressed() {
-            if (String.valueOf(feeds.get(0).getId()).equals(getLastNavFragment(getContext()))) {
-                // Make sure fragment is hidden before actually starting to delete
-                ((MainActivity) getActivity()).loadFragment(UserPreferences.getDefaultPage(), null);
-                getActivity().getSupportFragmentManager().executePendingTransactions();
-            }
-            super.onRemoveButtonPressed();
-        }
     }
 
     private boolean onTagContextMenuClicked(NavDrawerData.TagItem drawerItem, MenuItem item) {

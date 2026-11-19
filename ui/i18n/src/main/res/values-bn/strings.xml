@@ -120,7 +120,6 @@
     <string name="show_feed_settings_label">পডকাস্ট সেটিংস দেখান</string>
     <string name="feed_settings_label">পডকাস্ট সেটিংস</string>
     <string name="rename_feed_label">পডকাস্টের নাম পরিবর্তন করুন</string>
-    <string name="remove_feed_label">পডকাস্ট সরান</string>
     <string name="share_label">শেয়ার করুন</string>
     <string name="load_complete_feed">সম্পূর্ণ পডকাস্ট রিফ্রেশ করুন</string>
     <string name="multi_select">একাধিক নির্বাচন করুন</string>

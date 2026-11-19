@@ -147,7 +147,6 @@
     <string name="show_feed_settings_label">Podcastinstellingen tonen</string>
     <string name="feed_settings_label">Podcastinstellingen</string>
     <string name="rename_feed_label">Hernoemen</string>
-    <string name="remove_feed_label">Verwijderen</string>
     <string name="share_label">Delen</string>
     <string name="share_file_label">Bestand delen</string>
     <string name="load_complete_feed">Volledige podcast vernieuwen</string>
@@ -819,16 +818,8 @@
     <string name="statistics_expected_next_episode_any_time">Elk moment</string>
     <string name="release_schedule_multiple_per_day">Meerdere keren per dag</string>
     <string name="cover_as_background">Omslagafbeelding als achtergrond</string>
-    <plurals name="num_subscriptions">
-        <item quantity="one">Één abonnement</item>
-        <item quantity="other">%d abonnementen</item>
-    </plurals>
-    <string name="archive_feed_label_verb">Archiveren</string>
     <string name="archive_feed_label_noun">Archief</string>
     <string name="restore_archive_label">Herstellen</string>
-    <string name="remove_archive_feed_label">Verwijderen / archivereren</string>
-    <string name="feed_delete_explanation_delete">Verwijderen verwijdert ALLE afleveringen inclusief downloads, afspeelgeschiedenis, en statistieken.</string>
-    <string name="feed_delete_explanation_archive">Archiveren verbergt het van de abonnementenlijst en stopt automatische updates. Downloads, statistieken en afspeelstatus worden behouden.</string>
     <string name="tag_untagged">Ongelabeld</string>
     <string name="general_expand_button">Toon</string>
     <string name="general_collapse_button">Verberg</string>

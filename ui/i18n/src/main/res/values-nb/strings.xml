@@ -147,7 +147,6 @@
     <string name="show_feed_settings_label">Vis podkastinnstillinger</string>
     <string name="feed_settings_label">Podkastinnstillinger</string>
     <string name="rename_feed_label">Gi nytt navn</string>
-    <string name="remove_feed_label">Avslutt abonnement</string>
     <string name="share_label">Del</string>
     <string name="share_file_label">Del fil</string>
     <string name="load_complete_feed">Oppdater hele podkasten</string>
@@ -835,21 +834,11 @@
     <string name="statistics_expected_next_episode_any_time">Når som helst</string>
     <string name="release_schedule_multiple_per_day">flere ganger daglig</string>
     <string name="cover_as_background">Omslagsbilde som bakgrunn</string>
-    <plurals name="num_subscriptions">
-        <item quantity="one">%d abonnement</item>
-        <item quantity="other">%d abonnementer</item>
-    </plurals>
-    <string name="archive_feed_label_verb">Arkiver</string>
     <string name="archive_feed_label_noun">Arkiv</string>
     <string name="restore_archive_label">Gjenopprett</string>
-    <string name="remove_archive_feed_label">Avslutt abonnement / arkiver</string>
-    <string name="feed_delete_explanation_delete">Abonnementsavslutting fjerner abonnementet i tillegg til alle episoder, nedlastinger, avspillingshistorikk og statistikk.</string>
-    <string name="feed_delete_explanation_archive">Arkivering skjuler den fra abonnementslisten og slutter å se etter nye episoder. Nedlastinger, statistikk og avspillingsstatus bevares.</string>
     <string name="tag_untagged">Ikke merket</string>
     <string name="general_expand_button">Utvid</string>
     <string name="general_collapse_button">Kollaps</string>
-    <string name="archiving_podcast_progress">Arkiverer podkast %1$d av %2$d …</string>
-    <string name="deleting_podcast_progress">Sletter podkast %1$d av %2$d …</string>
     <string name="download_log_details_human_readable_reason_title">Status</string>
     <string name="download_log_details_technical_reason_title">Tekniske detaljer</string>
     <string name="download_log_details_file_url_title">Fil-URL</string>
@@ -887,5 +876,4 @@
     <string name="statistics_label_short">Statistikk</string>
     <string name="favorite_episodes_label_short">Favoritter</string>
     <string name="feed_new_episodes_action_snackbar">Kan ikke endres når automatisk nedlastning er aktivert.</string>
-    <string name="remove_restore_feed_label">Avslutt abonnement / gjenopprett</string>
 </resources>

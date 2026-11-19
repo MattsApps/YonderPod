@@ -161,7 +161,6 @@
     <string name="show_feed_settings_label">הצגת הגדרות הסכת</string>
     <string name="feed_settings_label">הגדרות הסכת</string>
     <string name="rename_feed_label">שינוי שם</string>
-    <string name="remove_feed_label">הסרת מינוי</string>
     <string name="share_label">שיתוף</string>
     <string name="share_file_label">שיתוף קובץ</string>
     <string name="load_complete_feed">רענון מלא של ההסכת</string>
@@ -863,18 +862,9 @@
     <string name="statistics_expected_next_episode_any_time">ממש כל רגע</string>
     <string name="release_schedule_multiple_per_day">מספר פעמים ביום</string>
     <string name="cover_as_background">עטיפה כרקע</string>
-    <string name="archive_feed_label_verb">העברה לארכיון</string>
     <string name="archive_feed_label_noun">ארכיון</string>
     <string name="restore_archive_label">שחזור</string>
-    <string name="remove_archive_feed_label">הסרת מינוי / ארכיון</string>
-    <plurals name="num_subscriptions">
-        <item quantity="one">מינוי</item>
-        <item quantity="two">שני מינויים</item>
-        <item quantity="other">%d מינויים</item>
-    </plurals>
-    <string name="feed_delete_explanation_delete">ביטול מינוי יסיר את המינוי לרבות ﬤﬥ הפרקים, ההורדות, היסטוריית הנגינה והסטטיסטיקה שלו.</string>
     <string name="tag_untagged">ללא תיוג</string>
-    <string name="feed_delete_explanation_archive">העברה לארכיון תסתיר מהרשימה ותפסיק לחפש פרקים חדשים. הורדות, סטטיסטיקות ומצב הנגינה יישמרו.</string>
     <string name="no_archive_head_label">שום דבר לא הועבר לארכיון</string>
     <string name="no_archive_label">אפשר להעביר הסכתים לארכיון ממסך המינויים הראשי.</string>
     <string name="report_bug_attrib_android_version">גרסת Android</string>
@@ -885,8 +875,6 @@
     <string name="report_bug_github_title">GitHub</string>
     <string name="general_expand_button">הרחבה</string>
     <string name="general_collapse_button">צמצום</string>
-    <string name="archiving_podcast_progress">הסכת %1$d מתוך %2$d מועבר לארכיון…</string>
-    <string name="deleting_podcast_progress">המינוי להסכת %1$d מתוך %2$d מבוטל…</string>
     <string name="download_log_details_human_readable_reason_title">מצב</string>
     <string name="download_log_details_technical_reason_title">פרטים טכניים</string>
     <string name="download_log_details_file_url_title">כתובת הקובץ</string>
@@ -918,8 +906,6 @@
     <string name="statistics_label_short">סטטיסטיקה</string>
     <string name="favorite_episodes_label_short">מועדפים</string>
     <string name="feed_new_episodes_action_snackbar">אי אפשר לשנות כשהורדה אוטומטית פעילה.</string>
-    <string name="remove_restore_feed_label">הסרת מינוי / שיחזור</string>
-    <string name="restoring_podcast_progress">ההסכת %1$d מתוך %2$d משוחזר…</string>
     <plurals name="added_to_favorites_message">
         <item quantity="one">פרק נוסף למועדפים.</item>
         <item quantity="two">שני פרקים נוספו למועדפים.</item>

@@ -144,7 +144,6 @@
     <string name="show_feed_settings_label">팟캐스트 설정 표시</string>
     <string name="feed_settings_label">팟캐스트 설정</string>
     <string name="rename_feed_label">이름 바꾸기</string>
-    <string name="remove_feed_label">구독 취소</string>
     <string name="share_label">공유</string>
     <string name="share_file_label">파일 공유</string>
     <string name="load_complete_feed">전체 팟캐스트 새로 고침</string>
@@ -717,15 +716,8 @@
     <string name="statistics_expected_next_episode_any_time">오늘 중 언제든</string>
     <string name="statistics_view_all">모든 팟캐스트 »</string>
     <string name="statistics_years_barchart_description">월별 재생 시간</string>
-    <string name="archive_feed_label_verb">보관</string>
     <string name="archive_feed_label_noun">보관함</string>
     <string name="restore_archive_label">복원</string>
-    <string name="remove_archive_feed_label">구독 취소 / 보관</string>
-    <string name="remove_restore_feed_label">구독 취소 / 복원</string>
-    <string name="feed_delete_explanation_delete">구독을 취소하면 에피소드, 다운로드, 재생 기록, 통계까지 모두 함께 삭제됩니다.</string>
-    <string name="feed_delete_explanation_archive">보관하면 목록에서 숨기고 새 에피소드를 더 이상 확인하지 않습니다. 다운로드, 통계, 재생 상태는 유지됩니다.</string>
-    <string name="archiving_podcast_progress">팟캐스트 보관 중 %1$d/%2$d…</string>
-    <string name="restoring_podcast_progress">팟캐스트 복원 중 %1$d/%2$d…</string>
     <string name="delete_tag_label">태그 삭제</string>
     <string name="delete_tag_confirmation">정말로 \"%1$s\" 태그를 삭제할지 확인하십시오.</string>
     <string name="removed_from_inbox_message">새로 받음 목록에서 제거했습니다</string>
@@ -767,7 +759,6 @@
     <string name="tag_all">전체</string>
     <string name="tag_untagged">태그 없음</string>
     <string name="wearos_no_items" tools:ignore="UnusedResources">항목 없음</string>
-    <string name="deleting_podcast_progress">팟캐스트 구독 취소 중 %1$d/%2$d…</string>
     <string name="show_transcript">스크립트 보기</string>
     <string name="transcript">스크립트</string>
     <string name="transcript_follow_audio_label">오디오 따라가기</string>
@@ -779,9 +770,6 @@
     <string name="enabled">사용함</string>
     <string name="disabled">사용 안 함</string>
     <string name="global_default_with_value">전체 기본값 (%1$s)</string>
-    <plurals name="num_subscriptions">
-        <item quantity="other">%d개 구독</item>
-    </plurals>
     <string name="multi_select_started_talkback">여러 항목 선택 동작이 아래에 표시됩니다</string>
     <string name="please_wait_before_refreshing">팟캐스트를 다시 새로고침하기 전에 잠시 기다리십시오.</string>
     <string name="play_this_to_seek_position_message">특정 위치로 이동하려면 에피소드를 재생해야 합니다</string>

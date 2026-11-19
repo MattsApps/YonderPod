@@ -152,7 +152,6 @@
     <string name="show_feed_settings_label">Prikaži nastavitve poddaje</string>
     <string name="feed_settings_label">Nastavitve poddaje</string>
     <string name="rename_feed_label">Preimenuj poddajo</string>
-    <string name="remove_feed_label">Prekliči naročnino</string>
     <string name="share_label">Deli</string>
     <string name="share_file_label">Deli datoteko</string>
     <string name="load_complete_feed">Osveži poddajo v celoti</string>
@@ -728,16 +727,8 @@
         <item quantity="other">%d dni</item>
     </plurals>
     <string name="delete_tag_confirmation">Prosimo potrdite izbris oznake \"%1$s\".</string>
-    <plurals name="num_subscriptions">
-        <item quantity="one">%d naročnina</item>
-        <item quantity="two">%d naročnini</item>
-        <item quantity="few">%d naročnine</item>
-        <item quantity="other">%d naročnin</item>
-    </plurals>
-    <string name="archive_feed_label_verb">Arhiviraj</string>
     <string name="archive_feed_label_noun">Arhiv</string>
     <string name="restore_archive_label">Obnovi</string>
-    <string name="remove_archive_feed_label">Izbriši / arhiviraj</string>
     <plurals name="downloading_episodes_message">
         <item quantity="one">Prenašam %d epizodo.</item>
         <item quantity="two">Prenašam %d epizodi.</item>
@@ -757,10 +748,6 @@
     <string name="visit_social_interact_confirm_dialog_title">Zapuščate AntennaPod</string>
     <string name="general_expand_button">Razširi</string>
     <string name="general_collapse_button">Strni</string>
-    <string name="archiving_podcast_progress">Arhiviranje poddaje %1$d od %2$d…</string>
-    <string name="deleting_podcast_progress">Preklic naročnine poddaje %1$d od %2$d…</string>
-    <string name="feed_delete_explanation_delete">Preklic naročnine odstrani naročnino vključno z epizodami, prenosi, zgovodino predvajanj in statistiko.</string>
-    <string name="feed_delete_explanation_archive">Arhiviranje skrije naročnino iz seznama in preneha slediti novim epizodam. Prenosi, statistika in predvajanje se ne spremeni.</string>
     <string name="multi_select_started_talkback">Možnost izbire večih elementov je prikazana na dnu</string>
     <string name="please_wait_before_refreshing">Prosim počakajte trenutek preden ponovno osvežite poddajo.</string>
     <string name="delete_downloads_played_confirmation">Prosim potrdite, da želite izbrisati vse predvajane prenose.</string>
@@ -775,8 +762,6 @@
     <string name="statistics_label_short">Statistike</string>
     <string name="favorite_episodes_label_short">Priljubljene</string>
     <string name="feed_new_episodes_action_snackbar">Ne more biti spreminjano dokler so avtomatski prenosi omogočeni.</string>
-    <string name="remove_restore_feed_label">Odnaroči / obnovi</string>
-    <string name="restoring_podcast_progress">Obnavljam podcast %1$d od %2$d…</string>
     <plurals name="marked_as_played_message">
         <item quantity="one">%d epizoda označena kot predvajana.</item>
         <item quantity="two">%d epizodi označeni kot predvajani.</item>

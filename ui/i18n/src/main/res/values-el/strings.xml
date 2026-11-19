@@ -155,7 +155,6 @@
     <string name="show_feed_settings_label">Εμφάνιση ρυθμίσεων podcast</string>
     <string name="feed_settings_label">Ρυθμίσεις podcast</string>
     <string name="rename_feed_label">Μετονομασία</string>
-    <string name="remove_feed_label">Απεγγραφή</string>
     <string name="share_label">Κοινοποίηση</string>
     <string name="share_file_label">Κοινοποίηση αρχείου</string>
     <string name="load_complete_feed">Ανανέωση όλου του podcast</string>
@@ -796,20 +795,8 @@
     <string name="statistics_label_short">Στατιστικά</string>
     <string name="favorite_episodes_label_short">Αγαπημένα</string>
     <string name="feed_new_episodes_action_snackbar">Δεν μπορεί να αλλαχθεί όταν είναι ενεργή η αυτόματη λήψη.</string>
-    <plurals name="num_subscriptions">
-        <item quantity="one">%d εγγραφή</item>
-        <item quantity="other">%d εγγραφές</item>
-    </plurals>
-    <string name="archive_feed_label_verb">Αρχειοθέτηση</string>
     <string name="archive_feed_label_noun">Αρχείο</string>
     <string name="restore_archive_label">Επαναφορά</string>
-    <string name="remove_archive_feed_label">Απεγγραφή / αρχειοθέτηση</string>
-    <string name="remove_restore_feed_label">Απεγγραφή / επαναφορά</string>
-    <string name="feed_delete_explanation_delete">Η απεγγραφή αφαιρεί την εγγραφή μαζί με όλα τα επεισόδια, λήψεις, ιστορικό αναπαραγωγής και στατιστικά.</string>
-    <string name="feed_delete_explanation_archive">Η αρχειοθέτηση κρύβει τις συνδρομές από τη λίστα και σταματάει να ψάχνει για επεισόδια. Λήψεις, στατιστικά και κατάσταση αναπαραγωγής διατηρούνται.</string>
-    <string name="archiving_podcast_progress">Αρχειοθέτηση podcast %1$d από %2$d…</string>
-    <string name="restoring_podcast_progress">Επαναφορά podcast %1$d από %2$d…</string>
-    <string name="deleting_podcast_progress">Απεγγραφή podcast %1$d από %2$d…</string>
     <string name="please_wait_before_refreshing">Παρακαλώ περίμενε λίγη ώρα πριν ανανεώσεις τα podcasts ξανά.</string>
     <plurals name="downloading_episodes_message">
         <item quantity="one">Γίνεται λήψη %d επεισοδίου.</item>

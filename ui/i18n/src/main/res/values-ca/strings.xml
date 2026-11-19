@@ -151,7 +151,6 @@
     <string name="show_feed_settings_label">Mostra la configuració del pòdcast</string>
     <string name="feed_settings_label">Configuració del pòdcast</string>
     <string name="rename_feed_label">Reanomena</string>
-    <string name="remove_feed_label">Eliminar</string>
     <string name="share_label">Comparteix</string>
     <string name="share_file_label">Comparteix el fitxer</string>
     <string name="load_complete_feed">Actualitza el pòdcast sencer</string>
@@ -855,19 +854,8 @@
     <string name="cover_as_background">Portada com a fons</string>
     <string name="general_expand_button">Mostra més</string>
     <string name="general_collapse_button">Recollir</string>
-    <plurals name="num_subscriptions">
-        <item quantity="one">%d subscripció</item>
-        <item quantity="many">%d subscripcions</item>
-        <item quantity="other">%d subscripcions</item>
-    </plurals>
-    <string name="archive_feed_label_verb">Arxivar</string>
     <string name="archive_feed_label_noun">Arxius</string>
     <string name="restore_archive_label">Restaurar</string>
-    <string name="remove_archive_feed_label">Eliminar / Arxivar</string>
-    <string name="feed_delete_explanation_delete">Eliminar suprimeix la subscripció, inclosos tots els episodis, les descàrregues, l’historial de reproducció i les estadístiques.</string>
-    <string name="feed_delete_explanation_archive">Arxivar amaga la subscripció de la llista i deixa de cercar episodis nous. Es conserven les descàrregues, les estadístiques i l’estat de reproducció.</string>
-    <string name="archiving_podcast_progress">S’està arxivant el podcast %1$d de %2$d…</string>
-    <string name="deleting_podcast_progress">S’està eliminant el pòdcast %1$d de %2$d…</string>
     <plurals name="marked_as_played_message">
         <item quantity="one">S\'ha marcat %d episodi com a reproduït.</item>
         <item quantity="many">S’han marcat %d episodis com a reproduïts.</item>

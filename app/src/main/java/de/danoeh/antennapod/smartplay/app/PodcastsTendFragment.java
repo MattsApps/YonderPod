@@ -57,6 +57,7 @@ public class PodcastsTendFragment extends Fragment {
     private final CompositeDisposable disposables = new CompositeDisposable();
     private View root;
     private boolean updating;
+    private boolean singleRefresh;
     private long updateStart;
     private long lastProgress;
     private String progressText = "";
@@ -138,6 +139,7 @@ public class PodcastsTendFragment extends Fragment {
         }
         updating = event.isFeedUpdateRunning;
         if (!updating) {
+            singleRefresh = false;
             load();
         } else {
             showProgress();
@@ -150,7 +152,7 @@ public class PodcastsTendFragment extends Fragment {
         }
         ((TextView) root.findViewById(R.id.tendUpdated)).setText(progressText);
         long now = System.currentTimeMillis();
-        if (now - lastProgress < 500) {
+        if (singleRefresh || now - lastProgress < 500) {
             return;
         }
         lastProgress = now;
@@ -173,7 +175,7 @@ public class PodcastsTendFragment extends Fragment {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(counts -> {
-                    if (!updating || root == null || counts[1] == 0) {
+                    if (!updating || singleRefresh || root == null || counts[1] == 0) {
                         return;
                     }
                     progressText = getString(R.string.tend_updating_progress, counts[0], counts[1]);
@@ -373,11 +375,37 @@ public class PodcastsTendFragment extends Fragment {
         for (Feed feed : feeds) {
             Integer newCount = state.newCounts.get(feed.getId());
             Integer saved = state.savedCounts.get(feed.getId());
-            list.addView(TendRows.row(this, list, feed.getTitle(), null, feed.getImageUrl(),
+            View row = TendRows.row(this, list, feed.getTitle(), null, feed.getImageUrl(),
                     TendRows.count(newCount != null ? newCount : 0), TendRows.count(saved != null ? saved : 0),
-                    v -> TendRows.open(this, FeedItemlistFragment.newInstance(feed.getId()))));
+                    v -> TendRows.open(this, FeedItemlistFragment.newInstance(feed.getId())));
+            if (ShowActions.applies(feed)) {
+                row.setOnLongClickListener(v -> {
+                    ShowActions.showMenu(this, v, feed, showListener);
+                    return true;
+                });
+            }
+            list.addView(row);
         }
     }
+
+    private final ShowActions.Listener showListener = new ShowActions.Listener() {
+        @Override
+        public void onChanged() {
+            if (root != null) {
+                load();
+            }
+        }
+
+        @Override
+        public void onRefreshing() {
+            // One show: "updating…" without the all-shows count, which would read "1 of 80".
+            singleRefresh = true;
+        }
+
+        @Override
+        public void onDeleting() {
+        }
+    };
 
     private int dp(int value) {
         return (int) (value * getResources().getDisplayMetrics().density);

@@ -167,7 +167,6 @@
     <string name="show_feed_settings_label">Показати налаштування подкасту</string>
     <string name="feed_settings_label">Налаштування подкасту</string>
     <string name="rename_feed_label">Перейменувати</string>
-    <string name="remove_feed_label">Видалити</string>
     <string name="share_label">Поділитися</string>
     <string name="share_file_label">Поділитися файлом</string>
     <string name="load_complete_feed">Оновити весь подкаст</string>
@@ -867,18 +866,8 @@
     <string name="statistics_expected_next_episode_any_time">Будь-коли зараз</string>
     <string name="release_schedule_multiple_per_day">кілька разів на день</string>
     <string name="cover_as_background">Обкладинка як фон</string>
-    <plurals name="num_subscriptions">
-        <item quantity="one">%d підписка</item>
-        <item quantity="few">%d підписки</item>
-        <item quantity="many">%d підписків</item>
-        <item quantity="other">%d підписків</item>
-    </plurals>
-    <string name="archive_feed_label_verb">Архів</string>
     <string name="archive_feed_label_noun">Архів</string>
     <string name="restore_archive_label">Відновити</string>
-    <string name="remove_archive_feed_label">Видалити / архівувати</string>
-    <string name="feed_delete_explanation_delete">Видалення видаляє підписку, включаючи всі її епізоди, завантаження, історію відтворення та статистику.</string>
-    <string name="feed_delete_explanation_archive">Архівування приховує підписку зі списку та припиняє пошук нових епізодів. Завантаження, статистика та стан відтворення зберігаються.</string>
     <string name="tag_untagged">Без тегів</string>
     <plurals name="mobile_download_notice">
         <item quantity="one">Завантаження через мобільне з’єднання даних протягом наступної %d хвилина</item>
@@ -908,8 +897,6 @@
     </plurals>
     <string name="general_expand_button">Розгорнути</string>
     <string name="general_collapse_button">Згорнути</string>
-    <string name="archiving_podcast_progress">Архівування подкасту %1$d з %2$d…</string>
-    <string name="deleting_podcast_progress">Видалення подкасту %1$d з %2$d…</string>
     <string name="download_log_details_human_readable_reason_title">Статус</string>
     <string name="download_log_details_technical_reason_title">Технічні деталі</string>
     <string name="download_log_details_file_url_title">URL-адреса файлу</string>

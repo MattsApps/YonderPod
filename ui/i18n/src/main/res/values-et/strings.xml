@@ -147,7 +147,6 @@
     <string name="show_feed_settings_label">Näita taskuhäälingu seadeid</string>
     <string name="feed_settings_label">Taskuhäälingu seaded</string>
     <string name="rename_feed_label">Nimeta ümber</string>
-    <string name="remove_feed_label">Loobu tellimusest</string>
     <string name="share_label">Jaga</string>
     <string name="share_file_label">Jaga faili</string>
     <string name="load_complete_feed">Värskenda kogu taskuhääling</string>
@@ -823,18 +822,8 @@
     <string name="no_queue_items_inbox_has_items_button_label">Mine postkasti</string>
     <string name="general_expand_button">Laienda</string>
     <string name="general_collapse_button">Ahenda</string>
-    <plurals name="num_subscriptions">
-        <item quantity="one">%d tellimus</item>
-        <item quantity="other">%d tellimust</item>
-    </plurals>
     <string name="restore_archive_label">Taasta</string>
-    <string name="archive_feed_label_verb">Arhiveeri</string>
     <string name="archive_feed_label_noun">Arhiiv</string>
-    <string name="remove_archive_feed_label">Loobu tellimusest / arhiveeri</string>
-    <string name="feed_delete_explanation_delete">Tellimuse lõpetamine eemaldab tellimuse koos kõigi selle osade, allalaadimiste, taasesituste ajaloo ja statistikaga.</string>
-    <string name="feed_delete_explanation_archive">Arhiveerimine peidab tellimuse loendist ja peatab uute osade otsimise. Allalaadimised, statistika ja taasesituse olek säilivad.</string>
-    <string name="archiving_podcast_progress">%1$d / %2$d taskuhäälingu arhiveerimine…</string>
-    <string name="deleting_podcast_progress">Loobun tellimustest: %1$d / %2$d…</string>
     <string name="please_wait_before_refreshing">Oota veidi, enne kui taskuhäälingusaateid uuesti värskendad.</string>
     <plurals name="marked_as_played_message">
         <item quantity="one">%d osa on märgitud esitatuks.</item>
@@ -885,8 +874,6 @@
     <string name="statistics_label_short">Statistika</string>
     <string name="favorite_episodes_label_short">Lemmikud</string>
     <string name="feed_new_episodes_action_snackbar">Kui automaatne allalaadimine on kasutusel, siis seda muuta ei saa.</string>
-    <string name="remove_restore_feed_label">Loobu tellimusest / taasta</string>
-    <string name="restoring_podcast_progress">Taastan taskuhäälinguid: %1$d / %2$d…</string>
     <plurals name="added_to_favorites_message">
         <item quantity="one">%d osa on lisatud lemmikuks.</item>
         <item quantity="other">%d osa on lisatud lemmikuks.</item>

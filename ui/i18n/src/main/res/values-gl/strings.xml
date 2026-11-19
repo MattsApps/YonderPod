@@ -155,7 +155,6 @@
     <string name="show_feed_settings_label">Mostrar axustes do podcast</string>
     <string name="feed_settings_label">Axustes do podcast</string>
     <string name="rename_feed_label">Cambiar nome</string>
-    <string name="remove_feed_label">Dar de baixa</string>
     <string name="share_label">Compartir</string>
     <string name="share_file_label">Compartir ficheiro</string>
     <string name="load_complete_feed">Actualizar o podcast completo</string>
@@ -819,16 +818,8 @@
     <string name="statistics_expected_next_episode_any_time">En calquera momento</string>
     <string name="release_schedule_multiple_per_day">varias veces ao día</string>
     <string name="cover_as_background">Portada como imaxe de fondo</string>
-    <plurals name="num_subscriptions">
-        <item quantity="one">%d subscrición</item>
-        <item quantity="other">%d subscricións</item>
-    </plurals>
-    <string name="archive_feed_label_verb">Arquivar</string>
     <string name="archive_feed_label_noun">Arquivo</string>
     <string name="restore_archive_label">Restablecer</string>
-    <string name="remove_archive_feed_label">Dar de baixa / arquivar</string>
-    <string name="feed_delete_explanation_delete">Dando de baixa o podcast retiras a subscrición incluíndo todos os seus episodios, descargas, historial de reprodución e estatísticas.</string>
-    <string name="feed_delete_explanation_archive">Ao arquivar ocultas a subscrición na lista e deixas de buscar novos episodios. Emporiso, as descargas, estatísticas e historial de reprodución consérvanse.</string>
     <string name="tag_untagged">Sen etiquetar</string>
     <plurals name="mobile_download_notice">
         <item quantity="one">Descargar usando datos do móbil no próximo %d minuto</item>
@@ -850,8 +841,6 @@
     </plurals>
     <string name="general_expand_button">Despregar</string>
     <string name="general_collapse_button">Pregar</string>
-    <string name="archiving_podcast_progress">Arquivando podcast %1$d de %2$d…</string>
-    <string name="deleting_podcast_progress">Dando de baixa o podcast %1$d de %2$d…</string>
     <string name="download_log_details_human_readable_reason_title">Estado</string>
     <string name="download_log_details_technical_reason_title">Detalles técnicos</string>
     <string name="download_log_details_file_url_title">URL do ficheiro</string>
@@ -887,8 +876,6 @@
     <string name="statistics_label_short">Estatísticas</string>
     <string name="favorite_episodes_label_short">Favoritos</string>
     <string name="feed_new_episodes_action_snackbar">Non se pode cambiar cando a descarga automática está activada.</string>
-    <string name="remove_restore_feed_label">Dar de baixa / restablecer</string>
-    <string name="restoring_podcast_progress">Restablecendo o podcast %1$d de %2$d…</string>
     <plurals name="added_to_favorites_message">
         <item quantity="one">%d episodio engadido aos favoritos.</item>
         <item quantity="other">%d episodios engadidos aos favoritos.</item>

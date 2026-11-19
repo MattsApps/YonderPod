@@ -151,7 +151,6 @@
     <string name="show_feed_settings_label">पॉडकास्ट सेटिंग दिखाएं</string>
     <string name="feed_settings_label">पॉडकास्ट सेटिंग</string>
     <string name="rename_feed_label">नाम बदलें</string>
-    <string name="remove_feed_label">मिटाएं</string>
     <string name="share_label">शेयर करें</string>
     <string name="share_file_label">फाइल शेयर करें</string>
     <string name="load_complete_feed">पूरा पॉडकास्ट रिफ्रेश करें</string>
@@ -628,18 +627,8 @@
         <item quantity="one">खत्म होने के %d दिन बाद</item>
         <item quantity="other">खत्म होने के %d दिनों बाद</item>
     </plurals>
-    <plurals name="num_subscriptions">
-        <item quantity="one">%d सब्सक्रिप्शन</item>
-        <item quantity="other">%d सब्सक्रिप्शन</item>
-    </plurals>
-    <string name="archive_feed_label_verb">आर्काइव करें</string>
     <string name="archive_feed_label_noun">आर्काइव</string>
     <string name="restore_archive_label">वापस लाएं</string>
-    <string name="remove_archive_feed_label">मिटाएं / आर्काइव करें</string>
-    <string name="feed_delete_explanation_delete">मिटाने पर सब्सक्रिप्शन और उसके सारे एपिसोड, डाउनलोड, प्लेबैक इतिहास, और आंकड़े भी मिट जाएंगे।</string>
-    <string name="feed_delete_explanation_archive">आर्काइव करने पर सब्सक्रिप्शन लिस्ट में छुपा दिया जाएगा और उसके नए एपिसोड देखना बंद हो जाएगा। डाउनलोड, आंकड़े, और प्लेबैक इतिहास वैसे के वैसे रखे जाते हैं।</string>
-    <string name="archiving_podcast_progress">%2$d में से %1$d पॉडकास्ट आर्काइव कर रहे…</string>
-    <string name="deleting_podcast_progress">%2$d में से %1$d पॉडकास्ट मिटा रहे…</string>
     <string name="multi_select_started_talkback">नीचे में दिखाए जाने वाले कई एक्शन चुनें</string>
     <string name="refresh_failed_msg">आखिरी रिफ्रेश नहीं हो पाया। जानकारी के लिए टैप करें।</string>
     <string name="please_wait_before_refreshing">पॉडकास्ट वापस रिफ्रेश करने से पहले कुछ देर इंतज़ार करें।</string>

@@ -9,12 +9,6 @@
         custom:showAsAction="never">
     </item>
     <item
-        android:id="@+id/refresh_item"
-        android:menuCategory="container"
-        android:title="@string/refresh_label"
-        custom:showAsAction="never">
-    </item>
-    <item
         android:id="@+id/refresh_complete_item"
         android:menuCategory="container"
         android:title="@string/load_complete_feed"
@@ -85,22 +79,34 @@
         custom:showAsAction="collapseActionView"
         android:icon="@drawable/ic_check"/>
 
+    <!-- A show's list (0.9.34), the same four items and order as the long press in Podcasts Tend (ShowActions).
+         A recorded radio show uses show_delete alone, as "delete this show". -->
     <item
-        android:id="@+id/remove_archive_feed"
-        android:icon="@drawable/ic_delete"
+        android:id="@+id/show_refresh"
         android:menuCategory="container"
-        android:title="@string/remove_archive_feed_label"
-        android:visible="true"
-        custom:showAsAction="collapseActionView">
-    </item>
+        android:title="@string/show_menu_refresh"
+        android:visible="false"
+        custom:showAsAction="never" />
 
     <item
-        android:id="@+id/remove_restore_feed"
-        android:icon="@drawable/ic_delete"
+        android:id="@+id/show_download_settings"
         android:menuCategory="container"
-        android:title="@string/remove_restore_feed_label"
+        android:title="@string/show_menu_download_settings"
         android:visible="false"
-        custom:showAsAction="collapseActionView">
-    </item>
+        custom:showAsAction="never" />
+
+    <item
+        android:id="@+id/show_category"
+        android:menuCategory="container"
+        android:title="@string/show_menu_category"
+        android:visible="false"
+        custom:showAsAction="never" />
+
+    <item
+        android:id="@+id/show_delete"
+        android:menuCategory="container"
+        android:title="@string/show_menu_delete"
+        android:visible="false"
+        custom:showAsAction="never" />
 
 </menu>

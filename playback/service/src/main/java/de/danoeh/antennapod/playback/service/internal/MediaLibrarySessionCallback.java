@@ -85,6 +85,12 @@ public class MediaLibrarySessionCallback implements MediaLibraryService.MediaLib
             = new SessionCommand("go_live", Bundle.EMPTY);
     public static final SessionCommand SESSION_COMMAND_STOP_LIVE
             = new SessionCommand("stop_live", Bundle.EMPTY);
+    /**
+     * Deleting what's playing (0.9.34): stops at once and unloads it, with nothing playing next. Used when a show
+     * or radio station is deleted while one of its episodes, recordings or the station itself is loaded.
+     */
+    public static final SessionCommand SESSION_COMMAND_UNLOAD
+            = new SessionCommand("unload", Bundle.EMPTY);
 
     private static final String EXTRA_VALUE = "value";
 
@@ -132,6 +138,7 @@ public class MediaLibrarySessionCallback implements MediaLibraryService.MediaLib
                 .add(SESSION_COMMAND_EXTEND_SLEEP_TIMER)
                 .add(SESSION_COMMAND_GO_LIVE)
                 .add(SESSION_COMMAND_STOP_LIVE)
+                .add(SESSION_COMMAND_UNLOAD)
                 .build();
         Player.Commands playerCommands = new Player.Commands.Builder()
                 .addAllCommands()

@@ -106,7 +106,6 @@
     <string name="show_feed_settings_label">Tampilkan pengaturan siniar</string>
     <string name="feed_settings_label">Pengaturan siniar</string>
     <string name="rename_feed_label">Ubah nama</string>
-    <string name="remove_feed_label">Berhenti berlangganan</string>
     <string name="share_label">Bagikan</string>
     <string name="load_complete_feed">Pembaruan podcast selesai</string>
     <string name="multi_select">Pilih banyak</string>
@@ -757,15 +756,8 @@
     <string name="bottom_navigation">Navigasi bawah</string>
     <string name="pref_enqueue_location_title">Lokasi antrean</string>
     <string name="is_favorite_label">Ditandai sebagai favorit</string>
-    <plurals name="num_subscriptions">
-        <item quantity="other">%d langganan</item>
-    </plurals>
-    <string name="archive_feed_label_verb">Arsip</string>
     <string name="archive_feed_label_noun">Arsip</string>
     <string name="restore_archive_label">Pulihkan</string>
-    <string name="remove_archive_feed_label">Berhenti berlangganan / arsipkan</string>
-    <string name="feed_delete_explanation_delete">Berhenti berlangganan akan menghapus langganan beserta semua episodenya, unduhan, riwayat pemutaran, dan statistik.</string>
-    <string name="feed_delete_explanation_archive">Pengarsipan menyembunyikan langganan dari daftar dan berhenti mencari episode baru. Unduhan, statistik, dan status pemutaran tetap disimpan.</string>
     <string name="please_wait_before_refreshing">Tolong tunggu sebentar sebelum memperbarui podcast lagi.</string>
     <plurals name="downloading_episodes_message">
         <item quantity="other">Mengunduh %d episode.</item>
@@ -813,8 +805,6 @@
     <string name="cover_as_background">Sampul sebagai latar belakang</string>
     <string name="general_expand_button">Perluas</string>
     <string name="general_collapse_button">Ciutkan</string>
-    <string name="archiving_podcast_progress">Mengarsipkan podcast %1$d dari %2$d…</string>
-    <string name="deleting_podcast_progress">Berhenti berlangganan dari podcast %1$d dari %2$d…</string>
     <string name="download_log_details_human_readable_reason_title">Status</string>
     <string name="download_log_details_technical_reason_title">Detail teknis</string>
     <string name="download_log_details_file_url_title">URL file</string>
@@ -842,8 +832,6 @@
     <string name="statistics_label_short">Statistik</string>
     <string name="favorite_episodes_label_short">Favorit</string>
     <string name="feed_new_episodes_action_snackbar">Tidak dapat diubah saat unduhan otomatis diaktifkan.</string>
-    <string name="remove_restore_feed_label">Berhenti berlangganan / pulihkan</string>
-    <string name="restoring_podcast_progress">Memulihkan podcast %1$d dari %2$d…</string>
     <plurals name="added_to_favorites_message">
         <item quantity="other">%d episode ditambahkan ke favorit.</item>
     </plurals>

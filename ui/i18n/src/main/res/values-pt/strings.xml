@@ -152,11 +152,6 @@
         <item quantity="many">%d episódios</item>
         <item quantity="other">%d episódios</item>
     </plurals>
-    <plurals name="num_subscriptions">
-        <item quantity="one">%d subscrição</item>
-        <item quantity="many">%d subscrições</item>
-        <item quantity="other">%d subscrições</item>
-    </plurals>
     <string name="episode_notification">Notificações de episódios</string>
     <string name="episode_notification_summary">Mostrar notificação sempre que for disponibilizado um novo episódio</string>
     <plurals name="new_episode_notification_message">
@@ -179,17 +174,10 @@
     <string name="show_feed_settings_label">Mostrar definições do podcast</string>
     <string name="feed_settings_label">Definições do podcast</string>
     <string name="rename_feed_label">Alterar nome</string>
-    <string name="archive_feed_label_verb">Arquivar</string>
     <string name="archive_feed_label_noun">Arquivo</string>
     <string name="restore_archive_label">Restaurar</string>
-    <string name="remove_archive_feed_label">Cancelar inscrição / arquivar</string>
-    <string name="remove_feed_label">Cancelar inscrição</string>
     <string name="share_label">Partilhar</string>
     <string name="share_file_label">Partilhar ficheiro</string>
-    <string name="feed_delete_explanation_delete">Cancelar a inscrição cancela a inscrição, incluindo todos os seus episódios, descargas, histórico de reprodução e estatísticas.</string>
-    <string name="feed_delete_explanation_archive">Arquivar oculta a subscrição da lista e deixa de procurar novos episódios. As transferências, as estatísticas e o estado de reprodução são mantidos.</string>
-    <string name="archiving_podcast_progress">A arquivar podcast %1$d de %2$d…</string>
-    <string name="deleting_podcast_progress">A cancelar inscrição de podcast %1$d de %2$d…</string>
     <string name="load_complete_feed">Atualizar podcast</string>
     <string name="multi_select">Seleção múltipla</string>
     <string name="select_all_above">Marcar tudo acima</string>
@@ -879,8 +867,6 @@
     <string name="statistics_label_short">Estatísticas</string>
     <string name="favorite_episodes_label_short">Favoritos</string>
     <string name="feed_new_episodes_action_snackbar">Não pode ser alterado quando descargas automáticas estão ativadas.</string>
-    <string name="remove_restore_feed_label">Cancelar inscrição / restaurar</string>
-    <string name="restoring_podcast_progress">A restaurar podcast %1$d de %2$d…</string>
     <plurals name="added_to_favorites_message">
         <item quantity="one">%d episódio incluído em favoritos.</item>
         <item quantity="many">%d episódios incluídos em favoritos.</item>
