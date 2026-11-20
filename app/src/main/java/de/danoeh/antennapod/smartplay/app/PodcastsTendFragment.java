@@ -216,6 +216,13 @@ public class PodcastsTendFragment extends Fragment {
                 }
                 state.lastUpdate = Math.max(state.lastUpdate, feed.getLastRefreshAttempt());
                 List<String> categories = CategoryChips.categoriesOf(feed);
+                if (booksHere && feed.isLocalFeed() && !Recordings.isRecordingsFeed(feed)
+                        && !books.contains(feed.getId())) {
+                    categories = new ArrayList<>(categories);
+                    if (!categories.contains(Books.CATEGORY)) {
+                        categories.add(Books.CATEGORY);
+                    }
+                }
                 if (categories.isEmpty()) {
                     state.uncategorised.add(feed);
                 }

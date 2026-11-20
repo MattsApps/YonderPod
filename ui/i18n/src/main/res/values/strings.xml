@@ -1538,10 +1538,14 @@
     <string name="world_from">from\n%1$s</string>
     <string name="world_then">then %1$s</string>
     <string name="world_chapter">chapter</string>
+    <string name="world_track">track</string>
     <string name="world_chapter_of">/%1$d</string>
     <string name="world_book_percent">%1$d%% of the book</string>
+    <string name="world_folder_percent">%1$d%% of the folder</string>
+    <string name="world_file_percent">%1$d%% of the file</string>
     <string name="world_left">%1$s left</string>
     <string name="world_then_chapter">then chapter %1$d · %2$s</string>
+    <string name="world_then_track">then track %1$d · %2$s</string>
     <string name="world_ready_to_play">Ready to play</string>
     <string name="world_today">today</string>
     <string name="world_yesterday">yesterday</string>
@@ -2119,7 +2123,7 @@
     <string name="help_topic_find_book">Finding an audiobook</string>
     <string name="help_about_find_book">Use the search at the top of Files Tend to find free audiobooks on LibriVox by title, author or genre, then Listen to this book.</string>
     <string name="help_topic_own_files">Adding your own audio files</string>
-    <string name="help_about_own_files">Add a folder at the top of Files Tend. A folder plays in order, like an album or a book: track 1 to the last, with no shuffle. Your files are never deleted unless you allow it. Files you open with Yonder or share to it go in Added files. Yonder isn\'t a music player: for music, put an app like Spotify at the edges (Tune → worlds).</string>
+    <string name="help_about_own_files">Add a folder at the top of Files Tend. A folder plays in order, like an album or a book: track 1 to the last, with no shuffle. Your files are never deleted unless you allow it. Files you open with Yonder or share to it go in Added files. The Files screen shows whatever you played last: a book, a folder at the track you\'re up to, or one added file. Yonder isn\'t a music player: for music, put an app like Spotify at the edges (Tune → worlds).</string>
     <string name="help_topic_files_tend">Files Tend</string>
     <string name="help_about_files_tend">Swipe up from Files. The search at the top finds free audiobooks on LibriVox. Under it is your audio: add a folder, your folders, and Added files (files you opened with Yonder or shared to it). Then your books, with how far you are.</string>
     <string name="help_topic_find_station">Finding a radio station</string>
@@ -2201,7 +2205,7 @@
     <string name="help_topic_colours">Colours</string>
     <string name="help_about_colours">A palette for each world, your own palettes, night palettes and Match my wallpaper.</string>
     <string name="help_topic_hide_world">Hiding a world</string>
-    <string name="help_about_hide_world">Switch Files or Radio off in Tune → worlds. Nothing is deleted: your books and folders show in Podcasts Tend.</string>
+    <string name="help_about_hide_world">Switch Files or Radio off in Tune → worlds. Nothing is deleted: your books and folders show in Podcasts Tend, under files.</string>
     <string name="help_topic_top_line">The top of the screen</string>
     <string name="help_about_top_line">Tap a neighbouring world\'s name to go there. The big coloured word is the world you\'re in.</string>
     <string name="help_topic_back_from_app">Getting back from another app</string>

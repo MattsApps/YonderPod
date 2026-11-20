@@ -9,6 +9,7 @@ import android.widget.TextView;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.Nullable;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -17,7 +18,10 @@ import java.util.Set;
 import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.model.feed.Feed;
 import de.danoeh.antennapod.model.feed.FeedItem;
+import de.danoeh.antennapod.model.feed.FeedItemFilter;
 import de.danoeh.antennapod.model.feed.FeedMedia;
+import de.danoeh.antennapod.model.feed.SortOrder;
+import de.danoeh.antennapod.playback.service.PlaybackServiceStarter;
 import de.danoeh.antennapod.storage.database.DBReader;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Completable;
@@ -33,6 +37,8 @@ public class BooksSurface extends WorldSurface {
         long totalMillis;
         FeedItem after;
         boolean hasOwnAudio;
+        boolean folder;
+        FeedItem single;
     }
 
     private final ActivityResultLauncher<Uri> addFolder =
@@ -54,23 +60,50 @@ public class BooksSurface extends WorldSurface {
         disposables.add(Single.fromCallable(() -> {
             State state = new State();
             Set<Long> books = Books.bookIds(app);
-            Map<Long, Long> lastPlayed = Books.lastPlayedPerBook(app, books);
-            long best = -1;
-            for (Feed feed : DBReader.getFeedList()) {
+            Set<Long> folders = new HashSet<>();
+            List<Feed> feeds = DBReader.getFeedList();
+            for (Feed feed : feeds) {
                 if (feed.getState() == Feed.STATE_SUBSCRIBED && feed.isLocalFeed()
                         && !books.contains(feed.getId()) && !Recordings.isRecordingsFeed(feed)
                         && !LocalFolders.isAddedFiles(feed)) {
                     state.hasOwnAudio = true;
+                    folders.add(feed.getId());
                 }
-                if (!books.contains(feed.getId()) || Books.isFinished(app, feed.getId())) {
+            }
+            Set<Long> candidates = new HashSet<>(books);
+            candidates.addAll(folders);
+            Map<Long, Long> lastPlayed = Books.lastPlayedPerBook(app, candidates);
+            long best = -1;
+            for (Feed feed : feeds) {
+                boolean folder = folders.contains(feed.getId());
+                if (folder ? Books.progress(app, feed).next == null
+                        : !books.contains(feed.getId()) || Books.isFinished(app, feed.getId())) {
                     continue;
                 }
                 Long played = lastPlayed.get(feed.getId());
                 long value = played != null ? played : 0;
                 if (state.book == null || value > best) {
                     state.book = feed;
+                    state.folder = folder;
                     best = value;
                 }
+            }
+            for (Feed feed : feeds) {
+                if (feed.getState() != Feed.STATE_SUBSCRIBED || !LocalFolders.isAddedFiles(feed)) {
+                    continue;
+                }
+                for (FeedItem item : DBReader.getFeedItemList(feed, FeedItemFilter.unfiltered(),
+                        SortOrder.DATE_NEW_OLD, 0, Integer.MAX_VALUE)) {
+                    FeedMedia media = item.getMedia();
+                    if (media != null && !item.isPlayed() && media.getLastPlayedTimeStatistics() > best) {
+                        state.single = item;
+                        best = media.getLastPlayedTimeStatistics();
+                    }
+                }
+            }
+            if (state.single != null) {
+                state.book = null;
+                return state;
             }
             if (state.book != null) {
                 state.progress = Books.progress(app, state.book);
@@ -103,6 +136,10 @@ public class BooksSurface extends WorldSurface {
         TextView next = root.findViewById(R.id.worldNext);
         View chapterBox = root.findViewById(R.id.worldChapterBox);
         View progressRow = root.findViewById(R.id.worldProgressRow);
+        if (state.single != null) {
+            showSingle(state.single, author, title, hint, next, chapterBox, progressRow);
+            return;
+        }
         if (state.book == null) {
             author.setVisibility(View.GONE);
             title.setText(R.string.world_books_empty);
@@ -127,6 +164,8 @@ public class BooksSurface extends WorldSurface {
         hint.setVisibility(View.GONE);
         chapterBox.setVisibility(View.VISIBLE);
         progressRow.setVisibility(View.VISIBLE);
+        ((TextView) root.findViewById(R.id.worldChapterLabel))
+                .setText(state.folder ? R.string.world_track : R.string.world_chapter);
         ((TextView) root.findViewById(R.id.worldChapter)).setText(String.valueOf(Math.max(1, progress.chapter)));
         ((TextView) root.findViewById(R.id.worldChapters))
                 .setText(getString(R.string.world_chapter_of, progress.chapters));
@@ -136,11 +175,13 @@ public class BooksSurface extends WorldSurface {
         bar.setTickStyle(false);
         bar.setProgress(done);
         ((TextView) root.findViewById(R.id.worldPercent))
-                .setText(getString(R.string.world_book_percent, Math.round(done * 100)));
+                .setText(getString(state.folder ? R.string.world_folder_percent : R.string.world_book_percent,
+                        Math.round(done * 100)));
         ((TextView) root.findViewById(R.id.worldTime))
                 .setText(getString(R.string.world_left, duration(progress.millisLeft)));
         if (state.after != null && state.after.getMedia() != null) {
-            next.setText(getString(R.string.world_then_chapter, progress.chapter + 1,
+            next.setText(getString(state.folder ? R.string.world_then_track : R.string.world_then_chapter,
+                    progress.chapter + 1,
                     duration(state.after.getMedia().getDuration())));
             next.setVisibility(View.VISIBLE);
         } else {
@@ -165,6 +206,42 @@ public class BooksSurface extends WorldSurface {
         };
         title.setOnClickListener(open);
         author.setOnClickListener(open);
+    }
+
+    private void showSingle(FeedItem item, TextView author, TextView title, TextView hint, TextView next,
+                            View chapterBox, View progressRow) {
+        FeedMedia media = item.getMedia();
+        author.setVisibility(View.GONE);
+        title.setText(item.getTitle() != null ? item.getTitle().toLowerCase(Locale.getDefault()) : "");
+        hint.setVisibility(View.GONE);
+        chapterBox.setVisibility(View.INVISIBLE);
+        progressRow.setVisibility(View.VISIBLE);
+        next.setVisibility(View.INVISIBLE);
+        int duration = media.getDuration();
+        int position = Math.min(media.getPosition(), duration);
+        float done = duration > 0 ? (float) position / duration : 0;
+        WildInkBar bar = root.findViewById(R.id.worldProgress);
+        bar.setTickStyle(false);
+        bar.setProgress(done);
+        ((TextView) root.findViewById(R.id.worldPercent))
+                .setText(getString(R.string.world_file_percent, Math.round(done * 100)));
+        ((TextView) root.findViewById(R.id.worldTime))
+                .setText(getString(R.string.world_left, duration(Math.max(0, duration - position))));
+        showPlaying(isPlaying(media));
+        root.findViewById(R.id.worldPlay).setOnClickListener(v -> {
+            if (isPlaying(media)) {
+                pause();
+            } else {
+                new PlaybackServiceStarter(requireContext().getApplicationContext(), media)
+                        .callEvenIfRunning(true)
+                        .start();
+            }
+        });
+        title.setOnClickListener(v -> {
+            if (isCurrent(media)) {
+                openPlayer();
+            }
+        });
     }
 
     private void addFolderResult(@Nullable Uri uri) {
