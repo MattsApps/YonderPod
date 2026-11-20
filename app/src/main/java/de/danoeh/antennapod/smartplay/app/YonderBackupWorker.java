@@ -49,7 +49,7 @@ public class YonderBackupWorker extends Worker {
     @Override
     public Result doWork() {
         try {
-            backUpToFolder(getApplicationContext());
+            backUpToFolder(getApplicationContext(), true);
             return Result.success();
         } catch (IOException | RuntimeException e) {
             Log.e(TAG, "Automatic backup failed: " + e.getMessage());
@@ -59,7 +59,7 @@ public class YonderBackupWorker extends Worker {
         }
     }
 
-    public static void backUpToFolder(Context context) throws IOException {
+    public static void backUpToFolder(Context context, boolean automatic) throws IOException {
         String folderUri = BackupSettings.folder(context);
         if (folderUri == null) {
             throw new IOException("No backup folder");
@@ -70,7 +70,8 @@ public class YonderBackupWorker extends Worker {
         }
         long now = System.currentTimeMillis();
         DocumentFile file = folder.createFile("application/octet-stream",
-                BackupFiles.automaticName(now, TimeZone.getDefault()));
+                automatic ? BackupFiles.automaticName(now, TimeZone.getDefault())
+                        : BackupFiles.manualName(now, TimeZone.getDefault()));
         if (file == null) {
             throw new IOException("Can't create a file in the backup folder");
         }
@@ -96,5 +97,8 @@ public class YonderBackupWorker extends Worker {
             }
         }
         BackupSettings.setLast(context, now, "");
+        if (automatic) {
+            BackupSettings.setLastAutomatic(context, now);
+        }
     }
 }

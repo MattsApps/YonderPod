@@ -25,13 +25,10 @@ import androidx.fragment.app.Fragment;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
-import java.io.IOException;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.TimeZone;
 
 import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.smartplay.backup.BackupFiles;
@@ -49,9 +46,7 @@ public class BackupFragment extends Fragment {
     private final CompositeDisposable disposables = new CompositeDisposable();
     private View root;
     private boolean backingUp = false;
-
-    private final ActivityResultLauncher<String> createBackup = registerForActivityResult(
-            new ActivityResultContracts.CreateDocument("application/octet-stream"), this::backUpTo);
+    private boolean backUpAfterFolder = false;
     private final ActivityResultLauncher<String[]> pickRestore = registerForActivityResult(
             new ActivityResultContracts.OpenDocument(), uri -> {
                 if (uri != null) {
@@ -71,8 +66,15 @@ public class BackupFragment extends Fragment {
         TextView action = root.findViewById(R.id.pageAction);
         action.setText(R.string.backup_now);
         action.setOnClickListener(v -> {
-            if (!backingUp) {
-                createBackup.launch(BackupFiles.manualName(System.currentTimeMillis(), TimeZone.getDefault()));
+            if (backingUp) {
+                return;
+            }
+            if (BackupSettings.folderUsable(requireContext())) {
+                backUpNow();
+            } else {
+                backUpAfterFolder = true;
+                Toast.makeText(requireContext(), R.string.backup_choose_folder, Toast.LENGTH_LONG).show();
+                pickFolder.launch(null);
             }
         });
         show();
@@ -101,6 +103,16 @@ public class BackupFragment extends Fragment {
                 ? getString(R.string.backup_last, DateUtils.getRelativeDateTimeString(context, last,
                         DateUtils.MINUTE_IN_MILLIS, DateUtils.WEEK_IN_MILLIS, 0))
                 : getString(R.string.backup_never);
+        if (!BackupSettings.OFF.equals(BackupSettings.frequency(context))) {
+            long lastAuto = BackupSettings.lastAutomatic(context);
+            note += "\n" + (lastAuto > 0
+                    ? getString(R.string.backup_last_auto, DateUtils.getRelativeDateTimeString(context, lastAuto,
+                            DateUtils.MINUTE_IN_MILLIS, DateUtils.WEEK_IN_MILLIS, 0))
+                    : getString(R.string.backup_auto_none));
+            if (!BackupSettings.folderUsable(context)) {
+                note += "\n" + getString(R.string.backup_folder_again);
+            }
+        }
         String error = BackupSettings.lastError(context);
         if (!error.isEmpty()) {
             note += "\n" + getString(R.string.backup_auto_failed, error);
@@ -218,8 +230,10 @@ public class BackupFragment extends Fragment {
     }
 
     private void folderChosen(@Nullable Uri uri) {
+        boolean thenBackUp = backUpAfterFolder;
+        backUpAfterFolder = false;
         if (uri == null) {
-            if (BackupSettings.folder(requireContext()) == null) {
+            if (!thenBackUp && BackupSettings.folder(requireContext()) == null) {
                 BackupSettings.setFrequency(requireContext(), BackupSettings.OFF);
                 show();
             }
@@ -230,6 +244,9 @@ public class BackupFragment extends Fragment {
         BackupSettings.setFolder(requireContext(), uri.toString());
         YonderBackupWorker.schedule(requireContext(), true);
         show();
+        if (thenBackUp) {
+            backUpNow();
+        }
     }
 
     private void chooseKeep() {
@@ -279,25 +296,15 @@ public class BackupFragment extends Fragment {
         builder.show();
     }
 
-    private void backUpTo(@Nullable Uri uri) {
-        if (uri == null) {
-            return;
-        }
+    private void backUpNow() {
         Context app = requireContext().getApplicationContext();
+        String folder = folderName();
         backingUp = true;
         ((TextView) root.findViewById(R.id.pageAction)).setText(R.string.backup_working);
-        disposables.add(Completable.fromAction(() -> {
-            try (OutputStream out = app.getContentResolver().openOutputStream(uri, "wt")) {
-                if (out == null) {
-                    throw new IOException("Can't write the file");
-                }
-                YonderBackup.write(app, out, BackupSettings.password(app));
-            }
-            BackupSettings.setLast(app, System.currentTimeMillis(), "");
-        })
+        disposables.add(Completable.fromAction(() -> YonderBackupWorker.backUpToFolder(app, false))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(() -> finishBackup(getString(R.string.backup_done)), error -> {
+                .subscribe(() -> finishBackup(getString(R.string.backup_done_in, folder)), error -> {
                     Log.e(TAG, "Backup failed: " + error.getMessage());
                     finishBackup(getString(R.string.backup_failed, String.valueOf(error.getMessage())));
                 }));

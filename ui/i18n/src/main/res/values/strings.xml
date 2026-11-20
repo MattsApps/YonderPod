@@ -1797,6 +1797,11 @@
     <string name="backup_never">No backup yet</string>
     <string name="backup_auto_failed">The last automatic backup didn\'t work: %1$s</string>
     <string name="backup_done">Backed up</string>
+    <string name="backup_done_in">Backed up to %1$s</string>
+    <string name="backup_choose_folder">Choose a folder for your backups. Yonder keeps them all there, and Restore lists them.</string>
+    <string name="backup_last_auto">Last automatic backup %1$s</string>
+    <string name="backup_auto_none">No automatic backup yet</string>
+    <string name="backup_folder_again">Choose your backup folder again: Android forgets it when Yonder is reinstalled.</string>
     <string name="backup_failed">Backup didn\'t work: %1$s</string>
     <string name="backup_restore">Restore</string>
     <string name="backup_restore_value">pick a file</string>
@@ -2213,7 +2218,7 @@
     <string name="help_topic_history">History, downloads and statistics</string>
     <string name="help_about_history">History and downloads are at the bottom of every Tend. Episodes, favourites and statistics are at the bottom of Tune.</string>
     <string name="help_topic_backup">Backup and restore</string>
-    <string name="help_about_backup">One file with everything Yonder knows (not the audio), automatic backups, and restoring on a new phone.</string>
+    <string name="help_about_backup">One file with everything Yonder knows (not the audio). Back up now and automatic backups both go into your backup folder, and Restore lists them. After reinstalling, choose the folder again. Restoring on a new phone.</string>
     <string name="help_topic_moving_other">Moving from another app</string>
     <string name="help_about_moving_other">Bring your shows from Pocket Casts, Overcast, Podcast Addict, AntennaPod and others.</string>
     <string name="help_topic_apple_spotify">Apple Podcasts and Spotify</string>

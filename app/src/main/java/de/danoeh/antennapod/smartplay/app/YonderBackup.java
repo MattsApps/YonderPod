@@ -606,10 +606,17 @@ public final class YonderBackup {
             }
             files.put(file.equals(defaultPreferencesName(context)) ? "default" : file, values);
         }
-        return new JSONObject().put("files", files);
+        JSONObject schedule = new JSONObject().put("frequency", BackupSettings.frequency(context))
+                .put("keep", BackupSettings.keep(context));
+        return new JSONObject().put("files", files).put("backupSchedule", schedule);
     }
 
     private static void restorePreferences(Context context, JSONObject preferences) {
+        JSONObject schedule = preferences.optJSONObject("backupSchedule");
+        if (schedule != null) {
+            BackupSettings.restoreSchedule(context, schedule.optString("frequency", BackupSettings.OFF),
+                    schedule.optInt("keep", BackupSettings.keep(context)));
+        }
         JSONObject files = preferences.optJSONObject("files");
         if (files == null) {
             return;

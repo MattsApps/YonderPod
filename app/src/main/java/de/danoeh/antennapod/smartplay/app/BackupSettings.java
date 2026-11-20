@@ -2,6 +2,7 @@ package de.danoeh.antennapod.smartplay.app;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.UriPermission;
 
 import androidx.annotation.Nullable;
 
@@ -15,6 +16,7 @@ public final class BackupSettings {
     private static final String KEY_FOLDER = "folder";
     private static final String KEY_KEEP = "keep";
     private static final String KEY_LAST = "last";
+    private static final String KEY_LAST_AUTO = "lastAuto";
     private static final String KEY_LAST_ERROR = "lastError";
     private static final String KEY_PASSWORD = "password";
 
@@ -52,6 +54,31 @@ public final class BackupSettings {
 
     public static long last(Context context) {
         return prefs(context).getLong(KEY_LAST, 0);
+    }
+
+    public static long lastAutomatic(Context context) {
+        return prefs(context).getLong(KEY_LAST_AUTO, 0);
+    }
+
+    public static void setLastAutomatic(Context context, long time) {
+        prefs(context).edit().putLong(KEY_LAST_AUTO, time).apply();
+    }
+
+    public static boolean folderUsable(Context context) {
+        String folder = folder(context);
+        if (folder == null) {
+            return false;
+        }
+        for (UriPermission permission : context.getContentResolver().getPersistedUriPermissions()) {
+            if (permission.getUri().toString().equals(folder) && permission.isWritePermission()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static void restoreSchedule(Context context, String frequency, int keep) {
+        prefs(context).edit().putString(KEY_FREQUENCY, frequency).putInt(KEY_KEEP, keep).commit();
     }
 
     public static String lastError(Context context) {
