@@ -44,7 +44,7 @@ if [ $RESULT -eq 0 ] && [ -f "$AAB" ]; then
   mkdir -p "$OUT"
   cp "$AAB" "$OUT/yonder-$VERSION.aab"
   echo "Saved: $OUT/yonder-$VERSION.aab"
-  echo "Upload that file in Play Console (Testing > Internal testing > Create new release)."
+  echo "Upload that file in Play Console (Test and release > Testing > Closed testing > Create new release)."
 else
   echo "STOP: the build failed. Send release-log.txt to the coding chat."
 fi
