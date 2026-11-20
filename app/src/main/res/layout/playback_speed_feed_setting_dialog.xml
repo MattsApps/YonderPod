@@ -33,10 +33,12 @@
 
     </LinearLayout>
 
+    <!-- Skip silence has its own row on the show's settings page since 1.0.1; kept hidden here. -->
     <CheckBox
         android:id="@+id/skipSilenceFeed"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/pref_skip_silence_title" />
+        android:text="@string/pref_skip_silence_title"
+        android:visibility="gone" />
 
 </LinearLayout>

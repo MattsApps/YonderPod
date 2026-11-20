@@ -165,6 +165,11 @@ public abstract class PlaybackPreferences {
         editor.apply();
     }
 
+    /** Forgets a skip-silence value saved for the loaded episode, so the show's own setting decides. */
+    public static void clearCurrentlyPlayingTemporarySkipSilence() {
+        prefs.edit().remove(PREF_CURRENTLY_PLAYING_TEMPORARY_SKIP_SILENCE).apply();
+    }
+
     public static void clearCurrentlyPlayingTemporaryPlaybackSettings() {
         SharedPreferences.Editor editor = prefs.edit();
         editor.remove(PREF_CURRENTLY_PLAYING_TEMPORARY_PLAYBACK_SPEED);

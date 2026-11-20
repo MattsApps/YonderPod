@@ -22,7 +22,14 @@ import de.danoeh.antennapod.ui.common.ThemeUtils;
 import de.danoeh.antennapod.event.playback.SpeedChangedEvent;
 import de.danoeh.antennapod.playback.base.BuildConfig;
 import de.danoeh.antennapod.playback.service.PlaybackController;
-import de.danoeh.antennapod.playback.service.internal.MediaLibrarySessionCallback;
+import de.danoeh.antennapod.event.settings.SpeedPresetChangedEvent;
+import de.danoeh.antennapod.model.feed.Feed;
+import de.danoeh.antennapod.model.feed.FeedMedia;
+import de.danoeh.antennapod.model.feed.FeedPreferences;
+import de.danoeh.antennapod.model.playback.Playable;
+import de.danoeh.antennapod.storage.database.DBReader;
+import de.danoeh.antennapod.storage.database.DBWriter;
+import de.danoeh.antennapod.ui.episodes.PlaybackSpeedUtils;
 import de.danoeh.antennapod.storage.preferences.UserPreferences;
 import de.danoeh.antennapod.ui.common.ItemOffsetDecoration;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
@@ -99,7 +106,7 @@ public class VariableSpeedDialog extends BottomSheetDialogFragment {
                         return;
                     }
                     updateSpeed(new SpeedChangedEvent(controller.getCurrentPlaybackSpeedMultiplier()));
-                    updateSkipSilence(controller.getCurrentPlaybackSkipSilence());
+                    showSkipSilence(pair);
                 }, error -> Log.e(TAG, Log.getStackTraceString(error)));
 
     }
@@ -110,8 +117,42 @@ public class VariableSpeedDialog extends BottomSheetDialogFragment {
         addCurrentSpeedChip.setText(String.format(Locale.getDefault(), "%1$.2f", event.getNewSpeed()));
     }
 
-    public void updateSkipSilence(boolean skipSilence) {
-        skipSilenceCheckbox.setChecked(skipSilence);
+    /**
+     * "Skip silence in &lt;show&gt;": the playing show's own setting (1.0.1), saved on the show and applied at
+     * once. Hidden with nothing loaded, on live radio and on radio recordings.
+     */
+    private void showSkipSilence(Playable media) {
+        skipSilenceCheckbox.setOnCheckedChangeListener(null);
+        Feed feed = null;
+        if (media instanceof FeedMedia && !((FeedMedia) media).isLiveRadio()
+                && ((FeedMedia) media).getItem() != null) {
+            feed = ((FeedMedia) media).getItem().getFeed();
+        }
+        if (feed == null || feed.getPreferences() == null || (feed.getDownloadUrl() != null
+                && feed.getDownloadUrl().startsWith(Feed.RECORDINGS_URL_PREFIX))) {
+            skipSilenceCheckbox.setVisibility(View.GONE);
+            return;
+        }
+        skipSilenceCheckbox.setText(getString(R.string.player_skip_silence_show, feed.getTitle()));
+        skipSilenceCheckbox.setChecked(PlaybackSpeedUtils.getCurrentSkipSilencePreference(media)
+                == FeedPreferences.SkipSilence.AGGRESSIVE);
+        skipSilenceCheckbox.setVisibility(View.VISIBLE);
+        final Feed shown = feed;
+        skipSilenceCheckbox.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            FeedPreferences.SkipSilence chosen = isChecked
+                    ? FeedPreferences.SkipSilence.AGGRESSIVE : FeedPreferences.SkipSilence.OFF;
+            shown.getPreferences().setFeedSkipSilence(chosen);
+            long feedId = shown.getId();
+            Schedulers.io().scheduleDirect(() -> {
+                Feed fresh = DBReader.getFeed(feedId, false, 0, 0);
+                FeedPreferences preferences = fresh != null && fresh.getPreferences() != null
+                        ? fresh.getPreferences() : shown.getPreferences();
+                preferences.setFeedSkipSilence(chosen);
+                DBWriter.setFeedPreferences(preferences);
+                EventBus.getDefault().post(new SpeedPresetChangedEvent(preferences.getFeedPlaybackSpeed(),
+                        feedId, chosen));
+            });
+        });
     }
 
     @Nullable
@@ -144,17 +185,7 @@ public class VariableSpeedDialog extends BottomSheetDialogFragment {
         addCurrentSpeedChip.setOnClickListener(v -> addCurrentSpeed());
 
         skipSilenceCheckbox = root.findViewById(R.id.skipSilence);
-        skipSilenceCheckbox.setChecked(UserPreferences.isSkipSilence());
-        skipSilenceCheckbox.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            UserPreferences.setSkipSilence(isChecked);
-            if (BuildConfig.USE_MEDIA3_PLAYBACK_SERVICE) {
-                PlaybackController.bindToMedia3Service(getContext(), mediaController ->
-                        mediaController.sendCustomCommand(MediaLibrarySessionCallback.SESSION_COMMAND_SKIP_SILENCE,
-                                MediaLibrarySessionCallback.createBundle(isChecked)));
-            } else if (controller != null) {
-                controller.setSkipSilence(isChecked);
-            }
-        });
+        skipSilenceCheckbox.setVisibility(View.GONE);
         return root;
     }
 

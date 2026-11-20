@@ -20,6 +20,7 @@ import java.util.Set;
 
 import de.danoeh.antennapod.BuildConfig;
 import de.danoeh.antennapod.R;
+import de.danoeh.antennapod.model.feed.VolumeAdaptionSetting;
 import de.danoeh.antennapod.storage.preferences.UserPreferences;
 import de.danoeh.antennapod.ui.common.Palette;
 import de.danoeh.antennapod.ui.screen.preferences.PreferenceActivity;
@@ -231,6 +232,12 @@ public final class HelpIndex {
                 R.string.tune_title, R.string.tune_controls, R.string.controls_advanced);
         setting(R.string.controls_interruption_back, R.string.help_words_interruption_back, OPEN_CONTROLS,
                 R.string.tune_title, R.string.tune_controls, R.string.controls_advanced);
+        setting(R.string.controls_skip_silence, R.string.help_words_skip_silence, OPEN_CONTROLS,
+                R.string.tune_title, R.string.tune_controls, R.string.controls_advanced);
+        if (VolumeAdaptionSetting.isBoostSupported()) {
+            setting(R.string.controls_volume_boost, R.string.help_words_volume_boost, OPEN_CONTROLS,
+                    R.string.tune_title, R.string.tune_controls, R.string.controls_advanced);
+        }
         setting(R.string.world_books, R.string.help_words_world_books, OPEN_TUNE,
                 R.string.tune_title, R.string.tune_worlds);
         setting(R.string.world_radio, R.string.help_words_world_radio, OPEN_TUNE,
@@ -487,6 +494,10 @@ public final class HelpIndex {
                 R.string.car_mode_auto);
         topic(playback, R.string.help_topic_speed, R.string.help_about_speed, OPEN_ADVANCED,
                 "prefPlaybackSpeedLauncher", R.xml.preferences_playback);
+        wordedTopic(playback, R.string.help_topic_skip_silence, R.string.help_about_skip_silence,
+                R.string.help_words_skip_silence, OPEN_TOPIC, 0);
+        wordedTopic(playback, R.string.help_topic_volume_boost, R.string.help_about_volume_boost,
+                R.string.help_words_volume_boost, OPEN_TOPIC, 0);
         topic(playback, R.string.help_topic_player, R.string.help_about_player, OPEN_TOPIC, 0);
         topic(playback, R.string.help_topic_widget, R.string.help_about_widget, OPEN_TOPIC, 0);
 

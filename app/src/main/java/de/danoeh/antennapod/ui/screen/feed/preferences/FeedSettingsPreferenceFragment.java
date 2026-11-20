@@ -57,7 +57,9 @@ import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import org.greenrobot.eventbus.EventBus;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -81,6 +83,8 @@ public class FeedSettingsPreferenceFragment extends PreferenceFragmentCompat {
     private static final String PREF_YONDER_DOWNLOADS = "yonderDownloads";
     private static final String PREF_YONDER_LOCAL_FILES = "yonderLocalFiles";
     private static final String PREF_BOOK_KEEP_AHEAD = "bookKeepAhead";
+    private static final String PREF_SKIP_SILENCE = "feedSkipSilence";
+    private static final String PREF_VOLUME = "volumeReduction";
 
     private Feed feed;
     private Disposable disposable;
@@ -304,16 +308,7 @@ public class FeedSettingsPreferenceFragment extends PreferenceFragmentCompat {
             updateAutoDeleteSummary();
             return false;
         });
-        ListPreference volumeAdaptationPreference = findPreference("volumeReduction");
-        volumeAdaptationPreference.setValue("" + feedPreferences.getVolumeAdaptionSetting().toInteger());
-        volumeAdaptationPreference.setOnPreferenceChangeListener((preference, newValue) -> {
-            VolumeAdaptionSetting newSetting = VolumeAdaptionSetting.fromInteger(Integer.parseInt((String) newValue));
-            feedPreferences.setVolumeAdaptionSetting(newSetting);
-            DBWriter.setFeedPreferences(feedPreferences);
-            volumeAdaptationPreference.setValue("" + feedPreferences.getVolumeAdaptionSetting().toInteger());
-            EventBus.getDefault().post(new VolumeAdaptionChangedEvent(newSetting, feed.getId()));
-            return false;
-        });
+        setupSound();
         findPreference(PREF_NEW_EPISODES_ACTION).setOnPreferenceClickListener(preference -> {
             boolean isAutoDownload = feed.getPreferences().isAutoDownload(UserPreferences.isEnableAutodownloadGlobal());
             if (isAutoDownload && !feed.isLocalFeed()) {
@@ -489,6 +484,92 @@ public class FeedSettingsPreferenceFragment extends PreferenceFragmentCompat {
         }
     }
 
+    /**
+     * Skip silence and volume boost, each with "usual" (Tune's default), on its own row under Playback speed.
+     * Not for radio recordings: radio is left as it is.
+     */
+    private void setupSound() {
+        ListPreference skipSilence = findPreference(PREF_SKIP_SILENCE);
+        ListPreference volume = findPreference(PREF_VOLUME);
+        boolean recording = Recordings.isRecordingsFeed(feed);
+        skipSilence.setVisible(!recording);
+        volume.setVisible(!recording);
+        if (recording) {
+            return;
+        }
+        String usualSkip = getString(UserPreferences.isSkipSilence()
+                ? R.string.show_sound_on : R.string.show_sound_off);
+        skipSilence.setEntries(new CharSequence[] {getString(R.string.show_sound_usual, usualSkip),
+            getString(R.string.show_sound_on), getString(R.string.show_sound_off)});
+        skipSilence.setEntryValues(new CharSequence[] {"" + FeedPreferences.SkipSilence.GLOBAL.code,
+            "" + FeedPreferences.SkipSilence.AGGRESSIVE.code, "" + FeedPreferences.SkipSilence.OFF.code});
+        skipSilence.setValue("" + feedPreferences.getFeedSkipSilence().code);
+        skipSilence.setSummary(skipSilence.getEntry());
+        skipSilence.setOnPreferenceChangeListener((preference, newValue) -> {
+            FeedPreferences.SkipSilence chosen = FeedPreferences.SkipSilence.fromCode(
+                    Integer.parseInt((String) newValue));
+            feedPreferences.setFeedSkipSilence(chosen);
+            DBWriter.setFeedPreferences(feedPreferences);
+            skipSilence.setValue("" + chosen.code);
+            skipSilence.setSummary(skipSilence.getEntry());
+            EventBus.getDefault().post(new SpeedPresetChangedEvent(feedPreferences.getFeedPlaybackSpeed(),
+                    feed.getId(), chosen));
+            return false;
+        });
+
+        List<VolumeAdaptionSetting> settings = new ArrayList<>();
+        settings.add(VolumeAdaptionSetting.OFF);
+        settings.add(VolumeAdaptionSetting.NO_CHANGE);
+        if (VolumeAdaptionSetting.isBoostSupported()) {
+            settings.add(VolumeAdaptionSetting.LIGHT_BOOST);
+            settings.add(VolumeAdaptionSetting.MEDIUM_BOOST);
+            settings.add(VolumeAdaptionSetting.HEAVY_BOOST);
+        }
+        settings.add(VolumeAdaptionSetting.LIGHT_REDUCTION);
+        settings.add(VolumeAdaptionSetting.HEAVY_REDUCTION);
+        CharSequence[] names = new CharSequence[settings.size()];
+        CharSequence[] values = new CharSequence[settings.size()];
+        for (int i = 0; i < settings.size(); i++) {
+            VolumeAdaptionSetting setting = settings.get(i);
+            names[i] = setting == VolumeAdaptionSetting.OFF
+                    ? getString(R.string.show_sound_usual,
+                            volumeName(getContext(), UserPreferences.getVolumeBoostUsual()))
+                    : volumeName(getContext(), setting);
+            values[i] = "" + setting.toInteger();
+        }
+        volume.setEntries(names);
+        volume.setEntryValues(values);
+        volume.setValue("" + feedPreferences.getVolumeAdaptionSetting().toInteger());
+        volume.setSummary(volume.getEntry());
+        volume.setOnPreferenceChangeListener((preference, newValue) -> {
+            VolumeAdaptionSetting chosen = VolumeAdaptionSetting.fromInteger(Integer.parseInt((String) newValue));
+            feedPreferences.setVolumeAdaptionSetting(chosen);
+            DBWriter.setFeedPreferences(feedPreferences);
+            volume.setValue("" + chosen.toInteger());
+            volume.setSummary(volume.getEntry());
+            EventBus.getDefault().post(new VolumeAdaptionChangedEvent(chosen, feed.getId()));
+            return false;
+        });
+    }
+
+    /** Everyday name of a volume setting, shared with Tune. */
+    public static String volumeName(Context context, VolumeAdaptionSetting setting) {
+        switch (setting) {
+            case LIGHT_BOOST:
+                return context.getString(R.string.feed_volume_boost_light);
+            case MEDIUM_BOOST:
+                return context.getString(R.string.feed_volume_boost_medium);
+            case HEAVY_BOOST:
+                return context.getString(R.string.feed_volume_boost_heavy);
+            case LIGHT_REDUCTION:
+                return context.getString(R.string.show_volume_quieter);
+            case HEAVY_REDUCTION:
+                return context.getString(R.string.show_volume_much_quieter);
+            default:
+                return context.getString(R.string.show_sound_off);
+        }
+    }
+
     private boolean showPlaybackSpeedDialog(Preference preference) {
         PlaybackSpeedFeedSettingDialogBinding viewBinding =
                 PlaybackSpeedFeedSettingDialogBinding.inflate(getLayoutInflater());
@@ -498,18 +579,12 @@ public class FeedSettingsPreferenceFragment extends PreferenceFragmentCompat {
             viewBinding.seekBar.setEnabled(!isChecked);
             viewBinding.seekBar.setAlpha(isChecked ? 0.4f : 1f);
             viewBinding.currentSpeedLabel.setAlpha(isChecked ? 0.4f : 1f);
-
-            viewBinding.skipSilenceFeed.setEnabled(!isChecked);
-            viewBinding.skipSilenceFeed.setAlpha(isChecked ? 0.4f : 1f);
         });
         float speed = feedPreferences.getFeedPlaybackSpeed();
         boolean isGlobal = speed == FeedPreferences.SPEED_USE_GLOBAL;
         viewBinding.useGlobalCheckbox.setChecked(isGlobal);
         viewBinding.seekBar.updateSpeed(isGlobal ? 1 : speed);
         viewBinding.currentSpeedLabel.setText(String.format(Locale.getDefault(), "%.2fx", isGlobal ? 1 : speed));
-        FeedPreferences.SkipSilence skipSilence = feedPreferences.getFeedSkipSilence();
-        viewBinding.skipSilenceFeed.setChecked(!isGlobal
-                && skipSilence == FeedPreferences.SkipSilence.AGGRESSIVE);
         new MaterialAlertDialogBuilder(getContext())
                 .setTitle(R.string.playback_speed)
                 .setView(viewBinding.getRoot())
@@ -517,15 +592,6 @@ public class FeedSettingsPreferenceFragment extends PreferenceFragmentCompat {
                     float newSpeed = viewBinding.useGlobalCheckbox.isChecked()
                             ? FeedPreferences.SPEED_USE_GLOBAL : viewBinding.seekBar.getCurrentSpeed();
                     feedPreferences.setFeedPlaybackSpeed(newSpeed);
-                    FeedPreferences.SkipSilence newSkipSilence;
-                    if (viewBinding.useGlobalCheckbox.isChecked()) {
-                        newSkipSilence = FeedPreferences.SkipSilence.GLOBAL;
-                    } else if (viewBinding.skipSilenceFeed.isChecked()) {
-                        newSkipSilence = FeedPreferences.SkipSilence.AGGRESSIVE;
-                    } else {
-                        newSkipSilence = FeedPreferences.SkipSilence.OFF;
-                    }
-                    feedPreferences.setFeedSkipSilence(newSkipSilence);
                     DBWriter.setFeedPreferences(feedPreferences);
                     EventBus.getDefault().post(new SpeedPresetChangedEvent(feedPreferences.getFeedPlaybackSpeed(),
                             feed.getId(), feedPreferences.getFeedSkipSilence()));

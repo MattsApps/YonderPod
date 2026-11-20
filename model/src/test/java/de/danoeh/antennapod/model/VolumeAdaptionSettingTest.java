@@ -73,6 +73,7 @@ public class VolumeAdaptionSettingTest {
         assertThat(VolumeAdaptionSetting.fromInteger(3), is(equalTo(VolumeAdaptionSetting.LIGHT_BOOST)));
         assertThat(VolumeAdaptionSetting.fromInteger(4), is(equalTo(VolumeAdaptionSetting.MEDIUM_BOOST)));
         assertThat(VolumeAdaptionSetting.fromInteger(5), is(equalTo(VolumeAdaptionSetting.HEAVY_BOOST)));
+        assertThat(VolumeAdaptionSetting.fromInteger(6), is(equalTo(VolumeAdaptionSetting.NO_CHANGE)));
     }
 
     @Test(expected =  IllegalArgumentException.class)
@@ -82,7 +83,7 @@ public class VolumeAdaptionSettingTest {
 
     @Test(expected =  IllegalArgumentException.class)
     public void cannotMapValuesOutOfRange() {
-        VolumeAdaptionSetting.fromInteger(6);
+        VolumeAdaptionSetting.fromInteger(7);
     }
 
     @Test
@@ -125,5 +126,17 @@ public class VolumeAdaptionSettingTest {
         float heavyBoostFactor = VolumeAdaptionSetting.HEAVY_BOOST.getAdaptionFactor();
 
         assertTrue("Heavy boost must have higher factor than medium boost", heavyBoostFactor > mediumBoostFactor);
+    }
+
+    @Test
+    public void usualFollowsTuneAndOthersStay() {
+        assertThat(VolumeAdaptionSetting.OFF.orUsual(VolumeAdaptionSetting.LIGHT_BOOST),
+                is(equalTo(VolumeAdaptionSetting.LIGHT_BOOST)));
+        assertThat(VolumeAdaptionSetting.NO_CHANGE.orUsual(VolumeAdaptionSetting.HEAVY_BOOST),
+                is(equalTo(VolumeAdaptionSetting.NO_CHANGE)));
+        assertThat(VolumeAdaptionSetting.HEAVY_REDUCTION.orUsual(VolumeAdaptionSetting.LIGHT_BOOST),
+                is(equalTo(VolumeAdaptionSetting.HEAVY_REDUCTION)));
+        assertThat(VolumeAdaptionSetting.OFF.orUsual(null), is(equalTo(VolumeAdaptionSetting.OFF)));
+        assertEquals(1.0f, VolumeAdaptionSetting.NO_CHANGE.getAdaptionFactor(), 0.01f);
     }
 }

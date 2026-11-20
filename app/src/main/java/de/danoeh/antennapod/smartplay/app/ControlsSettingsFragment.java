@@ -46,6 +46,12 @@ import de.danoeh.antennapod.activity.MainActivity;
 import de.danoeh.antennapod.storage.preferences.ButtonAction;
 import de.danoeh.antennapod.storage.preferences.ButtonPress;
 import de.danoeh.antennapod.storage.preferences.ControlsPreferences;
+import de.danoeh.antennapod.storage.preferences.UserPreferences;
+import de.danoeh.antennapod.event.settings.SoundDefaultsChangedEvent;
+import de.danoeh.antennapod.model.feed.VolumeAdaptionSetting;
+import de.danoeh.antennapod.ui.screen.feed.preferences.FeedSettingsPreferenceFragment;
+
+import org.greenrobot.eventbus.EventBus;
 
 public class ControlsSettingsFragment extends Fragment {
     private static final int[] THRESHOLD_MINUTES = {1, 2, 5, 15, 30, 60, 180, 360, 720, 1440, 2880, 10080};
@@ -83,7 +89,42 @@ public class ControlsSettingsFragment extends Fragment {
         root.findViewById(R.id.controls_advanced_toggle).setOnClickListener(v ->
                 advanced.setVisibility(advanced.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE));
         setupRewind(inflater);
+        setupSound();
         return root;
+    }
+
+    private static final VolumeAdaptionSetting[] USUAL_VOLUMES = {VolumeAdaptionSetting.OFF,
+        VolumeAdaptionSetting.LIGHT_BOOST, VolumeAdaptionSetting.MEDIUM_BOOST, VolumeAdaptionSetting.HEAVY_BOOST};
+
+    /** Skip silence and volume boost for shows left on "usual" (1.0.1). Both off by default. */
+    private void setupSound() {
+        setupSwitch(R.id.controls_skip_silence, UserPreferences.isSkipSilence(), checked -> {
+            UserPreferences.setSkipSilence(checked);
+            EventBus.getDefault().post(new SoundDefaultsChangedEvent());
+        });
+        View group = root.findViewById(R.id.controls_volume_boost_group);
+        if (!VolumeAdaptionSetting.isBoostSupported()) {
+            group.setVisibility(View.GONE);
+            return;
+        }
+        List<String> labels = new ArrayList<>();
+        int selected = 0;
+        VolumeAdaptionSetting usual = UserPreferences.getVolumeBoostUsual();
+        for (int i = 0; i < USUAL_VOLUMES.length; i++) {
+            labels.add(FeedSettingsPreferenceFragment.volumeName(requireContext(), USUAL_VOLUMES[i]));
+            if (USUAL_VOLUMES[i] == usual) {
+                selected = i;
+            }
+        }
+        Spinner volume = root.findViewById(R.id.controls_volume_boost);
+        volume.setAdapter(adapter(labels));
+        volume.setSelection(selected);
+        volume.setOnItemSelectedListener(listener(position -> {
+            if (USUAL_VOLUMES[position] != UserPreferences.getVolumeBoostUsual()) {
+                UserPreferences.setVolumeBoostUsual(USUAL_VOLUMES[position]);
+                EventBus.getDefault().post(new SoundDefaultsChangedEvent());
+            }
+        }));
     }
 
     @Override

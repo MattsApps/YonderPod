@@ -28,20 +28,21 @@
             android:summary="@string/pref_feed_playback_speed_sum"
             android:title="@string/playback_speed" />
 
+        <de.danoeh.antennapod.ui.preferences.preference.MaterialListPreference
+            android:icon="@drawable/ic_skip_24dp"
+            android:key="feedSkipSilence"
+            android:title="@string/show_skip_silence_title" />
+
+        <de.danoeh.antennapod.ui.preferences.preference.MaterialListPreference
+            android:icon="@drawable/ic_volume_adaption"
+            android:key="volumeReduction"
+            android:title="@string/show_volume_boost_title" />
+
         <Preference
             android:icon="@drawable/ic_skip_24dp"
             android:key="feedAutoSkip"
             android:summary="@string/pref_feed_skip_sum"
             android:title="@string/pref_feed_skip" />
-
-        <de.danoeh.antennapod.ui.screen.feed.preferences.VolumeAdaptationPreference
-            android:defaultValue="off"
-            android:entries="@array/spnVolumeAdaptationItems"
-            android:entryValues="@array/spnVolumeAdaptationValues"
-            android:icon="@drawable/ic_volume_adaption"
-            android:key="volumeReduction"
-            android:summary="@string/feed_volume_adaptation_summary"
-            android:title="@string/feed_volume_adapdation" />
 
     </PreferenceCategory>
 

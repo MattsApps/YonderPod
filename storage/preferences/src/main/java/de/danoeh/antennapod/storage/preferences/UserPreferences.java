@@ -33,6 +33,7 @@ import de.danoeh.antennapod.model.feed.FeedCounter;
 import de.danoeh.antennapod.model.feed.FeedPreferences;
 import de.danoeh.antennapod.model.feed.SortOrder;
 import de.danoeh.antennapod.model.feed.SubscriptionsFilter;
+import de.danoeh.antennapod.model.feed.VolumeAdaptionSetting;
 
 /**
  * Provides access to preferences set by the user in the settings screen. A
@@ -133,6 +134,7 @@ public abstract class UserPreferences {
     // Mediaplayer
     private static final String PREF_PLAYBACK_SPEED = "prefPlaybackSpeed";
     public static final String PREF_PLAYBACK_SKIP_SILENCE = "prefSkipSilence";
+    public static final String PREF_VOLUME_BOOST_USUAL = "prefVolumeBoostUsual";
     private static final String PREF_FAST_FORWARD_SECS = "prefFastForwardSecs";
     private static final String PREF_REWIND_SECS = "prefRewindSecs";
     private static final String PREF_QUEUE_LOCKED = "prefQueueLocked";
@@ -565,8 +567,24 @@ public abstract class UserPreferences {
         }
     }
 
+    /** Skip silence for shows left on "usual" (Tune → controls → advanced). Off by default. */
     public static boolean isSkipSilence() {
         return prefs.getBoolean(PREF_PLAYBACK_SKIP_SILENCE, false);
+    }
+
+    /** Volume boost for shows left on "usual" (Tune → controls → advanced). OFF (no boost) by default. */
+    public static VolumeAdaptionSetting getVolumeBoostUsual() {
+        try {
+            VolumeAdaptionSetting setting = VolumeAdaptionSetting.fromInteger(
+                    prefs.getInt(PREF_VOLUME_BOOST_USUAL, VolumeAdaptionSetting.OFF.toInteger()));
+            return setting == VolumeAdaptionSetting.NO_CHANGE ? VolumeAdaptionSetting.OFF : setting;
+        } catch (RuntimeException e) {
+            return VolumeAdaptionSetting.OFF;
+        }
+    }
+
+    public static void setVolumeBoostUsual(VolumeAdaptionSetting setting) {
+        prefs.edit().putInt(PREF_VOLUME_BOOST_USUAL, setting.toInteger()).apply();
     }
 
     public static List<Float> getPlaybackSpeedArray() {

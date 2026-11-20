@@ -51,6 +51,8 @@ import de.danoeh.antennapod.event.MessageEvent;
 import de.danoeh.antennapod.event.FeedItemEvent;
 import de.danoeh.antennapod.event.PlayerErrorEvent;
 import de.danoeh.antennapod.event.StreamingConfirmationEvent;
+import de.danoeh.antennapod.event.settings.SoundDefaultsChangedEvent;
+import de.danoeh.antennapod.event.settings.SpeedPresetChangedEvent;
 import de.danoeh.antennapod.event.settings.VolumeAdaptionChangedEvent;
 import de.danoeh.antennapod.event.PlayerStatusEvent;
 import de.danoeh.antennapod.event.playback.BufferUpdateEvent;
@@ -486,8 +488,8 @@ public class Media3PlaybackService extends MediaLibraryService {
                 seekToNextChapter();
                 return Futures.immediateFuture(new SessionResult(SessionResult.RESULT_SUCCESS));
             } else if (customCommand.customAction.equals(SESSION_COMMAND_SKIP_SILENCE.customAction)) {
-                boolean enabled = MediaLibrarySessionCallback.getBoolean(args, false);
-                PlaybackPreferences.setCurrentlyPlayingTemporarySkipSilence(enabled);
+                // Never on live radio, live pause or recordings (1.0.1).
+                boolean enabled = MediaLibrarySessionCallback.getBoolean(args, false) && soundSettingsApply();
                 exoPlayer.setSkipSilenceEnabled(enabled);
                 return Futures.immediateFuture(new SessionResult(SessionResult.RESULT_SUCCESS));
             } else if (customCommand.customAction.equals(SESSION_COMMAND_SET_SLEEP_TIMER.customAction)) {
@@ -1366,19 +1368,13 @@ public class Media3PlaybackService extends MediaLibraryService {
         boolean radio = currentPlayable.isLiveRadio();
         float speed = radio ? 1.0f : PlaybackSpeedUtils.getCurrentPlaybackSpeed(currentPlayable);
         player.setPlaybackSpeed(speed);
-        boolean enabled = !radio && PlaybackSpeedUtils.getCurrentSkipSilencePreference(currentPlayable)
-                == FeedPreferences.SkipSilence.AGGRESSIVE;
-        PlaybackPreferences.setCurrentlyPlayingTemporarySkipSilence(enabled);
-        exoPlayer.setSkipSilenceEnabled(enabled);
+        // The show's own skip silence decides (1.0.1): a value saved for an earlier load no longer wins.
+        PlaybackPreferences.clearCurrentlyPlayingTemporarySkipSilence();
         int maxAudioBitrate = radio && currentPlayable.getItem() != null
                 ? RadioPreferences.maxBitrate(currentPlayable.getItem().getId()) : Integer.MAX_VALUE;
         exoPlayer.setTrackSelectionParameters(exoPlayer.getTrackSelectionParameters().buildUpon()
                 .setMaxAudioBitrate(maxAudioBitrate).build());
-        if (currentPlayable.getItem() != null && currentPlayable.getItem().getFeed() != null) {
-            volumeAdaptionFactor = currentPlayable.getItem().getFeed()
-                    .getPreferences().getVolumeAdaptionSetting().getAdaptionFactor();
-            applyVolumeAdaption(1.0f);
-        }
+        applySoundSettings();
         updatePlaybackPreferences();
         WidgetUpdater.WidgetState widgetState = new WidgetUpdater.WidgetState(currentPlayable,
                 PlaybackService.isRunning ? PlayerStatus.PLAYING : PlayerStatus.PAUSED,
@@ -2172,14 +2168,71 @@ public class Media3PlaybackService extends MediaLibraryService {
     @Subscribe(threadMode = ThreadMode.MAIN)
     @SuppressWarnings("unused")
     public void volumeAdaptionChanged(VolumeAdaptionChangedEvent event) {
-        if (currentPlayable != null && currentPlayable.getItem() != null
-                && currentPlayable.getItem().getFeed() != null
-                && currentPlayable.getItem().getFeed().getId() == event.getFeedId()) {
-            currentPlayable.getItem().getFeed().getPreferences()
-                    .setVolumeAdaptionSetting(event.getVolumeAdaptionSetting());
-            volumeAdaptionFactor = event.getVolumeAdaptionSetting().getAdaptionFactor();
-            applyVolumeAdaption(1.0f);
+        FeedPreferences preferences = playingShowPreferences(event.getFeedId());
+        if (preferences != null) {
+            preferences.setVolumeAdaptionSetting(event.getVolumeAdaptionSetting());
+            applySoundSettings();
         }
+    }
+
+    /** A show's skip silence changed (its settings page or the player's speed dialog): applies at once. */
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    @SuppressWarnings("unused")
+    public void speedPresetChanged(SpeedPresetChangedEvent event) {
+        FeedPreferences preferences = playingShowPreferences(event.getFeedId());
+        if (preferences != null) {
+            preferences.setFeedSkipSilence(event.getSkipSilence());
+            applySoundSettings();
+        }
+    }
+
+    /** Tune's usual skip silence or volume boost changed. */
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    @SuppressWarnings("unused")
+    public void soundDefaultsChanged(SoundDefaultsChangedEvent event) {
+        if (currentPlayable != null) {
+            applySoundSettings();
+        }
+    }
+
+    @Nullable
+    private FeedPreferences playingShowPreferences(long feedId) {
+        if (currentPlayable == null || currentPlayable.getItem() == null
+                || currentPlayable.getItem().getFeed() == null
+                || currentPlayable.getItem().getFeed().getId() != feedId) {
+            return null;
+        }
+        return currentPlayable.getItem().getFeed().getPreferences();
+    }
+
+    /**
+     * Skip silence and volume boost apply to podcasts, books and own audio, never to live radio, live pause
+     * (which keeps the station loaded) or radio recordings.
+     */
+    private boolean soundSettingsApply() {
+        if (currentPlayable == null || currentPlayable.isLiveRadio() || currentPlayable.getItem() == null) {
+            return false;
+        }
+        Feed feed = currentPlayable.getItem().getFeed();
+        return feed != null && feed.getPreferences() != null && (feed.getDownloadUrl() == null
+                || !feed.getDownloadUrl().startsWith(Feed.RECORDINGS_URL_PREFIX));
+    }
+
+    /** Applies the loaded show's skip silence and volume boost (or Tune's usual ones) to the player. */
+    @OptIn(markerClass = UnstableApi.class)
+    private void applySoundSettings() {
+        boolean apply = soundSettingsApply();
+        boolean skipSilence = apply && PlaybackSpeedUtils.getCurrentSkipSilencePreference(currentPlayable)
+                == FeedPreferences.SkipSilence.AGGRESSIVE;
+        exoPlayer.setSkipSilenceEnabled(skipSilence);
+        VolumeAdaptionSetting volume = VolumeAdaptionSetting.OFF;
+        if (apply) {
+            volume = currentPlayable.getItem().getFeed().getPreferences().getVolumeAdaptionSetting()
+                    .orUsual(UserPreferences.getVolumeBoostUsual());
+        }
+        volumeAdaptionFactor = volume.getAdaptionFactor();
+        Log.d(TAG, "Sound: skip silence " + skipSilence + ", volume " + volume);
+        applyVolumeAdaption(1.0f);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

@@ -67,16 +67,12 @@ public final class BookDialogs {
             binding.seekBar.setEnabled(!isChecked);
             binding.seekBar.setAlpha(isChecked ? 0.4f : 1f);
             binding.currentSpeedLabel.setAlpha(isChecked ? 0.4f : 1f);
-            binding.skipSilenceFeed.setEnabled(!isChecked);
-            binding.skipSilenceFeed.setAlpha(isChecked ? 0.4f : 1f);
         });
         float speed = preferences.getFeedPlaybackSpeed();
         boolean isGlobal = speed == FeedPreferences.SPEED_USE_GLOBAL;
         binding.useGlobalCheckbox.setChecked(isGlobal);
         binding.seekBar.updateSpeed(isGlobal ? 1 : speed);
         binding.currentSpeedLabel.setText(String.format(Locale.getDefault(), "%.2fx", isGlobal ? 1 : speed));
-        binding.skipSilenceFeed.setChecked(!isGlobal
-                && preferences.getFeedSkipSilence() == FeedPreferences.SkipSilence.AGGRESSIVE);
         new MaterialAlertDialogBuilder(context)
                 .setTitle(R.string.playback_speed)
                 .setView(binding.getRoot())
@@ -84,15 +80,7 @@ public final class BookDialogs {
                     boolean global = binding.useGlobalCheckbox.isChecked();
                     preferences.setFeedPlaybackSpeed(global
                             ? FeedPreferences.SPEED_USE_GLOBAL : binding.seekBar.getCurrentSpeed());
-                    FeedPreferences.SkipSilence skipSilence;
-                    if (global) {
-                        skipSilence = FeedPreferences.SkipSilence.GLOBAL;
-                    } else if (binding.skipSilenceFeed.isChecked()) {
-                        skipSilence = FeedPreferences.SkipSilence.AGGRESSIVE;
-                    } else {
-                        skipSilence = FeedPreferences.SkipSilence.OFF;
-                    }
-                    preferences.setFeedSkipSilence(skipSilence);
+                    // Skip silence has its own row on the show's settings page (1.0.1); left as it is here.
                     DBWriter.setFeedPreferences(preferences);
                     EventBus.getDefault().post(new SpeedPresetChangedEvent(preferences.getFeedPlaybackSpeed(),
                             feed.getId(), preferences.getFeedSkipSilence()));
