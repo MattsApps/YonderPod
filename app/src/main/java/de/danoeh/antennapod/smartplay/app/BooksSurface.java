@@ -1,9 +1,13 @@
 package de.danoeh.antennapod.smartplay.app;
 
 import android.content.Context;
+import android.net.Uri;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.annotation.Nullable;
 
 import java.util.List;
 import java.util.Locale;
@@ -28,7 +32,11 @@ public class BooksSurface extends WorldSurface {
         Books.Progress progress;
         long totalMillis;
         FeedItem after;
+        boolean hasOwnAudio;
     }
+
+    private final ActivityResultLauncher<Uri> addFolder =
+            registerForActivityResult(new BooksTendFragment.PickFolder(), this::addFolderResult);
 
     @Override
     protected int world() {
@@ -49,6 +57,11 @@ public class BooksSurface extends WorldSurface {
             Map<Long, Long> lastPlayed = Books.lastPlayedPerBook(app, books);
             long best = -1;
             for (Feed feed : DBReader.getFeedList()) {
+                if (feed.getState() == Feed.STATE_SUBSCRIBED && feed.isLocalFeed()
+                        && !books.contains(feed.getId()) && !Recordings.isRecordingsFeed(feed)
+                        && !LocalFolders.isAddedFiles(feed)) {
+                    state.hasOwnAudio = true;
+                }
                 if (!books.contains(feed.getId()) || Books.isFinished(app, feed.getId())) {
                     continue;
                 }
@@ -93,13 +106,16 @@ public class BooksSurface extends WorldSurface {
         if (state.book == null) {
             author.setVisibility(View.GONE);
             title.setText(R.string.world_books_empty);
-            hint.setText(R.string.world_books_empty_hint);
+            hint.setText(state.hasOwnAudio ? R.string.world_books_folders_hint : R.string.world_books_empty_hint);
             hint.setVisibility(View.VISIBLE);
             chapterBox.setVisibility(View.INVISIBLE);
             progressRow.setVisibility(View.INVISIBLE);
             next.setVisibility(View.INVISIBLE);
             showPlaying(false);
-            root.findViewById(R.id.worldPlay).setOnClickListener(v -> openTend());
+            View.OnClickListener main = state.hasOwnAudio ? v -> openTend() : v -> addFolder.launch(null);
+            root.findViewById(R.id.worldPlay).setOnClickListener(main);
+            title.setOnClickListener(main);
+            hint.setOnClickListener(main);
             return;
         }
         Feed book = state.book;
@@ -149,5 +165,18 @@ public class BooksSurface extends WorldSurface {
         };
         title.setOnClickListener(open);
         author.setOnClickListener(open);
+    }
+
+    private void addFolderResult(@Nullable Uri uri) {
+        if (uri == null) {
+            return;
+        }
+        disposables.add(BooksTendFragment.addFolder(requireContext().getApplicationContext(), uri)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(saved -> {
+                    load();
+                    openTend();
+                }, error -> Log.e(TAG, Log.getStackTraceString(error))));
     }
 }

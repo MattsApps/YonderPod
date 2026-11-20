@@ -19,6 +19,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 import de.danoeh.antennapod.R;
@@ -31,7 +32,9 @@ import de.danoeh.antennapod.storage.database.DBReader;
 import de.danoeh.antennapod.storage.database.DBWriter;
 import de.danoeh.antennapod.storage.database.FeedDatabaseWriter;
 import de.danoeh.antennapod.storage.preferences.UserPreferences;
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Completable;
+import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -136,6 +139,62 @@ public final class AddedFiles {
                 })
                         .subscribeOn(Schedulers.io())
                         .subscribe(() -> { }, error -> Log.e(TAG, Log.getStackTraceString(error))))
+                .setNegativeButton(R.string.yonder_button_cancel, null)
+                .show();
+    }
+
+    private static final class RemoveAll {
+        final List<FeedItem> items = new ArrayList<>();
+        final List<File> copies = new ArrayList<>();
+        long copyBytes;
+    }
+
+    public static void confirmRemoveAll(Context context, Feed feed, Runnable afterRemoved) {
+        Single.fromCallable(() -> {
+            RemoveAll all = new RemoveAll();
+            Feed full = DBReader.getFeed(feed.getId(), false, 0, Integer.MAX_VALUE);
+            if (full != null && full.getItems() != null) {
+                all.items.addAll(full.getItems());
+            }
+            for (FeedItem item : all.items) {
+                FeedMedia media = item.getMedia();
+                if (media != null && media.getLocalFileUrl() != null
+                        && !media.getLocalFileUrl().startsWith(ContentResolver.SCHEME_CONTENT)) {
+                    File copy = new File(media.getLocalFileUrl());
+                    all.copies.add(copy);
+                    all.copyBytes += copy.length();
+                }
+            }
+            return all;
+        })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(all -> showRemoveAll(context, all, afterRemoved),
+                        error -> Log.e(TAG, Log.getStackTraceString(error)));
+    }
+
+    private static void showRemoveAll(Context context, RemoveAll all, Runnable afterRemoved) {
+        if (all.items.isEmpty()) {
+            return;
+        }
+        String message = all.copies.isEmpty()
+                ? context.getString(R.string.added_files_remove_all_links)
+                : context.getString(R.string.added_files_remove_all_copies,
+                        Formatter.formatShortFileSize(context, all.copyBytes));
+        new MaterialAlertDialogBuilder(context)
+                .setTitle(R.string.added_files_remove_all)
+                .setMessage(message)
+                .setPositiveButton(R.string.yonder_button_remove, (dialog, which) -> Completable.fromAction(() -> {
+                    for (File copy : all.copies) {
+                        if (!copy.delete()) {
+                            Log.d(TAG, "Could not delete copy " + copy);
+                        }
+                    }
+                    DBWriter.deleteFeedItems(context, all.items).get();
+                })
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(afterRemoved::run, error -> Log.e(TAG, Log.getStackTraceString(error))))
                 .setNegativeButton(R.string.yonder_button_cancel, null)
                 .show();
     }

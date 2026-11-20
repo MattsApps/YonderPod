@@ -391,11 +391,20 @@ public final class HelpIndex {
     }
 
     private void topic(Group group, int title, int about, int open, @Nullable String target, int screen) {
+        topic(group, title, about, "", open, target, screen);
+    }
+
+    private void wordedTopic(Group group, int title, int about, int words, int open, int target) {
+        topic(group, title, about, context.getString(words), open, target == 0 ? null : context.getString(target), 0);
+    }
+
+    private void topic(Group group, int title, int about, String words, int open, @Nullable String target,
+                       int screen) {
         String aboutText = context.getString(about);
         Item item = new Item(context.getString(title),
                 context.getString(R.string.tend_help).toLowerCase(Locale.getDefault()) + separator
                         + group.name.toLowerCase(Locale.getDefault()),
-                "", aboutText, open, target, screen, aboutText, true);
+                words, aboutText, open, target, screen, aboutText, true);
         group.topics.add(item);
         items.add(item);
     }
@@ -413,8 +422,8 @@ public final class HelpIndex {
         Group finding = group(R.string.help_group_finding);
         topic(finding, R.string.help_topic_find_podcast, R.string.help_about_find_podcast, OPEN_FIND_PODCAST, 0);
         topic(finding, R.string.help_topic_private_feed, R.string.help_about_private_feed, OPEN_FIND_PODCAST, 0);
-        topic(finding, R.string.help_topic_find_book, R.string.help_about_find_book, OPEN_FIND_BOOK, 0);
-        topic(finding, R.string.help_topic_own_files, R.string.help_about_own_files, OPEN_TOPIC, 0);
+        wordedTopic(finding, R.string.help_topic_find_book, R.string.help_about_find_book,
+                R.string.help_words_find_book, OPEN_FIND_BOOK, 0);
         topic(finding, R.string.help_topic_find_station, R.string.help_about_find_station, OPEN_FIND_STATION, 0);
 
         Group shows = group(R.string.help_group_shows);
@@ -460,6 +469,10 @@ public final class HelpIndex {
         topic(radio, R.string.help_topic_radio_mix_in, R.string.help_about_radio_mix_in, OPEN_TOPIC, 0);
 
         Group books = group(R.string.help_group_books);
+        wordedTopic(books, R.string.help_topic_own_files, R.string.help_about_own_files, R.string.help_words_own_files,
+                OPEN_TOPIC, 0);
+        wordedTopic(books, R.string.help_topic_files_tend, R.string.help_about_files_tend,
+                R.string.help_words_files_tend, OPEN_TOPIC, 0);
         topic(books, R.string.help_topic_book_pages, R.string.help_about_book_pages, OPEN_TOPIC, 0);
         topic(books, R.string.help_topic_book_extras, R.string.help_about_book_extras, OPEN_TOPIC, 0);
         topic(books, R.string.help_topic_book_delete, R.string.help_about_book_delete, OPEN_TOPIC, 0);

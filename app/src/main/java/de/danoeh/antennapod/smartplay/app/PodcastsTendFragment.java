@@ -308,7 +308,9 @@ public class PodcastsTendFragment extends Fragment {
             addGroup(list, getString(R.string.tend_uncategorised), null, state.uncategorised, state);
         }
         for (Map.Entry<String, List<Feed>> group : state.groups.entrySet()) {
-            addGroup(list, group.getKey().toLowerCase(Locale.getDefault()), group.getKey(), group.getValue(), state);
+            String name = Books.CATEGORY.equalsIgnoreCase(group.getKey()) ? getString(R.string.world_books)
+                    : group.getKey().toLowerCase(Locale.getDefault());
+            addGroup(list, name, group.getKey(), group.getValue(), state);
         }
         if (list.getChildCount() == 0) {
             TextView empty = new TextView(root.getContext());

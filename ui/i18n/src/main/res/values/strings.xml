@@ -844,6 +844,9 @@
     <string name="added_files_remove">Remove from Added files</string>
     <string name="added_files_remove_copy">Delete Yonder\'s copy of this file? This frees %1$s. The original file isn\'t touched.</string>
     <string name="added_files_remove_link">Remove this from Added files? The original file isn\'t touched.</string>
+    <string name="added_files_remove_all">Remove all added files</string>
+    <string name="added_files_remove_all_copies">Delete Yonder\'s copies of your added files? This frees %1$s. The original files on your phone aren\'t touched.</string>
+    <string name="added_files_remove_all_links">Take everything out of Added files? The original files on your phone aren\'t touched.</string>
     <string name="controls_title">Controls</string>
     <string name="controls_summary">Headset and car buttons, interruptions, rewind on resume</string>
     <string name="controls_buttons_title">Headset and car buttons</string>
@@ -1523,10 +1526,10 @@
     <string name="palette_plum">Plum</string>
     <string name="palette_custom">Custom</string>
     <string name="look_title">Look</string>
-    <string name="world_books">books</string>
+    <string name="world_books">files</string>
     <string name="world_podcasts">podcasts</string>
     <string name="world_radio">radio</string>
-    <string name="world_short_books">books</string>
+    <string name="world_short_books">files</string>
     <string name="world_short_podcasts">pods</string>
     <string name="world_short_radio">radio</string>
     <string name="world_neighbour_left">‹ %1$s</string>
@@ -1550,14 +1553,15 @@
     <string name="world_more">Swipe up for more</string>
     <string name="world_podcasts_empty">nothing to play yet</string>
     <string name="world_podcasts_empty_hint">Swipe up to find podcasts.</string>
-    <string name="world_books_empty">no book yet</string>
-    <string name="world_books_empty_hint">Swipe up to find one on LibriVox.</string>
+    <string name="world_books_empty">play your own audio files</string>
+    <string name="world_books_empty_hint">Tap to add a folder.\nOr swipe up to find a free audiobook.</string>
+    <string name="world_books_folders_hint">Swipe up to play your folders and added files, or to find a free audiobook.</string>
     <string name="world_radio_empty">no station yet</string>
     <string name="world_radio_empty_hint">Swipe up to add one.</string>
     <string name="tend_title">tend</string>
     <string name="tend_back">Back to the surface</string>
     <string name="tend_find_podcast">find a podcast</string>
-    <string name="tend_find_book">find a book on LibriVox</string>
+    <string name="tend_find_book">find free audiobooks</string>
     <string name="tend_find_station">find a station</string>
     <string name="tend_smart_plays">Smart Plays: Playing from</string>
     <string name="add_to_smart_play_title">Add to which Smart Play?</string>
@@ -1585,11 +1589,11 @@
     <string name="tend_updating_progress">updating… %1$d of %2$d</string>
     <string name="tend_never_updated">Update now ↻</string>
     <string name="tend_tune">tune ›</string>
-    <string name="tend_books">Your books</string>
-    <string name="tend_no_books">No books yet. Find one on LibriVox above.</string>
+    <string name="tend_books">Books</string>
+    <string name="tend_no_books">No books yet. Find a free audiobook with the search above.</string>
     <string name="tend_book_progress">chapter %1$d of %2$d</string>
     <string name="tend_book_finished">finished</string>
-    <string name="tend_folders">Your audio folders</string>
+    <string name="tend_folders">Your audio</string>
     <string name="tend_add_folder">add a folder</string>
     <string name="tend_delete_book">Delete book</string>
     <string name="tend_delete_book_question">Delete %1$s?</string>
@@ -1717,7 +1721,7 @@
     </plurals>
     <string name="tune_help">help</string>
     <string name="tune_welcome">Welcome tour</string>
-    <string name="about_intro">Version %1$s. Podcasts, books and radio, the way you want to hear them.</string>
+    <string name="about_intro">Version %1$s. Podcasts, audio files and radio, the way you want to hear them.</string>
     <string name="about_feedback">send feedback</string>
     <string name="about_thanks_heading">thanks</string>
     <string name="about_thanks">Yonder is built on AntennaPod, made by volunteers over many years. Thank you to everyone who built it.</string>
@@ -1754,9 +1758,9 @@
     <string name="welcome_next">next</string>
     <string name="welcome_start_fresh">start fresh</string>
     <string name="welcome_worlds_title">three worlds</string>
-    <string name="welcome_worlds_body">Books, podcasts and radio sit side by side. Swipe sideways to move between them. The big button plays what\'s next.</string>
+    <string name="welcome_worlds_body">Podcasts, Files and Radio sit side by side. Swipe sideways to move between them. The big button plays what\'s next.\n\nFiles: play your own audio files, and free audiobooks from LibriVox.</string>
     <string name="welcome_tend_title">swipe up to tend</string>
-    <string name="welcome_tend_body">Swipe up from any world to see your shows, books or stations, and your Smart Plays. Pull down from the top to come back.</string>
+    <string name="welcome_tend_body">Swipe up from any world to see your shows, files or stations, and your Smart Plays. Pull down from the top to come back.</string>
     <string name="welcome_tend_page">%1$s\n\n%2$s</string>
     <string name="welcome_categories">Categories decide when your shows refresh. Long-press a category on Tend to stop it refreshing each night.</string>
     <string name="welcome_download_title">download or stream</string>
@@ -2058,9 +2062,9 @@
     <string name="help_words_speed_button">speed, faster, slower, button, player</string>
     <string name="help_words_rewind">rewind, go back, resume, pause, recap, back</string>
     <string name="help_words_interruption_back">rewind, go back, call, phone, notification, interruption, resume</string>
-    <string name="help_words_world_books">audiobooks, books, hide, show, world</string>
+    <string name="help_words_world_books">files, audio files, own audio, mp3, audiobooks, books, hide, show, world</string>
     <string name="help_words_world_radio">radio, stations, hide, show, world</string>
-    <string name="help_words_edges">apps, shelf, shelves, edge, spotify, audible, swipe</string>
+    <string name="help_words_edges">apps, shelf, shelves, edge, spotify, audible, music, swipe</string>
     <string name="help_words_palette">colour, color, colours, palette, theme, look, dark, light</string>
     <string name="help_words_night">dark mode, night, dark, colour, color, palette</string>
     <string name="help_words_wallpaper">wallpaper, colour, color, palette, match</string>
@@ -2079,6 +2083,9 @@
     <string name="help_words_download_limit">how many, limit, storage, space, download</string>
     <string name="help_words_mark_played">played, finished, end, mark</string>
     <string name="help_words_continuous">continuous, next, autoplay, keep playing, stop after, choose next, when an episode ends</string>
+    <string name="help_words_own_files">files, mp3, m4a, music, my own audio, own audio, songs, album, tracks, folder, open with, share</string>
+    <string name="help_words_files_tend">files, folders, added files, books, mp3, own audio, librivox</string>
+    <string name="help_words_find_book">audiobook, book, books, librivox, free, classics</string>
     <string name="help_words_app_notifications">notification, notifications, alerts</string>
     <!-- Yonder help topics: groups, titles and what each covers -->
     <string name="help_group_start">Getting started</string>
@@ -2086,13 +2093,13 @@
     <string name="help_group_shows">Shows and downloads</string>
     <string name="help_group_smart_play">Smart Play</string>
     <string name="help_group_radio">Radio</string>
-    <string name="help_group_books">Audiobooks</string>
+    <string name="help_group_books">Files and audiobooks</string>
     <string name="help_group_playback">Playback</string>
     <string name="help_group_look">Look and getting around</string>
     <string name="help_group_safe">Keeping things safe</string>
     <string name="help_group_trouble">When something goes wrong</string>
     <string name="help_topic_welcome">Welcome tour</string>
-    <string name="help_about_welcome">The three worlds (Podcasts, Books and Radio), swiping sideways between them, and swiping up for more.</string>
+    <string name="help_about_welcome">The three worlds (Podcasts, Files and Radio), swiping sideways between them, and swiping up for more.</string>
     <string name="help_topic_depths">Surface, Tend and Tune</string>
     <string name="help_about_depths">Listen on the surface, look after your shows in Tend, and set-and-forget settings live in Tune.</string>
     <string name="help_topic_getting_around">Moving around Yonder</string>
@@ -2110,9 +2117,11 @@
     <string name="help_topic_private_feed">Adding a private feed by link</string>
     <string name="help_about_private_feed">Patreon and other private feeds, with a username and password if they need one. Keep those links private.</string>
     <string name="help_topic_find_book">Finding an audiobook</string>
-    <string name="help_about_find_book">Search LibriVox by title, author or genre, then Listen to this book.</string>
+    <string name="help_about_find_book">Use the search at the top of Files Tend to find free audiobooks on LibriVox by title, author or genre, then Listen to this book.</string>
     <string name="help_topic_own_files">Adding your own audio files</string>
-    <string name="help_about_own_files">Add a folder in Books Tend. Chapters play in their natural order, and your files are never deleted unless you allow it.</string>
+    <string name="help_about_own_files">Add a folder at the top of Files Tend. A folder plays in order, like an album or a book: track 1 to the last, with no shuffle. Your files are never deleted unless you allow it. Files you open with Yonder or share to it go in Added files. Yonder isn\'t a music player: for music, put an app like Spotify at the edges (Tune → worlds).</string>
+    <string name="help_topic_files_tend">Files Tend</string>
+    <string name="help_about_files_tend">Swipe up from Files. The search at the top finds free audiobooks on LibriVox. Under it is your audio: add a folder, your folders, and Added files (files you opened with Yonder or shared to it). Then your books, with how far you are.</string>
     <string name="help_topic_find_station">Finding a radio station</string>
     <string name="help_about_find_station">Search the station directory or paste a stream link. Some stations are offline or only play in their own country.</string>
     <string name="help_topic_subscriptions">How following a show works</string>
@@ -2174,7 +2183,7 @@
     <string name="help_topic_book_extras">Bookmarks and a speed for each book</string>
     <string name="help_about_book_extras">Bookmarks, a speed for each book, Mark book finished, and chapters kept ready ahead.</string>
     <string name="help_topic_book_delete">Deleting a book or folder</string>
-    <string name="help_about_book_delete">Long-press it in Books Tend. Removing a folder only takes it out of Yonder; your files stay on the phone.</string>
+    <string name="help_about_book_delete">Long-press it in Files Tend. Removing a folder only takes it out of Yonder; your files stay on the phone. To remove one added file, use its menu in Added files; to remove them all, long-press Added files. Only Yonder\'s copies are deleted, never the originals.</string>
     <string name="help_topic_sleep">Sleep</string>
     <string name="help_about_sleep">The one-tap timer, fading out, shaking for more time, stopping at a set time, and bedtime.</string>
     <string name="help_topic_buttons">Headset and car buttons</string>
@@ -2192,7 +2201,7 @@
     <string name="help_topic_colours">Colours</string>
     <string name="help_about_colours">A palette for each world, your own palettes, night palettes and Match my wallpaper.</string>
     <string name="help_topic_hide_world">Hiding a world</string>
-    <string name="help_about_hide_world">Switch Books or Radio off in Tune → worlds. Nothing is deleted.</string>
+    <string name="help_about_hide_world">Switch Files or Radio off in Tune → worlds. Nothing is deleted: your books and folders show in Podcasts Tend.</string>
     <string name="help_topic_top_line">The top of the screen</string>
     <string name="help_about_top_line">Tap a neighbouring world\'s name to go there. The big coloured word is the world you\'re in.</string>
     <string name="help_topic_back_from_app">Getting back from another app</string>
@@ -2216,7 +2225,7 @@
     <string name="help_topic_wont_play">A stream or episode won\'t play</string>
     <string name="help_about_wont_play">Dead links, stations blocked outside their country, and mobile data settings.</string>
     <string name="help_topic_storage">Running out of storage</string>
-    <string name="help_about_storage">How many to keep, deleting played episodes, and copies of added files.</string>
+    <string name="help_about_storage">How many to keep, deleting played episodes, and copies of added files. Added files is in Files Tend: remove one file from its menu, or long-press Added files to remove them all. Only Yonder\'s copies are deleted, never the originals.</string>
 
     <!-- Tip me (decided 3 Nov, built 10 Nov) -->
     <!-- F-Droid build only: the web page "tip me" opens. While this is empty, the F-Droid build never shows "tip me". -->

@@ -65,6 +65,7 @@ public class BooksTendFragment extends Fragment {
     private static final class State {
         final List<BookRow> books = new ArrayList<>();
         final List<Feed> folders = new ArrayList<>();
+        Feed addedFiles;
     }
 
     @Nullable
@@ -75,7 +76,7 @@ public class BooksTendFragment extends Fragment {
                 .inflate(R.layout.tend_fragment, container, false);
         TendRows.setUp(this, root, R.string.world_books, R.string.tend_find_book,
                 () -> TendRows.open(this, LibriVoxSearchFragment.newInstance(null)));
-        ((TextView) root.findViewById(R.id.tendListLabel)).setText(R.string.tend_books);
+        ((TextView) root.findViewById(R.id.tendListLabel)).setText(R.string.tend_folders);
         return root;
     }
 
@@ -131,6 +132,11 @@ public class BooksTendFragment extends Fragment {
                 }
                 if (books.contains(feed.getId())) {
                     bookFeeds.add(feed);
+                } else if (LocalFolders.isAddedFiles(feed)) {
+                    Feed full = DBReader.getFeed(feed.getId(), false, 0, 1);
+                    if (full != null && full.getItems() != null && !full.getItems().isEmpty()) {
+                        state.addedFiles = feed;
+                    }
                 } else if (feed.isLocalFeed() && !Recordings.isRecordingsFeed(feed)) {
                     state.folders.add(feed);
                 }
@@ -163,38 +169,6 @@ public class BooksTendFragment extends Fragment {
         }
         LinearLayout list = root.findViewById(R.id.tendList);
         list.removeAllViews();
-        for (BookRow book : state.books) {
-            View row = TendRows.row(this, list, book.feed.getDisplayTitle(), book.progress, book.feed.getImageUrl(),
-                    "", "", v -> TendRows.open(this, FeedItemlistFragment.newInstance(book.feed.getId())));
-            row.setOnLongClickListener(v -> {
-                offerDelete(v, book.feed, true);
-                return true;
-            });
-            list.addView(row);
-        }
-        if (state.books.isEmpty()) {
-            TextView empty = new TextView(root.getContext());
-            TextViewCompat.setTextAppearance(empty, R.style.TextAppearance_WildInk_Detail);
-            empty.setText(R.string.tend_no_books);
-            empty.setPadding(0, dp(12), 0, 0);
-            list.addView(empty);
-        }
-        LinearLayout extra = root.findViewById(R.id.tendExtra);
-        extra.removeAllViews();
-        TextView label = new TextView(root.getContext());
-        TextViewCompat.setTextAppearance(label, R.style.TextAppearance_WildInk_Label);
-        label.setText(R.string.tend_folders);
-        label.setPadding(0, dp(28), 0, dp(4));
-        extra.addView(label);
-        for (Feed folder : state.folders) {
-            View row = TendRows.row(this, extra, folder.getTitle(), null, folder.getImageUrl(), "", "",
-                    v -> TendRows.open(this, FeedItemlistFragment.newInstance(folder.getId())));
-            row.setOnLongClickListener(v -> {
-                offerDelete(v, folder, false);
-                return true;
-            });
-            extra.addView(row);
-        }
         TextView add = new TextView(root.getContext());
         TextViewCompat.setTextAppearance(add, R.style.Widget_WildInk_Link);
         add.setBackgroundResource(R.drawable.wildink_block);
@@ -206,7 +180,56 @@ public class BooksTendFragment extends Fragment {
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT);
         params.topMargin = dp(12);
-        extra.addView(add, params);
+        params.bottomMargin = dp(4);
+        list.addView(add, params);
+        for (Feed folder : state.folders) {
+            View row = TendRows.row(this, list, folder.getTitle(), null, folder.getImageUrl(), "", "",
+                    v -> TendRows.open(this, FeedItemlistFragment.newInstance(folder.getId())));
+            row.setOnLongClickListener(v -> {
+                offerDelete(v, folder, false);
+                return true;
+            });
+            list.addView(row);
+        }
+        if (state.addedFiles != null) {
+            Feed added = state.addedFiles;
+            View row = TendRows.row(this, list, added.getTitle(), null, added.getImageUrl(), "", "",
+                    v -> TendRows.open(this, FeedItemlistFragment.newInstance(added.getId())));
+            row.setOnLongClickListener(v -> {
+                PopupMenu menu = new PopupMenu(requireContext(), v);
+                menu.getMenu().add(R.string.added_files_remove_all);
+                menu.setOnMenuItemClickListener(item -> {
+                    AddedFiles.confirmRemoveAll(requireContext(), added, this::load);
+                    return true;
+                });
+                menu.show();
+                return true;
+            });
+            list.addView(row);
+        }
+        LinearLayout extra = root.findViewById(R.id.tendExtra);
+        extra.removeAllViews();
+        TextView label = new TextView(root.getContext());
+        TextViewCompat.setTextAppearance(label, R.style.TextAppearance_WildInk_Label);
+        label.setText(R.string.tend_books);
+        label.setPadding(0, dp(28), 0, dp(4));
+        extra.addView(label);
+        for (BookRow book : state.books) {
+            View row = TendRows.row(this, extra, book.feed.getDisplayTitle(), book.progress, book.feed.getImageUrl(),
+                    "", "", v -> TendRows.open(this, FeedItemlistFragment.newInstance(book.feed.getId())));
+            row.setOnLongClickListener(v -> {
+                offerDelete(v, book.feed, true);
+                return true;
+            });
+            extra.addView(row);
+        }
+        if (state.books.isEmpty()) {
+            TextView empty = new TextView(root.getContext());
+            TextViewCompat.setTextAppearance(empty, R.style.TextAppearance_WildInk_Detail);
+            empty.setText(R.string.tend_no_books);
+            empty.setPadding(0, dp(12), 0, 0);
+            extra.addView(empty);
+        }
     }
 
     private void offerDelete(View anchor, Feed feed, boolean book) {
@@ -242,8 +265,14 @@ public class BooksTendFragment extends Fragment {
         if (uri == null) {
             return;
         }
-        Context app = requireContext().getApplicationContext();
-        disposables.add(Single.fromCallable(() -> {
+        disposables.add(addFolder(requireContext().getApplicationContext(), uri)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(saved -> load(), error -> Log.e(TAG, Log.getStackTraceString(error))));
+    }
+
+    static Single<Feed> addFolder(Context app, Uri uri) {
+        return Single.fromCallable(() -> {
             app.getContentResolver().takePersistableUriPermission(uri,
                     Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
             DocumentFile documentFile = DocumentFile.fromTreeUri(app, uri);
@@ -257,13 +286,10 @@ public class BooksTendFragment extends Fragment {
             Feed saved = FeedDatabaseWriter.updateFeed(app, folder, false);
             FeedUpdateManager.getInstance().runOnce(app, saved);
             return saved;
-        })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(saved -> load(), error -> Log.e(TAG, Log.getStackTraceString(error))));
+        });
     }
 
-    private static final class PickFolder extends ActivityResultContracts.OpenDocumentTree {
+    static final class PickFolder extends ActivityResultContracts.OpenDocumentTree {
         @NonNull
         @Override
         public Intent createIntent(@NonNull Context context, @Nullable Uri input) {
