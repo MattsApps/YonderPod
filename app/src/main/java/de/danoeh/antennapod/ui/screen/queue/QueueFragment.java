@@ -44,6 +44,8 @@ import java.util.List;
 import java.util.Locale;
 
 import de.danoeh.antennapod.R;
+import de.danoeh.antennapod.actionbutton.PauseActionButton;
+import de.danoeh.antennapod.playback.service.PlaybackStatus;
 import de.danoeh.antennapod.smartplay.app.SmartPlayHours;
 import de.danoeh.antennapod.smartplay.app.SmartPlayQueueManager;
 import de.danoeh.antennapod.smartplay.app.SmartPlayStore;
@@ -460,7 +462,15 @@ public class QueueFragment extends Fragment implements MaterialToolbar.OnMenuIte
             @Override
             protected void afterBindViewHolder(EpisodeItemViewHolder holder, int pos) {
                 super.afterBindViewHolder(holder, pos);
-                PlaylistRow.style(holder, v -> showRowMenu(v, holder.getFeedItem()));
+                PlaylistRow.style(holder, v -> playOrPause(holder.getFeedItem()));
+                // Long press opens the row's menu (what the ⋮ used to open). A plain tap opens the notes.
+                holder.itemView.setOnLongClickListener(v -> {
+                    if (inActionMode()) {
+                        return false;
+                    }
+                    showRowMenu(v, holder.getFeedItem());
+                    return true;
+                });
             }
 
             @Override
@@ -543,6 +553,18 @@ public class QueueFragment extends Fragment implements MaterialToolbar.OnMenuIte
         }
     }
 
+    /** The row's play button plays it now; on the playing episode it's a pause button. */
+    private void playOrPause(@Nullable FeedItem item) {
+        if (item == null || item.getMedia() == null) {
+            return;
+        }
+        if (PlaybackStatus.isCurrentlyPlaying(item.getMedia())) {
+            new PauseActionButton(item).onClick(requireContext());
+        } else {
+            SmartPlayQueueManager.getInstance().playFromList(item);
+        }
+    }
+
     private void showRowMenu(View anchor, @Nullable FeedItem item) {
         if (item == null) {
             return;
@@ -589,7 +611,7 @@ public class QueueFragment extends Fragment implements MaterialToolbar.OnMenuIte
                     new MaterialAlertDialogBuilder(requireContext())
                             .setTitle(R.string.smartplay_switch_title)
                             .setSingleChoiceItems(names, checked, (dialog, which) -> {
-                                SmartPlayQueueManager.getInstance().activate(smartPlays.get(which).getId());
+                                SmartPlayQueueManager.getInstance().highlight(smartPlays.get(which).getId());
                                 dialog.dismiss();
                             })
                             .setNeutralButton(R.string.smartplay_manage, (dialog, which) ->

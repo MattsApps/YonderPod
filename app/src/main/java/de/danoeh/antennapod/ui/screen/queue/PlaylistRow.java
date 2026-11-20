@@ -19,7 +19,7 @@ final class PlaylistRow {
     private PlaylistRow() {
     }
 
-    static void style(EpisodeItemViewHolder holder, View.OnClickListener onMenu) {
+    static void style(EpisodeItemViewHolder holder, View.OnClickListener onPlay) {
         FeedItem item = holder.getFeedItem();
         if (item == null || item.getFeed() == null) {
             return;
@@ -48,9 +48,12 @@ final class PlaylistRow {
             date.setText(text);
             hideTimes(row);
         }
-        holder.secondaryActionIcon.setImageResource(R.drawable.dots_vertical);
-        holder.secondaryActionButton.setContentDescription(context.getString(R.string.playlist_more));
-        holder.secondaryActionButton.setOnClickListener(onMenu);
+        // 0.9.36: a play button (pause on the playing episode) instead of the ⋮; long press opens the menu.
+        boolean playing = media != null && PlaybackStatus.isCurrentlyPlaying(media);
+        holder.secondaryActionIcon.setImageResource(playing ? R.drawable.ic_pause : R.drawable.ic_play_24dp);
+        holder.secondaryActionButton.setContentDescription(context.getString(
+                playing ? R.string.pause_label : R.string.play_label));
+        holder.secondaryActionButton.setOnClickListener(onPlay);
     }
 
     static void showLeft(EpisodeItemViewHolder holder, int duration, int position) {

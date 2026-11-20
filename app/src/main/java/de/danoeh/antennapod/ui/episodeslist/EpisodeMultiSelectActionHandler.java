@@ -1,5 +1,7 @@
 package de.danoeh.antennapod.ui.episodeslist;
 
+import de.danoeh.antennapod.smartplay.app.AddToSmartPlay;
+
 import android.app.Activity;
 import android.util.Log;
 
@@ -70,12 +72,12 @@ public class EpisodeMultiSelectActionHandler {
         // Count here to give accurate number in snackbar
         List<FeedItem> toQueue = new ArrayList<>();
         for (FeedItem episode : items) {
-            if (episode.hasMedia() && !episode.isTagged(FeedItem.TAG_QUEUE)) {
+            if (episode.hasMedia()) {
                 toQueue.add(episode);
             }
         }
-        DBWriter.addQueueItem(activity, toQueue.toArray(new FeedItem[0]));
-        showMessage(R.plurals.added_to_queue_message, toQueue.size());
+        // Add to playlist (0.9.36): asks which Smart Play.
+        AddToSmartPlay.ask(activity, toQueue, null);
     }
 
     private void removeFromQueueChecked(List<FeedItem> items) {

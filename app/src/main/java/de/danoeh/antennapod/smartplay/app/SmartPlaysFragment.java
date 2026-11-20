@@ -59,7 +59,7 @@ public class SmartPlaysFragment extends Fragment {
         adapter = new SmartPlayListAdapter();
         list.setAdapter(adapter);
         list.setOnItemClickListener((parent, view, position, id) -> {
-            SmartPlayQueueManager.getInstance().activate(smartPlays.get(position).getId());
+            SmartPlayQueueManager.getInstance().highlight(smartPlays.get(position).getId());
             getParentFragmentManager().popBackStack();
         });
         return root;

@@ -436,7 +436,11 @@ public final class HelpIndex {
                 OPEN_TOPIC, 0);
         topic(smartPlay, R.string.help_topic_smart_play_priority, R.string.help_about_smart_play_priority,
                 OPEN_TOPIC, 0);
+        topic(smartPlay, R.string.help_topic_smart_play_switch, R.string.help_about_smart_play_switch,
+                OPEN_TOPIC, 0);
         topic(smartPlay, R.string.help_topic_playlist, R.string.help_about_playlist, OPEN_TOPIC, 0);
+        topic(smartPlay, R.string.help_topic_add_to_playlist, R.string.help_about_add_to_playlist, OPEN_TOPIC, 0);
+        topic(smartPlay, R.string.help_topic_detours, R.string.help_about_detours, OPEN_TOPIC, 0);
         topic(smartPlay, R.string.help_topic_coverage, R.string.help_about_coverage, OPEN_TOPIC, 0);
         topic(smartPlay, R.string.help_topic_smart_play_hours, R.string.help_about_smart_play_hours,
                 OPEN_TOPIC, 0);

@@ -279,9 +279,10 @@ public class PodcastsTendFragment extends Fragment {
                     TendRows.open(this, new QueueFragment());
                     return;
                 }
+                // "Playing from": only the highlight moves. The loaded episode plays on, then this one takes over.
                 SmartPlayQueueManager manager = SmartPlayQueueManager.getInstance();
                 if (manager != null) {
-                    manager.activate(smartPlay.getId());
+                    manager.highlight(smartPlay.getId());
                 }
                 v.postDelayed(this::load, 300);
             });

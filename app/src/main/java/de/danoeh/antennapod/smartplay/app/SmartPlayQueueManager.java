@@ -26,6 +26,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import de.danoeh.antennapod.event.FeedItemEvent;
+import de.danoeh.antennapod.event.PlayerStatusEvent;
 import de.danoeh.antennapod.event.QueueEvent;
 import de.danoeh.antennapod.event.playback.RebuildSmartPlayEvent;
 import de.danoeh.antennapod.model.feed.Feed;
@@ -36,6 +37,7 @@ import de.danoeh.antennapod.model.feed.FeedItemFilter;
 import de.danoeh.antennapod.model.feed.FeedPreferences;
 import de.danoeh.antennapod.model.feed.SortOrder;
 import de.danoeh.antennapod.smartplay.ManualEdits;
+import de.danoeh.antennapod.smartplay.PlaylistMemory;
 import de.danoeh.antennapod.smartplay.SmartPlayDefinition;
 import de.danoeh.antennapod.smartplay.SmartPlayEngine;
 import de.danoeh.antennapod.smartplay.SmartPlayEpisode;
@@ -62,6 +64,11 @@ public class SmartPlayQueueManager {
     private static final String KEY_PAUSED = "paused";
     private static final String KEY_FEED_QUEUE_ACTION_CLEARED = "feedQueueActionCleared";
     private static final String KEY_COUNTER_SET = "subscriptionCounterSet";
+    /** The Smart Play whose list is in the playlist right now (0.9.36). */
+    private static final String KEY_QUEUE_OWNER = "queueOwner";
+    private static final String KEY_UPGRADED_0936 = "upgraded0936";
+    private static final String MEMORY_PREFS = "SmartPlayPlaylists";
+    private static final String KEY_MEMORY = "memory";
 
     private static SmartPlayQueueManager instance;
 
@@ -73,12 +80,34 @@ public class SmartPlayQueueManager {
     private final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
     private ScheduledFuture<?> pendingUpdate;
     private volatile String activeName = "";
+    private final SharedPreferences memoryPrefs;
+    private final Object memoryLock = new Object();
+    private PlaylistMemory memory;
 
     private SmartPlayQueueManager(Context context) {
         this.context = context.getApplicationContext();
         this.editStore = new ManualEditStore(this.context);
         this.store = SmartPlayStore.getInstance(this.context);
         this.state = this.context.getSharedPreferences(STATE_PREFS, Context.MODE_PRIVATE);
+        this.memoryPrefs = this.context.getSharedPreferences(MEMORY_PREFS, Context.MODE_PRIVATE);
+        this.memory = PlaylistMemory.parse(memoryPrefs.getString(KEY_MEMORY, ""));
+    }
+
+    private interface MemoryEdit {
+        void apply(PlaylistMemory memory);
+    }
+
+    private void editMemory(MemoryEdit edit) {
+        synchronized (memoryLock) {
+            edit.apply(memory);
+            memoryPrefs.edit().putString(KEY_MEMORY, memory.serialize()).apply();
+        }
+    }
+
+    private PlaylistMemory memoryCopy() {
+        synchronized (memoryLock) {
+            return PlaylistMemory.parse(memory.serialize());
+        }
     }
 
     public static synchronized void init(Context context) {
@@ -97,9 +126,42 @@ public class SmartPlayQueueManager {
         disableConflictingQueueSettings();
         EventBus.getDefault().register(this);
         executor.execute(this::activeSmartPlay);
+        executor.execute(this::upgradeOnce);
         executor.execute(this::purge);
         executor.execute(this::clearPerFeedQueueActionOnce);
         scheduleUpdate();
+    }
+
+    /**
+     * 0.9.36: the hand-added list every Smart Play shared moves into the highlighted Smart Play, in its order.
+     * Half-played episodes stay on top of the highlighted Smart Play. Nothing else changes.
+     */
+    private void upgradeOnce() {
+        if (state.getBoolean(KEY_UPGRADED_0936, false)) {
+            return;
+        }
+        try {
+            long active = state.getLong(KEY_ACTIVE_ID, -1);
+            List<Long> queueIds = new ArrayList<>();
+            for (FeedItem item : DBReader.getQueue()) {
+                queueIds.add(item.getId());
+            }
+            Set<Long> shared = editStore.load().getHandAddedIds();
+            List<Long> halfPlayed = new ArrayList<>();
+            for (FeedItem item : DBReader.getEpisodes(0, Integer.MAX_VALUE,
+                    new FeedItemFilter(FeedItemFilter.PAUSED, FeedItemFilter.UNPLAYED), SortOrder.DATE_NEW_OLD)) {
+                halfPlayed.add(item.getId());
+            }
+            FeedMedia loaded = DBReader.getFeedMedia(PlaybackPreferences.getCurrentlyPlayingFeedMediaId());
+            long loadedId = loaded != null && !loaded.isLiveRadio() ? loaded.getItemId() : -1;
+            PlaylistMemory upgraded = PlaylistMemory.upgradeFrom0935(active, queueIds, shared, halfPlayed, loadedId);
+            editMemory(m -> memory = upgraded);
+            editStore.clearHandAdded();
+            state.edit().putLong(KEY_QUEUE_OWNER, active).putBoolean(KEY_UPGRADED_0936, true).apply();
+            Log.d(TAG, "0.9.36: moved " + shared.size() + " hand-added episode(s) into Smart Play " + active);
+        } catch (Exception e) {
+            Log.e(TAG, "Could not move the hand-added list", e);
+        }
     }
 
     private void clearPerFeedQueueActionOnce() {
@@ -155,14 +217,23 @@ public class SmartPlayQueueManager {
         return state.getBoolean(KEY_PAUSED, false);
     }
 
+    /**
+     * "Playing from": moves the highlight to this Smart Play. Nothing you can hear changes: the loaded episode
+     * carries on, shown at the top of this Smart Play's list, and when it ends this Smart Play takes over. It
+     * isn't written into any Smart Play tapped through on the way.
+     */
+    public void highlight(long smartPlayId) {
+        executor.execute(() -> switchTo(smartPlayId));
+    }
+
+    /** Switches and starts playing (audiobooks: Listen). */
     public void activate(long smartPlayId) {
         activate(smartPlayId, null);
     }
 
     public void activate(long smartPlayId, FeedMedia fallback) {
         executor.execute(() -> {
-            setActive(smartPlayId);
-            update(true);
+            switchTo(smartPlayId);
             List<FeedItem> queue = DBReader.getQueue();
             FeedMedia media = !queue.isEmpty() ? queue.get(0).getMedia() : fallback;
             if (media != null) {
@@ -175,8 +246,7 @@ public class SmartPlayQueueManager {
 
     public void activateAndPlay(long smartPlayId, FeedItem chapter) {
         executor.execute(() -> {
-            setActive(smartPlayId);
-            update(true);
+            switchTo(smartPlayId);
             try {
                 List<FeedItem> newQueue = new ArrayList<>();
                 newQueue.add(chapter);
@@ -195,41 +265,29 @@ public class SmartPlayQueueManager {
         });
     }
 
+    /** Active hours: moves the highlight at the boundary, without interrupting the loaded episode. */
     public void switchByHours(long smartPlayId) {
         executor.execute(() -> {
             if (smartPlayId == state.getLong(KEY_ACTIVE_ID, -1)) {
                 return;
             }
-            setActive(smartPlayId);
-            update(true);
-            keepPlayingOnTop();
+            switchTo(smartPlayId);
         });
     }
 
-    private void keepPlayingOnTop() {
-        try {
-            if (PlaybackPreferences.getCurrentPlayerStatus() != PlaybackPreferences.PLAYER_STATUS_PLAYING) {
-                return;
-            }
-            FeedMedia playing = DBReader.getFeedMedia(PlaybackPreferences.getCurrentlyPlayingFeedMediaId());
-            if (playing == null || playing.isLiveRadio() || playing.getItem() == null) {
-                return;
-            }
-            List<FeedItem> queue = DBReader.getQueue();
-            if (!queue.isEmpty() && queue.get(0).getId() == playing.getItemId()) {
-                return;
-            }
-            List<FeedItem> newQueue = new ArrayList<>();
-            newQueue.add(playing.getItem());
-            for (FeedItem item : queue) {
-                if (item.getId() != playing.getItemId()) {
-                    newQueue.add(item);
-                }
-            }
-            DBWriter.setQueue(newQueue).get();
-        } catch (Exception e) {
-            Log.e(TAG, "Could not keep the playing episode on top", e);
+    /** On the executor. Keeps the old Smart Play's hand-added slots, moves the highlight, builds the new list. */
+    private void switchTo(long smartPlayId) {
+        noteLoaded();
+        long old = state.getLong(KEY_ACTIVE_ID, -1);
+        if (old >= 0 && old != smartPlayId && state.getLong(KEY_QUEUE_OWNER, -1) == old) {
+            List<Long> queueIds = queueIds();
+            editMemory(m -> m.snapshot(old, queueIds));
         }
+        setActive(smartPlayId);
+        if (old != smartPlayId) {
+            editMemory(m -> m.onHighlightMoved(smartPlayId));
+        }
+        update(true);
     }
 
     private void setActive(long smartPlayId) {
@@ -243,6 +301,7 @@ public class SmartPlayQueueManager {
 
     public void onSmartPlayDeleted(long smartPlayId) {
         executor.execute(() -> {
+            editMemory(m -> m.forgetSmartPlay(smartPlayId));
             if (smartPlayId != state.getLong(KEY_ACTIVE_ID, -1)) {
                 activeSmartPlay();
                 return;
@@ -258,9 +317,10 @@ public class SmartPlayQueueManager {
                     next = stored.getId();
                 }
             }
-            state.edit().putLong(KEY_ACTIVE_ID, next).remove(KEY_PREVIOUS_ID).apply();
+            state.edit().putLong(KEY_ACTIVE_ID, next).remove(KEY_PREVIOUS_ID).putLong(KEY_QUEUE_OWNER, -1).apply();
+            long highlighted = next;
+            editMemory(m -> m.onHighlightMoved(highlighted));
             update(true);
-            keepPlayingOnTop();
         });
     }
 
@@ -268,6 +328,7 @@ public class SmartPlayQueueManager {
         executor.execute(this::activeSmartPlay);
     }
 
+    /** Play next: straight after the current episode, in the highlighted Smart Play. */
     public void playNext(FeedItem item) {
         executor.execute(() -> {
             try {
@@ -289,8 +350,11 @@ public class SmartPlayQueueManager {
                         target = i + 1;
                     }
                 }
+                editStore.unmarkRemoved(item.getId());
+                long active = state.getLong(KEY_ACTIVE_ID, -1);
+                int slot = target;
+                editMemory(m -> m.handAdd(active, item.getId(), slot));
                 if (existing >= 0) {
-                    editStore.markHandAdded(item.getId());
                     DBWriter.moveQueueItem(existing, target, true).get();
                 } else {
                     DBWriter.addQueueItemAt(context, item.getId(), target).get();
@@ -301,22 +365,167 @@ public class SmartPlayQueueManager {
         });
     }
 
-    public void addToEnd(FeedItem item) {
+    /**
+     * Add to playlist: next to play in that Smart Play, after any episodes already hand-added at its top, so
+     * several play in the order added. The highlighted Smart Play's list changes now; another one's when it's
+     * next highlighted.
+     */
+    public void addToPlaylist(long smartPlayId, List<FeedItem> items) {
         executor.execute(() -> {
-            try {
-                List<FeedItem> queue = DBReader.getQueue();
-                for (int i = 0; i < queue.size(); i++) {
-                    if (queue.get(i).getId() == item.getId()) {
-                        editStore.markHandAdded(item.getId());
-                        DBWriter.moveQueueItem(i, queue.size() - 1, true).get();
-                        return;
-                    }
+            long active = state.getLong(KEY_ACTIVE_ID, -1);
+            for (FeedItem item : items) {
+                if (item.getMedia() == null || item.getMedia().isLiveRadio()) {
+                    continue;
                 }
-                DBWriter.addQueueItemAt(context, item.getId(), queue.size()).get();
-            } catch (Exception e) {
-                Log.e(TAG, "Add to playlist failed", e);
+                editStore.unmarkRemoved(item.getId());
+                if (smartPlayId != active) {
+                    editMemory(m -> m.addToPlaylist(smartPlayId, item.getId()));
+                    continue;
+                }
+                try {
+                    List<FeedItem> queue = DBReader.getQueue();
+                    int existing = -1;
+                    for (int i = 0; i < queue.size(); i++) {
+                        if (queue.get(i).getId() == item.getId()) {
+                            existing = i;
+                        }
+                    }
+                    if (existing >= 0) {
+                        queue.remove(existing);
+                    }
+                    PlaylistMemory now = memoryCopy();
+                    long loadedItem = now.getLoaded();
+                    int target = !queue.isEmpty() && queue.get(0).getId() == loadedItem ? 1 : 0;
+                    while (target < queue.size() && now.isHandAdded(active, queue.get(target).getId())) {
+                        target++;
+                    }
+                    int slot = target;
+                    editMemory(m -> m.handAdd(active, item.getId(), slot));
+                    if (existing >= 0) {
+                        DBWriter.moveQueueItem(existing, target, true).get();
+                    } else {
+                        DBWriter.addQueueItemAt(context, item.getId(), target).get();
+                    }
+                } catch (Exception e) {
+                    Log.e(TAG, "Add to playlist failed", e);
+                }
             }
         });
+    }
+
+    /**
+     * The play button on a playlist row: plays it now, at the top of the list. The episode it interrupted
+     * keeps its normal place: on top of its own Smart Play if it's half-played there, otherwise at the slot
+     * this Smart Play's rules give it (or out of this list, if they wouldn't pick it).
+     */
+    public void playFromList(FeedItem item) {
+        executor.execute(() -> {
+            try {
+                noteLoaded();
+                long active = state.getLong(KEY_ACTIVE_ID, -1);
+                PlaylistMemory before = memoryCopy();
+                long interrupted = before.getLoaded() != item.getId() && before.getLoaded() != before.getDetour()
+                        ? before.getLoaded() : -1;
+                editMemory(m -> m.onLoaded(item.getId(), true, active));
+                List<FeedItem> queue = DBReader.getQueue();
+                List<FeedItem> newQueue = new ArrayList<>();
+                FeedItem fresh = item;
+                for (FeedItem queued : queue) {
+                    if (queued.getId() == item.getId()) {
+                        fresh = queued;
+                    }
+                }
+                newQueue.add(fresh);
+                for (FeedItem queued : queue) {
+                    if (queued.getId() != item.getId()) {
+                        newQueue.add(queued);
+                    }
+                }
+                PlaylistMemory after = memoryCopy();
+                if (interrupted >= 0 && !after.onTopIn(active).contains(interrupted)
+                        && !after.isHandAdded(active, interrupted)) {
+                    newQueue = placeAtRuleSlot(newQueue, interrupted);
+                }
+                DBWriter.setQueue(newQueue).get();
+                FeedMedia media = fresh.getMedia();
+                if (media != null) {
+                    new Handler(Looper.getMainLooper()).post(() -> new PlaybackServiceStarter(context, media)
+                            .callEvenIfRunning(true)
+                            .start());
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Could not play from the list", e);
+            }
+        });
+    }
+
+    /** Moves an episode to the slot this Smart Play's rules give it, or out of the list if they wouldn't. */
+    private List<FeedItem> placeAtRuleSlot(List<FeedItem> list, long episodeId) {
+        List<FeedItem> without = new ArrayList<>();
+        FeedItem moving = null;
+        for (FeedItem item : list) {
+            if (item.getId() == episodeId) {
+                moving = item;
+            } else {
+                without.add(item);
+            }
+        }
+        if (moving == null) {
+            return list;
+        }
+        List<Long> fresh = ruleOrder();
+        int at = fresh.indexOf(episodeId);
+        if (at < 0) {
+            Log.d(TAG, "Interrupted " + moving.getTitle() + ": this Smart Play wouldn't pick it");
+            return without;
+        }
+        int target = Math.min(Math.max(1, at), without.size());
+        without.add(target, moving);
+        Log.d(TAG, "Interrupted " + moving.getTitle() + ": back to slot " + target);
+        return without;
+    }
+
+    /** Which episodes the highlighted Smart Play's rules would pick, in order, ignoring hand-added ones. */
+    private List<Long> ruleOrder() {
+        List<Long> ids = new ArrayList<>();
+        try {
+            SmartPlayDefinition definition = activeSmartPlay();
+            Set<Long> streamFeeds = new HashSet<>();
+            Map<Long, FeedItem> itemsById = loadCandidates(new ArrayList<>(), streamFeeds);
+            List<SmartPlayEpisode> candidates = convertAll(itemsById, streamFeeds);
+            long active = state.getLong(KEY_ACTIVE_ID, -1);
+            Set<Long> onTop = memoryCopy().onTopIn(active);
+            for (SmartPlayEpisode episode : engine.rebuild(definition, candidates, new ArrayList<>(),
+                    new ManualEdits(new HashSet<>(), editStore.load().getRemovedIds()), onTop)) {
+                ids.add(episode.getId());
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Could not work out the rule order", e);
+        }
+        return ids;
+    }
+
+    /** Notes which episode is loaded, and whether it came from the highlighted list or is a detour. */
+    private void noteLoaded() {
+        long mediaId = PlaybackPreferences.getCurrentlyPlayingFeedMediaId();
+        if (mediaId == PlaybackPreferences.NO_MEDIA_PLAYING) {
+            if (memoryCopy().getLoaded() >= 0) {
+                editMemory(PlaylistMemory::onUnloaded);
+            }
+            return;
+        }
+        FeedMedia media = DBReader.getFeedMedia(mediaId);
+        if (media == null || media.isLiveRadio() || media.getItem() == null) {
+            return;
+        }
+        long itemId = media.getItemId();
+        if (memoryCopy().getLoaded() == itemId) {
+            return;
+        }
+        boolean fromPlaylist = DBReader.getQueueIDList().contains(itemId);
+        long active = state.getLong(KEY_ACTIVE_ID, -1);
+        editMemory(m -> m.onLoaded(itemId, fromPlaylist, active));
+        Log.d(TAG, "Loaded " + media.getEpisodeTitle() + (fromPlaylist ? " from the playlist" : ", a detour"));
     }
 
     private SmartPlayDefinition activeSmartPlay() {
@@ -351,20 +560,30 @@ public class SmartPlayQueueManager {
 
     @Subscribe(threadMode = ThreadMode.POSTING)
     public void onQueueEvent(QueueEvent event) {
+        long active = state.getLong(KEY_ACTIVE_ID, -1);
         switch (event.action) {
             case ADDED:
                 if (event.item != null) {
-                    editStore.markHandAdded(event.item.getId());
+                    long id = event.item.getId();
+                    int slot = event.position;
+                    editStore.unmarkRemoved(id);
+                    editMemory(m -> {
+                        if (!m.isHandAdded(active, id)) {
+                            m.handAdd(active, id, slot);
+                        }
+                    });
                 }
                 break;
             case REMOVED:
                 if (event.item != null) {
-                    editStore.markRemoved(event.item.getId());
+                    long id = event.item.getId();
+                    editStore.markRemoved(id);
+                    editMemory(m -> m.removeHandAdded(active, id));
                 }
                 scheduleUpdate();
                 break;
             case CLEARED:
-                editStore.clearHandAdded();
+                editMemory(m -> m.clearHandAdded(active));
                 state.edit().putBoolean(KEY_PAUSED, true).apply();
                 break;
             case IRREVERSIBLE_REMOVED:
@@ -373,6 +592,11 @@ public class SmartPlayQueueManager {
             default:
                 break;
         }
+    }
+
+    @Subscribe(threadMode = ThreadMode.POSTING)
+    public void onPlayerStatus(PlayerStatusEvent event) {
+        executor.execute(this::noteLoaded);
     }
 
     @Subscribe(threadMode = ThreadMode.POSTING)
@@ -398,84 +622,154 @@ public class SmartPlayQueueManager {
             return;
         }
         try {
+            noteLoaded();
             SmartPlayDefinition definition = activeSmartPlay();
+            long active = state.getLong(KEY_ACTIVE_ID, -1);
+            boolean switched = state.getLong(KEY_QUEUE_OWNER, -1) != active;
+            PlaylistMemory now = memoryCopy();
+            List<Long> handAddedIds = now.handAddedIds(active);
+            long carried = now.getCarriedTo() == active ? now.getCarriedEpisode() : -1;
+            long loaded = now.getLoaded() != now.getDetour() ? now.getLoaded() : -1;
+            long front = carried >= 0 ? carried
+                    : switched && loaded >= 0 && now.originOf(loaded) == active ? loaded : -1;
+
             List<FeedItem> queue = DBReader.getQueue();
             Set<Long> streamFeeds = new HashSet<>();
             Map<Long, FeedItem> itemsById = loadCandidates(queue, streamFeeds);
+            List<Long> extra = new ArrayList<>(handAddedIds);
+            if (front >= 0) {
+                extra.add(front);
+            }
+            for (long id : extra) {
+                if (!itemsById.containsKey(id)) {
+                    FeedItem item = DBReader.getFeedItem(id);
+                    if (item != null && item.getMedia() != null) {
+                        itemsById.put(id, item);
+                    }
+                }
+            }
             long playingItemId = playingItemId(itemsById);
             Map<Long, Set<Long>> playsIn = Recordings.playsInByFeed(context);
             Set<Long> detour = detourKept(queue);
             Set<Long> dead = deadIds(itemsById.values(), playingItemId, playsIn, detour);
             itemsById.keySet().removeAll(dead);
             editStore.forget(dead);
-            boolean streamingAllowed = NetworkUtils.isStreamingAllowed();
-            Map<Long, Long> playOrderDates = localPlayOrderDates(itemsById);
-            List<Feed> allFeeds = DBReader.getFeedList();
-            Books.fixListOrderOnce(context, allFeeds);
-            Books.detectNewBooks(context, allFeeds);
-            Set<Long> books = Books.bookIds(context);
-            Map<Long, Long> bookLastPlayed = Books.lastPlayedPerBook(context, books);
-            Set<Long> notInAllFeeds = new HashSet<>(books);
-            for (FeedItem item : itemsById.values()) {
-                if (Recordings.isRecordingsFeed(item.getFeed()) && !chosenHere(playsIn, item.getFeedId())) {
-                    notInAllFeeds.add(item.getFeedId());
-                }
-            }
-
-            List<SmartPlayEpisode> candidates = new ArrayList<>();
-            for (FeedItem item : itemsById.values()) {
-                SmartPlayEpisode episode = SmartPlayEpisodeConverter.convert(item,
-                        streamFeeds.contains(item.getFeedId()), streamingAllowed, playOrderDates.get(item.getId()),
-                        notInAllFeeds.contains(item.getFeedId()), lastPlayed(bookLastPlayed, item.getFeedId()));
-                if (episode != null) {
-                    candidates.add(episode);
-                }
+            List<SmartPlayEpisode> candidates = convertAll(itemsById, streamFeeds);
+            Map<Long, SmartPlayEpisode> byId = new HashMap<>();
+            for (SmartPlayEpisode episode : candidates) {
+                byId.put(episode.getId(), episode);
             }
             List<SmartPlayEpisode> current = new ArrayList<>();
-            for (FeedItem item : queue) {
-                if (dead.contains(item.getId())) {
-                    continue;
-                }
-                SmartPlayEpisode episode = SmartPlayEpisodeConverter.convert(item,
-                        streamFeeds.contains(item.getFeedId()), streamingAllowed, playOrderDates.get(item.getId()),
-                        notInAllFeeds.contains(item.getFeedId()), lastPlayed(bookLastPlayed, item.getFeedId()));
-                if (episode != null) {
-                    current.add(episode);
+            if (!switched) {
+                for (FeedItem item : queue) {
+                    SmartPlayEpisode episode = byId.get(item.getId());
+                    if (episode != null && !dead.contains(item.getId())) {
+                        current.add(episode);
+                    }
                 }
             }
 
-            ManualEdits edits = editStore.load();
-            List<SmartPlayEpisode> result = fullRebuild
-                    ? engine.rebuild(definition, candidates, current, edits)
-                    : engine.onNewDownloads(definition, candidates, current, edits);
+            Set<Long> removed = new HashSet<>(editStore.load().getRemovedIds());
+            removed.removeAll(handAddedIds);
+            ManualEdits edits = new ManualEdits(handAddedIds, removed);
+            Set<Long> onTop = now.onTopIn(active);
+            List<SmartPlayEpisode> result;
+            if (switched) {
+                List<SmartPlayEpisode> handAdded = new ArrayList<>();
+                for (long id : handAddedIds) {
+                    if (byId.containsKey(id)) {
+                        handAdded.add(byId.get(id));
+                    }
+                }
+                result = engine.rebuildWithSlots(definition, candidates, handAdded, now.handAddedSlots(active),
+                        edits, onTop);
+            } else if (fullRebuild) {
+                result = engine.rebuild(definition, candidates, current, edits, onTop);
+            } else {
+                result = engine.onNewDownloads(definition, candidates, current, edits, onTop);
+            }
 
-            pruneEdits(edits, queue, itemsById);
+            pruneEdits(itemsById);
 
             List<Long> currentIds = new ArrayList<>();
             for (FeedItem item : queue) {
                 currentIds.add(item.getId());
             }
-            List<Long> resultIds = new ArrayList<>();
+            // The loaded episode, carried here by moving the highlight, shows at the top while it's loaded.
+            FeedItem frontItem = front >= 0 ? itemsById.get(front) : null;
+            boolean putFront = frontItem != null && !frontItem.isPlayed()
+                    && (switched || fullRebuild || currentIds.contains(front));
             List<FeedItem> newQueue = new ArrayList<>();
+            if (putFront) {
+                newQueue.add(frontItem);
+            }
             for (SmartPlayEpisode episode : result) {
                 FeedItem item = itemsById.get(episode.getId());
-                if (item != null) {
-                    resultIds.add(item.getId());
+                if (item != null && !(putFront && item.getId() == front)) {
                     newQueue.add(item);
                 }
             }
             // A lengthened show's extra part plays straight after its main recording.
             newQueue = Recordings.tailsAfterMain(newQueue, itemsById.values());
-            resultIds.clear();
+            List<Long> resultIds = new ArrayList<>();
             for (FeedItem item : newQueue) {
                 resultIds.add(item.getId());
             }
             if (!resultIds.equals(currentIds)) {
                 DBWriter.setQueue(newQueue).get();
             }
+            if (switched) {
+                state.edit().putLong(KEY_QUEUE_OWNER, active).apply();
+                Log.d(TAG, "Playing from " + definition.getName() + (front >= 0 ? ", loaded episode on top" : ""));
+            }
+            Set<Long> halfPlayed = new HashSet<>();
+            for (FeedItem item : itemsById.values()) {
+                if (item.isInProgress()) {
+                    halfPlayed.add(item.getId());
+                }
+            }
+            editMemory(m -> {
+                m.snapshot(active, resultIds);
+                m.retainOrigins(halfPlayed);
+            });
         } catch (Exception e) {
             Log.e(TAG, "Smart Play update failed", e);
         }
+    }
+
+    private List<SmartPlayEpisode> convertAll(Map<Long, FeedItem> itemsById, Set<Long> streamFeeds) {
+        boolean streamingAllowed = NetworkUtils.isStreamingAllowed();
+        Map<Long, Long> playOrderDates = localPlayOrderDates(itemsById);
+        List<Feed> allFeeds = DBReader.getFeedList();
+        Books.fixListOrderOnce(context, allFeeds);
+        Books.detectNewBooks(context, allFeeds);
+        Set<Long> books = Books.bookIds(context);
+        Map<Long, Long> bookLastPlayed = Books.lastPlayedPerBook(context, books);
+        Map<Long, Set<Long>> playsIn = Recordings.playsInByFeed(context);
+        Set<Long> notInAllFeeds = new HashSet<>(books);
+        for (FeedItem item : itemsById.values()) {
+            if (Recordings.isRecordingsFeed(item.getFeed()) && !chosenHere(playsIn, item.getFeedId())) {
+                notInAllFeeds.add(item.getFeedId());
+            }
+        }
+        List<SmartPlayEpisode> candidates = new ArrayList<>();
+        for (FeedItem item : itemsById.values()) {
+            SmartPlayEpisode episode = SmartPlayEpisodeConverter.convert(item,
+                    streamFeeds.contains(item.getFeedId()), streamingAllowed, playOrderDates.get(item.getId()),
+                    notInAllFeeds.contains(item.getFeedId()), lastPlayed(bookLastPlayed, item.getFeedId()));
+            if (episode != null) {
+                candidates.add(episode);
+            }
+        }
+        return candidates;
+    }
+
+    private static List<Long> queueIds() {
+        List<Long> ids = new ArrayList<>();
+        for (long id : DBReader.getQueueIDList().toArray()) {
+            ids.add(id);
+        }
+        return ids;
     }
 
     public void purgeDeadEntries() {
@@ -496,18 +790,24 @@ public class SmartPlayQueueManager {
             Set<Long> dead = deadIds(queue, playingItemId, playsIn, detour);
             Set<Long> forget = new HashSet<>(dead);
             List<FeedItem> remembered = new ArrayList<>();
-            for (long id : editStore.load().getHandAddedIds()) {
+            for (long id : memoryCopy().allHandAddedIds()) {
                 if (!inQueue.containsKey(id)) {
                     FeedItem item = DBReader.getFeedItem(id);
-                    if (item == null) {
+                    if (item == null || item.isPlayed()) {
                         forget.add(id);
                     } else {
                         remembered.add(item);
                     }
                 }
             }
-            forget.addAll(deadIds(remembered, playingItemId, playsIn, detour));
+            // Hand-added to another Smart Play: whether a recording plays in the highlighted one doesn't matter.
+            Set<Long> rememberedIds = new HashSet<>();
+            for (FeedItem item : remembered) {
+                rememberedIds.add(item.getId());
+            }
+            forget.addAll(deadIds(remembered, playingItemId, playsIn, rememberedIds));
             editStore.forget(forget);
+            editMemory(m -> m.forget(forget));
             if (!dead.isEmpty()) {
                 List<FeedItem> kept = new ArrayList<>();
                 for (FeedItem item : queue) {
@@ -652,21 +952,15 @@ public class SmartPlayQueueManager {
         }
     }
 
-    private void pruneEdits(ManualEdits edits, List<FeedItem> queue, Map<Long, FeedItem> itemsById) {
-        Set<Long> keepHandAdded = new HashSet<>();
-        for (FeedItem item : queue) {
-            if (edits.isHandAdded(item.getId())) {
-                keepHandAdded.add(item.getId());
-            }
-        }
+    /** Hand-removed episodes are remembered until they're played or gone. */
+    private void pruneEdits(Map<Long, FeedItem> itemsById) {
         Set<Long> keepRemoved = new HashSet<>();
-        Map<Long, FeedItem> lookup = new HashMap<>(itemsById);
-        for (long id : edits.getRemovedIds()) {
-            FeedItem item = lookup.get(id);
+        for (long id : editStore.load().getRemovedIds()) {
+            FeedItem item = itemsById.get(id);
             if (item != null && !item.isPlayed()) {
                 keepRemoved.add(id);
             }
         }
-        editStore.prune(keepHandAdded, keepRemoved);
+        editStore.prune(new HashSet<>(), keepRemoved);
     }
 }

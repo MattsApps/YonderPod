@@ -19,6 +19,7 @@ import java.util.List;
 import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.smartplay.app.AddedFiles;
 import de.danoeh.antennapod.smartplay.app.LocalFolders;
+import de.danoeh.antennapod.smartplay.app.AddToSmartPlay;
 import de.danoeh.antennapod.smartplay.app.SmartPlayQueueManager;
 import de.danoeh.antennapod.event.MessageEvent;
 import de.danoeh.antennapod.event.playback.PlaybackServiceEvent;
@@ -208,7 +209,7 @@ public class FeedItemMenuHandler {
         } else if (menuItemId == R.id.play_next_item) {
             SmartPlayQueueManager.getInstance().playNext(selectedItem);
         } else if (menuItemId == R.id.add_to_queue_item) {
-            SmartPlayQueueManager.getInstance().addToEnd(selectedItem);
+            AddToSmartPlay.ask(fragment.requireActivity(), Collections.singletonList(selectedItem), null);
         } else if (menuItemId == R.id.remove_from_queue_item) {
             DBWriter.removeQueueItem(context, true, selectedItem);
         } else if (menuItemId == R.id.add_to_favorites_item) {

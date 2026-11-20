@@ -41,15 +41,51 @@ public class SmartPlayEngine {
 
     public List<SmartPlayEpisode> rebuild(SmartPlayDefinition definition, List<SmartPlayEpisode> candidates,
                                           List<SmartPlayEpisode> currentList, ManualEdits edits) {
+        return rebuild(definition, candidates, currentList, edits, null);
+    }
+
+    /**
+     * halfPlayedHere: the half-played episodes that go on top of this Smart Play (its own, and the one carried
+     * into it, 0.9.36); null for every half-played episode, as before. Others keep their normal rule slot.
+     * Audiobook chapters are unchanged: they jump only in a book list that covers them.
+     */
+    public List<SmartPlayEpisode> rebuild(SmartPlayDefinition definition, List<SmartPlayEpisode> candidates,
+                                          List<SmartPlayEpisode> currentList, ManualEdits edits,
+                                          Set<Long> halfPlayedHere) {
+        Map<Long, Integer> slots = new java.util.LinkedHashMap<>();
+        for (int i = 0; i < currentList.size(); i++) {
+            long id = currentList.get(i).getId();
+            if (edits.isHandAdded(id) && !slots.containsKey(id)) {
+                slots.put(id, i);
+            }
+        }
+        List<SmartPlayEpisode> handAdded = new ArrayList<>();
+        Map<Long, SmartPlayEpisode> latestState = byId(candidates);
+        for (SmartPlayEpisode episode : currentList) {
+            if (slots.containsKey(episode.getId())) {
+                handAdded.add(latest(latestState, episode));
+            }
+        }
+        return rebuildWithSlots(definition, candidates, handAdded, slots, edits, halfPlayedHere);
+    }
+
+    /**
+     * Rebuilds with hand-added episodes put back at their slots (handAdded in slot order, slots by episode id).
+     * Used when switching to a Smart Play whose list isn't the one showing.
+     */
+    public List<SmartPlayEpisode> rebuildWithSlots(SmartPlayDefinition definition, List<SmartPlayEpisode> candidates,
+                                                   List<SmartPlayEpisode> handAddedInOrder, Map<Long, Integer> slots,
+                                                   ManualEdits edits, Set<Long> halfPlayedHere) {
         Map<Long, SmartPlayEpisode> latestState = byId(candidates);
         List<Integer> handAddedPositions = new ArrayList<>();
         List<SmartPlayEpisode> handAdded = new ArrayList<>();
         Set<Long> used = new HashSet<>();
-        for (int i = 0; i < currentList.size(); i++) {
-            SmartPlayEpisode current = latest(latestState, currentList.get(i));
-            if (edits.isHandAdded(current.getId()) && !edits.isRemoved(current.getId())
+        for (SmartPlayEpisode episode : handAddedInOrder) {
+            SmartPlayEpisode current = latest(latestState, episode);
+            Integer slot = slots.get(current.getId());
+            if (slot != null && edits.isHandAdded(current.getId()) && !edits.isRemoved(current.getId())
                     && !current.isPlayed() && used.add(current.getId())) {
-                handAddedPositions.add(i);
+                handAddedPositions.add(slot);
                 handAdded.add(current);
             }
         }
@@ -64,8 +100,10 @@ public class SmartPlayEngine {
         List<SmartPlayEpisode> result = new ArrayList<>();
         List<SmartPlayEpisode> halfPlayed = new ArrayList<>();
         for (SmartPlayEpisode episode : pool) {
-            boolean mayJump = !episode.isBook() && !definition.isBookList();
-            if (episode.isHalfPlayed() && (mayJump || definition.covers(episode))) {
+            boolean bookish = episode.isBook() || definition.isBookList();
+            boolean onTop = bookish ? definition.covers(episode)
+                    : halfPlayedHere == null || halfPlayedHere.contains(episode.getId());
+            if (episode.isHalfPlayed() && onTop) {
                 halfPlayed.add(episode);
             }
         }
@@ -89,6 +127,13 @@ public class SmartPlayEngine {
     public List<SmartPlayEpisode> onNewDownloads(SmartPlayDefinition definition,
                                                  List<SmartPlayEpisode> candidates,
                                                  List<SmartPlayEpisode> currentList, ManualEdits edits) {
+        return onNewDownloads(definition, candidates, currentList, edits, null);
+    }
+
+    public List<SmartPlayEpisode> onNewDownloads(SmartPlayDefinition definition,
+                                                 List<SmartPlayEpisode> candidates,
+                                                 List<SmartPlayEpisode> currentList, ManualEdits edits,
+                                                 Set<Long> halfPlayedHere) {
         Map<Long, SmartPlayEpisode> latestState = byId(candidates);
         List<SmartPlayEpisode> kept = new ArrayList<>();
         Set<Long> used = new HashSet<>();
@@ -99,7 +144,7 @@ public class SmartPlayEngine {
             }
         }
         if (kept.isEmpty()) {
-            return rebuild(definition, candidates, Collections.emptyList(), edits);
+            return rebuild(definition, candidates, Collections.emptyList(), edits, halfPlayedHere);
         }
 
         List<SmartPlayEpisode> pool = new ArrayList<>();

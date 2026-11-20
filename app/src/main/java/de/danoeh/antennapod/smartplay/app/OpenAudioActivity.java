@@ -68,18 +68,24 @@ public class OpenAudioActivity extends AppCompatActivity {
                     } else if (action == PLAY_NEXT) {
                         SmartPlayQueueManager.getInstance().playNext(result.item);
                     } else if (action == ADD) {
-                        SmartPlayQueueManager.getInstance().addToEnd(result.item);
+                        showResult(result);
+                        AddToSmartPlay.ask(this, java.util.Collections.singletonList(result.item), this::finish);
+                        return;
                     }
-                    String message = result.copied
-                            ? getString(R.string.open_file_copied, Formatter.formatShortFileSize(this, result.size))
-                            : getString(R.string.open_file_linked);
-                    Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
+                    showResult(result);
                     finish();
                 }, error -> {
                     Log.e(TAG, Log.getStackTraceString(error));
                     Toast.makeText(getApplicationContext(), R.string.open_file_failed, Toast.LENGTH_LONG).show();
                     finish();
                 });
+    }
+
+    private void showResult(AddedFiles.Result result) {
+        String message = result.copied
+                ? getString(R.string.open_file_copied, Formatter.formatShortFileSize(this, result.size))
+                : getString(R.string.open_file_linked);
+        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
     }
 
     private static Uri audioUri(Intent intent) {

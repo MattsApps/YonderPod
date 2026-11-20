@@ -1559,7 +1559,13 @@
     <string name="tend_find_podcast">find a podcast</string>
     <string name="tend_find_book">find a book on LibriVox</string>
     <string name="tend_find_station">find a station</string>
-    <string name="tend_smart_plays">Smart Plays</string>
+    <string name="tend_smart_plays">Smart Plays: Playing from</string>
+    <string name="add_to_smart_play_title">Add to which Smart Play?</string>
+    <string name="add_to_smart_play_playing_from">%1$s (playing from)</string>
+    <plurals name="add_to_smart_play_done">
+        <item quantity="one">Added to %2$s</item>
+        <item quantity="other">%1$d added to %2$s</item>
+    </plurals>
     <string name="tend_new_smart_play">New Smart Play</string>
     <string name="tend_smart_play_edit">Edit</string>
     <string name="tend_smart_play_duplicate">Duplicate</string>
@@ -2126,13 +2132,19 @@
     <string name="help_topic_streaming">Streaming or downloading</string>
     <string name="help_about_streaming">Stream modes, and whether to stream or download on mobile data.</string>
     <string name="help_topic_smart_play">What Smart Play is</string>
-    <string name="help_about_smart_play">A playlist that builds itself from your rules. Half-played episodes come first.</string>
+    <string name="help_about_smart_play">A playlist that builds itself from your rules. An episode you half-played comes first, but only in the Smart Play you played it from.</string>
+    <string name="help_topic_smart_play_switch">Switching Smart Plays</string>
+    <string name="help_about_smart_play_switch">Podcasts Tend shows “Smart Plays: Playing from” with the one you’re playing from highlighted. Tap another to move the highlight: what’s playing carries on to its end, shown at the top of the new list, then the new Smart Play takes over. Nothing is left behind in the ones you tap through. Tap the highlighted one to open its list.</string>
+    <string name="help_topic_add_to_playlist">Play next or Add to playlist</string>
+    <string name="help_about_add_to_playlist">Play next puts an episode straight after the one playing, in the Smart Play you’re playing from. Add to playlist asks which Smart Play, then puts it next to play there, after any you’ve already added, so several play in the order you added them. Episodes you add belong to that Smart Play only, and they stay when it rebuilds. Anything you add yourself plays, even if the Smart Play would never include it.</string>
+    <string name="help_topic_detours">Playing something else for a while</string>
+    <string name="help_about_detours">Play an episode from a show page, search or elsewhere and it plays straight away without joining any playlist. When it ends, Yonder goes back to the episode it interrupted, then the Smart Play carries on. It waits for you if you pause it, until you start something else.</string>
     <string name="help_topic_smart_play_build">Building a Smart Play</string>
     <string name="help_about_smart_play_build">Rules made of an order, a count and a source; adding, reordering and saving them.</string>
     <string name="help_topic_smart_play_priority">Priority shows and exclusions</string>
     <string name="help_about_smart_play_priority">Shows that always go first, shows that never play, and the most episodes from one show.</string>
     <string name="help_topic_playlist">The playlist</string>
-    <string name="help_about_playlist">Tap “from” or “then” on the surface. Drag to reorder, play next, add to the end, remove, skip, rebuild or clear. An episode you play from a show page goes first; when it ends, Yonder goes back to what you were listening to. At the end of the playlist, the Smart Play fills it again and keeps going.</string>
+    <string name="help_about_playlist">Tap “from” or “then” on the surface. The list shows episodes in the order they’ll play. Press play on any of them to play it now; the one it interrupted keeps its usual place. Tap an episode for its notes, long-press it for its menu (play next, remove, mark played and more), and drag the handle to reorder. At the end of the playlist, the Smart Play fills it again and keeps going.</string>
     <string name="help_topic_coverage">Coverage warnings</string>
     <string name="help_about_coverage">Shows that no rule covers, and “Included in” on a show\'s page.</string>
     <string name="help_topic_smart_play_hours">Switching Smart Plays by time of day</string>

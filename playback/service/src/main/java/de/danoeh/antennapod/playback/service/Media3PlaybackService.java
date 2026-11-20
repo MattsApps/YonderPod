@@ -1572,17 +1572,22 @@ public class Media3PlaybackService extends MediaLibraryService {
         return !media.localFileAvailable() && !URLUtil.isContentUrl(media.getStreamUrl());
     }
 
+    /**
+     * A detour (played from outside the playlists) isn't added to any Smart Play's list (0.9.36). A recording
+     * played by hand still brings its extra parts: they go at the top of the list, kept as part of the detour,
+     * and play straight after it.
+     */
     private void addPlayedToQueue(FeedMedia media) {
         FeedItem item = media.getItem();
-        boolean radio = media.isLiveRadio();
+        if (media.isLiveRadio()) {
+            return;
+        }
         Schedulers.io().scheduleDirect(() -> {
             Feed feed = item.getFeed() != null ? item.getFeed() : DBReader.getFeed(item.getFeedId(), false, 0, 0);
             boolean book = feed != null && feed.getPreferences() != null
                     && feed.getPreferences().getTags().contains(BOOK_CATEGORY);
-            int index = radio || book ? DBReader.getQueueIDList().size() : 0;
-            List<FeedItem> parts = radio || book ? new ArrayList<>() : extraPartsOf(item);
+            List<FeedItem> parts = book ? new ArrayList<>() : extraPartsOf(item);
             if (parts.isEmpty()) {
-                DBWriter.addQueueItemAt(this, item.getId(), index);
                 return;
             }
             LongList queueIds = DBReader.getQueueIDList();
@@ -1592,16 +1597,16 @@ public class Media3PlaybackService extends MediaLibraryService {
                     kept.add(id);
                 }
             }
-            kept.add(item.getId());
             for (FeedItem part : parts) {
                 kept.add(part.getId());
             }
             NextUpPreferences.setDetourKept(kept);
             Log.d(TAG, "Detour: " + item.getTitle() + " brings " + parts.size() + " extra part(s)");
             try {
-                DBWriter.addQueueItemAt(this, item.getId(), index).get();
                 for (int i = 0; i < parts.size(); i++) {
-                    DBWriter.addQueueItemAt(this, parts.get(i).getId(), index + 1 + i).get();
+                    if (!queueIds.contains(parts.get(i).getId())) {
+                        DBWriter.addQueueItemAt(this, parts.get(i).getId(), i).get();
+                    }
                 }
             } catch (ExecutionException | InterruptedException e) {
                 Log.e(TAG, "Could not add the extra parts", e);

@@ -9,6 +9,10 @@ import java.util.Set;
 
 import de.danoeh.antennapod.smartplay.ManualEdits;
 
+/**
+ * Hand-removed episodes (shared by every Smart Play). Since 0.9.36 hand-added episodes live per Smart Play in
+ * PlaylistMemory; the old shared hand-added set here is only read once, to move it.
+ */
 public class ManualEditStore {
     private static final String PREFS_NAME = "SmartPlay";
     private static final String KEY_HAND_ADDED = "handAdded";
@@ -26,6 +30,15 @@ public class ManualEditStore {
         handAdded.add(String.valueOf(episodeId));
         removed.remove(String.valueOf(episodeId));
         write(handAdded, removed);
+    }
+
+    /** Added back by hand: no longer hand-removed. */
+    public synchronized void unmarkRemoved(long episodeId) {
+        Set<String> handAdded = read(KEY_HAND_ADDED);
+        Set<String> removed = read(KEY_REMOVED);
+        if (removed.remove(String.valueOf(episodeId))) {
+            write(handAdded, removed);
+        }
     }
 
     public synchronized void markRemoved(long episodeId) {

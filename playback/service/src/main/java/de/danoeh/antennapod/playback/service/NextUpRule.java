@@ -31,7 +31,8 @@ import de.danoeh.antennapod.storage.preferences.NextUpPreferences;
  * otherwise that show's newest unplayed one (earlier parts first), otherwise nothing ("Nothing new in …").
  *
  * <p>Half-played episodes are left out when Yonder picks, if the listener turned them off. The episode a
- * detour interrupted always resumes. Picking an episode yourself never comes here.
+ * detour interrupted always resumes. A detour is in no list (0.9.36): after it come its recording's extra
+ * parts, then the episode it interrupted, then the Smart Play. Picking an episode yourself never comes here.
  */
 public final class NextUpRule {
     private static final String TAG = "NextUpRule";
@@ -83,7 +84,19 @@ public final class NextUpRule {
         boolean byItself = auto && keep;
         int[] questions = {auto && !asked ? NextUpPreferences.QUESTION_CONTINUOUS : 0};
         String reason = "next in the playlist";
-        FeedItem next = afterInQueue(queue, finished, byItself, questions);
+        FeedItem next;
+        if (!contains(queue, finished.getId())) {
+            // A detour (0.9.36: never in any list): its recording's extra parts, then the episode it
+            // interrupted, then the Smart Play carries on.
+            next = afterDetour(queue, byItself, questions);
+            reason = "after a detour";
+            if (next == null && auto) {
+                next = firstInQueue(rebuild.rebuiltQueue(finished), finished.getId(), byItself, questions);
+                reason = "first after rebuilding the Smart Play";
+            }
+        } else {
+            next = afterInQueue(queue, finished, byItself, questions);
+        }
         if (next == null && skipped) {
             next = firstInQueue(queue, finished.getId(), false, questions);
         }
@@ -138,6 +151,25 @@ public final class NextUpRule {
     @Nullable
     public static FeedItem firstInPlaylist(List<FeedItem> queue) {
         return firstInQueue(queue, -1, false, null);
+    }
+
+    @Nullable
+    private static FeedItem afterDetour(List<FeedItem> queue, boolean byItself, int[] questions) {
+        java.util.Set<Long> parts = NextUpPreferences.getDetourKept();
+        for (FeedItem item : queue) {
+            if (parts.contains(item.getId()) && take(item, byItself, questions)) {
+                return item;
+            }
+        }
+        long resumeId = NextUpPreferences.getDetourResume();
+        if (resumeId > 0) {
+            FeedMedia resume = DBReader.getFeedMedia(resumeId);
+            if (resume != null && resume.getItem() != null && !resume.getItem().isPlayed()
+                    && !resume.isLiveRadio()) {
+                return resume.getItem();
+            }
+        }
+        return firstInQueue(queue, -1, byItself, questions);
     }
 
     private static boolean contains(List<FeedItem> queue, long itemId) {
