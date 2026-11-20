@@ -143,6 +143,7 @@ public final class ShowActions {
             Disposable ignored = Completable.fromAction(() -> {
                 DeletedShows.remember(app, feedId, title);
                 DBWriter.deleteFeed(app, feedId).get();
+                UpdateScheduler.forgetUnusedCategories(app);
             })
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())

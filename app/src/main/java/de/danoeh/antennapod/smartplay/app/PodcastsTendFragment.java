@@ -24,11 +24,13 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.concurrent.TimeUnit;
 
 import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.event.FeedListUpdateEvent;
@@ -41,7 +43,6 @@ import de.danoeh.antennapod.smartplay.SmartPlayDefinition;
 import de.danoeh.antennapod.smartplay.SmartPlayRule;
 import de.danoeh.antennapod.smartplay.worlds.WorldPages;
 import de.danoeh.antennapod.storage.database.DBReader;
-import de.danoeh.antennapod.storage.database.NavDrawerData;
 import de.danoeh.antennapod.storage.preferences.UserPreferences;
 import de.danoeh.antennapod.ui.screen.feed.FeedItemlistFragment;
 import de.danoeh.antennapod.ui.screen.queue.QueueFragment;
@@ -69,6 +70,7 @@ public class PodcastsTendFragment extends Fragment {
         List<Feed> uncategorised = new ArrayList<>();
         Map<Long, Integer> newCounts;
         Map<Long, Integer> savedCounts;
+        Set<String> notRefreshing = new HashSet<>();
         long lastUpdate;
     }
 
@@ -157,12 +159,13 @@ public class PodcastsTendFragment extends Fragment {
         }
         lastProgress = now;
         long since = updateStart;
+        Context app = requireContext().getApplicationContext();
         disposables.add(Single.fromCallable(() -> {
             int total = 0;
             int done = 0;
             for (Feed feed : DBReader.getFeedList()) {
                 if (feed.getState() != Feed.STATE_SUBSCRIBED || feed.isAppManaged() || feed.getPreferences() == null
-                        || !feed.getPreferences().getKeepUpdated()) {
+                        || !feed.getPreferences().getKeepUpdated() || !UpdateScheduler.refreshesWithAll(app, feed)) {
                     continue;
                 }
                 total++;
@@ -196,9 +199,8 @@ public class PodcastsTendFragment extends Fragment {
             state.smartPlays = SmartPlayStore.getInstance(app).getAll();
             SmartPlayQueueManager manager = SmartPlayQueueManager.getInstance();
             state.activeId = manager != null ? manager.getActiveId() : -1;
-            NavDrawerData data = DBReader.getNavDrawerData(null, FeedOrder.ALPHABETICAL, FeedCounter.SHOW_NEW,
-                    Feed.STATE_SUBSCRIBED);
-            state.newCounts = data.feedCounters;
+            state.newCounts = DBReader.getRecentUnplayedCounts(
+                    System.currentTimeMillis() - TimeUnit.DAYS.toMillis(7));
             state.savedCounts = DBReader.getNavDrawerData(null, FeedOrder.ALPHABETICAL,
                     FeedCounter.SHOW_DOWNLOADED, Feed.STATE_SUBSCRIBED).feedCounters;
             Set<Long> books = Books.bookIds(app);
@@ -224,6 +226,11 @@ public class PodcastsTendFragment extends Fragment {
                         state.groups.put(category, group);
                     }
                     group.add(feed);
+                }
+            }
+            for (String category : state.groups.keySet()) {
+                if (!UpdateScheduler.refreshesEachNight(app, category)) {
+                    state.notRefreshing.add(category);
                 }
             }
             return state;
@@ -297,10 +304,10 @@ public class PodcastsTendFragment extends Fragment {
         LinearLayout list = root.findViewById(R.id.tendList);
         list.removeAllViews();
         if (!state.uncategorised.isEmpty()) {
-            addGroup(list, getString(R.string.tend_uncategorised), state.uncategorised, state);
+            addGroup(list, getString(R.string.tend_uncategorised), null, state.uncategorised, state);
         }
         for (Map.Entry<String, List<Feed>> group : state.groups.entrySet()) {
-            addGroup(list, group.getKey().toLowerCase(Locale.getDefault()), group.getValue(), state);
+            addGroup(list, group.getKey().toLowerCase(Locale.getDefault()), group.getKey(), group.getValue(), state);
         }
         if (list.getChildCount() == 0) {
             TextView empty = new TextView(root.getContext());
@@ -370,13 +377,22 @@ public class PodcastsTendFragment extends Fragment {
                 .show();
     }
 
-    private void addGroup(LinearLayout list, String name, List<Feed> feeds, State state) {
-        list.addView(TendRows.heading(list, name));
+    private void addGroup(LinearLayout list, String name, @Nullable String category, List<Feed> feeds, State state) {
+        TextView heading = TendRows.heading(list, name);
+        if (category != null) {
+            heading.setOnLongClickListener(v -> {
+                categoryMenu(v, category, !state.notRefreshing.contains(category));
+                return true;
+            });
+        }
+        list.addView(heading);
         for (Feed feed : feeds) {
             Integer newCount = state.newCounts.get(feed.getId());
             Integer saved = state.savedCounts.get(feed.getId());
             View row = TendRows.row(this, list, feed.getTitle(), null, feed.getImageUrl(),
-                    TendRows.count(newCount != null ? newCount : 0), TendRows.count(saved != null ? saved : 0),
+                    newCount != null && newCount > 99 ? getString(R.string.tend_count_many)
+                            : TendRows.count(newCount != null ? newCount : 0),
+                    TendRows.count(saved != null ? saved : 0),
                     v -> TendRows.open(this, FeedItemlistFragment.newInstance(feed.getId())));
             if (ShowActions.applies(feed)) {
                 row.setOnLongClickListener(v -> {
@@ -386,6 +402,21 @@ public class PodcastsTendFragment extends Fragment {
             }
             list.addView(row);
         }
+    }
+
+    private void categoryMenu(View anchor, String category, boolean refreshing) {
+        Context app = requireContext().getApplicationContext();
+        PopupMenu menu = new PopupMenu(requireContext(), anchor);
+        menu.getMenu().add(0, 0, 0, R.string.tend_category_refresh_nightly).setCheckable(true).setChecked(refreshing);
+        menu.setOnMenuItemClickListener(item -> {
+            disposables.add(Completable.fromAction(() -> UpdateScheduler.setRefreshesEachNight(app, category,
+                    !refreshing))
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(this::load, error -> Log.e(TAG, Log.getStackTraceString(error))));
+            return true;
+        });
+        menu.show();
     }
 
     private final ShowActions.Listener showListener = new ShowActions.Listener() {

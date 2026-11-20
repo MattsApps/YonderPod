@@ -1364,6 +1364,11 @@ public class PodDBAdapter {
         return conditionalFeedCounterRead(whereRead, feedIds);
     }
 
+    public final Map<Long, Integer> getRecentUnplayedCounters(long since) {
+        return conditionalFeedCounterRead("(" + KEY_READ + "=" + FeedItem.NEW + " OR " + KEY_READ + "="
+                + FeedItem.UNPLAYED + ") AND " + TABLE_NAME_FEED_ITEMS + "." + KEY_PUBDATE + ">=" + since);
+    }
+
     private Map<Long, Integer> conditionalFeedCounterRead(String whereRead, long... feedIds) {
         String limitFeeds;
         if (feedIds.length > 0) {

@@ -18,6 +18,7 @@ import de.danoeh.antennapod.model.feed.Feed;
 import de.danoeh.antennapod.model.feed.FeedCounter;
 import de.danoeh.antennapod.model.feed.FeedOrder;
 import de.danoeh.antennapod.model.feed.FeedPreferences;
+import de.danoeh.antennapod.smartplay.app.UpdateScheduler;
 import de.danoeh.antennapod.storage.database.DBReader;
 import de.danoeh.antennapod.storage.database.DBWriter;
 import de.danoeh.antennapod.storage.database.NavDrawerData;
@@ -33,6 +34,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.Future;
 
 public class TagSettingsDialog extends DialogFragment {
     public static final String TAG = "TagSettingsDialog";
@@ -160,10 +162,12 @@ public class TagSettingsDialog extends DialogFragment {
         if (viewBinding.rootFolderCheckbox.isChecked()) {
             displayedTags.add(FeedPreferences.TAG_ROOT);
         }
+        List<Future<?>> writes = new ArrayList<>();
         for (FeedPreferences preferences : feedPreferencesList) {
             preferences.getTags().removeAll(commonTags);
             preferences.getTags().addAll(displayedTags);
-            DBWriter.setFeedPreferences(preferences);
+            writes.add(DBWriter.setFeedPreferences(preferences));
         }
+        UpdateScheduler.forgetUnusedCategoriesAfter(requireContext(), writes);
     }
 }

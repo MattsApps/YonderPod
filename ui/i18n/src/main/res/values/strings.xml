@@ -1570,6 +1570,8 @@
     <string name="tend_subscriptions">Subscriptions</string>
     <string name="tend_new_saved">new · saved</string>
     <string name="tend_uncategorised">uncategorised</string>
+    <string name="tend_category_refresh_nightly">Refresh each night</string>
+    <string name="tend_count_many">99+</string>
     <string name="tend_history">history</string>
     <string name="tend_downloads">downloads</string>
     <string name="tend_updated">Updated %1$s ↻</string>
@@ -1749,6 +1751,14 @@
     <string name="welcome_worlds_body">Books, podcasts and radio sit side by side. Swipe sideways to move between them. The big button plays what\'s next.</string>
     <string name="welcome_tend_title">swipe up to tend</string>
     <string name="welcome_tend_body">Swipe up from any world to see your shows, books or stations, and your Smart Plays. Pull down from the top to come back.</string>
+    <string name="welcome_tend_page">%1$s\n\n%2$s</string>
+    <string name="welcome_categories">Categories decide when your shows refresh. Long-press a category on Tend to stop it refreshing each night.</string>
+    <string name="welcome_download_title">download or stream</string>
+    <string name="welcome_download_body">Download episodes, or stream them to save space?</string>
+    <string name="welcome_download">Download</string>
+    <string name="welcome_download_why">New episodes are saved on your phone, so they play anywhere.</string>
+    <string name="welcome_stream">Stream</string>
+    <string name="welcome_stream_why">New episodes play over the internet and take no space. You can change this for each show later.</string>
     <string name="welcome_tune_title">tune</string>
     <string name="welcome_tune_body">Settings live in Tune, at the bottom of every Tend.</string>
     <string name="welcome_notifications">Allow notifications</string>
@@ -2105,6 +2115,8 @@
     <string name="help_about_show_menu">Long-press a show in Podcasts Tend, or use ⋮ on its page: Refresh checks it now and downloads by its own download settings; Download settings; Category; Delete show. Deleting stops it straight away if it\'s playing and deletes its downloads at once.</string>
     <string name="help_topic_categories">Categories</string>
     <string name="help_about_categories">Tag shows with categories, sort several at once, and use categories in Smart Play.</string>
+    <string name="help_topic_category_refresh">Categories and refreshing</string>
+    <string name="help_about_category_refresh">Long-press a category on Podcasts Tend to turn “Refresh each night” off or on. A category with it off is skipped by the nightly refresh and by refresh all. A show in several categories refreshes if any of them does, and a show with no category always does. Refreshing one show by hand (its long press, or its page) always works. Download settings belong to each show, not to its categories.</string>
     <string name="help_topic_download_modes">Download modes</string>
     <string name="help_about_download_modes">Manual, latest, in order, work backwards and the rest, and when to use each.</string>
     <string name="help_topic_show_downloads">Managing a show\'s downloads</string>

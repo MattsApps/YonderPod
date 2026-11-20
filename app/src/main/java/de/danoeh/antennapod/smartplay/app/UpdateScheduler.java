@@ -25,6 +25,7 @@ import java.util.Set;
 import java.util.TimeZone;
 import java.util.TreeSet;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
@@ -39,6 +40,7 @@ import de.danoeh.antennapod.smartplay.schedule.ScheduleRunPlanner;
 import de.danoeh.antennapod.smartplay.schedule.ScheduleTimes;
 import de.danoeh.antennapod.smartplay.schedule.UpdateSchedule;
 import de.danoeh.antennapod.storage.database.DBReader;
+import de.danoeh.antennapod.storage.database.DBWriter;
 
 public final class UpdateScheduler {
     private static final String TAG = "UpdateScheduler";
@@ -59,6 +61,7 @@ public final class UpdateScheduler {
         Context app = context.getApplicationContext();
         RecordingSweeper.init(app);
         EXECUTOR.execute(() -> {
+            keepNormalShowsUpdated();
             reschedule(app);
             if (YonderBackup.takeUpdateAfterRestore(app)) {
                 Log.d(TAG, "Updating after a restore");
@@ -197,6 +200,89 @@ public final class UpdateScheduler {
                 WorkManager.getInstance(context).cancelUniqueWork(WORK_RUN_PREFIX + key);
             }
         }
+    }
+
+    private static void keepNormalShowsUpdated() {
+        for (Feed feed : DBReader.getFeedList()) {
+            if (feed.getState() != Feed.STATE_SUBSCRIBED || feed.isLocalFeed() || feed.isAppManaged()
+                    || feed.getPreferences() == null || feed.getPreferences().getKeepUpdated()) {
+                continue;
+            }
+            Log.d(TAG, "Turning keep updated back on for " + feed.getTitle());
+            feed.getPreferences().setKeepUpdated(true);
+            try {
+                DBWriter.setFeedPreferences(feed.getPreferences()).get();
+            } catch (Exception e) {
+                Log.e(TAG, "Could not turn keep updated on", e);
+            }
+        }
+    }
+
+    public static boolean refreshesWithAll(Context context, Feed feed) {
+        if (feed.isLocalFeed() || feed.isAppManaged() || feed.getPreferences() == null) {
+            return true;
+        }
+        Map<String, SmartPlayStore.StoredSchedule> schedules = SmartPlayStore.getInstance(context).getAllSchedules();
+        boolean categorised = false;
+        for (String tag : feed.getPreferences().getTags()) {
+            if (FeedPreferences.TAG_ROOT.equals(tag) || FeedPreferences.TAG_UNTAGGED.equals(tag)) {
+                continue;
+            }
+            categorised = true;
+            SmartPlayStore.StoredSchedule stored = schedules.get(tag);
+            if (stored == null || stored.getMode() != CategoryScheduleMode.MANUAL) {
+                return true;
+            }
+        }
+        return !categorised;
+    }
+
+    public static boolean refreshesEachNight(Context context, String category) {
+        return getCategory(context, category).getMode() != CategoryScheduleMode.MANUAL;
+    }
+
+    public static void setRefreshesEachNight(Context context, String category, boolean refresh) {
+        SmartPlayStore.StoredSchedule stored = getCategory(context, category);
+        CategoryScheduleMode mode = !refresh ? CategoryScheduleMode.MANUAL
+                : stored.getMode() == CategoryScheduleMode.MANUAL ? CategoryScheduleMode.DEFAULT : stored.getMode();
+        Log.d(TAG, "Category " + category + " refreshes each night: " + refresh);
+        save(context, category, mode, stored.getSchedule());
+    }
+
+    public static void renameCategory(Context context, String from, String to) {
+        Context app = context.getApplicationContext();
+        EXECUTOR.execute(() -> {
+            synchronized (UpdateScheduler.class) {
+                SmartPlayStore store = SmartPlayStore.getInstance(app);
+                Map<String, SmartPlayStore.StoredSchedule> schedules = store.getAllSchedules();
+                SmartPlayStore.StoredSchedule stored = schedules.get(from);
+                if (stored == null || from.equals(to)) {
+                    return;
+                }
+                if (!schedules.containsKey(to)) {
+                    store.setSchedule(new SmartPlayStore.StoredSchedule(to, stored.getMode(), stored.getSchedule(),
+                            stored.getSince(), stored.getLastTriggered()));
+                }
+                store.deleteSchedule(from);
+                WorkManager.getInstance(app).cancelUniqueWork(WORK_JOB_PREFIX + from);
+                WorkManager.getInstance(app).cancelUniqueWork(WORK_RUN_PREFIX + from);
+                reschedule(app);
+            }
+        });
+    }
+
+    public static void forgetUnusedCategoriesAfter(Context context, List<Future<?>> writes) {
+        Context app = context.getApplicationContext();
+        EXECUTOR.execute(() -> {
+            try {
+                for (Future<?> write : writes) {
+                    write.get();
+                }
+                forgetUnusedCategories(app);
+            } catch (Exception e) {
+                Log.e(TAG, "Forgetting unused categories failed", e);
+            }
+        });
     }
 
     public static List<String> getCategories() {

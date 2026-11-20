@@ -421,6 +421,7 @@ public final class HelpIndex {
         topic(shows, R.string.help_topic_subscriptions, R.string.help_about_subscriptions, OPEN_TOPIC, 0);
         topic(shows, R.string.help_topic_show_menu, R.string.help_about_show_menu, OPEN_TOPIC, 0);
         topic(shows, R.string.help_topic_categories, R.string.help_about_categories, OPEN_TOPIC, 0);
+        topic(shows, R.string.help_topic_category_refresh, R.string.help_about_category_refresh, OPEN_TOPIC, 0);
         topic(shows, R.string.help_topic_download_modes, R.string.help_about_download_modes, OPEN_TUNE,
                 R.string.tune_download_defaults);
         topic(shows, R.string.help_topic_show_downloads, R.string.help_about_show_downloads, OPEN_TUNE,

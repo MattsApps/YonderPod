@@ -35,6 +35,8 @@ import java.util.Date;
 import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.activity.MainActivity;
 import de.danoeh.antennapod.model.feed.Feed;
+import de.danoeh.antennapod.smartplay.download.DownloadMode;
+import de.danoeh.antennapod.smartplay.download.ShowDownloadSettings;
 import de.danoeh.antennapod.smartplay.support.FirstRun;
 import de.danoeh.antennapod.storage.database.DBReader;
 import de.danoeh.antennapod.system.CrashReportWriter;
@@ -50,7 +52,7 @@ public class WelcomeActivity extends AppCompatActivity {
     private static final String KEY_SHOWN = "shown";
     private static final String KEY_CRASH_ANSWERED = "crashAnswered";
     private static final String KEY_CRASH_NEVER = "crashNever";
-    private static final int PAGES = 5;
+    private static final int PAGES = 6;
 
     private ViewPager2 pager;
     private final ActivityResultLauncher<String> notificationPermission = registerForActivityResult(
@@ -181,7 +183,8 @@ public class WelcomeActivity extends AppCompatActivity {
                 break;
             case 1:
                 title.setText(R.string.welcome_tend_title);
-                body.setText(R.string.welcome_tend_body);
+                body.setText(getString(R.string.welcome_tend_page, getString(R.string.welcome_tend_body),
+                        getString(R.string.welcome_categories)));
                 break;
             case 2:
                 title.setText(R.string.welcome_tune_title);
@@ -197,10 +200,23 @@ public class WelcomeActivity extends AppCompatActivity {
                 }
                 break;
             case 3:
+                title.setText(R.string.welcome_download_title);
+                body.setText(R.string.welcome_download_body);
+                boolean streaming = DownloadSettingsRepository.getInstance(this).getDefaults().getMode().streams();
+                action(actions, R.string.welcome_download, R.string.welcome_download_why, !streaming, () -> {
+                    setStreamingDefault(false);
+                    refreshPage();
+                });
+                action(actions, R.string.welcome_stream, R.string.welcome_stream_why, streaming, () -> {
+                    setStreamingDefault(true);
+                    refreshPage();
+                });
+                break;
+            case 4:
                 title.setText(R.string.welcome_free_title);
                 body.setText(R.string.welcome_free_body);
                 break;
-            case 4:
+            case 5:
             default:
                 title.setText(R.string.welcome_ready_title);
                 body.setText(R.string.welcome_ready_body);
@@ -211,6 +227,23 @@ public class WelcomeActivity extends AppCompatActivity {
                 });
                 break;
         }
+    }
+
+    private void setStreamingDefault(boolean stream) {
+        DownloadSettingsRepository repository = DownloadSettingsRepository.getInstance(this);
+        ShowDownloadSettings defaults = repository.getDefaults();
+        DownloadMode mode = defaults.getMode();
+        if (stream && mode == DownloadMode.LATEST) {
+            mode = DownloadMode.STREAM_LATEST;
+        } else if (stream && mode == DownloadMode.IN_ORDER) {
+            mode = DownloadMode.STREAM_IN_ORDER;
+        } else if (!stream && mode == DownloadMode.STREAM_LATEST) {
+            mode = DownloadMode.LATEST;
+        } else if (!stream && mode == DownloadMode.STREAM_IN_ORDER) {
+            mode = DownloadMode.IN_ORDER;
+        }
+        repository.setDefaults(new ShowDownloadSettings(mode, defaults.getEpisodeCount(), defaults.getKeepAtMost(),
+                defaults.getDeleteOlderThanDays(), defaults.isAllowDeletions()));
     }
 
     private void action(LinearLayout parent, int label, int why, boolean primary, Runnable onClick) {

@@ -44,11 +44,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.Predicate;
 
 public class FeedUpdateWorker extends Worker {
     private static final String TAG = "FeedUpdateWorker";
     private static final long JOB_SCHEDULE_TIME_VARIATION = TimeUnit.MINUTES.toMillis(15);
     private static final long SCHEDULED_SKIP_RECENT = TimeUnit.MINUTES.toMillis(10);
+
+    private static Predicate<Feed> refreshesWithAll = feed -> true;
 
     private final NewEpisodesNotification newEpisodesNotification;
     private final NotificationManagerCompat notificationManager;
@@ -57,6 +60,10 @@ public class FeedUpdateWorker extends Worker {
         super(context, params);
         newEpisodesNotification = new NewEpisodesNotification();
         notificationManager = NotificationManagerCompat.from(context);
+    }
+
+    public static void setRefreshesWithAll(Predicate<Feed> filter) {
+        refreshesWithAll = filter;
     }
 
     @Override
@@ -78,7 +85,8 @@ public class FeedUpdateWorker extends Worker {
                 for (long id : scheduledFeedIds) {
                     inRun |= id == feed.getId();
                 }
-                if (!inRun || !feed.getPreferences().getKeepUpdated() || feed.getState() != Feed.STATE_SUBSCRIBED
+                if (!inRun || !feed.getPreferences().getKeepUpdated() || !refreshesWithAll.test(feed)
+                        || feed.getState() != Feed.STATE_SUBSCRIBED
                         || feed.getLastRefreshAttempt() > System.currentTimeMillis() - SCHEDULED_SKIP_RECENT) {
                     continue;
                 }
@@ -93,7 +101,8 @@ public class FeedUpdateWorker extends Worker {
             Iterator<Feed> itr = toUpdate.iterator();
             while (itr.hasNext()) {
                 Feed feed = itr.next();
-                if (!feed.getPreferences().getKeepUpdated() || feed.getState() != Feed.STATE_SUBSCRIBED) {
+                if (!feed.getPreferences().getKeepUpdated() || !refreshesWithAll.test(feed)
+                        || feed.getState() != Feed.STATE_SUBSCRIBED) {
                     itr.remove();
                     continue;
                 }

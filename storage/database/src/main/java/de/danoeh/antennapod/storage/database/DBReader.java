@@ -671,6 +671,16 @@ public final class DBReader {
         }
     }
 
+    public static synchronized Map<Long, Integer> getRecentUnplayedCounts(long since) {
+        PodDBAdapter adapter = PodDBAdapter.getInstance();
+        adapter.open();
+        try {
+            return adapter.getRecentUnplayedCounters(since);
+        } finally {
+            adapter.close();
+        }
+    }
+
     /**
      * Returns data necessary for displaying the navigation drawer. This includes
      * the list of subscriptions, the number of items in the queue and the number of unread

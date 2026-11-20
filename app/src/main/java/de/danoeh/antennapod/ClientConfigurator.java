@@ -17,6 +17,7 @@ import de.danoeh.antennapod.storage.preferences.UserPreferences;
 import de.danoeh.antennapod.net.common.AntennapodHttpClient;
 import de.danoeh.antennapod.net.download.serviceinterface.DownloadServiceInterface;
 import de.danoeh.antennapod.net.download.service.feed.DownloadServiceInterfaceImpl;
+import de.danoeh.antennapod.net.download.service.feed.FeedUpdateWorker;
 import de.danoeh.antennapod.net.common.NetworkUtils;
 import de.danoeh.antennapod.net.ssl.SslProviderInstaller;
 import de.danoeh.antennapod.smartplay.app.BookTopUpWorker;
@@ -57,6 +58,7 @@ public class ClientConfigurator {
         NetworkUtils.init(context);
         DownloadServiceInterface.setImpl(new DownloadServiceInterfaceImpl());
         FeedUpdateManager.setInstance(new YonderFeedUpdateManager());
+        FeedUpdateWorker.setRefreshesWithAll(feed -> UpdateScheduler.refreshesWithAll(context, feed));
         AutoDownloadManager.setInstance(new YonderAutoDownloadManager(context));
         AntennapodHttpClient.setCacheDirectory(new File(context.getCacheDir(), "okhttp"));
         AntennapodHttpClient.setProxyConfig(UserPreferences.getProxyConfig());

@@ -331,6 +331,7 @@ public class FeedSettingsPreferenceFragment extends PreferenceFragmentCompat {
         });
         SwitchPreferenceCompat keepUpdated = findPreference("keepUpdated");
         keepUpdated.setChecked(feedPreferences.getKeepUpdated());
+        keepUpdated.setVisible(feed.isLocalFeed() || feed.isAppManaged());
         keepUpdated.setOnPreferenceChangeListener((preference, newValue) -> {
             boolean checked = Boolean.TRUE.equals(newValue);
             feedPreferences.setKeepUpdated(checked);

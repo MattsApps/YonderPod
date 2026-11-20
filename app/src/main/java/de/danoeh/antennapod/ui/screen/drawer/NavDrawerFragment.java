@@ -50,6 +50,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Future;
 
 import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.activity.MainActivity;
@@ -58,6 +59,7 @@ import de.danoeh.antennapod.ui.MenuItemUtils;
 import de.danoeh.antennapod.storage.database.DBReader;
 import de.danoeh.antennapod.storage.database.NavDrawerData;
 import de.danoeh.antennapod.smartplay.app.ScheduleText;
+import de.danoeh.antennapod.smartplay.app.UpdateScheduler;
 import de.danoeh.antennapod.ui.screen.feed.RenameFeedDialog;
 import de.danoeh.antennapod.ui.screen.subscriptions.SubscriptionsFilterDialog;
 import de.danoeh.antennapod.event.FeedItemEvent;
@@ -214,11 +216,13 @@ public class NavDrawerFragment extends Fragment implements SharedPreferences.OnS
 
                 @Override
                 public void onConfirmButtonPressed(DialogInterface dialog) {
+                    List<Future<?>> writes = new ArrayList<>();
                     for (Feed feed : drawerItem.getFeeds()) {
                         FeedPreferences preferences = feed.getPreferences();
                         preferences.getTags().remove(drawerItem.getTitle());
-                        DBWriter.setFeedPreferences(preferences);
+                        writes.add(DBWriter.setFeedPreferences(preferences));
                     }
+                    UpdateScheduler.forgetUnusedCategoriesAfter(requireContext(), writes);
                 }
             };
             dialog.createNewDialog().show();

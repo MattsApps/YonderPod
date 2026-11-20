@@ -13,6 +13,7 @@ import de.danoeh.antennapod.model.feed.Feed;
 import de.danoeh.antennapod.storage.database.DBWriter;
 import de.danoeh.antennapod.ui.common.databinding.EditTextDialogBinding;
 import de.danoeh.antennapod.model.feed.FeedPreferences;
+import de.danoeh.antennapod.smartplay.app.UpdateScheduler;
 
 public class RenameFeedDialog {
 
@@ -67,6 +68,10 @@ public class RenameFeedDialog {
             preferences.getTags().remove(tag.getTitle());
             preferences.getTags().add(title);
             DBWriter.setFeedPreferences(preferences);
+        }
+        Activity activity = activityRef.get();
+        if (activity != null) {
+            UpdateScheduler.renameCategory(activity, tag.getTitle(), title);
         }
     }
 
