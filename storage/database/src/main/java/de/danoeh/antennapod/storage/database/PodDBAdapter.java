@@ -1084,6 +1084,17 @@ public class PodDBAdapter {
         return db.rawQuery(query, null);
     }
 
+    /** Episodes with media, most recently played first (1.0.2: each world offers its own last-played thing). */
+    public final Cursor getRecentlyPlayedCursor(int limit) {
+        final String query = "SELECT " + KEYS_FEED_ITEM_WITHOUT_DESCRIPTION + ", " + KEYS_FEED_MEDIA
+                + " FROM " + TABLE_NAME_FEED_ITEMS
+                + JOIN_FEED_ITEM_AND_MEDIA
+                + " WHERE " + TABLE_NAME_FEED_MEDIA + "." + KEY_LAST_PLAYED_TIME_STATISTICS + " > 0"
+                + " ORDER BY " + TABLE_NAME_FEED_MEDIA + "." + KEY_LAST_PLAYED_TIME_STATISTICS + " DESC"
+                + " LIMIT " + limit;
+        return db.rawQuery(query, null);
+    }
+
     public final Cursor getPausedQueueCursor(int limit) {
         final String hasPositionOrRecentlyPlayed = TABLE_NAME_FEED_MEDIA + "."  + KEY_POSITION + " >= 1000"
                 + " OR " + TABLE_NAME_FEED_MEDIA + "." + KEY_LAST_PLAYED_TIME_STATISTICS

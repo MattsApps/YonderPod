@@ -49,6 +49,30 @@
 
         </FrameLayout>
 
+        <!-- The small stop circle (1.0.2), shown only while another world plays. Size and place are set by
+             OtherStopFit, measured from the play circle, so nothing here is a fixed size. -->
+        <FrameLayout
+            android:id="@+id/worldOtherStop"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_gravity="start|top"
+            android:background="@drawable/wildink_dot"
+            android:backgroundTint="?android:attr/textColorPrimary"
+            android:contentDescription="@string/world_other_stop_description"
+            android:foreground="?android:attr/selectableItemBackgroundBorderless"
+            android:visibility="gone">
+
+            <ImageView
+                android:id="@+id/worldOtherStopIcon"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_gravity="center"
+                android:importantForAccessibility="no"
+                android:src="@drawable/wildink_stop_square"
+                android:tint="?android:attr/colorBackground" />
+
+        </FrameLayout>
+
     </FrameLayout>
 
     <LinearLayout

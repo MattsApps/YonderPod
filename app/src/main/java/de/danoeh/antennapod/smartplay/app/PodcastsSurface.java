@@ -7,7 +7,6 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.HashSet;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -21,10 +20,8 @@ import de.danoeh.antennapod.model.feed.FeedItem;
 import de.danoeh.antennapod.model.feed.FeedMedia;
 import de.danoeh.antennapod.model.playback.Playable;
 import de.danoeh.antennapod.playback.service.PlaybackServiceStarter;
-import de.danoeh.antennapod.smartplay.worlds.WorldPages;
 import de.danoeh.antennapod.storage.database.DBReader;
 import de.danoeh.antennapod.storage.preferences.PlaybackPreferences;
-import de.danoeh.antennapod.storage.preferences.UserPreferences;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.schedulers.Schedulers;
@@ -56,12 +53,13 @@ public class PodcastsSurface extends WorldSurface {
         Context app = requireContext().getApplicationContext();
         disposables.add(Single.fromCallable(() -> {
             State state = new State();
-            Set<Long> books = UserPreferences.isWorldShown(WorldPages.BOOKS)
-                    ? Books.bookIds(app) : new HashSet<>();
+            Set<Long> books = WorldOf.filesBooks(app);
             FeedMedia current = DBReader.getFeedMedia(PlaybackPreferences.getCurrentlyPlayingFeedMediaId());
             List<FeedItem> queue = DBReader.getQueue();
-            if (isPodcast(current, books)) {
-                state.media = current;
+            FeedMedia last = isPodcast(current, books) ? current : WorldOf.lastPodcast(books);
+            if (last != null) {
+                // 1.0.2: the last podcast played, resumed, even while another world plays.
+                state.media = last;
             } else {
                 // Nothing loaded: show what play would play, by the same rule every route uses.
                 List<FeedItem> podcasts = new ArrayList<>();
@@ -103,8 +101,7 @@ public class PodcastsSurface extends WorldSurface {
     }
 
     private static boolean isPodcast(FeedMedia media, Set<Long> books) {
-        return media != null && !media.isLiveRadio() && media.getItem() != null
-                && !books.contains(media.getItem().getFeedId());
+        return media != null && media.getItem() != null && WorldOf.of(media, books) == PODCASTS;
     }
 
     private void show(State state) {

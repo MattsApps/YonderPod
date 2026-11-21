@@ -1,6 +1,8 @@
 package de.danoeh.antennapod.smartplay.app;
 
+import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,7 +32,10 @@ import de.danoeh.antennapod.playback.service.PlaybackService;
 import de.danoeh.antennapod.smartplay.worlds.WorldPages;
 import de.danoeh.antennapod.storage.preferences.PlaybackPreferences;
 import de.danoeh.antennapod.ui.appstartintent.MediaButtonStarter;
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public abstract class WorldSurface extends Fragment {
     public static final int BOOKS = 0;
@@ -61,6 +66,8 @@ public abstract class WorldSurface extends Fragment {
         TipMark.bind(this, root);
         PlayCircleFit.bind(root);
         LivePauseFit.bind(root);
+        OtherStopFit.bind(root);
+        root.findViewById(R.id.worldOtherStop).setOnClickListener(v -> stopOther());
         root.findViewById(R.id.worldHandle).setOnClickListener(v -> openTend());
         for (int id : new int[] {R.id.worldFrom, R.id.worldNext}) {
             View link = root.findViewById(id);
@@ -104,6 +111,7 @@ public abstract class WorldSurface extends Fragment {
         super.onStart();
         EventBus.getDefault().register(this);
         load();
+        checkOtherPlaying();
         TipMark.bind(this, root);
     }
 
@@ -122,6 +130,50 @@ public abstract class WorldSurface extends Fragment {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onPlayerStatusChanged(PlayerStatusEvent event) {
         load();
+        checkOtherPlaying();
+    }
+
+    /**
+     * The small stop circle (1.0.2) shows only while something from another world plays: never in the world
+     * that is playing, so never beside live pause's stack, and never while paused (live pause included).
+     * Every start, pause or stop, from the app, notification, widget, Bluetooth, Tend or a call, posts a
+     * PlayerStatusEvent, so it follows at once.
+     */
+    private void checkOtherPlaying() {
+        Context app = requireContext().getApplicationContext();
+        disposables.add(Single.fromCallable(() -> WorldOf.playing(app))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(playing -> {
+                    if (root != null) {
+                        boolean other = playing != WorldOf.NONE && playing != world();
+                        root.findViewById(R.id.worldOtherStop).setVisibility(other ? View.VISIBLE : View.GONE);
+                    }
+                }, error -> Log.e("WorldSurface", Log.getStackTraceString(error))));
+    }
+
+    /**
+     * Stops what another world is playing. An episode, book, file or recording pauses where it is (its place
+     * is kept); live radio, or radio playing behind live, just stops, with no live pause and no buffer. The
+     * big circle keeps offering this world's own thing.
+     */
+    private void stopOther() {
+        root.findViewById(R.id.worldOtherStop).setVisibility(View.GONE);
+        if (!BuildConfig.USE_MEDIA3_PLAYBACK_SERVICE) {
+            pause();
+            return;
+        }
+        Context app = requireContext().getApplicationContext();
+        disposables.add(Single.fromCallable(() -> WorldOf.playing(app))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(playing -> PlaybackController.bindToMedia3Service(app, controller -> {
+                    if (playing == RADIO) {
+                        controller.stop();
+                    } else {
+                        controller.pause();
+                    }
+                }), error -> Log.e("WorldSurface", Log.getStackTraceString(error))));
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

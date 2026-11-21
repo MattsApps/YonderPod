@@ -438,6 +438,20 @@ public final class DBReader {
         }
     }
 
+    /** Episodes with media, most recently played first, with their feeds loaded. */
+    @NonNull
+    public static synchronized List<FeedItem> getRecentlyPlayed(int limit) {
+        PodDBAdapter adapter = PodDBAdapter.getInstance();
+        adapter.open();
+        try (FeedItemCursor cursor = new FeedItemCursor(adapter.getRecentlyPlayedCursor(limit))) {
+            List<FeedItem> items = extractItemlistFromCursor(cursor);
+            loadFeedDataOfFeedItemList(items);
+            return items;
+        } finally {
+            adapter.close();
+        }
+    }
+
     @NonNull
     public static synchronized List<FeedItem> getPausedQueue(int limit) {
         PodDBAdapter adapter = PodDBAdapter.getInstance();
