@@ -119,7 +119,7 @@ public class VariableSpeedDialog extends BottomSheetDialogFragment {
 
     /**
      * "Skip silence in &lt;show&gt;": the playing show's own setting (1.0.1), saved on the show and applied at
-     * once. Hidden with nothing loaded, on live radio and on radio recordings.
+     * once. Hidden with nothing loaded and on live radio; radio recordings have it (coding thread 18).
      */
     private void showSkipSilence(Playable media) {
         skipSilenceCheckbox.setOnCheckedChangeListener(null);
@@ -128,8 +128,7 @@ public class VariableSpeedDialog extends BottomSheetDialogFragment {
                 && ((FeedMedia) media).getItem() != null) {
             feed = ((FeedMedia) media).getItem().getFeed();
         }
-        if (feed == null || feed.getPreferences() == null || (feed.getDownloadUrl() != null
-                && feed.getDownloadUrl().startsWith(Feed.RECORDINGS_URL_PREFIX))) {
+        if (feed == null || feed.getPreferences() == null) {
             skipSilenceCheckbox.setVisibility(View.GONE);
             return;
         }

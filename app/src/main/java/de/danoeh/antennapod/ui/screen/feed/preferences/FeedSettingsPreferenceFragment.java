@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.DocumentsContract;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -379,7 +380,7 @@ public class FeedSettingsPreferenceFragment extends PreferenceFragmentCompat {
             alert.setMessage(R.string.reconnect_local_folder_warning);
             alert.setPositiveButton(android.R.string.ok, (dialog, which) -> {
                 try {
-                    addLocalFolderLauncher.launch(null);
+                    addLocalFolderLauncher.launch(currentFolder());
                 } catch (ActivityNotFoundException e) {
                     Log.e(TAG, "No activity found. Should never happen...");
                 }
@@ -448,6 +449,25 @@ public class FeedSettingsPreferenceFragment extends PreferenceFragmentCompat {
         autoDownloadPreference.setValue("" + feedPreferences.getAutoDownload().code);
     }
 
+    /**
+     * Where the folder picker opens when reconnecting: the folder being reconnected (thread 18), not wherever the
+     * last picker was left (such as the backup folder). Null, so the picker decides, if it can't be worked out.
+     */
+    @Nullable
+    private Uri currentFolder() {
+        if (feed == null || feed.getDownloadUrl() == null
+                || !feed.getDownloadUrl().startsWith(Feed.PREFIX_LOCAL_FOLDER)) {
+            return null;
+        }
+        try {
+            Uri tree = Uri.parse(feed.getDownloadUrl().substring(Feed.PREFIX_LOCAL_FOLDER.length()));
+            return DocumentsContract.buildDocumentUriUsingTree(tree, DocumentsContract.getTreeDocumentId(tree));
+        } catch (RuntimeException e) {
+            Log.d(TAG, "No folder to open the picker at: " + e);
+            return null;
+        }
+    }
+
     private void addLocalFolderResult(final Uri uri) {
         if (uri == null) {
             return;
@@ -491,12 +511,7 @@ public class FeedSettingsPreferenceFragment extends PreferenceFragmentCompat {
     private void setupSound() {
         ListPreference skipSilence = findPreference(PREF_SKIP_SILENCE);
         ListPreference volume = findPreference(PREF_VOLUME);
-        boolean recording = Recordings.isRecordingsFeed(feed);
-        skipSilence.setVisible(!recording);
-        volume.setVisible(!recording);
-        if (recording) {
-            return;
-        }
+        // Radio recordings have both too, like a podcast (coding thread 18).
         String usualSkip = getString(UserPreferences.isSkipSilence()
                 ? R.string.show_sound_on : R.string.show_sound_off);
         skipSilence.setEntries(new CharSequence[] {getString(R.string.show_sound_usual, usualSkip),
@@ -517,25 +532,11 @@ public class FeedSettingsPreferenceFragment extends PreferenceFragmentCompat {
             return false;
         });
 
-        List<VolumeAdaptionSetting> settings = new ArrayList<>();
-        settings.add(VolumeAdaptionSetting.OFF);
-        settings.add(VolumeAdaptionSetting.NO_CHANGE);
-        if (VolumeAdaptionSetting.isBoostSupported()) {
-            settings.add(VolumeAdaptionSetting.LIGHT_BOOST);
-            settings.add(VolumeAdaptionSetting.MEDIUM_BOOST);
-            settings.add(VolumeAdaptionSetting.HEAVY_BOOST);
-        }
-        settings.add(VolumeAdaptionSetting.LIGHT_REDUCTION);
-        settings.add(VolumeAdaptionSetting.HEAVY_REDUCTION);
-        CharSequence[] names = new CharSequence[settings.size()];
+        List<VolumeAdaptionSetting> settings = volumeChoices();
+        CharSequence[] names = volumeChoiceNames(getContext(), settings);
         CharSequence[] values = new CharSequence[settings.size()];
         for (int i = 0; i < settings.size(); i++) {
-            VolumeAdaptionSetting setting = settings.get(i);
-            names[i] = setting == VolumeAdaptionSetting.OFF
-                    ? getString(R.string.show_sound_usual,
-                            volumeName(getContext(), UserPreferences.getVolumeBoostUsual()))
-                    : volumeName(getContext(), setting);
-            values[i] = "" + setting.toInteger();
+            values[i] = "" + settings.get(i).toInteger();
         }
         volume.setEntries(names);
         volume.setEntryValues(values);
@@ -550,6 +551,38 @@ public class FeedSettingsPreferenceFragment extends PreferenceFragmentCompat {
             EventBus.getDefault().post(new VolumeAdaptionChangedEvent(chosen, feed.getId()));
             return false;
         });
+    }
+
+    /**
+     * The choices for one show's or station's volume boost, in order: Usual, Off, the boosts (only where the
+     * phone supports them), Quieter, Much quieter. Shared by the show's settings page and the player's speaker
+     * button, so the two always offer the same.
+     */
+    public static List<VolumeAdaptionSetting> volumeChoices() {
+        List<VolumeAdaptionSetting> settings = new ArrayList<>();
+        settings.add(VolumeAdaptionSetting.OFF);
+        settings.add(VolumeAdaptionSetting.NO_CHANGE);
+        if (VolumeAdaptionSetting.isBoostSupported()) {
+            settings.add(VolumeAdaptionSetting.LIGHT_BOOST);
+            settings.add(VolumeAdaptionSetting.MEDIUM_BOOST);
+            settings.add(VolumeAdaptionSetting.HEAVY_BOOST);
+        }
+        settings.add(VolumeAdaptionSetting.LIGHT_REDUCTION);
+        settings.add(VolumeAdaptionSetting.HEAVY_REDUCTION);
+        return settings;
+    }
+
+    /** Names for {@link #volumeChoices()}: OFF reads "Usual (…)" with Tune's usual boost. */
+    public static CharSequence[] volumeChoiceNames(Context context, List<VolumeAdaptionSetting> settings) {
+        CharSequence[] names = new CharSequence[settings.size()];
+        for (int i = 0; i < settings.size(); i++) {
+            VolumeAdaptionSetting setting = settings.get(i);
+            names[i] = setting == VolumeAdaptionSetting.OFF
+                    ? context.getString(R.string.show_sound_usual,
+                            volumeName(context, UserPreferences.getVolumeBoostUsual()))
+                    : volumeName(context, setting);
+        }
+        return names;
     }
 
     /** Everyday name of a volume setting, shared with Tune. */

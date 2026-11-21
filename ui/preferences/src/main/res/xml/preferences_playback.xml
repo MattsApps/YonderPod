@@ -14,6 +14,13 @@
         android:title="@string/sleep_settings_title"
         search:ignore="true" />
 
+    <!-- The usual volume boost (coding thread 18). Its summary is set in PlaybackPreferencesFragment. The usual
+         speed moved to Tune › controls › Speed and silences. -->
+    <Preference
+        android:key="prefVolumeBoostUsualLauncher"
+        android:title="@string/controls_volume_boost"
+        search:ignore="true" />
+
     <PreferenceCategory android:title="@string/interruptions">
         <SwitchPreferenceCompat
                 android:defaultValue="true"
@@ -48,10 +55,6 @@
                 android:key="prefPlaybackRewindDeltaLauncher"
                 android:summary="@string/pref_rewind_sum"
                 android:title="@string/pref_rewind"/>
-        <Preference
-                android:key="prefPlaybackSpeedLauncher"
-                android:summary="@string/pref_playback_speed_sum"
-                android:title="@string/playback_speed"/>
     </PreferenceCategory>
 
     <PreferenceCategory

@@ -288,11 +288,12 @@ public class FeedPreferences implements Serializable {
         feedSkipSilence = skipSilence;
     }
 
+    /**
+     * The show's own skip silence. Since 1.0.1 it no longer depends on the show's speed: AntennaPod returned GLOBAL
+     * whenever the speed was on usual, so a show's On or Off never stuck, and was even saved as GLOBAL (thread 18).
+     */
     public SkipSilence getFeedSkipSilence() {
-        if (feedPlaybackSpeed == SPEED_USE_GLOBAL) {
-            return SkipSilence.GLOBAL;
-        }
-        return feedSkipSilence;
+        return feedSkipSilence != null ? feedSkipSilence : SkipSilence.GLOBAL;
     }
 
     public Set<String> getTags() {

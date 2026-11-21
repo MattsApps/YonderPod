@@ -14,12 +14,18 @@ import de.danoeh.antennapod.smartplay.app.SleepSettingsFragment;
 import de.danoeh.antennapod.storage.preferences.UserPreferences;
 import de.danoeh.antennapod.ui.preferences.screen.AnimatedPreferenceFragment;
 import de.danoeh.antennapod.ui.screen.feed.preferences.SkipPreferenceDialog;
-import de.danoeh.antennapod.ui.screen.playback.VariableSpeedDialog;
+import de.danoeh.antennapod.event.settings.SoundDefaultsChangedEvent;
+import de.danoeh.antennapod.model.feed.VolumeAdaptionSetting;
+import de.danoeh.antennapod.ui.screen.feed.preferences.FeedSettingsPreferenceFragment;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.Map;
 
 public class PlaybackPreferencesFragment extends AnimatedPreferenceFragment {
-    private static final String PREF_PLAYBACK_SPEED_LAUNCHER = "prefPlaybackSpeedLauncher";
+    private static final String PREF_VOLUME_BOOST_USUAL = "prefVolumeBoostUsualLauncher";
+    private static final VolumeAdaptionSetting[] USUAL_VOLUMES = {VolumeAdaptionSetting.OFF,
+        VolumeAdaptionSetting.LIGHT_BOOST, VolumeAdaptionSetting.MEDIUM_BOOST, VolumeAdaptionSetting.HEAVY_BOOST};
     private static final String PREF_PLAYBACK_REWIND_DELTA_LAUNCHER = "prefPlaybackRewindDeltaLauncher";
     private static final String PREF_PLAYBACK_FAST_FORWARD_DELTA_LAUNCHER = "prefPlaybackFastForwardDeltaLauncher";
 
@@ -60,10 +66,7 @@ public class PlaybackPreferencesFragment extends AnimatedPreferenceFragment {
     private void setupPlaybackScreen() {
         final Activity activity = getActivity();
 
-        findPreference(PREF_PLAYBACK_SPEED_LAUNCHER).setOnPreferenceClickListener(preference -> {
-            new VariableSpeedDialog().show(getChildFragmentManager(), null);
-            return true;
-        });
+        setupVolumeBoost();
         findPreference(PREF_PLAYBACK_REWIND_DELTA_LAUNCHER).setOnPreferenceClickListener(preference -> {
             SkipPreferenceDialog.showSkipPreference(activity, SkipPreferenceDialog.SkipDirection.SKIP_REWIND, null);
             return true;
@@ -78,6 +81,47 @@ public class PlaybackPreferencesFragment extends AnimatedPreferenceFragment {
         }
 
         buildEnqueueLocationPreference();
+    }
+
+    /**
+     * The usual volume boost, for shows and stations left on usual (moved here from Tune › Buttons and rewind ›
+     * advanced by coding thread 18). Hidden on phones without boost support.
+     */
+    private void setupVolumeBoost() {
+        Preference boost = findPreference(PREF_VOLUME_BOOST_USUAL);
+        if (!VolumeAdaptionSetting.isBoostSupported()) {
+            boost.setVisible(false);
+            return;
+        }
+        showVolumeBoost(boost);
+        boost.setOnPreferenceClickListener(preference -> {
+            CharSequence[] names = new CharSequence[USUAL_VOLUMES.length];
+            int selected = 0;
+            for (int i = 0; i < USUAL_VOLUMES.length; i++) {
+                names[i] = FeedSettingsPreferenceFragment.volumeName(requireContext(), USUAL_VOLUMES[i]);
+                if (USUAL_VOLUMES[i] == UserPreferences.getVolumeBoostUsual()) {
+                    selected = i;
+                }
+            }
+            new MaterialAlertDialogBuilder(requireContext())
+                    .setTitle(R.string.controls_volume_boost)
+                    .setSingleChoiceItems(names, selected, (dialog, which) -> {
+                        if (USUAL_VOLUMES[which] != UserPreferences.getVolumeBoostUsual()) {
+                            UserPreferences.setVolumeBoostUsual(USUAL_VOLUMES[which]);
+                            EventBus.getDefault().post(new SoundDefaultsChangedEvent());
+                        }
+                        showVolumeBoost(boost);
+                        dialog.dismiss();
+                    })
+                    .setNegativeButton(R.string.cancel_label, null)
+                    .show();
+            return true;
+        });
+    }
+
+    private void showVolumeBoost(Preference boost) {
+        boost.setSummary(getString(R.string.volume_boost_usual_summary,
+                FeedSettingsPreferenceFragment.volumeName(requireContext(), UserPreferences.getVolumeBoostUsual())));
     }
 
     private void buildEnqueueLocationPreference() {

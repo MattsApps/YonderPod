@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.graphics.drawable.Drawable;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,6 +45,9 @@ import de.danoeh.antennapod.ui.screen.playback.PlayButton;
 import de.danoeh.antennapod.smartplay.app.BookDialogs;
 import de.danoeh.antennapod.smartplay.app.Books;
 import de.danoeh.antennapod.smartplay.app.CarModeActivity;
+import de.danoeh.antennapod.smartplay.app.RadioStationFragment;
+import de.danoeh.antennapod.smartplay.app.TendRows;
+import de.danoeh.antennapod.ui.screen.playback.VolumeBoostDialog;
 import de.danoeh.antennapod.ui.common.ThemeUtils;
 import de.danoeh.antennapod.ui.screen.chapter.ChaptersFragment;
 import de.danoeh.antennapod.smartplay.app.SleepTimerGridDialog;
@@ -76,7 +80,6 @@ import de.danoeh.antennapod.model.feed.Chapter;
 import de.danoeh.antennapod.model.feed.FeedItem;
 import de.danoeh.antennapod.model.feed.FeedMedia;
 import de.danoeh.antennapod.model.playback.Playable;
-import de.danoeh.antennapod.playback.cast.CastEnabledActivity;
 import de.danoeh.antennapod.storage.preferences.ControlsPreferences;
 import de.danoeh.antennapod.storage.preferences.UserPreferences;
 import io.reactivex.rxjava3.core.Maybe;
@@ -351,7 +354,8 @@ public class AudioPlayerFragment extends Fragment implements
         setChapterDividers();
         setupOptionsMenu();
         boolean hasChapters = currentMedia.getChapters() != null && !currentMedia.getChapters().isEmpty();
-        getView().findViewById(R.id.butChapters).setVisibility(hasChapters ? View.VISIBLE : View.GONE);
+        // Invisible rather than gone, so the buttons beside it never move (coding thread 18).
+        getView().findViewById(R.id.butChapters).setVisibility(hasChapters ? View.VISIBLE : View.INVISIBLE);
         loadThen(currentMedia);
         boolean isPlaying = PlaybackService.isRunning
                 && PlaybackPreferences.getCurrentPlayerStatus() == PlaybackPreferences.PLAYER_STATUS_PLAYING;
@@ -588,8 +592,9 @@ public class AudioPlayerFragment extends Fragment implements
         toolbar.getMenu().findItem(R.id.open_feed_item).setVisible(true);
         FeedItemMenuHandler.onPrepareMenu(toolbar.getMenu(),
                 Collections.singletonList(currentMedia.getItem()));
-        ((CastEnabledActivity) getActivity()).requestCastButton(toolbar.getMenu());
-        if (currentMedia.isLiveRadio()) {
+        // No cast button on this player (coding thread 18): the speaker button has its place.
+        boolean live = currentMedia.isLiveRadio();
+        if (live) {
             for (int id : new int[] {R.id.add_to_favorites_item, R.id.remove_from_favorites_item,
                     R.id.open_feed_item, R.id.playback_speed, R.id.player_show_chapters, R.id.transcript_item,
                     R.id.open_social_interact_url, R.id.share_item}) {
@@ -599,6 +604,7 @@ public class AudioPlayerFragment extends Fragment implements
                 }
             }
         }
+        keepSlots(live);
         final long feedId = currentMedia.getItem() != null ? currentMedia.getItem().getFeedId() : -1;
         final Context appContext = requireContext().getApplicationContext();
         Single.fromCallable(() -> Books.isBook(appContext, feedId))
@@ -606,6 +612,36 @@ public class AudioPlayerFragment extends Fragment implements
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(book -> toolbar.getMenu().findItem(R.id.add_bookmark_item).setVisible(book),
                         error -> Log.e(TAG, Log.getStackTraceString(error)));
+    }
+
+    /**
+     * Every top-bar button keeps its place on every player (coding thread 18): one that doesn't apply (the star
+     * and share on live radio, share on your own files) stays as an empty, untappable slot, and on live radio the
+     * ⋮ menu keeps "Open station", so nothing beside it moves.
+     */
+    private void keepSlots(boolean live) {
+        MenuItem add = toolbar.getMenu().findItem(R.id.add_to_favorites_item);
+        MenuItem remove = toolbar.getMenu().findItem(R.id.remove_from_favorites_item);
+        if (add.isVisible() || remove.isVisible()) {
+            slot(add.isVisible() ? add : remove, true);
+        } else {
+            slot(add, false);
+        }
+        MenuItem share = toolbar.getMenu().findItem(R.id.share_item);
+        slot(share, share.isVisible());
+        slot(toolbar.getMenu().findItem(R.id.volume_boost_item), true);
+        toolbar.getMenu().findItem(R.id.open_station_item).setVisible(live);
+    }
+
+    private static void slot(MenuItem item, boolean shown) {
+        item.setVisible(true);
+        item.setEnabled(shown);
+        Drawable icon = item.getIcon();
+        if (icon != null) {
+            icon = icon.mutate();
+            icon.setAlpha(shown ? 255 : 0);
+            item.setIcon(icon);
+        }
     }
 
     @Override
@@ -629,6 +665,15 @@ public class AudioPlayerFragment extends Fragment implements
                     BookDialogs.addBookmark(requireContext(), media, position);
                 }
             });
+            return true;
+        } else if (itemId == R.id.volume_boost_item) {
+            VolumeBoostDialog.show(requireContext(), currentMedia);
+            return true;
+        } else if (itemId == R.id.open_station_item) {
+            if (feedItem != null) {
+                ((MainActivity) getActivity()).getBottomSheet().setState(BottomSheetBehavior.STATE_COLLAPSED);
+                TendRows.open(this, RadioStationFragment.newInstance(feedItem.getId()));
+            }
             return true;
         } else if (itemId == R.id.car_mode_item) {
             startActivity(new Intent(getContext(), CarModeActivity.class));

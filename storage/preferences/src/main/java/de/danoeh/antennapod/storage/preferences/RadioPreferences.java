@@ -8,9 +8,13 @@ import androidx.annotation.NonNull;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import de.danoeh.antennapod.model.feed.VolumeAdaptionSetting;
+
 public final class RadioPreferences {
     public static final String PREFS = "YonderRadio";
     private static final String KEY_STATION = "station_";
+    /** A station's own volume boost (1.0.1), as a VolumeAdaptionSetting code. Absent or 0 means usual. */
+    private static final String KEY_BOOST = "boost_";
 
     public enum Quality {
         LOW(80_000),
@@ -93,7 +97,32 @@ public final class RadioPreferences {
     }
 
     public static void remove(long itemId) {
-        prefs.edit().remove(KEY_STATION + itemId).apply();
+        prefs.edit().remove(KEY_STATION + itemId).remove(KEY_BOOST + itemId).apply();
+    }
+
+    /**
+     * The station's own volume boost for live radio and live pause (1.0.1). OFF means usual (Tune's usual
+     * boost), as it does for a show.
+     */
+    @NonNull
+    public static VolumeAdaptionSetting boost(long itemId) {
+        if (prefs == null) {
+            return VolumeAdaptionSetting.OFF;
+        }
+        try {
+            return VolumeAdaptionSetting.fromInteger(prefs.getInt(KEY_BOOST + itemId,
+                    VolumeAdaptionSetting.OFF.toInteger()));
+        } catch (RuntimeException e) {
+            return VolumeAdaptionSetting.OFF;
+        }
+    }
+
+    public static void setBoost(long itemId, @NonNull VolumeAdaptionSetting setting) {
+        if (setting == VolumeAdaptionSetting.OFF) {
+            prefs.edit().remove(KEY_BOOST + itemId).apply();
+        } else {
+            prefs.edit().putInt(KEY_BOOST + itemId, setting.toInteger()).apply();
+        }
     }
 
     public static int maxBitrate(long itemId) {

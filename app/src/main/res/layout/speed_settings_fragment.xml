@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Tune › controls › Speed and silences (coding thread 18): the usual speed and skip silence. -->
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="?android:attr/colorBackground"
+    android:fitsSystemWindows="true"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingHorizontal="24dp"
+        android:paddingBottom="24dp">
+
+        <TextView
+            style="@style/Widget.WildInk.PageTitle"
+            android:text="@string/tune_speed_silences" />
+
+        <include
+            android:id="@+id/speed_usual_row"
+            layout="@layout/tune_row" />
+
+        <com.google.android.material.materialswitch.MaterialSwitch
+            android:id="@+id/speed_skip_silence"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="@string/controls_skip_silence"
+            android:textAppearance="@style/TextAppearance.WildInk.RowLabel" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/speed_silences_summary"
+            android:textAppearance="@style/TextAppearance.WildInk.Detail" />
+
+        <com.google.android.material.materialswitch.MaterialSwitch
+            android:id="@+id/speed_show_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/controls_show_speed"
+            android:textAppearance="@style/TextAppearance.WildInk.RowLabel" />
+
+    </LinearLayout>
+
+</ScrollView>

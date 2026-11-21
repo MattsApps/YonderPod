@@ -186,7 +186,7 @@ public class BooksTendFragment extends Fragment {
             View row = TendRows.row(this, list, folder.getTitle(), null, folder.getImageUrl(), "", "",
                     v -> TendRows.open(this, FeedItemlistFragment.newInstance(folder.getId())));
             row.setOnLongClickListener(v -> {
-                offerDelete(v, folder, false);
+                offerActions(v, folder, false);
                 return true;
             });
             list.addView(row);
@@ -218,7 +218,7 @@ public class BooksTendFragment extends Fragment {
             View row = TendRows.row(this, extra, book.feed.getDisplayTitle(), book.progress, book.feed.getImageUrl(),
                     "", "", v -> TendRows.open(this, FeedItemlistFragment.newInstance(book.feed.getId())));
             row.setOnLongClickListener(v -> {
-                offerDelete(v, book.feed, true);
+                offerActions(v, book.feed, true);
                 return true;
             });
             extra.addView(row);
@@ -232,11 +232,20 @@ public class BooksTendFragment extends Fragment {
         }
     }
 
-    private void offerDelete(View anchor, Feed feed, boolean book) {
+    /**
+     * A book's or folder's long press: Refresh first, as a show's long press has it (thread 18, Matt: everything that
+     * can be refreshed offers it the same way), then Delete book or Remove folder. Refresh is ShowActions' own.
+     */
+    private void offerActions(View anchor, Feed feed, boolean book) {
         PopupMenu menu = new PopupMenu(requireContext(), anchor);
-        menu.getMenu().add(book ? R.string.tend_delete_book : R.string.tend_remove_folder);
+        menu.getMenu().add(0, 1, 0, R.string.show_menu_refresh);
+        menu.getMenu().add(0, 2, 1, book ? R.string.tend_delete_book : R.string.tend_remove_folder);
         menu.setOnMenuItemClickListener(item -> {
-            confirmDelete(feed, book);
+            if (item.getItemId() == 1) {
+                ShowActions.refresh(requireContext(), feed);
+            } else {
+                confirmDelete(feed, book);
+            }
             return true;
         });
         menu.show();

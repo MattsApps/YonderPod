@@ -146,6 +146,9 @@ public class TuneFragment extends Fragment {
                 ? R.string.tune_next_keep : R.string.tune_next_choose), this::chooseWhenEpisodeEnds);
         row(sections, R.string.tune_half_played, getString(NextUpPreferences.includeHalfPlayed()
                 ? R.string.tune_half_included : R.string.tune_half_left_out), this::chooseHalfPlayed);
+        // No value on the right, so the label stays on one line at the largest font, as Playback and
+        // headphones does (coding thread 18).
+        row(sections, R.string.tune_speed_silences, "", () -> TendRows.open(this, new SpeedSettingsFragment()));
         row(sections, R.string.tune_playback, "", () -> openSettings(PreferenceActivity.OPEN_PLAYBACK_SCREEN));
 
         heading(sections, R.string.tune_worlds);

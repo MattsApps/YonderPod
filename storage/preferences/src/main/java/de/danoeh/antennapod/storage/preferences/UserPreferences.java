@@ -567,12 +567,12 @@ public abstract class UserPreferences {
         }
     }
 
-    /** Skip silence for shows left on "usual" (Tune → controls → advanced). Off by default. */
+    /** Skip silence for shows left on "usual" (Tune → controls → Speed and silences). Off by default. */
     public static boolean isSkipSilence() {
         return prefs.getBoolean(PREF_PLAYBACK_SKIP_SILENCE, false);
     }
 
-    /** Volume boost for shows left on "usual" (Tune → controls → advanced). OFF (no boost) by default. */
+    /** Volume boost for shows and stations left on "usual" (Tune → Playback and headphones). Off by default. */
     public static VolumeAdaptionSetting getVolumeBoostUsual() {
         try {
             VolumeAdaptionSetting setting = VolumeAdaptionSetting.fromInteger(

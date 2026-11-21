@@ -240,6 +240,14 @@
                 android:gravity="center"
                 android:orientation="horizontal">
 
+                <!-- An empty slot balancing chapters on the right, so sleep, speed and car sit centred under the
+                     play button, with speed straight below it, and nothing moves when chapters shows (thread 18). -->
+                <View
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_marginHorizontal="10dp"
+                    android:importantForAccessibility="no" />
+
                 <ImageButton
                     android:id="@+id/butSleep"
                     android:layout_width="48dp"
@@ -301,7 +309,7 @@
                     android:contentDescription="@string/chapters_label"
                     android:padding="12dp"
                     android:scaleType="fitCenter"
-                    android:visibility="gone"
+                    android:visibility="invisible"
                     app:srcCompat="@drawable/ic_chapter_next"
                     app:tint="?android:attr/textColorSecondary" />
 

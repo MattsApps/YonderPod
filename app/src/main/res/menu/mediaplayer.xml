@@ -43,6 +43,14 @@
         android:title="@string/set_sleeptimer_label">
     </item>
 
+    <!-- Volume boost, where the cast button was (coding thread 18). Cast is no longer on this player. -->
+    <item
+        android:id="@+id/volume_boost_item"
+        android:icon="@drawable/ic_volume_adaption"
+        custom:showAsAction="always"
+        android:title="@string/player_volume_boost">
+    </item>
+
     <item
         android:id="@+id/audio_controls"
         android:title="@string/audio_controls"
@@ -62,6 +70,14 @@
         android:icon="@drawable/ic_feed"
         custom:showAsAction="collapseActionView"
         android:title="@string/open_podcast"
+        android:visible="false">
+    </item>
+
+    <!-- Live radio only, so the ⋮ menu (and every icon beside it) keeps its place (coding thread 18). -->
+    <item
+        android:id="@+id/open_station_item"
+        custom:showAsAction="never"
+        android:title="@string/player_open_station"
         android:visible="false">
     </item>
 

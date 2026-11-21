@@ -20,7 +20,7 @@ import de.danoeh.antennapod.model.feed.SortOrder;
 import de.danoeh.antennapod.ui.common.ThemeUtils;
 import de.danoeh.antennapod.ui.statistics.R;
 import de.danoeh.antennapod.ui.statistics.databinding.FeedStatisticsBinding;
-import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.core.Maybe;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
@@ -73,7 +73,9 @@ public class FeedStatisticsFragment extends Fragment {
 
     private void loadStatistics() {
         disposable =
-                Observable.fromCallable(() -> {
+                // Maybe, not Observable: a show never played has no statistics, and Observable crashed Yonder on that
+                // null (thread 18, 21 Nov). Maybe treats it as nothing to show.
+                Maybe.fromCallable(() -> {
                     DBReader.StatisticsResult statisticsData = DBReader.getStatistics(true, 0, Long.MAX_VALUE);
                     Collections.sort(statisticsData.feedTime, (item1, item2) ->
                             Long.compare(item2.timePlayed, item1.timePlayed));

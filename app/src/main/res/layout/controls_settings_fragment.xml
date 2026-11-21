@@ -164,13 +164,6 @@
             android:text="@string/controls_keep_screen_on"
             android:textAppearance="@style/TextAppearance.WildInk.RowLabel" />
 
-        <com.google.android.material.materialswitch.MaterialSwitch
-            android:id="@+id/controls_show_speed"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/controls_show_speed"
-            android:textAppearance="@style/TextAppearance.WildInk.RowLabel" />
-
         <Button
             android:id="@+id/controls_advanced_toggle"
             style="?attr/borderlessButtonStyle"
@@ -216,40 +209,6 @@
                 android:id="@+id/controls_interruption_back"
                 android:layout_width="match_parent"
                 android:layout_height="48dp" />
-
-            <com.google.android.material.materialswitch.MaterialSwitch
-                android:id="@+id/controls_skip_silence"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:text="@string/controls_skip_silence"
-                android:textAppearance="@style/TextAppearance.WildInk.RowLabel" />
-
-            <LinearLayout
-                android:id="@+id/controls_volume_boost_group"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:text="@string/controls_volume_boost"
-                    android:textAppearance="@style/TextAppearance.WildInk.Detail" />
-
-                <Spinner
-                    android:id="@+id/controls_volume_boost"
-                    android:layout_width="match_parent"
-                    android:layout_height="48dp" />
-
-            </LinearLayout>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/controls_sound_summary"
-                android:textAppearance="@style/TextAppearance.WildInk.Detail" />
 
         </LinearLayout>
 

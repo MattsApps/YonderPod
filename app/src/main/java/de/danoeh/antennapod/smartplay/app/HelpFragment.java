@@ -163,6 +163,9 @@ public class HelpFragment extends Fragment {
             case HelpIndex.OPEN_CONTROLS:
                 openSheet(new ControlsSettingsFragment(), item.target);
                 break;
+            case HelpIndex.OPEN_SPEED:
+                openSheet(new SpeedSettingsFragment(), item.target);
+                break;
             case HelpIndex.OPEN_SLEEP:
                 openSheet(new SleepSettingsFragment(), item.target);
                 break;

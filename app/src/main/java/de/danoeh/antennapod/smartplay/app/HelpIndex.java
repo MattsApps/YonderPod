@@ -45,6 +45,8 @@ public final class HelpIndex {
     public static final int OPEN_FIND_BOOK = 11;
     public static final int OPEN_FIND_STATION = 12;
     public static final int OPEN_TOPIC = 13;
+    /** Tune › controls › Speed and silences (coding thread 18). */
+    public static final int OPEN_SPEED = 14;
 
     private static final Set<String> HIDDEN_ADVANCED = new HashSet<>(Arrays.asList("searchPreference",
             "prefDocumentation", "prefViewForum", "prefContribute", "prefSendBugReport"));
@@ -226,17 +228,21 @@ public final class HelpIndex {
                 R.string.tune_title, R.string.tune_controls, R.string.controls_player_title);
         setting(R.string.controls_keep_screen_on, R.string.help_words_screen_on, OPEN_CONTROLS,
                 R.string.tune_title, R.string.tune_controls, R.string.controls_player_title);
-        setting(R.string.controls_show_speed, R.string.help_words_speed_button, OPEN_CONTROLS,
-                R.string.tune_title, R.string.tune_controls, R.string.controls_player_title);
+        setting(R.string.controls_show_speed, R.string.help_words_speed_button, OPEN_SPEED,
+                R.string.tune_title, R.string.tune_controls, R.string.tune_speed_silences);
         setting(R.string.controls_rewind, R.string.help_words_rewind, OPEN_CONTROLS,
                 R.string.tune_title, R.string.tune_controls, R.string.controls_advanced);
         setting(R.string.controls_interruption_back, R.string.help_words_interruption_back, OPEN_CONTROLS,
                 R.string.tune_title, R.string.tune_controls, R.string.controls_advanced);
-        setting(R.string.controls_skip_silence, R.string.help_words_skip_silence, OPEN_CONTROLS,
-                R.string.tune_title, R.string.tune_controls, R.string.controls_advanced);
+        setting(R.string.speed_usual, R.string.help_words_speed, OPEN_SPEED,
+                R.string.tune_title, R.string.tune_controls, R.string.tune_speed_silences);
+        setting(R.string.controls_skip_silence, R.string.help_words_skip_silence, OPEN_SPEED,
+                R.string.tune_title, R.string.tune_controls, R.string.tune_speed_silences);
         if (VolumeAdaptionSetting.isBoostSupported()) {
-            setting(R.string.controls_volume_boost, R.string.help_words_volume_boost, OPEN_CONTROLS,
-                    R.string.tune_title, R.string.tune_controls, R.string.controls_advanced);
+            String name = context.getString(R.string.controls_volume_boost);
+            items.add(new Item(name, path(R.string.tune_title, R.string.tune_controls, R.string.tune_playback),
+                    context.getString(R.string.help_words_volume_boost), "", OPEN_ADVANCED,
+                    "prefVolumeBoostUsualLauncher", R.xml.preferences_playback, null, false));
         }
         setting(R.string.world_books, R.string.help_words_world_books, OPEN_TUNE,
                 R.string.tune_title, R.string.tune_worlds);
@@ -362,8 +368,6 @@ public final class HelpIndex {
                 return R.string.help_words_sort_order;
             case "prefMobileUpdateTypes":
                 return R.string.help_words_mobile_data;
-            case "prefPlaybackSpeedLauncher":
-                return R.string.help_words_speed;
             case "prefPlaybackFastForwardDeltaLauncher":
             case "prefPlaybackRewindDeltaLauncher":
                 return R.string.help_words_skip;
@@ -492,8 +496,8 @@ public final class HelpIndex {
                 R.string.controls_notifications_label);
         topic(playback, R.string.help_topic_car_mode, R.string.help_about_car_mode, OPEN_CONTROLS,
                 R.string.car_mode_auto);
-        topic(playback, R.string.help_topic_speed, R.string.help_about_speed, OPEN_ADVANCED,
-                "prefPlaybackSpeedLauncher", R.xml.preferences_playback);
+        wordedTopic(playback, R.string.help_topic_speed, R.string.help_about_speed, R.string.help_words_speed,
+                OPEN_SPEED, R.string.speed_usual);
         wordedTopic(playback, R.string.help_topic_skip_silence, R.string.help_about_skip_silence,
                 R.string.help_words_skip_silence, OPEN_TOPIC, 0);
         wordedTopic(playback, R.string.help_topic_volume_boost, R.string.help_about_volume_boost,
