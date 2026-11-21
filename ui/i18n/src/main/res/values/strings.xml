@@ -1411,6 +1411,7 @@
     <string name="live_pause_widget_paused">%1$d min behind · stops at 1 hour</string>
     <string name="live_pause_go_live_description">Back to live</string>
     <string name="live_pause_stop_description">Stop, and delete what was saved behind you</string>
+    <string name="world_other_stop_description">Stop what\'s playing</string>
     <string name="radio_search_hint">Station name, place or style</string>
     <string name="radio_adding">Adding %1$s…</string>
     <!-- Yonder radio recordings -->
