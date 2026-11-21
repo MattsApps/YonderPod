@@ -1,6 +1,6 @@
 # Yonder
 
-Yonder is a podcast, audiobook and radio app for Android, made by BetterBuiltApps.
+Yonder is a podcast, audiobook and radio app for Android, made by Targle’s Apps.
 
 - Website: https://mattsapps.github.io/yonder/
 - Privacy policy: https://mattsapps.github.io/yonder/privacy-policy.html
