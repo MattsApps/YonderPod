@@ -12,8 +12,8 @@ android {
         applicationId "com.mattsapps.yonderpod"
         // Version code schema (kept above AntennaPod's 3120395 so test builds install over it):
         // "0.9.0" -> 4000900, "0.9.1" -> 4000901, "1.0.0" -> 4010000
-        versionCode 4010004
-        versionName "1.0.3"
+        versionCode 4010005
+        versionName "1.0.4"
     }
 
     signingConfigs {
@@ -71,7 +71,6 @@ dependencies {
     implementation project(':net:download:service-interface')
     implementation project(':net:download:service')
     implementation project(':net:ssl')
-    playImplementation project(':net:sync:wear-interface')
     implementation project(':parser:feed')
     implementation project(':parser:transcript')
     implementation project(':playback:base')
@@ -103,10 +102,8 @@ dependencies {
     implementation libs.androidx.fragment
     implementation libs.androidx.gridlayout
     implementation libs.androidx.media
-    implementation libs.androidx.palette
     implementation libs.androidx.preference
     implementation libs.androidx.recyclerview
-    implementation libs.androidx.transition
     implementation libs.androidx.viewpager2
     implementation libs.androidx.work.runtime
     implementation libs.google.material
@@ -114,7 +111,6 @@ dependencies {
     implementation libs.androidx.media3.common
     implementation libs.androidx.media3.session
     implementation libs.androidx.media3.ui
-    playImplementation libs.google.play.services.wearable
     playImplementation libs.google.play.billing
 
     implementation libs.commons.lang3

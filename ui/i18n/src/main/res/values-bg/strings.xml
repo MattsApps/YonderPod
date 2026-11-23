@@ -137,9 +137,6 @@
     </plurals>
     <string name="new_episode_notification_group_text">Вашите абонаменти имат нови епизоди.</string>
     <!--Actions on feeds-->
-  <string name="remove_all_inbox_label">Премахни всички от входящата поща</string>
-    <string name="removed_all_inbox_msg">Премахна всички от входящата поща</string>
-    <string name="remove_all_inbox_confirmation_msg">Моля потвърди, че искаш да премахнеш всички от входящата поща.</string>
     <string name="multi_select_mark_played_confirmation">Моля потвърди, че искаш да маркираш всички избрани като слушани.</string>
     <string name="multi_select_mark_unplayed_confirmation">Моля потвърди, че искаш да маркираш всички избрани като неслушани.</string>
     <string name="show_info_label">Покажи информация</string>
@@ -167,7 +164,6 @@
     <string name="pause_label">Пауза</string>
     <string name="stream_label">Стрийм</string>
     <string name="delete_label">Изтрий</string>
-    <string name="remove_inbox_label">Премахни от входящата кутия</string>
     <string name="toggle_played_label">Превключи състоянито дали е слушано</string>
     <string name="mark_read_no_media_label">Маркирай като прочетено</string>
     <string name="mark_unread_label_no_media">Маркирай като непрочетено</string>
@@ -335,7 +331,6 @@
         <item quantity="one">%d изтеглен епизод изтрит.</item>
         <item quantity="other">%d изтеглени епизоди изтрити.</item>
     </plurals>
-    <string name="removed_from_inbox_message">Премахнато от входящи</string>
     <string name="mark_as_played_label">Маркиране като изслушано</string>
     <string name="play_this_to_seek_position_message">За да преминете към позиции, трябва да пуснете епизода</string>
     <plurals name="marked_as_played_message">
@@ -350,10 +345,6 @@
     <plurals name="removed_from_queue_message">
         <item quantity="one">%d епизод премахнат от опашката.</item>
         <item quantity="other">%d епизоди премахнати от опашката.</item>
-    </plurals>
-    <plurals name="removed_from_inbox_batch_label">
-        <item quantity="one">%d епизод премахнат от входящи.</item>
-        <item quantity="other">%d епизоди премахнати от входящи.</item>
     </plurals>
     <plurals name="added_to_favorites_message">
         <item quantity="one">%d епизод добавен към любими.</item>

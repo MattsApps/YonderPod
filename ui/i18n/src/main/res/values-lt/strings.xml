@@ -418,7 +418,6 @@
     <string name="preview_episodes">Epizodo peržiūra</string>
     <string name="state_deleted_not_subscribed">Dar nesate užsiprenumeravę šio podkasto. Užsiprenumeruokite nemokamai, kad galėtumėte lengviau jį pasiekti ir išsaugoti jo atkūrimo istoriją.</string>
     <string name="is_played">grojo</string>
-    <string name="is_inbox_label">Gautuosiuose</string>
     <string name="remaining_time">Likęs laikas: %1$s</string>
     <string name="add_term">Pridėti terminą</string>
     <string name="shuffle_suggestions">Sumaišyti pasiūlymus</string>
@@ -500,13 +499,10 @@
     <string name="feed_new_episodes_action_add_to_queue">Įtraukti į eilę</string>
     <string name="feed_new_episodes_action_nothing">Nieko</string>
     <string name="episode_notification">Epizodų pranešimai</string>
-    <string name="remove_all_inbox_confirmation_msg">Patvirtinkite, kad norite pašalinti visas iš gaunamųjų laiškų dėžutės.</string>
-    <string name="remove_all_inbox_label">Pašalinti viską iš gautųjų</string>
     <string name="multi_select_started_talkback">Daugkartinio pasirinkimo veiksmai rodomi apačioje</string>
     <string name="refresh_failed_msg">Paskutinis atnaujinimas nepavyko. Bakstelėkite , kad peržiūrėtumėte išsamią informaciją.</string>
     <string name="add_tag">Pridėti žymę</string>
     <string name="toggle_played_label">Keisti atkūrimo būseną</string>
-    <string name="remove_inbox_label">Pašalinti iš gaunamųjų laiškų dėžutės</string>
     <string name="show_transcript">Rodyti transkripciją</string>
     <string name="remove_from_queue_label">Pašalinti iš eilės</string>
     <string name="transcript">Transkripcija</string>
@@ -531,7 +527,6 @@
     <string name="clear_queue_label">Išvalyti eilę</string>
     <string name="size">Dydis</string>
     <string name="no_history_head_label">Nėra istorijos</string>
-    <string name="no_inbox_head_label">Nėra epizodų gautuosiuose</string>
     <string name="no_inbox_label">Kai naujos epizodos atvyks, jos bus rodomos čia. Tada galėsite nuspręsti, ar jos jus domina, ar ne.</string>
     <string name="no_all_episodes_filtered_label">Pabandykite išvalyti filtrą, kad pamatytumėte daugiau epizodų.</string>
     <string name="theming">Tema</string>
@@ -657,7 +652,6 @@
     <string name="pref_auto_local_delete_sum">Taip pat ištrina per funkciją „pridėti vietinį aplanką“ įtrauktus failus. Atkreipiame dėmesį, kad jie nėra atsiųsti AntennaPod ir negali būti atsisiųsti iš naujo</string>
     <string name="multi_select_mark_unplayed_confirmation">Patvirtinkite, kad norite pažymėti visus pasirinktus elementus kaip neatkurtus.</string>
     <string name="multi_select_mark_played_confirmation">Patvirtinkite, kad norite pažymėti visus pasirinktus elementus kaip atkurtus.</string>
-    <string name="removed_all_inbox_msg">Pašalinta visa iš gautųjų</string>
     <string name="playback_error_generic">Medijos failo nepavyko atkurti.\n\n- Pabandykite ištrinti ir iš naujo atsisiųsti epizodą.\n- Patikrinkite tinklo ryšį ir įsitikinkite, kad prieigos neužkerta joks VPN ar prisijungimo puslapis.\n- Pabandykite ilgai paspausti ir bendrinti „Medijos adresą“ su interneto naršykle, kad pamatytumėte, ar jį galima atkurti ten. Jei ne, susisiekite su podkasto kūrėjais.</string>
     <string name="add_feed_label_short">Pridėti</string>
     <string name="episodes_label_short">Epizodai</string>
@@ -703,7 +697,6 @@
         <item quantity="few">Ištrinti %d atsisiųsti epizodai.</item>
         <item quantity="other">Ištrinta %d atsisiųstų epizodų.</item>
     </plurals>
-    <string name="removed_from_inbox_message">Pašalinta iš gautųjų</string>
     <string name="mark_as_played_label">Pažymėti kaip perklausytą</string>
     <plurals name="marked_as_played_message">
         <item quantity="one">%d epizodas pažymėtas kaip perklausytas.</item>
@@ -728,11 +721,6 @@
         <item quantity="one">%d epizodas pašalintas iš eilės.</item>
         <item quantity="few">%d epizodai pašalinti iš eilės.</item>
         <item quantity="other">%d epizodų pašalinta iš eilės.</item>
-    </plurals>
-    <plurals name="removed_from_inbox_batch_label">
-        <item quantity="one">%d epizodas pašalintas iš gautųjų.</item>
-        <item quantity="few">%d epizodai pašalinti iš gautųjų.</item>
-        <item quantity="other">%d epizodų pašalinta iš gautųjų.</item>
     </plurals>
     <string name="transcript_follow_audio_label">Sekti garso įrašą</string>
     <string name="visit_social_interact_label">Rodyti komentarus</string>
@@ -762,8 +750,6 @@
         <item quantity="few">%d epizodai perkelti žemyn.</item>
         <item quantity="other">%d epizodų perkelta žemyn.</item>
     </plurals>
-    <string name="no_queue_items_inbox_has_items_label">Eilėje nėra epizodų, bet yra naujų, kurie laukia jūsų!</string>
-    <string name="no_queue_items_inbox_has_items_button_label">Eiti į gautuosius</string>
     <string name="preference_search_clear_input">Išvalyti</string>
     <string name="overflow_more">Daugiau</string>
     <string name="pref_skip_keeps_episodes_title">Saugoti praleistus epizodus</string>
@@ -930,12 +916,4 @@
     </plurals>
     <string name="show_password_accessibility">Rodyti slaptažodį</string>
     <string name="rss_address_invalid">Jūsų įvestas RSS adresas negalioja.</string>
-    <string name="wearos_connected_to" tools:ignore="UnusedResources">Prisijungta prie %s</string>
-    <string name="wearos_version" tools:ignore="UnusedResources">Versija %s</string>
-    <string name="wearos_phone_not_supported" tools:ignore="UnusedResources">Telefonas nesuderinamas. Įsitikinkite, kad telefone turite naujausią AntennaPod versiją iš „Google Play“ parduotuvės.</string>
-    <string name="wearos_no_items" tools:ignore="UnusedResources">Nėra elementų</string>
-    <string name="wearos_phone_not_reachable" tools:ignore="UnusedResources">Nepavyko pasiekti telefono. Įsitikinkite, kad telefonas netoliese ir AntennaPod yra įdiegta.</string>
-    <string name="wearos_play_on_phone" tools:ignore="UnusedResources">Groti telefone</string>
-    <string name="wearos_browse_phone" tools:ignore="UnusedResources">Naršyti telefone</string>
-    <string name="wearos_open_on_phone" tools:ignore="UnusedResources">Atverti telefone</string>
 </resources>

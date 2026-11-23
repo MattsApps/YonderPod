@@ -135,9 +135,6 @@
     </plurals>
     <string name="new_episode_notification_group_text">구독에 새 에피소드가 있습니다.</string>
     <!--Actions on feeds-->
-  <string name="remove_all_inbox_label">새로 받음 목록에서 모두 제거</string>
-    <string name="removed_all_inbox_msg">새로 받음 목록에서 모두 제거함</string>
-    <string name="remove_all_inbox_confirmation_msg">정말로 새로 받음 목록에서 모두 제거할지 확인하십시오.</string>
     <string name="multi_select_mark_played_confirmation">정말로 선택한 항목을 재생함으로 표시할지 확인하십시오.</string>
     <string name="multi_select_mark_unplayed_confirmation">정말로 선택한 항목을 재생하지 않음으로 표시할지 확인하십시오.</string>
     <string name="show_info_label">정보 표시</string>
@@ -169,15 +166,11 @@
     <string name="pause_label">일시 중지</string>
     <string name="stream_label">스트리밍</string>
     <string name="delete_label">삭제</string>
-    <string name="remove_inbox_label">새로 받음 목록에서 제거</string>
     <string name="toggle_played_label">재생함 상태 토글</string>
     <string name="mark_read_no_media_label">읽었다고 표시</string>
     <string name="mark_unread_label_no_media">읽지 않음으로 표시</string>
     <string name="add_to_queue_label">대기열에 추가</string>
     <string name="remove_from_queue_label">대기열에서 제거</string>
-    <plurals name="removed_from_inbox_batch_label">
-        <item quantity="other">%d개 에피소드를 새로 받음 목록에서 제거했습니다.</item>
-    </plurals>
     <string name="add_to_favorite_label">즐겨찾기에 추가</string>
     <string name="remove_from_favorite_label">즐겨찾기에서 제거</string>
     <string name="visit_website_label">웹사이트 방문</string>
@@ -272,7 +265,6 @@
     <string name="no_all_episodes_head_label">에피소드 없음</string>
     <string name="no_all_episodes_label">팟캐스트를 추가하면, 그 팟캐스트의 에피소드가 여기 나타납니다.</string>
     <string name="no_all_episodes_filtered_label">더 많은 에피소드를 보려면 필터를 지워보십시오.</string>
-    <string name="no_inbox_head_label">새로 받음 목록에 에피소드 없음</string>
     <string name="no_inbox_label">새 에피소드가 도착하면 여기에 표시됩니다. 그 다음에 그 에피소드에 관심이 있는지 없는지 결정할 수 있습니다.</string>
     <string name="no_subscriptions_head_label">구독 없음</string>
     <string name="no_subscriptions_label">팟캐스트에 구독하려면, 아래 더하기 아이콘을 누르십시오.</string>
@@ -500,7 +492,6 @@
     <string name="status_downloading_label">에피소드를 다운로드하는 중입니다</string>
     <string name="in_queue_label">대기열에서</string>
     <string name="is_favorite_label">즐겨찾기로 표시</string>
-    <string name="is_inbox_label">새로 받음에서</string>
     <string name="is_played">재생함</string>
     <string name="load_next_page_label">다음 페이지 읽기</string>
     <string name="position">위치: %1$s</string>
@@ -720,7 +711,6 @@
     <string name="restore_archive_label">복원</string>
     <string name="delete_tag_label">태그 삭제</string>
     <string name="delete_tag_confirmation">정말로 \"%1$s\" 태그를 삭제할지 확인하십시오.</string>
-    <string name="removed_from_inbox_message">새로 받음 목록에서 제거했습니다</string>
     <string name="mark_as_played_label">재생함으로 표시</string>
     <plurals name="marked_as_played_message">
         <item quantity="other">%d개 에피소드를 재생함으로 표시했습니다.</item>
@@ -751,14 +741,11 @@
     <plurals name="move_to_bottom_message">
         <item quantity="other">%d개 에피소드를 맨 아래로 옮겼습니다.</item>
     </plurals>
-    <string name="no_queue_items_inbox_has_items_label">재생할 에피소드가 없지만, 새로 받은 에피소드가 기다리고 있습니다!</string>
-    <string name="no_queue_items_inbox_has_items_button_label">새로 받음으로 이동</string>
     <string name="no_archive_head_label">보관한 항목 없음</string>
     <string name="no_archive_label">구독 화면에서 팟캐스트를 보관할 수 있습니다.</string>
     <string name="state_deleted_not_subscribed">아직 이 팟캐스트를 구독하지 않았습니다. 무료로 구독하면 더 쉽게 이용하고 재생 기록도 유지할 수 있습니다.</string>
     <string name="tag_all">전체</string>
     <string name="tag_untagged">태그 없음</string>
-    <string name="wearos_no_items" tools:ignore="UnusedResources">항목 없음</string>
     <string name="show_transcript">스크립트 보기</string>
     <string name="transcript">스크립트</string>
     <string name="transcript_follow_audio_label">오디오 따라가기</string>
@@ -832,13 +819,6 @@
     <string name="report_bug_crash_log_message">생성: %1$s.</string>
     <string name="report_bug_forum_title">포럼</string>
     <string name="report_bug_github_title">GitHub</string>
-    <string name="wearos_connected_to" tools:ignore="UnusedResources">%s에 연결됨</string>
-    <string name="wearos_version" tools:ignore="UnusedResources">버전 %s</string>
-    <string name="wearos_phone_not_supported" tools:ignore="UnusedResources">휴대전화가 호환되지 않습니다. 휴대전화에서 Google Play의 최신 버전 안테나팟을 사용 중인지 확인하십시오.</string>
-    <string name="wearos_phone_not_reachable" tools:ignore="UnusedResources">휴대전화에 연결할 수 없습니다. 휴대전화가 가까이 있고 안테나팟이 설치되어 있는지 확인하십시오.</string>
-    <string name="wearos_play_on_phone" tools:ignore="UnusedResources">휴대전화에서 재생</string>
-    <string name="wearos_browse_phone" tools:ignore="UnusedResources">휴대전화 둘러보기</string>
-    <string name="wearos_open_on_phone" tools:ignore="UnusedResources">휴대전화에서 열기</string>
     <string name="echo_home_header">한 해 돌아보기</string>
     <string name="echo_home_subtitle">지난 한 해 동안 가장 많이 들은 팟캐스트와 통계입니다. 휴대전화 안에서만 처리됩니다.</string>
     <string name="echo_intro_your_year">여러분의</string>

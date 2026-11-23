@@ -143,9 +143,6 @@
     </plurals>
     <string name="new_episode_notification_group_text">Vaš kanal ima novo epizodo.</string>
     <!--Actions on feeds-->
-  <string name="remove_all_inbox_label">Odstrani vse iz nabiralnika</string>
-    <string name="removed_all_inbox_msg">Nabiralnik počiščen</string>
-    <string name="remove_all_inbox_confirmation_msg">Prosim potrdite, da želite odstraniti vse iz nabiralnika.</string>
     <string name="multi_select_mark_played_confirmation">Prosim potrdite, da želite označiti vse izbrane elemente kot predvajane.</string>
     <string name="multi_select_mark_unplayed_confirmation">Prosim potrdite, da želite označiti vse izbrane elemente kot nepredvajane.</string>
     <string name="show_info_label">Prikaži informacije</string>
@@ -179,18 +176,11 @@
     <string name="pause_label">Pavza</string>
     <string name="stream_label">Pretočno predvajanje</string>
     <string name="delete_label">Briši</string>
-    <string name="remove_inbox_label">Odstrani iz nabiralnika</string>
     <string name="toggle_played_label">Preklopi stanje predvajanja</string>
     <string name="mark_read_no_media_label">Označi kot prebrano</string>
     <string name="mark_unread_label_no_media">Označi kot neprebrano</string>
     <string name="add_to_queue_label">Dodaj v čakalno vrsto</string>
     <string name="remove_from_queue_label">Odstrani iz čakalne vrste</string>
-    <plurals name="removed_from_inbox_batch_label">
-        <item quantity="one">%d epizoda odstranjena iz nabiralnika.</item>
-        <item quantity="two">%d epizodi odstranjeni iz nabiralnika.</item>
-        <item quantity="few">%d epizode odstranjene iz nabiralnika.</item>
-        <item quantity="other">%d epizode odstranjene iz nabiralnika.</item>
-    </plurals>
     <string name="add_to_favorite_label">Dodaj med priljubljene</string>
     <string name="remove_from_favorite_label">Odstrani iz priljubljenih</string>
     <string name="visit_website_label">Ogled spletne strani</string>
@@ -285,7 +275,6 @@
     <string name="no_all_episodes_head_label">Ni epizod</string>
     <string name="no_all_episodes_label">Ko dodate poddajo, bodo epizode prikazane tukaj.</string>
     <string name="no_all_episodes_filtered_label">Odstranite filtre, da vidite več epizod.</string>
-    <string name="no_inbox_head_label">V nabiralniku ni epizod</string>
     <string name="no_inbox_label">Ko prispejo nove epizode, bodo prikazane tukaj. Takrat se lahko odločite, če so vam zanimive.</string>
     <string name="no_subscriptions_head_label">Ni naročnin</string>
     <string name="no_subscriptions_label">Če se želite naročiti na poddajo, pritisnite spodnjo plus ikono.</string>
@@ -499,7 +488,6 @@
     <string name="status_downloading_label">Epizoda se prenaša</string>
     <string name="in_queue_label">V čakalni vrsti</string>
     <string name="is_favorite_label">Označeno kot priljubljeno</string>
-    <string name="is_inbox_label">V nabiralniku</string>
     <string name="is_played">Predvajano</string>
     <string name="load_next_page_label">Naloži naslednjo stran</string>
     <string name="position">Pozicija: %1$s</string>
@@ -741,7 +729,6 @@
         <item quantity="few">%d prenešene epizode izbrisane.</item>
         <item quantity="other">%d prenešenih epizod izbrisanih.</item>
     </plurals>
-    <string name="removed_from_inbox_message">Odstranjeno iz prejetih</string>
     <string name="mark_as_played_label">Označi kot predvajano</string>
     <string name="mark_as_unplayed_label">Označi kot nepredvajano</string>
     <string name="transcript_follow_audio_label">Sledi zvoku</string>
@@ -815,8 +802,6 @@
     <string name="episode">Epizoda</string>
     <string name="feed">Podcast</string>
     <string name="queue_time_left_label">%1$s • %2$s preostane</string>
-    <string name="no_queue_items_inbox_has_items_label">Ni epizod v čakalni vrsti, vendar so nove epizode, ki čakajo nate!</string>
-    <string name="no_queue_items_inbox_has_items_button_label">Pojdi v nabiralnik</string>
     <string name="no_fav_episodes_head_label">Ni priljubljenih</string>
     <string name="no_fav_episodes_label">Označi epizode kot priljubljen, tako da se dotakneš ikone zvezdice.</string>
     <string name="no_archive_head_label">Nič ni arhivirano</string>

@@ -1111,22 +1111,6 @@ public class PodDBAdapter {
         return db.rawQuery(query, null);
     }
 
-    public void setFeedItems(int oldState, int newState) {
-        setFeedItems(oldState, newState, 0);
-    }
-
-    public void setFeedItems(int oldState, int newState, long feedId) {
-        String sql = "UPDATE " + TABLE_NAME_FEED_ITEMS + " SET " + KEY_READ + "=" + newState;
-        if (feedId > 0) {
-            sql += " WHERE " + KEY_FEED + "=" + feedId;
-        }
-        if (FeedItem.NEW <= oldState && oldState <= FeedItem.PLAYED) {
-            sql += feedId > 0 ? " AND " : " WHERE ";
-            sql += KEY_READ + "=" + oldState;
-        }
-        db.execSQL(sql);
-    }
-
     public final Cursor getEpisodesCursor(int offset, int limit, FeedItemFilter filter, SortOrder sortOrder) {
         String orderByQuery = FeedItemSortQuery.generateFrom(sortOrder);
         String filterQuery = FeedItemFilterQuery.generateFrom(filter);

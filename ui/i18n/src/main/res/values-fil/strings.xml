@@ -161,9 +161,6 @@
         <item quantity="other">Mga bagong kabanata</item>
     </plurals>
     <string name="new_episode_notification_group_text">May mga bagong kabanata ang iyong mga subscription.</string>
-    <string name="remove_all_inbox_label">Alisin lahat sa inbox</string>
-    <string name="removed_all_inbox_msg">Inalis lahat sa inbox</string>
-    <string name="remove_all_inbox_confirmation_msg">Pakikumpirma na gusto mong alisin ang lahat sa inbox.</string>
     <string name="multi_select_mark_played_confirmation">Pakikumpirma na gusto mong markahan ang lahat ng napiling aytem bilang pinatugtog.</string>
     <string name="multi_select_mark_unplayed_confirmation">Pakikumpirma na gusto mong markahan ang lahat ng napiling aytem bilang hindi pa pinatugtog.</string>
     <string name="show_info_label">Ipakita ang impormasyon</string>
@@ -210,7 +207,5 @@
         <item quantity="one">%d na na-download na kabanata ang tinanggal.</item>
         <item quantity="other">%d na na-download na mga kabanata ang tinanggal.</item>
     </plurals>
-    <string name="remove_inbox_label">Alisin sa inbox</string>
-    <string name="removed_from_inbox_message">Inalis sa inbox</string>
     <string name="mark_as_played_label">Markahan bilang pinatugtog</string>
 </resources>

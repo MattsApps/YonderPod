@@ -146,9 +146,6 @@
     </plurals>
     <string name="new_episode_notification_group_text">Twoje subskrypcje mają nowe odcinki.</string>
     <!--Actions on feeds-->
-  <string name="remove_all_inbox_label">Usuń wszystkie ze skrzynki odbiorczej</string>
-    <string name="removed_all_inbox_msg">Usunięto wszystkie ze skrzynki odbiorczej</string>
-    <string name="remove_all_inbox_confirmation_msg">Potwierdź, że chcesz usunąć wszystkie ze skrzynki odbiorczej.</string>
     <string name="multi_select_mark_played_confirmation">Potwierdź, że chcesz oznaczyć wszystkie zaznaczone elementy jako odtworzone.</string>
     <string name="multi_select_mark_unplayed_confirmation">Potwierdź, że chcesz oznaczyć wszystkie zaznaczone elementy jako nieodtworzone.</string>
     <string name="show_info_label">Pokaż informacje</string>
@@ -183,18 +180,11 @@
     <string name="pause_label">Pauza</string>
     <string name="stream_label">Streamuj</string>
     <string name="delete_label">Usuń</string>
-    <string name="remove_inbox_label">Usuń ze skrzynki odbiorczej</string>
     <string name="toggle_played_label">Pokaż status odtworzenia</string>
     <string name="mark_read_no_media_label">Oznacz jako przeczytane</string>
     <string name="mark_unread_label_no_media">Oznacz jako nieprzeczytane</string>
     <string name="add_to_queue_label">Dodaj do kolejki</string>
     <string name="remove_from_queue_label">Usuń z kolejki</string>
-    <plurals name="removed_from_inbox_batch_label">
-        <item quantity="one">%d odcinek usunięty ze skrzynki odbiorczej.</item>
-        <item quantity="few">%d odcinki usunięte ze skrzynki odbiorczej.</item>
-        <item quantity="many">%d odcinków usuniętych ze skrzynki odbiorczej.</item>
-        <item quantity="other">%d odcinków usuniętych ze skrzynki odbiorczej.</item>
-    </plurals>
     <string name="add_to_favorite_label">Dodaj do ulubionych</string>
     <string name="show_transcript">Pokaż transkrypt</string>
     <string name="transcript">Transkrypt</string>
@@ -295,7 +285,6 @@
     <string name="no_all_episodes_head_label">Brak odcinków</string>
     <string name="no_all_episodes_label">Tutaj pojawi się lista odcinków, gdy dodasz podcast.</string>
     <string name="no_all_episodes_filtered_label">Spróbuj wyczyścić filtr, aby zobaczyć więcej odcinków.</string>
-    <string name="no_inbox_head_label">Brak odcinków w skrzynce odbiorczej</string>
     <string name="no_inbox_label">Gdy pojawią się nowe odcinki, zobaczysz je tutaj. Możesz wtedy zdecydować, czy są dla Ciebie interesujące czy nie.</string>
     <string name="no_subscriptions_head_label">Brak subskrypcji</string>
     <string name="no_subscriptions_label">Aby subskrybować podcast naciśnij znak plus poniżej.</string>
@@ -530,7 +519,6 @@
     <string name="status_downloading_label">Odcinek jest pobierany</string>
     <string name="in_queue_label">W kolejce</string>
     <string name="is_favorite_label">Oznaczono jako ulubiony</string>
-    <string name="is_inbox_label">W skrzynce odbiorczej</string>
     <string name="is_played">Odtworzne</string>
     <string name="load_next_page_label">Załaduj następną stronę</string>
     <string name="position">Pozycja: %1$s</string>
@@ -810,7 +798,6 @@
         <item quantity="many">Usunięto %d pobranych odcinków.</item>
         <item quantity="other">Usunięto %d pobranych odcinków.</item>
     </plurals>
-    <string name="removed_from_inbox_message">Usunięto ze skrzynki odbiorczej</string>
     <string name="mark_as_played_label">Oznacz jako odtworzone</string>
     <string name="play_this_to_seek_position_message">Aby przewinąć do konkretnej pozycji, musisz odtworzyć odcinek</string>
     <string name="mark_as_unplayed_label">Oznacz jako nieodtworzone</string>
@@ -831,7 +818,6 @@
     <string name="visit_social_interact_confirm_dialog_message">Upewnij się, że strona \"%1$s\" jest bezpieczna.</string>
     <string name="reset_playback_position_label">Zresetuj pozycję odtwarzania</string>
     <string name="no_items_selected_message">Nie zaznaczono żadnego elementu</string>
-    <string name="no_queue_items_inbox_has_items_button_label">Idź do skrzynki odbiorczej</string>
     <plurals name="move_to_top_message">
         <item quantity="one">%d odcinek przeniesiony na górę.</item>
         <item quantity="few">%d odcinki przeniesione na górę.</item>
@@ -844,7 +830,6 @@
         <item quantity="many">%d odcinków przeniesionych na dół.</item>
         <item quantity="other">%d odcinków przeniesionych na dół.</item>
     </plurals>
-    <string name="no_queue_items_inbox_has_items_label">Brak odcinków w kolejce, ale czekają na Ciebie nowe!</string>
     <string name="no_archive_label">Podcasty można archiwizować z poziomu głównego ekranu subskrypcji.</string>
     <string name="no_archive_head_label">Niczego nie zarchiwizowano</string>
     <string name="archive_feed_label_noun">Archiwum</string>
@@ -952,5 +937,4 @@
     <string name="import_error_label">Błąd importu</string>
     <string name="show_password_accessibility">Pokaż hasło</string>
     <string name="rss_address_invalid">Wprowadzony adres RSS jest nieprawidłowy.</string>
-    <string name="wearos_version" tools:ignore="UnusedResources">Wersja %s</string>
 </resources>

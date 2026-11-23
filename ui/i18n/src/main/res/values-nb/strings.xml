@@ -138,9 +138,6 @@
     </plurals>
     <string name="new_episode_notification_group_text">Det er nye episoder i abonnementene dine.</string>
     <!--Actions on feeds-->
-  <string name="remove_all_inbox_label">Fjern alt fra innboksen</string>
-    <string name="removed_all_inbox_msg">Alt fjernet fra innboksen</string>
-    <string name="remove_all_inbox_confirmation_msg">Bekreft at du ønsker å fjerne alt fra innboksen.</string>
     <string name="multi_select_mark_played_confirmation">Bekreft at du ønsker å markere alle episoder som avspilt.</string>
     <string name="multi_select_mark_unplayed_confirmation">Bekreft at du ønsker å markere alle episoder som uavspilt.</string>
     <string name="show_info_label">Vis informasjon</string>
@@ -173,16 +170,11 @@
     <string name="pause_label">Sett på pause</string>
     <string name="stream_label">Strøm</string>
     <string name="delete_label">Slett</string>
-    <string name="remove_inbox_label">Fjern fra innboksen</string>
     <string name="toggle_played_label">Bytt avspillingsstatus</string>
     <string name="mark_read_no_media_label">Merk som lest</string>
     <string name="mark_unread_label_no_media">Merk som ulest</string>
     <string name="add_to_queue_label">Legg til i kø</string>
     <string name="remove_from_queue_label">Fjern fra køen</string>
-    <plurals name="removed_from_inbox_batch_label">
-        <item quantity="one">Én episode er fjernet fra innboksen.</item>
-        <item quantity="other">%d episoder er fjernet fra innboksen.</item>
-    </plurals>
     <string name="add_to_favorite_label">Legg til i favoritter</string>
     <string name="remove_from_favorite_label">Fjern fra favoritter</string>
     <string name="visit_website_label">Besøk nettside</string>
@@ -278,7 +270,6 @@
     <string name="no_all_episodes_head_label">Ingen episoder</string>
     <string name="no_all_episodes_label">Når du legger til en podkast, vises episodene her.</string>
     <string name="no_all_episodes_filtered_label">Prøv å nullstille filteret for å få se flere episoder.</string>
-    <string name="no_inbox_head_label">Ingen episoder i innboksen</string>
     <string name="no_inbox_label">Når nye episoder slippes, dukker de opp her. Du kan da velge om du er interessert i de eller ikke.</string>
     <string name="no_subscriptions_head_label">Ingen abonnementer</string>
     <string name="no_subscriptions_label">Trykk på pluss-ikonet nedenfor for å abonnere på en podkast.</string>
@@ -506,7 +497,6 @@
     <string name="status_downloading_label">Episoden lastes ned nå</string>
     <string name="in_queue_label">I køen</string>
     <string name="is_favorite_label">Merket som favoritt</string>
-    <string name="is_inbox_label">I innboksen</string>
     <string name="is_played">Avspilt</string>
     <string name="load_next_page_label">Last inn neste side</string>
     <string name="position">Posisjon: %1$s</string>
@@ -792,7 +782,6 @@
         <item quantity="one">Én nedlastet episode er slettet.</item>
         <item quantity="other">%d nedlastede episoder er slettet.</item>
     </plurals>
-    <string name="removed_from_inbox_message">Fjernet fra innboksen</string>
     <string name="mark_as_played_label">Merk som avspilt</string>
     <plurals name="marked_as_played_message">
         <item quantity="one">Én episode merket som avspilt.</item>
@@ -812,8 +801,6 @@
         <item quantity="one">Én episode flyttet til bunnen.</item>
         <item quantity="other">%d episoder flyttet til bunnen.</item>
     </plurals>
-    <string name="no_queue_items_inbox_has_items_label">Her var det tomt! Fortvil ikke, nye episoder venter på deg!</string>
-    <string name="no_queue_items_inbox_has_items_button_label">Gå til innboksen</string>
     <plurals name="added_to_queue_message">
         <item quantity="one">Én episode lagt til i køen.</item>
         <item quantity="other">%d episoder lagt til i køen.</item>

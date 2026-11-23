@@ -146,9 +146,6 @@
     </plurals>
     <string name="new_episode_notification_group_text">Dine abonnementer har nye afsnit.</string>
     <!--Actions on feeds-->
-  <string name="remove_all_inbox_label">Fjern alle fra indbakken</string>
-    <string name="removed_all_inbox_msg">Fjernede alle fra indbakken</string>
-    <string name="remove_all_inbox_confirmation_msg">Bekræft, at du ønsker at fjerne alle fra indbakken.</string>
     <string name="multi_select_mark_played_confirmation">Bekræft, at du ønsker at markere alle valgte emner som afspillet.</string>
     <string name="multi_select_mark_unplayed_confirmation">Bekræft, at du ønsker at markere alle valgte emner som uafspillet.</string>
     <string name="show_info_label">Vis information</string>
@@ -182,16 +179,11 @@
     <string name="pause_label">Sæt på pause</string>
     <string name="stream_label">Stream</string>
     <string name="delete_label">Slet</string>
-    <string name="remove_inbox_label">Fjern fra indbakken</string>
     <string name="toggle_played_label">Skift afspilningstilstand</string>
     <string name="mark_read_no_media_label">Marker som læst</string>
     <string name="mark_unread_label_no_media">Marker som ulæst</string>
     <string name="add_to_queue_label">Føj til kø</string>
     <string name="remove_from_queue_label">Fjern fra kø</string>
-    <plurals name="removed_from_inbox_batch_label">
-        <item quantity="one">%d afsnit fjernet fra indbakken.</item>
-        <item quantity="other">%d afsnit fjernet fra indbakken.</item>
-    </plurals>
     <string name="add_to_favorite_label">Føj til favoritter</string>
     <string name="show_transcript">Vis transskription</string>
     <string name="transcript">Transskription</string>
@@ -291,7 +283,6 @@
     <string name="no_all_episodes_head_label">Ingen afsnit</string>
     <string name="no_all_episodes_label">Når du tilføjer en podcast, vil afsnittene blive vist her.</string>
     <string name="no_all_episodes_filtered_label">Prøv at rydde filteret for at se flere afsnit.</string>
-    <string name="no_inbox_head_label">Ingen afsnit i indbakken</string>
     <string name="no_inbox_label">Når der kommer nye afsnit, vil de blive vist her. Du kan så beslutte, om du er interesseret i dem eller ej.</string>
     <string name="no_subscriptions_head_label">Ingen abonnementer</string>
     <string name="no_subscriptions_label">Tryk på plus-ikonet nedenfor for at abonnere på en podcast.</string>
@@ -553,7 +544,6 @@
     <string name="status_downloading_label">Afsnit overføres</string>
     <string name="in_queue_label">I køen</string>
     <string name="is_favorite_label">Markeret som favorit</string>
-    <string name="is_inbox_label">I indbakken</string>
     <string name="is_played">Afspillet</string>
     <string name="load_next_page_label">Indlæs næste side</string>
     <string name="position">Position: %1$s</string>
@@ -776,7 +766,6 @@
         <item quantity="one">%d overført afsnit slettet.</item>
         <item quantity="other">%d overførte afsnit slettet.</item>
     </plurals>
-    <string name="removed_from_inbox_message">Fjernet fra indbakke</string>
     <string name="mark_as_played_label">Markér som afspillet</string>
     <plurals name="marked_as_played_message">
         <item quantity="one">%d afsnit markeret som afspillet.</item>
@@ -810,8 +799,6 @@
         <item quantity="one">%d afsnit flyttet til bund.</item>
         <item quantity="other">%d afsnit flyttet til bund.</item>
     </plurals>
-    <string name="no_queue_items_inbox_has_items_label">Der er ingen afsnit i kø, men der er nye afsnit, der venter på dig!</string>
-    <string name="no_queue_items_inbox_has_items_button_label">Gå til indbakke</string>
     <string name="please_wait_before_refreshing">Vent et øjeblik, før du opdaterer podcasts igen.</string>
     <string name="already_downloaded">Afsnittet er allerede overført</string>
     <string name="tag_all">Alle</string>
@@ -896,13 +883,5 @@
     <string name="import_error_label">Importfejl</string>
     <string name="show_password_accessibility">Vis adgangskode</string>
     <string name="rss_address_invalid">Den RSS-adresse, du har indtastet, er ikke gyldig.</string>
-    <string name="wearos_connected_to" tools:ignore="UnusedResources">Forbundet til %s</string>
-    <string name="wearos_version" tools:ignore="UnusedResources">Version %s</string>
-    <string name="wearos_phone_not_supported" tools:ignore="UnusedResources">Telefonen er ikke kompatibel. Sørg for, at du har den nyeste version af AntennaPod fra Google Play installeret på din telefon.</string>
-    <string name="wearos_no_items" tools:ignore="UnusedResources">Ingen elementer</string>
-    <string name="wearos_phone_not_reachable" tools:ignore="UnusedResources">Det var ikke muligt at oprette forbindelse til telefonen. Sørg for, at din telefon er i nærheden, og at AntennaPod er installeret.</string>
-    <string name="wearos_play_on_phone" tools:ignore="UnusedResources">Afspil på telefon</string>
-    <string name="wearos_browse_phone" tools:ignore="UnusedResources">Gennemse telefon</string>
-    <string name="wearos_open_on_phone" tools:ignore="UnusedResources">Åbn på telefon</string>
     <string name="statistics_label_short">Statistik</string>
 </resources>

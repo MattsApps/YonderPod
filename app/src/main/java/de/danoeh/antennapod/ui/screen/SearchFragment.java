@@ -165,8 +165,7 @@ public class SearchFragment extends Fragment implements EpisodeItemListAdapter.O
             @Override
             protected void onSelectedItemsUpdated() {
                 super.onSelectedItemsUpdated();
-                FeedItemMenuHandler.onPrepareMenu(floatingSelectMenu.getMenu(), getSelectedItems(),
-                        R.id.remove_inbox_item);
+                FeedItemMenuHandler.onPrepareMenu(floatingSelectMenu.getMenu(), getSelectedItems());
                 floatingSelectMenu.updateItemVisibility();
             }
         };

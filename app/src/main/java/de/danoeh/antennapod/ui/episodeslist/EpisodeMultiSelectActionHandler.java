@@ -41,8 +41,6 @@ public class EpisodeMultiSelectActionHandler {
             queueChecked(items);
         } else if (actionId == R.id.remove_from_queue_item) {
             removeFromQueueChecked(items);
-        } else if (actionId == R.id.remove_inbox_item) {
-            removeFromInboxChecked(items);
         } else if (actionId == R.id.mark_read_item) {
             markedCheckedPlayed(items);
         } else if (actionId == R.id.mark_unread_item) {
@@ -84,17 +82,6 @@ public class EpisodeMultiSelectActionHandler {
         long[] checkedIds = getSelectedIds(items);
         DBWriter.removeQueueItem(activity, true, checkedIds);
         showMessage(R.plurals.removed_from_queue_message, checkedIds.length);
-    }
-
-    private void removeFromInboxChecked(List<FeedItem> items) {
-        List<FeedItem> markUnplayed = new ArrayList<>();
-        for (FeedItem episode : items) {
-            if (episode.isNew()) {
-                markUnplayed.add(episode);
-            }
-        }
-        DBWriter.markItemsPlayed(FeedItem.UNPLAYED, false, markUnplayed);
-        showMessage(R.plurals.removed_from_inbox_batch_label, markUnplayed.size());
     }
 
     private void markedCheckedPlayed(List<FeedItem> items) {

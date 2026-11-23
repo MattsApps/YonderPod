@@ -17,7 +17,6 @@ dependencyResolutionManagement {
 }
 
 include ':app'
-include ':app-wearos'
 
 include ':event'
 include ':model'
@@ -29,7 +28,6 @@ include ':net:discovery'
 include ':net:download:service-interface'
 include ':net:download:service'
 include ':net:ssl'
-include ':net:sync:wear-interface'
 
 include ':parser:feed'
 include ':parser:media'

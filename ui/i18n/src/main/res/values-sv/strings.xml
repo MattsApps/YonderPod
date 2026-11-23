@@ -146,9 +146,6 @@
     </plurals>
     <string name="new_episode_notification_group_text">Dina prenumerationer har nya avsnitt.</string>
     <!--Actions on feeds-->
-  <string name="remove_all_inbox_label">Ta bort allt från inkorgen</string>
-    <string name="removed_all_inbox_msg">Tog bort allt från inkorgen</string>
-    <string name="remove_all_inbox_confirmation_msg">Bekräfta att du vill ta bort allt i inkorgen.</string>
     <string name="multi_select_mark_played_confirmation">Bekräfta att du vill markera alla valda avsnitt som spelade.</string>
     <string name="multi_select_mark_unplayed_confirmation">Bekräfta att du vill markera alla valda avsnitt som ospelade.</string>
     <string name="show_info_label">Visa information</string>
@@ -182,16 +179,11 @@
     <string name="pause_label">Pausa</string>
     <string name="stream_label">Strömma</string>
     <string name="delete_label">Ta bort</string>
-    <string name="remove_inbox_label">Ta bort från inkorgen</string>
     <string name="toggle_played_label">Växla spelstatus</string>
     <string name="mark_read_no_media_label">Markera som läst</string>
     <string name="mark_unread_label_no_media">Markera som oläst</string>
     <string name="add_to_queue_label">Lägg till i kön</string>
     <string name="remove_from_queue_label">Ta bort från kön</string>
-    <plurals name="removed_from_inbox_batch_label">
-        <item quantity="one">%d avsnitt har tagits bort från inkorgen.</item>
-        <item quantity="other">%d avsnitt har tagits bort från inkorgen.</item>
-    </plurals>
     <string name="add_to_favorite_label">Lägg till i favoriter</string>
     <string name="show_transcript">Visa transkription</string>
     <string name="transcript">Transkription</string>
@@ -291,7 +283,6 @@
     <string name="no_all_episodes_head_label">Inga avsnitt</string>
     <string name="no_all_episodes_label">När du lagt till ett avsnitt visas det här.</string>
     <string name="no_all_episodes_filtered_label">Testa att nollställa filtret för att se fler avsnitt.</string>
-    <string name="no_inbox_head_label">Inga avsnitt i inkorgen</string>
     <string name="no_inbox_label">När nya avsnitt kommer visas de här. Du kan sedan avgöra om de är intressanta.</string>
     <string name="no_subscriptions_head_label">Inga prenumerationer</string>
     <string name="no_subscriptions_label">Tryck på plus-ikonen nedan för att prenumerera på en podcast.</string>
@@ -553,7 +544,6 @@
     <string name="status_downloading_label">Avsnittet laddas ner</string>
     <string name="in_queue_label">I kön</string>
     <string name="is_favorite_label">Markerad som favorit</string>
-    <string name="is_inbox_label">I inkorgen</string>
     <string name="is_played">Spelad</string>
     <string name="load_next_page_label">Ladda nästa sida</string>
     <string name="position">Position: %1$s</string>
@@ -787,7 +777,6 @@
     </plurals>
     <string name="mark_as_played_label">Markera som spelad</string>
     <string name="feed_new_episodes_action_summary_autodownload">Automatisk nedladdning aktiverad. Avsnitt läggs till i inkorgen och flyttas sedan till kön när de har laddats ned.</string>
-    <string name="removed_from_inbox_message">Borttaget från inkorgen</string>
     <string name="mark_as_unplayed_label">Markera som ospelad</string>
     <plurals name="added_to_queue_message">
         <item quantity="one">%d avsnitt tillagt i kön.</item>
@@ -801,12 +790,10 @@
         <item quantity="one">%d avsnitt flyttades till botten.</item>
         <item quantity="other">%d avsnitt flyttades till botten.</item>
     </plurals>
-    <string name="no_queue_items_inbox_has_items_button_label">Gå till inkorgen</string>
     <string name="play_this_to_seek_position_message">Du måste spela avsnittet för att kunna hoppa till olika tidpunkter</string>
     <string name="delete_local_feed_confirmation_dialog_message">Borttagning raderar avsnittet från AntennaPod och tar bort mediafilen från din enhets lagringsutrymme. Den kan inte laddas ned igen genom AntennaPod.</string>
     <string name="visit_social_interact_confirm_dialog_message">Vänligen säkerställ att du litar på webbplatsen \"%1$s\".</string>
     <string name="no_items_selected_message">Inga objekt har valts</string>
-    <string name="no_queue_items_inbox_has_items_label">Inga avsnitt är köade, men det finns nya avsnitt som väntar dig!</string>
     <string name="transcript_follow_audio_label">Följ ljuduppspelning</string>
     <string name="archive_feed_label_noun">Arkiv</string>
     <string name="restore_archive_label">Återställ</string>
@@ -896,13 +883,5 @@
     <string name="import_error_label">Importeringsfel</string>
     <string name="show_password_accessibility">Visa lösenord</string>
     <string name="rss_address_invalid">RSS-adressen du har angett är inte giltig.</string>
-    <string name="wearos_connected_to" tools:ignore="UnusedResources">Ansluten till %s</string>
-    <string name="wearos_version" tools:ignore="UnusedResources">Version %s</string>
-    <string name="wearos_phone_not_supported" tools:ignore="UnusedResources">Telefonen är inte kompatibel. Se till att du har den senaste versionen av AntennaPod från Google Play på din telefon.</string>
-    <string name="wearos_no_items" tools:ignore="UnusedResources">Inga artiklar</string>
-    <string name="wearos_phone_not_reachable" tools:ignore="UnusedResources">Kunde inte nå telefonen. Se till att din telefon är nära och att AntennaPod är installerat.</string>
-    <string name="wearos_play_on_phone" tools:ignore="UnusedResources">Spela upp på telefon</string>
-    <string name="wearos_browse_phone" tools:ignore="UnusedResources">Bläddra i telefonen</string>
-    <string name="wearos_open_on_phone" tools:ignore="UnusedResources">Öppna på telefonen</string>
     <string name="pref_display">Visning</string>
 </resources>

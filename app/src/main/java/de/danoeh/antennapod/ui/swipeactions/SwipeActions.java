@@ -35,7 +35,7 @@ public class SwipeActions extends ItemTouchHelper.SimpleCallback implements Life
     public static final String KEY_PREFIX_NO_ACTION = "PrefNoSwipeAction";
 
     private static final List<SwipeAction> swipeActions = Collections.unmodifiableList(
-            Arrays.asList(new AddToQueueSwipeAction(), new RemoveFromInboxSwipeAction(),
+            Arrays.asList(new AddToQueueSwipeAction(),
                     new StartDownloadSwipeAction(), new MarkFavoriteSwipeAction(),
                     new RemoveFromFavoritesSwipeAction(), new TogglePlaybackStateSwipeAction(),
                     new RemoveFromQueueSwipeAction(), new DeleteSwipeAction(),
@@ -93,8 +93,12 @@ public class SwipeActions extends ItemTouchHelper.SimpleCallback implements Life
     private static Actions getPrefs(Context context, String tag, String defaultActions) {
         SharedPreferences prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
         String prefsString = prefs.getString(KEY_PREFIX_SWIPEACTIONS + tag, defaultActions);
-
-        return new Actions(prefsString);
+        Actions actions = new Actions(prefsString);
+        if (!actions.hasActions() && !defaultActions.isEmpty()) {
+            // A saved action that no longer exists (Remove from inbox, gone in 1.0.4): use the defaults
+            actions = new Actions(defaultActions);
+        }
+        return actions;
     }
 
     private static Actions getPrefs(Context context, String tag) {
@@ -104,9 +108,6 @@ public class SwipeActions extends ItemTouchHelper.SimpleCallback implements Life
     public static Actions getPrefsWithDefaults(Context context, String tag) {
         String defaultActions;
         switch (tag) {
-            case "NewEpisodesFragment":
-                defaultActions = SwipeAction.ADD_TO_QUEUE + "," + SwipeAction.REMOVE_FROM_INBOX;
-                break;
             case QueueFragment.TAG:
                 defaultActions = SwipeAction.REMOVE_FROM_QUEUE + "," + SwipeAction.REMOVE_FROM_QUEUE;
                 break;

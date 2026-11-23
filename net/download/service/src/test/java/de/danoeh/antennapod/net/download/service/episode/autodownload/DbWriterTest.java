@@ -9,8 +9,6 @@ import androidx.core.util.Consumer;
 import androidx.preference.PreferenceManager;
 import androidx.test.platform.app.InstrumentationRegistry;
 
-import de.danoeh.antennapod.model.feed.FeedItemFilter;
-import de.danoeh.antennapod.model.feed.SortOrder;
 import de.danoeh.antennapod.net.download.serviceinterface.DownloadServiceInterface;
 import de.danoeh.antennapod.net.download.serviceinterface.DownloadServiceInterfaceStub;
 import de.danoeh.antennapod.storage.database.DBReader;
@@ -747,36 +745,6 @@ public class DbWriterTest {
                 queue.close();
                 adapter.close();
             }
-        }
-    }
-
-    @Test
-    public void testRemoveAllNewFlags() throws Exception {
-        final int numItems = 10;
-        Feed feed = new Feed("url", null, "title");
-        feed.setItems(new ArrayList<>());
-        for (int i = 0; i < numItems; i++) {
-            FeedItem item = new FeedItem(0, "title " + i, "id " + i, "link " + i,
-                    new Date(), FeedItem.NEW, feed);
-            item.setMedia(new FeedMedia(item, "", 0, ""));
-            feed.getItems().add(item);
-        }
-
-        PodDBAdapter adapter = PodDBAdapter.getInstance();
-        adapter.open();
-        adapter.setCompleteFeed(feed);
-        adapter.close();
-
-        assertTrue(feed.getId() != 0);
-        for (FeedItem item : feed.getItems()) {
-            assertTrue(item.getId() != 0);
-        }
-
-        DBWriter.removeAllNewFlags().get();
-        List<FeedItem> loadedItems = DBReader.getFeedItemList(feed,
-                FeedItemFilter.unfiltered(), SortOrder.DATE_NEW_OLD, 0, Integer.MAX_VALUE);
-        for (FeedItem item : loadedItems) {
-            assertFalse(item.isNew());
         }
     }
 

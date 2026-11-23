@@ -68,7 +68,6 @@ public class FeedItemMenuHandler {
         boolean canPlayNext = false;
         boolean canVisitWebsite = false;
         boolean canShare = false;
-        boolean canRemoveFromInbox = false;
         boolean canMarkPlayed = false;
         boolean canMarkUnplayed = false;
         boolean canResetPosition = false;
@@ -89,7 +88,6 @@ public class FeedItemMenuHandler {
             canPlayNext |= hasMedia;
             canVisitWebsite |= !item.getFeed().isLocalFeed() && ShareUtils.hasLinkToShare(item);
             canShare |= !item.getFeed().isLocalFeed();
-            canRemoveFromInbox |= item.isNew();
             canMarkPlayed |= !item.isPlayed();
             canMarkUnplayed |= item.isPlayed();
             canResetPosition |= hasMedia && item.getMedia().getPosition() != 0;
@@ -118,7 +116,6 @@ public class FeedItemMenuHandler {
         setItemVisibility(menu, R.id.play_next_item, canPlayNext);
         setItemVisibility(menu, R.id.visit_website_item, canVisitWebsite);
         setItemVisibility(menu, R.id.share_item, canShare);
-        setItemVisibility(menu, R.id.remove_inbox_item, canRemoveFromInbox);
         setItemVisibility(menu, R.id.mark_read_item, canMarkPlayed);
         setItemVisibility(menu, R.id.mark_unread_item, canMarkUnplayed);
         setItemVisibility(menu, R.id.reset_position, canResetPosition);
@@ -198,8 +195,6 @@ public class FeedItemMenuHandler {
         } else if (menuItemId == R.id.remove_item) {
             LocalDeleteModal.showLocalFeedDeleteWarningIfNecessary(context, Arrays.asList(selectedItem),
                     () -> DBWriter.deleteFeedMediaOfItem(context, selectedItem.getMedia()));
-        } else if (menuItemId == R.id.remove_inbox_item) {
-            removeNewFlagWithUndo(fragment, selectedItem);
         } else if (menuItemId == R.id.mark_read_item) {
             new EpisodeMultiSelectActionHandler(fragment.getActivity(), R.id.mark_read_item)
                     .handleAction(Collections.singletonList(selectedItem));
@@ -291,14 +286,8 @@ public class FeedItemMenuHandler {
         switch (playState) {
             default:
             case FeedItem.UNPLAYED:
-                if (item.getPlayState() == FeedItem.NEW) {
-                    //was new
-                    message = fragment.getString(R.string.removed_from_inbox_message);
-                } else {
-                    //was played
-                    message = fragment.getResources().getQuantityString(
-                            R.plurals.marked_as_unplayed_message, 1, 1);
-                }
+                message = fragment.getResources().getQuantityString(
+                        R.plurals.marked_as_unplayed_message, 1, 1);
                 break;
             case FeedItem.PLAYED:
                 message = fragment.getResources().getQuantityString(
@@ -315,10 +304,6 @@ public class FeedItemMenuHandler {
                     }, fragment.getString(R.string.undo)));
         }
         h.postDelayed(r, 2000);
-    }
-
-    public static void removeNewFlagWithUndo(@NonNull Fragment fragment, FeedItem item) {
-        markReadWithUndo(fragment, item, FeedItem.UNPLAYED, false);
     }
 
 }

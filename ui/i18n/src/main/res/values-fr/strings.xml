@@ -153,9 +153,6 @@
     </plurals>
     <string name="new_episode_notification_group_text">Vos abonnements disposent de nouveaux épisodes.</string>
     <!--Actions on feeds-->
-  <string name="remove_all_inbox_label">Vider la boîte de réception</string>
-    <string name="removed_all_inbox_msg">Boîte de réception vidée</string>
-    <string name="remove_all_inbox_confirmation_msg">Merci de confirmer que vous voulez vider la boîte de réception.</string>
     <string name="multi_select_mark_played_confirmation">Merci de confirmer le marquage de tous les éléments sélectionnés comme lus.</string>
     <string name="multi_select_mark_unplayed_confirmation">Merci de confirmer le marquage de tous les éléments sélectionnés comme non lus.</string>
     <string name="show_info_label">Voir les détails</string>
@@ -190,17 +187,11 @@
     <string name="pause_label">Pause</string>
     <string name="stream_label">Streaming</string>
     <string name="delete_label">Supprimer</string>
-    <string name="remove_inbox_label">Supprimer de la boîte de réception</string>
     <string name="toggle_played_label">Modifier l\'état de lecture</string>
     <string name="mark_read_no_media_label">Marquer comme lu</string>
     <string name="mark_unread_label_no_media">Marquer comme non lu</string>
     <string name="add_to_queue_label">Ajouter à la liste de lecture</string>
     <string name="remove_from_queue_label">Supprimer de la liste de lecture</string>
-    <plurals name="removed_from_inbox_batch_label">
-        <item quantity="one">%d épisode supprimé de la boîte de réception.</item>
-        <item quantity="many">%d épisodes supprimés de la boîte de réception.</item>
-        <item quantity="other">%d épisodes supprimés de la boîte de réception.</item>
-    </plurals>
     <string name="add_to_favorite_label">Ajouter aux favoris</string>
     <string name="show_transcript">Voir la transcription</string>
     <string name="transcript">Transcription</string>
@@ -301,7 +292,6 @@
     <string name="no_all_episodes_head_label">Aucun épisode</string>
     <string name="no_all_episodes_label">Quand vous ajouterez un podcast ses épisodes seront montrés ici.</string>
     <string name="no_all_episodes_filtered_label">Pour voir plus d\'épisodes supprimer le filtre.</string>
-    <string name="no_inbox_head_label">Aucun épisode dans la boîte de réception</string>
     <string name="no_inbox_label">Les nouveaux épisodes seront affichés ici. Vous pourrez décider s\'ils vous intéressent ou pas.</string>
     <string name="no_subscriptions_head_label">Aucun abonnement</string>
     <string name="no_subscriptions_label">Pour vous abonner à un podcast appuyer sur le bouton +.</string>
@@ -567,7 +557,6 @@
     <string name="status_downloading_label">L\'épisode est en train d\'être téléchargé</string>
     <string name="in_queue_label">Dans la liste de lecture</string>
     <string name="is_favorite_label">Dans les favoris</string>
-    <string name="is_inbox_label">Dans la boîte de réception</string>
     <string name="is_played">Lu</string>
     <string name="load_next_page_label">Charger la page suivante</string>
     <string name="position">Position : %1$s</string>
@@ -825,7 +814,6 @@
         <item quantity="many">%d épisodes téléchargés supprimés.</item>
         <item quantity="other">%d épisodes téléchargés supprimés.</item>
     </plurals>
-    <string name="removed_from_inbox_message">Supprimé de la boîte de réception</string>
     <string name="mark_as_played_label">Marquer comme lu</string>
     <string name="play_this_to_seek_position_message">Pour changer la position l\'épisode doit être en cours de lecture</string>
     <string name="mark_as_unplayed_label">Marquer comme non lu</string>
@@ -855,8 +843,6 @@
         <item quantity="many">%d épisodes déplacés en bas de la liste.</item>
         <item quantity="other">%d épisodes déplacés en bas de la liste.</item>
     </plurals>
-    <string name="no_queue_items_inbox_has_items_button_label">Ouvrir la boîte de réception</string>
-    <string name="no_queue_items_inbox_has_items_label">Vous n\'avez rien à lire mais des épisodes vous attendent !</string>
     <string name="please_wait_before_refreshing">Merci d\'attendre un peu avant de réactualiser les podcasts.</string>
     <string name="already_downloaded">L\'épisode est déjà téléchargé</string>
     <string name="tag_all">Tous</string>
@@ -930,13 +916,5 @@
     <string name="import_error_label">Erreur d\'import</string>
     <string name="show_password_accessibility">Montrer le mot de passe</string>
     <string name="rss_address_invalid">L\'adresse RSS saisie n\'est pas valide.</string>
-    <string name="wearos_connected_to" tools:ignore="UnusedResources">Connecté à %s</string>
-    <string name="wearos_version" tools:ignore="UnusedResources">Version %s</string>
-    <string name="wearos_phone_not_supported" tools:ignore="UnusedResources">Téléphone non compatible. Assurez-vous que votre version d\'AntennaPod est la plus récente disponible sur le Play Store de votre téléphone.</string>
-    <string name="wearos_no_items" tools:ignore="UnusedResources">Aucun élément</string>
-    <string name="wearos_phone_not_reachable" tools:ignore="UnusedResources">Échec de la connexion au téléphone. Assurez-vous que votre téléphone est à proximité et qu\'AntennaPod est installé.</string>
-    <string name="wearos_play_on_phone" tools:ignore="UnusedResources">Lire sur le téléphone</string>
-    <string name="wearos_browse_phone" tools:ignore="UnusedResources">Parcourir le téléphone</string>
-    <string name="wearos_open_on_phone" tools:ignore="UnusedResources">Ouvrir sur le téléphone</string>
     <string name="feed_new_episodes_action_snackbar">Impossible à changer quand le téléchargement automatique est activé.</string>
 </resources>

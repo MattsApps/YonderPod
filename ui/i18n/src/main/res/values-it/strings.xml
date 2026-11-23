@@ -152,9 +152,6 @@
     </plurals>
     <string name="new_episode_notification_group_text">Le tue iscrizioni hanno nuovi episodi.</string>
     <!--Actions on feeds-->
-  <string name="remove_all_inbox_label">Svuota l\'inbox</string>
-    <string name="removed_all_inbox_msg">Inbox svuotata</string>
-    <string name="remove_all_inbox_confirmation_msg">Conferma che vuoi svuotare l\'inbox.</string>
     <string name="multi_select_mark_played_confirmation">Conferma di voler contrassegnare tutti gli elementi selezionati come riprodotti.</string>
     <string name="multi_select_mark_unplayed_confirmation">Conferma di voler contrassegnare tutti gli elementi selezionati come non riprodotti.</string>
     <string name="show_info_label">Mostra informazioni</string>
@@ -189,17 +186,11 @@
     <string name="pause_label">Pausa</string>
     <string name="stream_label">Riproduci</string>
     <string name="delete_label">Elimina</string>
-    <string name="remove_inbox_label">Rimuovi dall\'inbox</string>
     <string name="toggle_played_label">Cambia stato di riproduzione</string>
     <string name="mark_read_no_media_label">Contrassegna come letto</string>
     <string name="mark_unread_label_no_media">Contrassegna come non letto</string>
     <string name="add_to_queue_label">Aggiungi alla coda</string>
     <string name="remove_from_queue_label">Rimuovi dalla coda</string>
-    <plurals name="removed_from_inbox_batch_label">
-        <item quantity="one">%d episodio rimosso dall\'inbox.</item>
-        <item quantity="many">%d di episodi rimossi dall\'inbox.</item>
-        <item quantity="other">%d episodi rimossi dall\'inbox.</item>
-    </plurals>
     <string name="add_to_favorite_label">Aggiungi ai preferiti</string>
     <string name="show_transcript">Mostra trascrizione</string>
     <string name="transcript">Trascrizione</string>
@@ -300,7 +291,6 @@
     <string name="no_all_episodes_head_label">Nessun episodio</string>
     <string name="no_all_episodes_label">Quando aggiungi un podcast, gli episodi vengono mostrati qui.</string>
     <string name="no_all_episodes_filtered_label">Prova a rimuovere i filtri per visualizzare più episodi.</string>
-    <string name="no_inbox_head_label">Nessun episodio nell\'inbox</string>
     <string name="no_inbox_label">Quando verranno pubblicati nuovi episodi, appariranno qui. Puoi decidere se ti interessano o meno.</string>
     <string name="no_subscriptions_head_label">Nessuna iscrizione</string>
     <string name="no_subscriptions_label">Per aggiungere un podcast, premi il tasto + in basso.</string>
@@ -566,7 +556,6 @@
     <string name="status_downloading_label">L\'episodio è in download</string>
     <string name="in_queue_label">Nella coda</string>
     <string name="is_favorite_label">Contrassegnato come preferito</string>
-    <string name="is_inbox_label">Nell\'inbox</string>
     <string name="is_played">Riprodotti</string>
     <string name="load_next_page_label">Carica la pagina successiva</string>
     <string name="position">Posizione: %1$s</string>
@@ -814,8 +803,6 @@
         <item quantity="many">%d di episodi scaricati eliminati.</item>
         <item quantity="other">%d episodi scaricati eliminati.</item>
     </plurals>
-    <string name="removed_from_inbox_message">Rimosso dall\'inbox</string>
-    <string name="no_queue_items_inbox_has_items_button_label">Vai all\'inbox</string>
     <string name="mark_as_played_label">Contrassegna come riprodotto</string>
     <plurals name="marked_as_played_message">
         <item quantity="one">%d episodio contrassegnato come riprodotto.</item>
@@ -854,7 +841,6 @@
         <item quantity="many">%d di episodi spostati in fondo.</item>
         <item quantity="other">%d episodi spostati in fondo.</item>
     </plurals>
-    <string name="no_queue_items_inbox_has_items_label">Non hai nessun episodio in coda, ma ci sono nuovi episodi che ti aspettano!</string>
     <string name="delete_local_feed_confirmation_dialog_message">Eliminare un episodio lo rimuove da AntennaPod ed elimina il file multimediale dallo spazio di archiviazione del tuo dispositivo. Non potrà essere scaricato di nuovo attraverso AntennaPod.</string>
     <string name="please_wait_before_refreshing">Aspetta un po\' prima di aggiornare di nuovo i podcast.</string>
     <string name="already_downloaded">L\'episodio è già scaricato</string>
@@ -929,13 +915,5 @@
     <string name="import_error_label">Errore d\'importazione</string>
     <string name="show_password_accessibility">Mostra password</string>
     <string name="rss_address_invalid">L\'indirizzo RSS che hai inserito non è valido.</string>
-    <string name="wearos_connected_to" tools:ignore="UnusedResources">Connesso a %s</string>
-    <string name="wearos_version" tools:ignore="UnusedResources">Versione %s</string>
-    <string name="wearos_phone_not_supported" tools:ignore="UnusedResources">Telefono non compatibile. Assicurati di avere sul tuo telefono la versione più recente di AntennaPod disponibile su Google Play.</string>
-    <string name="wearos_no_items" tools:ignore="UnusedResources">Nessun elemento</string>
-    <string name="wearos_phone_not_reachable" tools:ignore="UnusedResources">Impossibile raggiungere il telefono. Assicurati che il tuo telefono sia nei paraggi e che AntennaPod sia installato.</string>
-    <string name="wearos_play_on_phone" tools:ignore="UnusedResources">Riproduci sul telefono</string>
-    <string name="wearos_browse_phone" tools:ignore="UnusedResources">Esplora il telefono</string>
-    <string name="wearos_open_on_phone" tools:ignore="UnusedResources">Apri sul telefono</string>
     <string name="bottom_navigation_deprecation_warning">Sfortunatamente, in una versione futura dovremo rimuovere la navigazione laterale. AntennaPod è sviluppato da un piccolo gruppo di volontari e, dopo aver supportato per anni entrambi i tipi di navigazione, continuare a farlo comporta troppo lavoro aggiuntivo. \n\nSe hai assolutamente bisogno della navigazione laterale, disabilita gli aggiornamenti di AntennaPod nel tuo app store.</string>
 </resources>

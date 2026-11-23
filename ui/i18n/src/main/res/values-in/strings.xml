@@ -97,9 +97,6 @@
     </plurals>
     <string name="new_episode_notification_group_text">Siniar langganan Anda merilis episode baru.</string>
     <!--Actions on feeds-->
-  <string name="remove_all_inbox_label">Hapus semua episode dari kotak masuk</string>
-    <string name="removed_all_inbox_msg">Semua episode telah dihapus dari kotak masuk</string>
-    <string name="remove_all_inbox_confirmation_msg">Mohon konfirmasikan bahwa Anda ingin menghapus semua episode dari kotak masuk.</string>
     <string name="multi_select_mark_played_confirmation">Mohon konfirmasikan bahwa Anda ingin menandakan semuaepisode sebagai \'terputar\'.</string>
     <string name="multi_select_mark_unplayed_confirmation">Mohon konfirmasikan bahwa Anda ingin menandakan semua item sebagai \'belum terputar\'.</string>
     <string name="show_info_label">Tampilkan informasi</string>
@@ -128,13 +125,9 @@
     <string name="pause_label">Jeda</string>
     <string name="stream_label">Jalir</string>
     <string name="delete_label">Hapus</string>
-    <string name="remove_inbox_label">Hapus dari kotak masuk</string>
     <string name="toggle_played_label">Aktifkan status \"terputar\"</string>
     <string name="mark_read_no_media_label">Tandai sebagai \"terbaca\"</string>
     <string name="mark_unread_label_no_media">Tandai sebagai \"belum dibaca\"</string>
-    <plurals name="removed_from_inbox_batch_label">
-        <item quantity="other">Sebanyak %d episode dihapus dari kotak masuk.</item>
-    </plurals>
     <string name="visit_website_label">Lihat situs</string>
     <string name="skip_episode_label">Lewati episode</string>
     <!--Download messages and labels-->
@@ -202,7 +195,6 @@
     <string name="no_history_label">Episode yang telah Anda dengarkan akan tampil di sini.</string>
     <string name="no_all_episodes_label">Episode yang telah Anda tambahkan akan tampil di sini.</string>
     <string name="no_all_episodes_filtered_label">Coba bersihkan tapisan untuk melihat lebih banyak episode.</string>
-    <string name="no_inbox_head_label">Tidak ada episode di kotak masuk</string>
     <string name="no_inbox_label">Episode baru akan ditampilkan di sini. Setelahnya, Anda dapat menentukan apakah Anda ingin mendengarkannya atau tidak.</string>
     <string name="no_subscriptions_head_label">~Tiada Langganan~</string>
     <string name="no_subscriptions_label">Untuk berlangganan siniar, tekan ikon tanda tambah di bawah.</string>
@@ -717,7 +709,6 @@
     <string name="pref_new_episodes_action_sum">Tindakan yang dilakukan pada episode-episode baru</string>
     <string name="automatic_database_export_summary">Buat cadangan pangkalan data AntennaPod setiap tiga hari sekali. Pilihan ini hanya menyimpan lima pencadangan terakhir.</string>
     <string name="automatic_database_export_error">Terdapat galat ketika mencadangkan pangkalan data secara otomatis</string>
-    <string name="is_inbox_label">Di dalam kotak masuk</string>
     <string name="is_played">Terputar</string>
     <string name="feed_folders_include_root">Tampilkan tag di atas (hanya navigasi samping)</string>
     <string name="statistics_time_total">seluruh</string>
@@ -765,7 +756,6 @@
     <plurals name="deleted_episode_message">
         <item quantity="other">%d episode yang diunduh telah dihapus.</item>
     </plurals>
-    <string name="removed_from_inbox_message">Dihapus dari kotak masuk</string>
     <string name="mark_as_played_label">Tandai sebagai sudah dimainkan</string>
     <string name="play_this_to_seek_position_message">Untuk melompat ke posisi, Anda perlu memainkan episode tersebut</string>
     <plurals name="marked_as_played_message">
@@ -794,8 +784,6 @@
     <plurals name="move_to_bottom_message">
         <item quantity="other">%d episode dipindahkan ke bagian bawah.</item>
     </plurals>
-    <string name="no_queue_items_inbox_has_items_label">Tidak ada episode yang dijadwalkan, tetapi ada episode baru yang menanti Anda!</string>
-    <string name="no_queue_items_inbox_has_items_button_label">Pergi ke kotak masuk</string>
     <string name="no_archive_head_label">Tidak ada yang diarsipkan</string>
     <string name="no_archive_label">Anda dapat mengarsipkan podcast dari layar langganan utama.</string>
     <string name="tag_all">Semua</string>
@@ -855,12 +843,4 @@
     </plurals>
     <string name="show_password_accessibility">Tampilkan kata sandi</string>
     <string name="rss_address_invalid">Alamat RSS yang Anda masukkan tidak valid.</string>
-    <string name="wearos_connected_to" tools:ignore="UnusedResources">Terhubung ke %s</string>
-    <string name="wearos_version" tools:ignore="UnusedResources">Versi %s</string>
-    <string name="wearos_phone_not_supported" tools:ignore="UnusedResources">Ponsel tidak kompatibel. Pastikan Anda menjalankan AntennaPod versi terbaru dari Google Play di ponsel Anda.</string>
-    <string name="wearos_no_items" tools:ignore="UnusedResources">Tidak ada item</string>
-    <string name="wearos_phone_not_reachable" tools:ignore="UnusedResources">Tidak dapat menjangkau ponsel. Pastikan ponsel Anda berada di dekat dan AntennaPod terpasang.</string>
-    <string name="wearos_play_on_phone" tools:ignore="UnusedResources">Putar di ponsel</string>
-    <string name="wearos_browse_phone" tools:ignore="UnusedResources">Jelajahi ponsel</string>
-    <string name="wearos_open_on_phone" tools:ignore="UnusedResources">Buka di ponsel</string>
 </resources>

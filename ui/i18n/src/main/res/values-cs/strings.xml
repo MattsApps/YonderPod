@@ -142,9 +142,6 @@
     </plurals>
     <string name="new_episode_notification_group_text">Tvé odběry mají nové epizody.</string>
     <!--Actions on feeds-->
-  <string name="remove_all_inbox_label">Odebrat vše z nových</string>
-    <string name="removed_all_inbox_msg">Vše z nových odebráno</string>
-    <string name="remove_all_inbox_confirmation_msg">Potvrďte prosím odebrání všech položek z nových.</string>
     <string name="multi_select_mark_played_confirmation">Potvrďte prosím, že chcete označit všechny vybrané položky jako přehnané.</string>
     <string name="multi_select_mark_unplayed_confirmation">Potvrďte prosím, že chcete označit všechny vybrané položky jako nepřehrané.</string>
     <string name="show_info_label">Informace o zdroji</string>
@@ -178,17 +175,11 @@
     <string name="pause_label">Pozastavit</string>
     <string name="stream_label">Streamovat</string>
     <string name="delete_label">Smazat</string>
-    <string name="remove_inbox_label">Odebrat z nových</string>
     <string name="toggle_played_label">Přepnutí stavu přehrávání</string>
     <string name="mark_read_no_media_label">Označit jako přečtené</string>
     <string name="mark_unread_label_no_media">Označit jako nepřečtené</string>
     <string name="add_to_queue_label">Přidat do fronty</string>
     <string name="remove_from_queue_label">Odebrat z fronty</string>
-    <plurals name="removed_from_inbox_batch_label">
-        <item quantity="one">%d epizoda odebrána z doručených.</item>
-        <item quantity="few">%d epizody odebrány z doručených.</item>
-        <item quantity="other">%d epizod odebráno z nových.</item>
-    </plurals>
     <string name="add_to_favorite_label">Přidat do oblíbených</string>
     <string name="remove_from_favorite_label">Odebrat z oblíbených</string>
     <string name="visit_website_label">Navštívit stránku</string>
@@ -285,7 +276,6 @@
     <string name="no_all_episodes_head_label">Žádné epizody</string>
     <string name="no_all_episodes_label">Až si přidáte nějaký podcast, tak se objeví zde.</string>
     <string name="no_all_episodes_filtered_label">Zkuste zrušit filtr, aby se zobrazilo více epizod.</string>
-    <string name="no_inbox_head_label">Žádné nové epizody</string>
     <string name="no_inbox_label">Jakmile se objeví nové epizody, budou zde uvedeny. Pak se můžete rozhodnout, zda o ně máte zájem, nebo ne.</string>
     <string name="no_subscriptions_head_label">Žádné odběry</string>
     <string name="no_subscriptions_label">Pro přihlášení odběru podcastu stiskněte ikonu plus níže.</string>
@@ -513,7 +503,6 @@
     <string name="status_downloading_label">Epizoda je právě stahována</string>
     <string name="in_queue_label">Ve frontě</string>
     <string name="is_favorite_label">Označeno jako oblíbené</string>
-    <string name="is_inbox_label">V nových</string>
     <string name="is_played">Přehráno</string>
     <string name="load_next_page_label">Načíst další stranu</string>
     <string name="position">Pozice: %1$s</string>
@@ -814,7 +803,6 @@
         <item quantity="few">%d stažené epizody byly smazány.</item>
         <item quantity="other">%d stažených epizod bylo smazáno.</item>
     </plurals>
-    <string name="removed_from_inbox_message">Odebráno z nových</string>
     <string name="mark_as_played_label">Označit jako přehrané</string>
     <plurals name="marked_as_played_message">
         <item quantity="one">%d epizoda označena jako přehraná.</item>
@@ -856,8 +844,6 @@
         <item quantity="few">%d epizody přesunuty na konec.</item>
         <item quantity="other">%d epizod přesunuto na konec.</item>
     </plurals>
-    <string name="no_queue_items_inbox_has_items_label">Žádné epizody nejsou zařazeny, ale čekají na vás nové epizody!</string>
-    <string name="no_queue_items_inbox_has_items_button_label">Přejít do nových</string>
     <string name="please_wait_before_refreshing">Počkejte chvíli, než podcasty znovu aktualizujete.</string>
     <string name="already_downloaded">Epizoda je již stažena</string>
     <string name="tag_all">Všechny</string>

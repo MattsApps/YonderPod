@@ -138,9 +138,6 @@
     </plurals>
     <string name="new_episode_notification_group_text">Er zijn nieuwe afleveringen beschikbaar.</string>
     <!--Actions on feeds-->
-  <string name="remove_all_inbox_label">Alles verwijderen uit Postvak IN</string>
-    <string name="removed_all_inbox_msg">Alles is verwijderd uit Postvak IN</string>
-    <string name="remove_all_inbox_confirmation_msg">Bevestig dat je alle items wilt verwijderen uit Postvak IN.</string>
     <string name="multi_select_mark_played_confirmation">Bevestig dat je alle afleveringen wilt markeren als beluisterd.</string>
     <string name="multi_select_mark_unplayed_confirmation">Bevestig dat je alle afleveringen wilt markeren als onbeluisterd.</string>
     <string name="show_info_label">Informatie tonen</string>
@@ -173,16 +170,11 @@
     <string name="pause_label">Pauzeren</string>
     <string name="stream_label">Streamen</string>
     <string name="delete_label">Verwijderen</string>
-    <string name="remove_inbox_label">Verwijderen uit Postvak IN</string>
     <string name="toggle_played_label">Afspeelstatus wijzigen</string>
     <string name="mark_read_no_media_label">Markeren als gelezen</string>
     <string name="mark_unread_label_no_media">Markeren als ongelezen</string>
     <string name="add_to_queue_label">Toevoegen aan wachtrij</string>
     <string name="remove_from_queue_label">Verwijderen uit wachtrij</string>
-    <plurals name="removed_from_inbox_batch_label">
-        <item quantity="one">%d aflevering verwijderd uit Postvak In.</item>
-        <item quantity="other">%d afleveringen verwijderd uit Postvak In.</item>
-    </plurals>
     <string name="add_to_favorite_label">Toevoegen aan favorieten</string>
     <string name="remove_from_favorite_label">Verwijderen uit favorieten</string>
     <string name="visit_website_label">Website bezoeken</string>
@@ -278,7 +270,6 @@
     <string name="no_all_episodes_head_label">Geen afleveringen</string>
     <string name="no_all_episodes_label">Als je een podcast toevoegt, verschijnen de afleveringen hier.</string>
     <string name="no_all_episodes_filtered_label">Wis het filter om meer afleveringen te bekijken.</string>
-    <string name="no_inbox_head_label">Er staan geen afleveringen in Postvak IN</string>
     <string name="no_inbox_label">Nieuwe afleveringen worden hier getoond. Vanaf hier kun je beslissen of je ze wilt behouden of niet.</string>
     <string name="no_subscriptions_head_label">Geen abonnementen</string>
     <string name="no_subscriptions_label">Tik op het plus-pictogram om je te abonneren op een podcast.</string>
@@ -506,7 +497,6 @@
     <string name="status_downloading_label">Aflevering wordt gedownload</string>
     <string name="in_queue_label">In de wachtrij</string>
     <string name="is_favorite_label">Toegevoegd aan favorieten</string>
-    <string name="is_inbox_label">In Postvak IN</string>
     <string name="is_played">Afgespeeld</string>
     <string name="load_next_page_label">Volgende pagina laden</string>
     <string name="position">Positie: %1$s</string>
@@ -776,7 +766,6 @@
         <item quantity="one">%d aflevering verwijderd.</item>
         <item quantity="other">%d afleveringen verwijderd.</item>
     </plurals>
-    <string name="removed_from_inbox_message">Verwijderd uit Postvak IN</string>
     <string name="mark_as_played_label">Markeer als afgespeeld</string>
     <plurals name="marked_as_played_message">
         <item quantity="one">Één aflevering gemarkeerd als afgespeeld.</item>
@@ -809,8 +798,6 @@
         <item quantity="one">%d aflevering naar onderaan verplaatst.</item>
         <item quantity="other">%d afleveringen naar onderaan verplaatst.</item>
     </plurals>
-    <string name="no_queue_items_inbox_has_items_label">Geen afleveringen in de wachtrij, maar er staan nieuwe afleveringen in Postvak IN!</string>
-    <string name="no_queue_items_inbox_has_items_button_label">Ga naar Postvak IN</string>
     <string name="delete_local_feed_confirmation_dialog_message">Dit verwijdert de aflevering uit AntennaPod en verwijdert de mediabestanden van de opslag op je apparaat. Het kan niet opnieuw gedownload worden via AntennaPod.</string>
     <string name="please_wait_before_refreshing">Wacht even voordat je de podcasts weer ververst.</string>
     <string name="already_downloaded">Aflevering is al gedownload</string>

@@ -121,10 +121,6 @@
         <item quantity="one">Bitdikdən %d gün sonra</item>
         <item quantity="other">Bitdikdən %d gün sonra</item>
     </plurals>
-    <plurals name="removed_from_inbox_batch_label">
-        <item quantity="one">%d bölüm gələnlər qutusundan silindi.</item>
-        <item quantity="other">%d bölüm gələnlər qutusundan silindi.</item>
-    </plurals>
     <string name="episode_notification">Bölüm bildirişləri</string>
     <string name="mark_unread_label_no_media">Oxunmamış kimi işarələ</string>
     <string name="add_to_queue_label">Növbəyə əlavə et</string>
@@ -144,7 +140,6 @@
         <item quantity="one">%1$d/%2$d seçilib</item>
         <item quantity="other">%1$d/%2$d seçilib</item>
     </plurals>
-    <string name="remove_all_inbox_label">Gələnlər qutusundan hamısını sil</string>
     <plurals name="new_episode_notification_message">
         <item quantity="one">%2$s yeni bölümü var</item>
         <item quantity="other">%2$s %1$d yeni bölümü var</item>
@@ -204,8 +199,6 @@
     <string name="episode_cleanup_after_listening">Bitdikdən sonra</string>
     <string name="episode_notification_summary">Yeni bölüm yayımlananda bildiriş göstər.</string>
     <string name="new_episode_notification_group_text">Sizin abunəliklərin yeni bölümləri var.</string>
-    <string name="removed_all_inbox_msg">Gələnlər qutusundan hamısı silindi</string>
-    <string name="remove_all_inbox_confirmation_msg">Zəhmət olmasa, gələnlər qutusundan hamısı silmək istədiyinizi təsdiqləyin.</string>
     <string name="feed_volume_adapdation">Səs gücününün uyğunlaşması</string>
     <string name="show_feed_settings_label">Podkast ayarlarını göstər</string>
     <string name="rename_feed_label">Podkastın adını dəyiş</string>
@@ -231,7 +224,6 @@
     <string name="add_to_favorite_label">Sevimlilərə əlavə et</string>
     <string name="remove_from_favorite_label">Sevimlilərdən sil</string>
     <string name="delete_label">Sil</string>
-    <string name="remove_inbox_label">Gələnlər qutusundan sil</string>
     <string name="mark_read_no_media_label">işarə etOxunmuş kimi işarələ</string>
     <string name="show_transcript">Transkripti göstər</string>
     <string name="remove_from_queue_label">Növbədən sil</string>

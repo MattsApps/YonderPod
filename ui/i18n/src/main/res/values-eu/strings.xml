@@ -138,9 +138,6 @@
     </plurals>
     <string name="new_episode_notification_group_text">Zure harpidetzak saio berriak ditu.</string>
     <!--Actions on feeds-->
-  <string name="remove_all_inbox_label">Kendu dena sarrerako ontzitik</string>
-    <string name="removed_all_inbox_msg">Sarrerako ontzitik dena kendu da</string>
-    <string name="remove_all_inbox_confirmation_msg">Mesedez, baieztatu dena kendu nahi duzula sarrerako ontzitik.</string>
     <string name="multi_select_mark_played_confirmation">Berretsi hautatutako elementu guztiak erreproduzitutzat markatu nahi dituzula.</string>
     <string name="multi_select_mark_unplayed_confirmation">Berretsi hautatutako elementu guztiak erreproduzitu gabekotzat markatu nahi dituzula.</string>
     <string name="show_info_label">Programaren informazioa</string>
@@ -173,16 +170,11 @@
     <string name="pause_label">Pausatu</string>
     <string name="stream_label">Entzun zuzenean</string>
     <string name="delete_label">Ezabatu</string>
-    <string name="remove_inbox_label">Kendu sarrerako ontzitik</string>
     <string name="toggle_played_label">Txandakatu erreprodukzio-egoera</string>
     <string name="mark_read_no_media_label">Markatu irakurri gisa</string>
     <string name="mark_unread_label_no_media">Markatu ez irakurri bezala</string>
     <string name="add_to_queue_label">Gehitu ilaran</string>
     <string name="remove_from_queue_label">Kendu ilaratik</string>
-    <plurals name="removed_from_inbox_batch_label">
-        <item quantity="one">Saio %d sarrerako ontzitik kenduta.</item>
-        <item quantity="other">%d saio sarrerako ontzitik kenduta.</item>
-    </plurals>
     <string name="add_to_favorite_label">Gehitu gogokoetara</string>
     <string name="remove_from_favorite_label">Kendu gogokoetatik</string>
     <string name="visit_website_label">Bisitatu webgunea</string>
@@ -278,7 +270,6 @@
     <string name="no_all_episodes_head_label">Ez dago saiorik</string>
     <string name="no_all_episodes_label">Podcast bat gehitzen duzunean saioak hemen azalduko dira.</string>
     <string name="no_all_episodes_filtered_label">Saiatu iragazkia ezabatzen saio gehiago ikusteko.</string>
-    <string name="no_inbox_head_label">Ez dago saiorik sarrerako ontzian</string>
     <string name="no_inbox_label">Saio berriak iristen direnean, hemen agertuko dira. Orduan erabaki ahal izango duzu ea interesatzen zaizun ala ez.</string>
     <string name="no_subscriptions_head_label">Ez dago harpidetzarik</string>
     <string name="no_subscriptions_label">Podcast batera harpidetzeko, sakatu beheko plus ikonoa.</string>
@@ -506,7 +497,6 @@
     <string name="status_downloading_label">Saioa deskargatzen ari da</string>
     <string name="in_queue_label">Ilaran</string>
     <string name="is_favorite_label">Gogoko gisa markatua</string>
-    <string name="is_inbox_label">Sarrerako ontzian</string>
     <string name="is_played">Erreproduzitua</string>
     <string name="load_next_page_label">Kargatu hurrengo orria</string>
     <string name="position">Kokalekua: %1$s</string>
@@ -776,7 +766,6 @@
         <item quantity="one">Deskargatutako atal %d ezabatuta.</item>
         <item quantity="other">Deskargatutako %d atal deskargatuta.</item>
     </plurals>
-    <string name="removed_from_inbox_message">Sarrera-ontzitik kendu da</string>
     <string name="mark_as_played_label">Erreproduzituta gisa ezarri</string>
     <plurals name="marked_as_played_message">
         <item quantity="one">%d erreproduzituta gisa ezarri da.</item>
@@ -810,8 +799,6 @@
         <item quantity="one">Atal %d behean ezarri da.</item>
         <item quantity="other">%d atal behean ezarri dira.</item>
     </plurals>
-    <string name="no_queue_items_inbox_has_items_label">Ez dago atalik programatuta, baina badaude zain dituzun atal berriak!</string>
-    <string name="no_queue_items_inbox_has_items_button_label">Sarrera-otzira joan</string>
     <string name="please_wait_before_refreshing">Mesedez, itxaron pixka bat podcastak berriro freskatu aurretik.</string>
     <string name="already_downloaded">Atala dagoeneko deskargatuta dago</string>
     <string name="tag_all">Denak</string>
@@ -897,12 +884,4 @@
     <string name="import_error_label">Inportatu akatsa</string>
     <string name="show_password_accessibility">Pasahitza erakutsi</string>
     <string name="rss_address_invalid">Idatzi duzun RSS helbidea ez da zuzena.</string>
-    <string name="wearos_connected_to" tools:ignore="UnusedResources">%sra konektatuta</string>
-    <string name="wearos_version" tools:ignore="UnusedResources">%s bertsioa</string>
-    <string name="wearos_phone_not_supported" tools:ignore="UnusedResources">Telefonoa ez da bateragarria. Ziurtatu Google Play-ko AntennaPod-en azken bertsioa erabiltzen ari zarela zure telefonoan.</string>
-    <string name="wearos_no_items" tools:ignore="UnusedResources">Elementurik ez</string>
-    <string name="wearos_phone_not_reachable" tools:ignore="UnusedResources">Ezin izan da telefonora iritsi. Ziurtatu telefonoa gertu dagoela eta AntennaPod instalatuta dagoela.</string>
-    <string name="wearos_play_on_phone" tools:ignore="UnusedResources">Mugikorrean erreproduzitu</string>
-    <string name="wearos_browse_phone" tools:ignore="UnusedResources">Mugikorra arakatu</string>
-    <string name="wearos_open_on_phone" tools:ignore="UnusedResources">Mugikorrean ireki</string>
 </resources>

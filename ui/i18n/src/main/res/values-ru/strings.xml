@@ -158,9 +158,6 @@
     </plurals>
     <string name="new_episode_notification_group_text">Появились новые выпуски.</string>
     <!--Actions on feeds-->
-  <string name="remove_all_inbox_label">Убрать все из входящих</string>
-    <string name="removed_all_inbox_msg">Всё убрано из входящих</string>
-    <string name="remove_all_inbox_confirmation_msg">Подтвердите, что вы хотите убрать всё из входящих.</string>
     <string name="multi_select_mark_played_confirmation">Подтвердите, что хотите отметить все выбранные выпуски как прослушанные.</string>
     <string name="multi_select_mark_unplayed_confirmation">Подтвердите, что хотите отметить все выбранные выпуски как непрослушанные.</string>
     <string name="show_info_label">Показать информацию</string>
@@ -196,18 +193,11 @@
     <string name="pause_label">Пауза</string>
     <string name="stream_label">Воспроизвести из сети</string>
     <string name="delete_label">Удалить</string>
-    <string name="remove_inbox_label">Убрать из входящих</string>
     <string name="toggle_played_label">Прослушано — непрослушано</string>
     <string name="mark_read_no_media_label">Отметить как прочитанное</string>
     <string name="mark_unread_label_no_media">Отметить как непрочитанное</string>
     <string name="add_to_queue_label">Добавить в очередь</string>
     <string name="remove_from_queue_label">Убрать из очереди</string>
-    <plurals name="removed_from_inbox_batch_label">
-        <item quantity="one">%d выпуск удалён из входящих.</item>
-        <item quantity="few">%d выпуска удалены из входящих.</item>
-        <item quantity="many">%d выпусков удалены из входящих.</item>
-        <item quantity="other">%d выпусков удалены из входящих.</item>
-    </plurals>
     <string name="add_to_favorite_label">Добавить в избранное</string>
     <string name="show_transcript">Показать расшифровку</string>
     <string name="transcript">Расшифровка</string>
@@ -309,7 +299,6 @@
     <string name="no_all_episodes_head_label">Нет выпусков</string>
     <string name="no_all_episodes_label">Когда вы добавите подкаст, выпуски будут показаны здесь.</string>
     <string name="no_all_episodes_filtered_label">Попробуйте сбросить фильтр, чтобы увидеть больше выпусков.</string>
-    <string name="no_inbox_head_label">Во входящих нет выпусков</string>
     <string name="no_inbox_label">Когда появятся новые выпуски, они будут показаны здесь. Вы сможете решить, интересны ли они вам.</string>
     <string name="no_subscriptions_head_label">Подписки не оформлены</string>
     <string name="no_subscriptions_label">Чтобы подписаться на подкаст, нажмите значок «плюс» внизу.</string>
@@ -579,7 +568,6 @@
     <string name="status_downloading_label">Выпуск загружается</string>
     <string name="in_queue_label">В очереди</string>
     <string name="is_favorite_label">Добавлен в избранное</string>
-    <string name="is_inbox_label">Во входящих</string>
     <string name="is_played">Прослушано</string>
     <string name="load_next_page_label">Загрузить следующую страницу</string>
     <string name="position">Позиция: %1$s</string>
@@ -800,7 +788,6 @@
     <string name="echo_listened_after_comment_addict">Вы подкастоман</string>
     <string name="echo_listened_after_time">Как правило, вы прослушивали выпуск %1$s после его выхода.</string>
     <string name="echo_hoarder_comment_medium">Вы слушали выпуски из %1$d%% от общего числа %2$d ваших активных подписок в этом году. Почему бы не послушать «%3$s» снова?</string>
-    <string name="removed_from_inbox_message">Убрано из входящих</string>
     <string name="mark_as_played_label">Отметить как прослушанное</string>
     <string name="mark_as_unplayed_label">Отметить как непрослушанный</string>
     <string name="reset_playback_position_label">Сбросить позицию</string>
@@ -844,10 +831,8 @@
         <item quantity="many">%d выпусков перемещено вниз.</item>
         <item quantity="other">%d выпусков перемещено вниз.</item>
     </plurals>
-    <string name="no_queue_items_inbox_has_items_button_label">Перейти во входящие</string>
     <string name="play_this_to_seek_position_message">Чтобы перейти к определённой позиции, необходимо воспроизвести выпуск</string>
     <string name="transcript_follow_audio_label">Следовать за аудио</string>
-    <string name="no_queue_items_inbox_has_items_label">Нет выпусков на очереди, но у вас есть новые выпуски!</string>
     <string name="archive_feed_label_noun">Архив</string>
     <string name="restore_archive_label">Восстанановить</string>
     <string name="please_wait_before_refreshing">Пожалуйста, подождите некоторое время, прежде чем снова обновлять подкасты.</string>
@@ -963,12 +948,4 @@
     <string name="import_error_label">Ошибка импорта</string>
     <string name="show_password_accessibility">Показать пароль</string>
     <string name="rss_address_invalid">Предоставленный адрес RSS не является действительным.</string>
-    <string name="wearos_connected_to" tools:ignore="UnusedResources">Подключено к %s</string>
-    <string name="wearos_version" tools:ignore="UnusedResources">Версия %s</string>
-    <string name="wearos_phone_not_supported" tools:ignore="UnusedResources">Смартфон не совместим. Убедитесь, что вы используете самую актуальную версию AntennaPod из Google Play на вашем смартфоне.</string>
-    <string name="wearos_no_items" tools:ignore="UnusedResources">Нет элементов</string>
-    <string name="wearos_phone_not_reachable" tools:ignore="UnusedResources">Невозможно подключиться к телефону. Убедитесь, что телефон находится поблизости и AntennaPod установлен.</string>
-    <string name="wearos_play_on_phone" tools:ignore="UnusedResources">Воспроизвести на телефоне</string>
-    <string name="wearos_browse_phone" tools:ignore="UnusedResources">Данные на телефоне</string>
-    <string name="wearos_open_on_phone" tools:ignore="UnusedResources">Открыть на телефоне</string>
 </resources>

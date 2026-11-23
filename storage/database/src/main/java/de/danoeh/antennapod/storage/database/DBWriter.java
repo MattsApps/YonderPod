@@ -697,34 +697,6 @@ public class DBWriter {
         });
     }
 
-    /**
-     * Sets the 'read'-attribute of all NEW FeedItems of a specific Feed to UNPLAYED.
-     *
-     * @param feedId ID of the Feed.
-     */
-    public static Future<?> removeFeedNewFlag(final long feedId) {
-        return runOnDbThread(() -> {
-            final PodDBAdapter adapter = PodDBAdapter.getInstance();
-            adapter.open();
-            adapter.setFeedItems(FeedItem.NEW, FeedItem.UNPLAYED, feedId);
-            adapter.close();
-            EventBus.getDefault().post(new FeedItemEvent(Collections.emptyList(), true));
-        });
-    }
-
-    /**
-     * Sets the 'read'-attribute of all NEW FeedItems to UNPLAYED.
-     */
-    public static Future<?> removeAllNewFlags() {
-        return runOnDbThread(() -> {
-            final PodDBAdapter adapter = PodDBAdapter.getInstance();
-            adapter.open();
-            adapter.setFeedItems(FeedItem.NEW, FeedItem.UNPLAYED);
-            adapter.close();
-            EventBus.getDefault().post(new FeedItemEvent(Collections.emptyList(), true));
-        });
-    }
-
     static Future<?> addNewFeed(final Context context, final Feed... feeds) {
         return runOnDbThread(() -> {
             final PodDBAdapter adapter = PodDBAdapter.getInstance();

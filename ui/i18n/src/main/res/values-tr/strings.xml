@@ -146,9 +146,6 @@
     </plurals>
     <string name="new_episode_notification_group_text">Aboneliklerinize ait yeni bölümler var.</string>
     <!--Actions on feeds-->
-  <string name="remove_all_inbox_label">Gelen kutusunu temizle</string>
-    <string name="removed_all_inbox_msg">Gelen kutusu temizlendi</string>
-    <string name="remove_all_inbox_confirmation_msg">Lütfen gelen kutusunu temizlemek istediğinizi onaylayın.</string>
     <string name="multi_select_mark_played_confirmation">Tüm seçili olanları \"Çalındı\" olarak işaretlemek istediğinizi onaylayın.</string>
     <string name="multi_select_mark_unplayed_confirmation">Tüm seçili olanları \"Çalınmadı\" olarak işaretlemek istediğinizi onaylayın.</string>
     <string name="show_info_label">Bilgiyi göster</string>
@@ -182,16 +179,11 @@
     <string name="pause_label">Duraklat</string>
     <string name="stream_label">Akış</string>
     <string name="delete_label">Sil</string>
-    <string name="remove_inbox_label">Gelen kutusundan sil</string>
     <string name="toggle_played_label">Oynatma durumunu değiştir</string>
     <string name="mark_read_no_media_label">Okundu olarak işaretle</string>
     <string name="mark_unread_label_no_media">Okunmadı olarak işaretle</string>
     <string name="add_to_queue_label">Sıraya ekle</string>
     <string name="remove_from_queue_label">Sıradan çıkar</string>
-    <plurals name="removed_from_inbox_batch_label">
-        <item quantity="one">%d bölüm gelen kutusundan kaldırıldı.</item>
-        <item quantity="other">%d bölüm gelen kutusundan kaldırıldı.</item>
-    </plurals>
     <string name="add_to_favorite_label">Favorilere ekle</string>
     <string name="show_transcript">Transkripti göster</string>
     <string name="transcript">Transkript</string>
@@ -291,7 +283,6 @@
     <string name="no_all_episodes_head_label">Hiçbir bölüm yok</string>
     <string name="no_all_episodes_label">Bir Podcast ekledikten sonra bölümleri burada gözükecek.</string>
     <string name="no_all_episodes_filtered_label">Daha çok bölüm görmek için filtreyi temizlemeyi deneyin.</string>
-    <string name="no_inbox_head_label">Gelen kutusunda bölüm yok</string>
     <string name="no_inbox_label">Yeni bölümler geldiğinde burada görünecek. İlgi duyup duymadığınıza o zaman karar verebilirsiniz.</string>
     <string name="no_subscriptions_head_label">Abonelik yok</string>
     <string name="no_subscriptions_label">Bir Podcaste abone olmak için, aşağıdaki Artı simgesine tıklayın.</string>
@@ -553,7 +544,6 @@
     <string name="status_downloading_label">Bölüm indiriliyor</string>
     <string name="in_queue_label">Kuyrukta</string>
     <string name="is_favorite_label">Favori olarak işaretlendi</string>
-    <string name="is_inbox_label">Gelen kutusunda</string>
     <string name="is_played">Oynatılan</string>
     <string name="load_next_page_label">Sonraki sayfayı yükle</string>
     <string name="position">Pozisyon: %1$s</string>
@@ -784,7 +774,6 @@
     <string name="echo_thanks_we_are_glad_new">bu yıl bize katıldığın için!\n\nBaşka bir uygulamadan gelmiş ya da podcast macerana bizimle başlamış olsanda seninle olduğumuz için mutluyuz!</string>
     <string name="echo_listened_after_time">Bir bölümü genellikle yayınlandıktan %1$s sonra tamamladın.</string>
     <string name="echo_hoarder_comment_medium">Bu yıl %2$d aktif aboneliğinden %1$d%% bölüm oynattın. Şunu tekrar kontrol etmeye ne dersin \"%3$s\" ?</string>
-    <string name="removed_from_inbox_message">Gelen kutusundan kaldırıldı</string>
     <string name="mark_as_played_label">Oynatıldı olarak işaretle</string>
     <plurals name="added_to_queue_message">
         <item quantity="one">%d bölüm sıraya eklendi.</item>
@@ -830,8 +819,6 @@
         <item quantity="one">%d bölüm aşağı taşındı.</item>
         <item quantity="other">%d bölüm aşağı taşındı.</item>
     </plurals>
-    <string name="no_queue_items_inbox_has_items_label">Sırada bölüm yok, ama sizi bekleyen yeni bölümler var!</string>
-    <string name="no_queue_items_inbox_has_items_button_label">Gelen kutusuna git</string>
     <string name="tag_all">Tümü</string>
     <string name="tag_untagged">Etiketsiz</string>
     <string name="statistics_expected_next_episode_any_time">Her an olabilir</string>

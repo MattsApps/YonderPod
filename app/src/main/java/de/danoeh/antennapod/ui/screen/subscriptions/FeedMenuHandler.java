@@ -22,13 +22,6 @@ public abstract class FeedMenuHandler {
         if (menu == null || selectedItems == null || selectedItems.isEmpty() || selectedItems.get(0) == null) {
             return false;
         }
-        boolean allSubscribed = true;
-        for (Feed feed : selectedItems) {
-            if (feed.getState() != Feed.STATE_SUBSCRIBED) {
-                allSubscribed = false;
-            }
-        }
-        setItemVisibility(menu, R.id.remove_all_inbox_item, allSubscribed);
         boolean singleNonLocalFeedSelected = selectedItems.size() == 1 && !selectedItems.get(0).isLocalFeed();
         setItemVisibility(menu, R.id.share_feed, singleNonLocalFeedSelected);
         return true;
@@ -46,9 +39,6 @@ public abstract class FeedMenuHandler {
         @NonNull Context context = fragment.requireContext();
         if (menuItemId == R.id.rename_folder_item) {
             new RenameFeedDialog(fragment.getActivity(), selectedFeed).show();
-        } else if (menuItemId == R.id.remove_all_inbox_item) {
-            new FeedMultiSelectActionHandler(fragment.getActivity(), Collections.singletonList(selectedFeed))
-                    .handleAction(R.id.remove_all_inbox_item);
         } else if (menuItemId == R.id.edit_tags) {
             TagSettingsDialog.newInstance(Collections.singletonList(selectedFeed.getPreferences()))
                     .show(fragment.getChildFragmentManager(), TagSettingsDialog.TAG);

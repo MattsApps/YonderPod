@@ -13,12 +13,6 @@
         android:icon="@drawable/ic_share"/>
 
     <item
-        android:id="@+id/remove_all_inbox_item"
-        android:menuCategory="container"
-        android:title="@string/remove_all_inbox_label"
-        android:icon="@drawable/ic_check"/>
-
-    <item
         android:id="@+id/keep_updated"
         android:menuCategory="container"
         android:title="@string/keep_updated"

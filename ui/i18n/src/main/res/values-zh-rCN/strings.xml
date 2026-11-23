@@ -140,9 +140,6 @@
     </plurals>
     <string name="new_episode_notification_group_text">您的订阅有新单集。</string>
     <!--Actions on feeds-->
-  <string name="remove_all_inbox_label">从收件箱中移除所有内容</string>
-    <string name="removed_all_inbox_msg">已从收件箱中移除所有内容</string>
-    <string name="remove_all_inbox_confirmation_msg">请确认您要从收件箱中移除所有内容。</string>
     <string name="multi_select_mark_played_confirmation">请确认您要将所有选定项目标记为已播放。</string>
     <string name="multi_select_mark_unplayed_confirmation">请确认您要将所有选定项目标记为未播放。</string>
     <string name="show_info_label">显示信息</string>
@@ -175,15 +172,11 @@
     <string name="pause_label">暂停</string>
     <string name="stream_label">流式播放</string>
     <string name="delete_label">删除</string>
-    <string name="remove_inbox_label">从收件箱中移除</string>
     <string name="toggle_played_label">切换播放状态</string>
     <string name="mark_read_no_media_label">标记为已读</string>
     <string name="mark_unread_label_no_media">标记为未读</string>
     <string name="add_to_queue_label">添加到队列</string>
     <string name="remove_from_queue_label">从队列中移除</string>
-    <plurals name="removed_from_inbox_batch_label">
-        <item quantity="other">已从收件箱中移除 %d 个单集。</item>
-    </plurals>
     <string name="add_to_favorite_label">添加到收藏</string>
     <string name="show_transcript">显示声音文字</string>
     <string name="transcript">声音文字</string>
@@ -282,7 +275,6 @@
     <string name="no_all_episodes_head_label">无单集</string>
     <string name="no_all_episodes_label">添加播客时，其单集将在此处显示。</string>
     <string name="no_all_episodes_filtered_label">尝试清除筛选条件以查看更多单集。</string>
-    <string name="no_inbox_head_label">收件箱中没有单集</string>
     <string name="no_inbox_label">新单集上线后，将在此处显示。随后您可以决定是否对其感兴趣。</string>
     <string name="no_subscriptions_head_label">没有订阅</string>
     <string name="no_subscriptions_label">点按下方的+号按钮来订阅播客。</string>
@@ -540,7 +532,6 @@
     <string name="status_downloading_label">单集正在下载</string>
     <string name="in_queue_label">在队列中</string>
     <string name="is_favorite_label">标记为收藏</string>
-    <string name="is_inbox_label">在收件箱中</string>
     <string name="is_played">已播放</string>
     <string name="load_next_page_label">载入下一页</string>
     <string name="position">位置：%1$s</string>
@@ -762,7 +753,6 @@
     <plurals name="deleted_episode_message">
         <item quantity="other">已删除 %d 个已下载单集。</item>
     </plurals>
-    <string name="removed_from_inbox_message">已从收件箱中移除</string>
     <string name="mark_as_played_label">标记为已播放</string>
     <plurals name="marked_as_played_message">
         <item quantity="other">%d 个单集已标记为已播放。</item>
@@ -790,8 +780,6 @@
     <plurals name="move_to_bottom_message">
         <item quantity="other">%d 个单集已移至底部。</item>
     </plurals>
-    <string name="no_queue_items_inbox_has_items_label">队列中无单集，但有新单集等着您！</string>
-    <string name="no_queue_items_inbox_has_items_button_label">转到收件箱</string>
     <string name="please_wait_before_refreshing">请稍后再刷新播客。</string>
     <string name="already_downloaded">单集已下载</string>
     <string name="tag_all">全部</string>
@@ -854,14 +842,6 @@
     <string name="import_error_label">导入错误</string>
     <string name="show_password_accessibility">显示密码</string>
     <string name="rss_address_invalid">您输入的 RSS 地址无效。</string>
-    <string name="wearos_connected_to" tools:ignore="UnusedResources">已连接到 %s</string>
-    <string name="wearos_version" tools:ignore="UnusedResources">版本 %s</string>
-    <string name="wearos_play_on_phone" tools:ignore="UnusedResources">在手机上播放</string>
-    <string name="wearos_open_on_phone" tools:ignore="UnusedResources">在手机上打开</string>
-    <string name="wearos_browse_phone" tools:ignore="UnusedResources">浏览手机</string>
-    <string name="wearos_no_items" tools:ignore="UnusedResources">无项目</string>
-    <string name="wearos_phone_not_reachable" tools:ignore="UnusedResources">无法连接到手机。请确保您的手机在附近且已安装 AntennaPod。</string>
     <string name="pref_display">显示</string>
-    <string name="wearos_phone_not_supported" tools:ignore="UnusedResources">手机不兼容。请确保您在手机上运行的是来自 Google Play 的 AntennaPod 最新版本。</string>
     <string name="bottom_navigation_deprecation_warning">我们在将来更新中不得不删除侧边栏导航。 AntennaPod 由一小群志愿者开发，多年维护两种样式使我们不堪重负。\n\n如果您完全依赖侧栏导航，请在应用商店中禁用 AntennaPod 更新。</string>
 </resources>

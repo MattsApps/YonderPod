@@ -152,9 +152,6 @@
     </plurals>
     <string name="new_episode_notification_group_text">למינוי שלך יש פרקים חדשים.</string>
     <!--Actions on feeds-->
-  <string name="remove_all_inbox_label">הסרה של הכול מהדואר הנכנס</string>
-    <string name="removed_all_inbox_msg">הכול הוסר מהדואר הנכנס</string>
-    <string name="remove_all_inbox_confirmation_msg">נא לאשר להסיר הכול מהדואר הנכנס.</string>
     <string name="multi_select_mark_played_confirmation">נא לאשר את סימון כל הפריטים המסומנים כנוגנו.</string>
     <string name="multi_select_mark_unplayed_confirmation">נא לאשר את סימון כל הפריטים המסומנים כטרם נוגנו.</string>
     <string name="show_info_label">הצגת מידע</string>
@@ -189,17 +186,11 @@
     <string name="pause_label">השהיה</string>
     <string name="stream_label">הזרמה</string>
     <string name="delete_label">מחיקה</string>
-    <string name="remove_inbox_label">הסרה מהדואר הנכנס</string>
     <string name="toggle_played_label">החלפת מצב נגינה</string>
     <string name="mark_read_no_media_label">סימון כנקרא</string>
     <string name="mark_unread_label_no_media">סימון כלא נקרא</string>
     <string name="add_to_queue_label">הוספה לתור</string>
     <string name="remove_from_queue_label">הסרה מהתור</string>
-    <plurals name="removed_from_inbox_batch_label">
-        <item quantity="one">הפרק הוסר מהדואר הנכנס.</item>
-        <item quantity="two">%d פרקים הוסרו מהדואר הנכנס.</item>
-        <item quantity="other">%d פרקים הוסרו מהדואר הנכנס.</item>
-    </plurals>
     <string name="add_to_favorite_label">הוספה למועדפים</string>
     <string name="show_transcript">הצגת תמלול</string>
     <string name="transcript">תמלול</string>
@@ -300,7 +291,6 @@
     <string name="no_all_episodes_head_label">אין פרקים</string>
     <string name="no_all_episodes_label">בעת הוספת הסכת, הפרקים יופיעו כאן.</string>
     <string name="no_all_episodes_filtered_label">יש לנסות לנקות את המסנן כדי לצפות בפרקים נוספים.</string>
-    <string name="no_inbox_head_label">אין פרקים בדואר הנכנס</string>
     <string name="no_inbox_label">כאשר פרקים חדשים מגיעים, הם מופיעים כאן. אפשר להחליט אם הם מעניינים אותך או לא.</string>
     <string name="no_subscriptions_head_label">אין מינויים</string>
     <string name="no_subscriptions_label">כדי להירשם להסכת, יש ללחוץ על סימן הפלוס שלהלן.</string>
@@ -566,7 +556,6 @@
     <string name="status_downloading_label">הפרק יורד</string>
     <string name="in_queue_label">בתור</string>
     <string name="is_favorite_label">מסומן כמועדף</string>
-    <string name="is_inbox_label">בפריטים הנכנסים</string>
     <string name="is_played">התנגן</string>
     <string name="load_next_page_label">טעינת הדף הבא</string>
     <string name="position">מיקום: %1$s</string>
@@ -814,7 +803,6 @@
         <item quantity="two">שני פרקים שירדו נמחקו.</item>
         <item quantity="other">%d פרקים שירדו נמחקו.</item>
     </plurals>
-    <string name="removed_from_inbox_message">הוסר מהדואר הנכנס</string>
     <string name="mark_as_played_label">סימון כהושמע</string>
     <plurals name="marked_as_played_message">
         <item quantity="one">פרק סומן כהושמע.</item>
@@ -854,8 +842,6 @@
         <item quantity="two">שני פרקים ירדו לסוף.</item>
         <item quantity="other">%d פרקים ירדו לסוף.</item>
     </plurals>
-    <string name="no_queue_items_inbox_has_items_label">אין פרקים שממתינים בתור, אך יש פרקים חדשים שממתינים לך!</string>
-    <string name="no_queue_items_inbox_has_items_button_label">מעבר לדואר הנכנס</string>
     <string name="tag_all">הכול</string>
     <string name="please_wait_before_refreshing">נא להמתין לפני ריענון ההסכתים שוב.</string>
     <string name="already_downloaded">הפרק כבר ירד</string>
@@ -924,14 +910,6 @@
     <string name="import_error_label">שגיאת ייבוא</string>
     <string name="show_password_accessibility">הצגת סיסמה</string>
     <string name="rss_address_invalid">כתובת ה־RSS שמילאת לא תקפה.</string>
-    <string name="wearos_connected_to" tools:ignore="UnusedResources">מחובר אל %s</string>
-    <string name="wearos_version" tools:ignore="UnusedResources">גרסה %s</string>
-    <string name="wearos_phone_not_supported" tools:ignore="UnusedResources">הטלפון לא נתמך. נא לוודא שהגרסה שמותקנת אצלך היא הגרסה העדכנית ביותר של אנטנה־פּוֹד מ־Google Play בטלפון שלך.</string>
-    <string name="wearos_no_items" tools:ignore="UnusedResources">אין פריטים</string>
-    <string name="wearos_phone_not_reachable" tools:ignore="UnusedResources">לא ניתן לתקשר עם הטלפון. נא לוודא שהטלפון שלך בקרבת מקום ושהיישומון אנטנה־פּוֹד מותקן.</string>
-    <string name="wearos_play_on_phone" tools:ignore="UnusedResources">נגינה בטלפון</string>
-    <string name="wearos_browse_phone" tools:ignore="UnusedResources">עיון בטלפון</string>
-    <string name="wearos_open_on_phone" tools:ignore="UnusedResources">פתיחה בטלפון</string>
     <plurals name="reset_position_message">
         <item quantity="one">נקודת הנגינה של פרק אחד התאפסה.</item>
         <item quantity="two">נקודת הנגינה של שני פרקים התאפסה.</item>

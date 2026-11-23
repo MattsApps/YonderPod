@@ -138,9 +138,6 @@
     </plurals>
     <string name="new_episode_notification_group_text">Sinu tellitud kanalitel on uusi saateid.</string>
     <!--Actions on feeds-->
-  <string name="remove_all_inbox_label">Eemalda kõik postkastist</string>
-    <string name="removed_all_inbox_msg">Kõik postkastist eemaldatud</string>
-    <string name="remove_all_inbox_confirmation_msg">Palun kinnita, et soovid kõik postkastist eemaldada.</string>
     <string name="multi_select_mark_played_confirmation">Palun kinnita, et soovid kõik valitud üksused märkida kuulatuks.</string>
     <string name="multi_select_mark_unplayed_confirmation">Palun kinnita, et soovid kõik valitud üksused märkida kui kuulamata.</string>
     <string name="show_info_label">Näita infot</string>
@@ -173,16 +170,11 @@
     <string name="pause_label">Peata</string>
     <string name="stream_label">Voogedastusena</string>
     <string name="delete_label">Kustuta</string>
-    <string name="remove_inbox_label">Eemalda postkastist</string>
     <string name="toggle_played_label">Muuda kuulamise olekut</string>
     <string name="mark_read_no_media_label">Märgi loetuks</string>
     <string name="mark_unread_label_no_media">Märgi mitteloetuks</string>
     <string name="add_to_queue_label">Lisa esitusjärjekorda</string>
     <string name="remove_from_queue_label">Eemalda järjekorrast</string>
-    <plurals name="removed_from_inbox_batch_label">
-        <item quantity="one">%d osa postkastist eemaldatud.</item>
-        <item quantity="other">%d osa postkastist eemaldatud.</item>
-    </plurals>
     <string name="add_to_favorite_label">Lisa lemmikutesse</string>
     <string name="remove_from_favorite_label">Eemalda lemmikutest</string>
     <string name="visit_website_label">Külasta veebilehte</string>
@@ -278,7 +270,6 @@
     <string name="no_all_episodes_head_label">Saateid pole</string>
     <string name="no_all_episodes_label">Kui lisad taskuhäälingu, näeb siin selle saateid.</string>
     <string name="no_all_episodes_filtered_label">Rohkemate osade nägemiseks tühista filter.</string>
-    <string name="no_inbox_head_label">Postkastis pole saateid</string>
     <string name="no_inbox_label">Kui avaldatakse uusi osi, näed neid siin. Saad ise otsustada, kas oled nendest huvitatud või mitte.</string>
     <string name="no_subscriptions_head_label">Tellimusi pole</string>
     <string name="no_subscriptions_label">Taskuhäälingu tellimiseks vajuta all plussmärgil.</string>
@@ -506,7 +497,6 @@
     <string name="status_downloading_label">Osa laaditakse alla</string>
     <string name="in_queue_label">Järjekorras</string>
     <string name="is_favorite_label">Märgitud lemmikuks</string>
-    <string name="is_inbox_label">Postkastis</string>
     <string name="is_played">Kuulatud</string>
     <string name="load_next_page_label">Laadi järgmine lehekülg</string>
     <string name="position">Asukoht: %1$s</string>
@@ -792,7 +782,6 @@
         <item quantity="one">%d allalaaditud osa on kustutatud.</item>
         <item quantity="other">%d allalaaditud osa on kustutatud.</item>
     </plurals>
-    <string name="removed_from_inbox_message">Eemaldati postkastist</string>
     <string name="mark_as_played_label">Märgi kuulatuks</string>
     <string name="play_this_to_seek_position_message">Juurdepääsuks kuulamisjärjele, pead seda osa kuulama</string>
     <string name="mark_as_unplayed_label">Märgi kui kuulamata</string>
@@ -818,8 +807,6 @@
         <item quantity="one">%d osa on liigutatud alla.</item>
         <item quantity="other">%d osa on liigutatud alla.</item>
     </plurals>
-    <string name="no_queue_items_inbox_has_items_label">Ühtegi osa pole veel ilmunud, aga uued osa ootavad sind!</string>
-    <string name="no_queue_items_inbox_has_items_button_label">Mine postkasti</string>
     <string name="general_expand_button">Laienda</string>
     <string name="general_collapse_button">Ahenda</string>
     <string name="restore_archive_label">Taasta</string>
@@ -897,12 +884,4 @@
     <string name="show_password_accessibility">Näita salasõna</string>
     <string name="statistics_expected_next_episode_any_time">Kohe millal vaid</string>
     <string name="rss_address_invalid">Sinu sisestatud RSS-aadress pole korrektne.</string>
-    <string name="wearos_connected_to" tools:ignore="UnusedResources">Ühendatud seadmega %s</string>
-    <string name="wearos_version" tools:ignore="UnusedResources">Versioon %s</string>
-    <string name="wearos_phone_not_supported" tools:ignore="UnusedResources">Telefon pole ühilduv. Palun kontrolli, et oled laadinud Google Play rakendustepoest alla viimase AntennaPodi versiooni.</string>
-    <string name="wearos_no_items" tools:ignore="UnusedResources">Objekte pole</string>
-    <string name="wearos_phone_not_reachable" tools:ignore="UnusedResources">Telefon pole leitav. Palun kontrolli, et telefon on läheduses ja AntennaPod on paigaldatud.</string>
-    <string name="wearos_play_on_phone" tools:ignore="UnusedResources">Esita telefonis</string>
-    <string name="wearos_browse_phone" tools:ignore="UnusedResources">Sirvi telefonis</string>
-    <string name="wearos_open_on_phone" tools:ignore="UnusedResources">Ava telefonis</string>
 </resources>

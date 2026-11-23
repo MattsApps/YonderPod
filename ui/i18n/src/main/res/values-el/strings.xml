@@ -146,9 +146,6 @@
     </plurals>
     <string name="new_episode_notification_group_text">Οι συνδρομές σας έχουν νέα επεισόδια.</string>
     <!--Actions on feeds-->
-  <string name="remove_all_inbox_label">Αφαίρεση όλων από τα εισερχόμενα</string>
-    <string name="removed_all_inbox_msg">Αφαιρέθηκαν όλα από τα εισερχόμενα</string>
-    <string name="remove_all_inbox_confirmation_msg">Παρακαλούμε επιβεβαιώστε ότι θέλετε να τα αφαιρέσετε όλα από τα εισερχόμενα.</string>
     <string name="multi_select_mark_played_confirmation">Επιβεβαιώστε ότι θέλετε να επισημάνετε όλα τα επιλεγμένα στοιχεία ως αναπαραγόμενα.</string>
     <string name="multi_select_mark_unplayed_confirmation">Επιβεβαιώστε ότι θέλετε να επισημάνετε όλα τα επιλεγμένα στοιχεία ως μη αναπαραγόμενα.</string>
     <string name="show_info_label">Εμφάνιση πληροφοριών</string>
@@ -182,16 +179,11 @@
     <string name="pause_label">Παύση</string>
     <string name="stream_label">Ροή</string>
     <string name="delete_label">Διαγραφή</string>
-    <string name="remove_inbox_label">Αφαίρεση από τα εισερχόμενα</string>
     <string name="toggle_played_label">Εναλλαγή αναπαραχθέντας κατάστασης</string>
     <string name="mark_read_no_media_label">Επισήμανση ως αναγνωσμένο</string>
     <string name="mark_unread_label_no_media">Επισήμανση ως μη αναγνωσμένο</string>
     <string name="add_to_queue_label">Προσθήκη στην ουρά</string>
     <string name="remove_from_queue_label">Αφαίρεση από την ουρά</string>
-    <plurals name="removed_from_inbox_batch_label">
-        <item quantity="one">%d επεισόδιο αφαιρέθηκε από τα εισερχόμενα.</item>
-        <item quantity="other">%d επεισόδια αφαιρέθηκαν από τα εισερχόμενα.</item>
-    </plurals>
     <string name="add_to_favorite_label">Προσθήκη στα αγαπημένα</string>
     <string name="show_transcript">Εμφάνιση μεταγραφής</string>
     <string name="transcript">Μεταγραφή</string>
@@ -291,7 +283,6 @@
     <string name="no_all_episodes_head_label">Χωρίς επεισόδια</string>
     <string name="no_all_episodes_label">Με την προσθήκη ενός podcast, τα επεισόδιά του θα εμφανίζονται εδώ.</string>
     <string name="no_all_episodes_filtered_label">Προσπαθήστε να διαγράψετε τα φίλτρα για να δείτε περισσότερα επεισόδια.</string>
-    <string name="no_inbox_head_label">Δεν υπάρχουν επεισόδια στα εισερχόμενα</string>
     <string name="no_inbox_label">Όταν βγαίνουν καινούργια επεισόδια, θα εμφανίζονται εδώ. Μπορείτε να αποφασίσετε εάν σας ενδιαφέρουν ή όχι.</string>
     <string name="no_subscriptions_head_label">Χωρίς συνδρομές</string>
     <string name="no_subscriptions_label">Για να εγγραφείτε σε ένα podcast, πατήστε το εικονίδιο + παρακάτω.</string>
@@ -552,7 +543,6 @@
     <string name="status_downloading_label">Γίνεται λήψη του επεισοδίου</string>
     <string name="in_queue_label">Στην ουρά</string>
     <string name="is_favorite_label">Επισημάνθηκε ως αγαπημένο</string>
-    <string name="is_inbox_label">Στα εισερχόμενα</string>
     <string name="is_played">Αναπαράχθηκε</string>
     <string name="load_next_page_label">Φόρτωση επόμενης σελίδας</string>
     <string name="position">Θέση: %1$s</string>
@@ -806,7 +796,6 @@
         <item quantity="one">%d κατεβασμένο επεισόδιο διαγράφηκε.</item>
         <item quantity="other">%d κατεβασμένα επεισόδια διαγράφηκαν.</item>
     </plurals>
-    <string name="removed_from_inbox_message">Αφαιρέθηκε από τα εισερχόμενα</string>
     <string name="mark_as_played_label">Επισήμανση ως παιγμένο</string>
     <string name="play_this_to_seek_position_message">Για να μεταπιδήσετε σε συγκεκριμένες θέσεις, πρέπει να αναπαράγετε το επεισόδιο</string>
     <plurals name="marked_as_played_message">
@@ -853,8 +842,6 @@
     <string name="episode">Επεισόδιο</string>
     <string name="feed">Podcast</string>
     <string name="queue_time_left_label">%1$s • απομένουν %2$s</string>
-    <string name="no_queue_items_inbox_has_items_label">Δεν υπάρχουν επεισόδια στην ουρά, αλλά σας περιμένουν νέα επεισόδια!</string>
-    <string name="no_queue_items_inbox_has_items_button_label">Μετάβαση στα εισερχόμενα</string>
     <string name="no_fav_episodes_head_label">Δεν υπάρχουν αγαπημένα</string>
     <string name="no_fav_episodes_label">Επισημάνετε επεισόδια ως αγαπημένα πατώντας το εικονίδιο με το αστέρι.</string>
     <string name="no_archive_head_label">Δεν υπάρχουν αρχειοθετημένα</string>
@@ -889,14 +876,6 @@
     <string name="report_bug_crash_log_message">Δημιουργήθηκε: %1$s.</string>
     <string name="pref_advanced">Για προχωρημένους</string>
     <string name="cover_as_background">Εξώφυλλο ως φόντο</string>
-    <string name="wearos_connected_to" tools:ignore="UnusedResources">Συνδέθηκε στο %s</string>
-    <string name="wearos_version" tools:ignore="UnusedResources">Έκδοση %s</string>
-    <string name="wearos_phone_not_supported" tools:ignore="UnusedResources">Το τηλέφωνο δεν είναι συμβατό. Βεβαιωθείτε ότι στο τηλέφωνό σας εκτελείτε την πιο πρόσφατη έκδοση του AntennaPod από το Google Play.</string>
-    <string name="wearos_no_items" tools:ignore="UnusedResources">Δεν υπάρχουν στοιχεία</string>
-    <string name="wearos_phone_not_reachable" tools:ignore="UnusedResources">Δεν ήταν δυνατή η σύνδεση με το τηλέφωνο. Βεβαιωθείτε ότι το τηλέφωνό σας βρίσκεται κοντά και ότι το AntennaPod είναι εγκατεστημένο.</string>
-    <string name="wearos_play_on_phone" tools:ignore="UnusedResources">Αναπαραγωγή στο τηλέφωνο</string>
-    <string name="wearos_browse_phone" tools:ignore="UnusedResources">Περιήγηση στο τηλέφωνο</string>
-    <string name="wearos_open_on_phone" tools:ignore="UnusedResources">Άνοιγμα στο τηλέφωνο</string>
     <string name="transcript_follow_audio_label">Συγχρονισμός με τον ήχο</string>
     <string name="sleep_timer_without_continuous_playback_message">Αντί να ενεργοποιείτε πάντα αυτόματα τον χρονοδιακόπτη ύπνου με ένα επεισόδιο, απενεργοποιήστε τη «συνεχή αναπαραγωγή» στις ρυθμίσεις.</string>
     <string name="release_schedule_multiple_per_day">πολλές φορές την ημέρα</string>

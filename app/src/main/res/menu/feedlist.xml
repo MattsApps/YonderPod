@@ -72,13 +72,6 @@
         custom:showAsAction="never"
         android:title="@string/share_label" />
 
-    <item
-        android:id="@+id/remove_all_inbox_item"
-        android:title="@string/remove_all_inbox_label"
-        android:menuCategory="container"
-        custom:showAsAction="collapseActionView"
-        android:icon="@drawable/ic_check"/>
-
     <!-- A show's list (0.9.34), the same four items and order as the long press in Podcasts Tend (ShowActions).
          A recorded radio show uses show_delete alone, as "delete this show". -->
     <item

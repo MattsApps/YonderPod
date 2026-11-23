@@ -158,9 +158,6 @@
     </plurals>
     <string name="new_episode_notification_group_text">У подкастах, на які ви підписані вийшли нові випуски.</string>
     <!--Actions on feeds-->
-  <string name="remove_all_inbox_label">Видалити все з вхідних</string>
-    <string name="removed_all_inbox_msg">Вхідні очищено</string>
-    <string name="remove_all_inbox_confirmation_msg">Будь ласка, підтвердьте, що хочете видалити всі випуски з нових.</string>
     <string name="multi_select_mark_played_confirmation">Підтвердіть, якщо бажаєте, позначення усіх вибраних елементів як відтворені.</string>
     <string name="multi_select_mark_unplayed_confirmation">Будь ласка, підтвердіть, що ви хочете позначити всі вибрані елементи як \"не відтворені\".</string>
     <string name="show_info_label">Інформація</string>
@@ -196,18 +193,11 @@
     <string name="pause_label">Пауза</string>
     <string name="stream_label">Прослухати без завантаження</string>
     <string name="delete_label">Видалити</string>
-    <string name="remove_inbox_label">Вилучити з вхідних</string>
     <string name="toggle_played_label">Перемикнути стан прослуханості</string>
     <string name="mark_read_no_media_label">Позначити як прочитане</string>
     <string name="mark_unread_label_no_media">Позначити як непрочитане</string>
     <string name="add_to_queue_label">Додати до черги</string>
     <string name="remove_from_queue_label">Вилучити з черги</string>
-    <plurals name="removed_from_inbox_batch_label">
-        <item quantity="one">%d випуск вилучено з нових.</item>
-        <item quantity="few">%d випуски вилучено з нових.</item>
-        <item quantity="many">%d випуски вилучено з нових.</item>
-        <item quantity="other">%d випуски вилучено з нових.</item>
-    </plurals>
     <string name="add_to_favorite_label">Додати до обраного</string>
     <string name="show_transcript">Показати транскрипцію</string>
     <string name="transcript">Транскрипція</string>
@@ -309,7 +299,6 @@
     <string name="no_all_episodes_head_label">Немає випусків</string>
     <string name="no_all_episodes_label">Коли додасте подкаст, тут з’явиться перелік його випусків.</string>
     <string name="no_all_episodes_filtered_label">Спробуйте очистити фільтр, щоб побачити більше випусків.</string>
-    <string name="no_inbox_head_label">У папці «Нові» немає випусків</string>
     <string name="no_inbox_label">Коли вийдуть нові випуски, вони зʼявляться тут, і ви зможете вирішити, чи цікавлять вони вас.</string>
     <string name="no_subscriptions_head_label">Немає підписок</string>
     <string name="no_subscriptions_label">Щоб підписатися на подкаст, натисніть іконку «плюс» нижче.</string>
@@ -579,7 +568,6 @@
     <string name="status_downloading_label">Триває завантаження випуску</string>
     <string name="in_queue_label">В черзі</string>
     <string name="is_favorite_label">Відмічений як улюблений</string>
-    <string name="is_inbox_label">В теці \"Вхідні\"</string>
     <string name="is_played">Відтворений</string>
     <string name="load_next_page_label">Завантажити наступну сторінку</string>
     <string name="position">Позиція: %1$s</string>
@@ -812,7 +800,6 @@
         <item quantity="many">%d завантажені епізодів видалено.</item>
         <item quantity="other">%d завантажені епізодів видалено.</item>
     </plurals>
-    <string name="removed_from_inbox_message">Видалено з папки \"Вхідні\"</string>
     <string name="mark_as_played_label">Позначити як відтворене</string>
     <plurals name="marked_as_played_message">
         <item quantity="one">%d епізод позначено як відтворений.</item>
@@ -858,8 +845,6 @@
         <item quantity="many">%d епізодів переміщено вниз.</item>
         <item quantity="other">%d епізодів переміщено вниз.</item>
     </plurals>
-    <string name="no_queue_items_inbox_has_items_label">Немає запланованих епізодів, але на вас чекають нові епізоди!</string>
-    <string name="no_queue_items_inbox_has_items_button_label">Перейти до папки \"Вхідні\"</string>
     <string name="please_wait_before_refreshing">Будь ласка, зачекайте деякий час, перш ніж знову оновлювати подкасти.</string>
     <string name="already_downloaded">Епізод вже завантажено</string>
     <string name="tag_all">Усі</string>

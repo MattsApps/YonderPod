@@ -142,9 +142,6 @@
     </plurals>
     <string name="new_episode_notification_group_text">आपके सब्सक्रिप्शन के नए एपिसोड हैं।</string>
     <!--Actions on feeds-->
-  <string name="remove_all_inbox_label">इनबॉक्स से सब हटाएं</string>
-    <string name="removed_all_inbox_msg">इनबॉक्स से सब हटाए गए</string>
-    <string name="remove_all_inbox_confirmation_msg">ये कंफर्म करें कि आप इनबॉक्स से सब कुछ हटाना चाहते हैं।</string>
     <string name="multi_select_mark_played_confirmation">ये कंफर्म करें कि आप सभी चुने गए आइटमों को सुना हुआ मार्क करना चाहते हैं।</string>
     <string name="multi_select_mark_unplayed_confirmation">ये कंफर्म करें कि आप सभी चुने गए आइटमों को अनसुना मार्क करना चाहते हैं।</string>
     <string name="show_info_label">जानकारी दिखाएं</string>
@@ -176,16 +173,11 @@
     <string name="pause_label">रोकें</string>
     <string name="stream_label">स्ट्रीम करें</string>
     <string name="delete_label">मिटाएं</string>
-    <string name="remove_inbox_label">इनबॉक्स से हटाएं</string>
     <string name="toggle_played_label">सुनने का मार्क बदलें</string>
     <string name="mark_read_no_media_label">पढ़ा हुआ मार्क करें</string>
     <string name="mark_unread_label_no_media">पढ़ा नहीं मार्क करें</string>
     <string name="add_to_queue_label">कतार में जोड़ें</string>
     <string name="remove_from_queue_label">कतार से हटाएं</string>
-    <plurals name="removed_from_inbox_batch_label">
-        <item quantity="one">%d एपिसोड इनबॉक्स से हटाया गया।</item>
-        <item quantity="other">%d एपिसोड इनबॉक्स से हटाए गए।</item>
-    </plurals>
     <string name="add_to_favorite_label">मनपसंद में जोड़ें</string>
     <string name="remove_from_favorite_label">मनपसंद से हटाएं</string>
     <string name="visit_website_label">वेबसाइट पर जाएं</string>
@@ -281,7 +273,6 @@
     <string name="no_all_episodes_head_label">कोई एपिसोड नहीं</string>
     <string name="no_all_episodes_label">जब आप कोई पॉडकास्ट जोड़ेंगे, तो एपिसोड इधर दिखेंगे।</string>
     <string name="no_all_episodes_filtered_label">ज़्यादा एपिसोड देखने के लिए फिल्टर हटाकर देखें।</string>
-    <string name="no_inbox_head_label">इनबॉक्स में कोई एपिसोड नहीं</string>
     <string name="no_inbox_label">जब नए एपिसोड आएंगे, तब वो यहा दिखेंगे। फिर ये देखा जा सकता है कि आपकी उसमें दिलचस्पी है या नहीं।</string>
     <string name="no_subscriptions_head_label">कोई सब्सक्रिप्शन नहीं</string>
     <string name="no_subscriptions_label">पॉडकास्ट को सब्सक्राइब करने के लिए, नीचे वाला प्लस आइकन दबाएं।</string>
@@ -495,7 +486,6 @@
     <string name="status_downloading_label">एपिसोड डाउनलोड कर रहे है</string>
     <string name="in_queue_label">कतार में</string>
     <string name="is_favorite_label">मनपसंद मार्क किया गया</string>
-    <string name="is_inbox_label">इनबॉक्स में</string>
     <string name="is_played">सुना हुआ</string>
     <string name="load_next_page_label">अगला पेज लोड करें</string>
     <string name="position">पोज़िशन: %1$s</string>
@@ -644,7 +634,6 @@
         <item quantity="one">%d डाउनलोड किया गया एपिसोड मिटाया गया।</item>
         <item quantity="other">%d डाउनलोड करे गए एपिसोड मिटाए गए।</item>
     </plurals>
-    <string name="removed_from_inbox_message">इनबॉक्स से हटाया गया</string>
     <string name="mark_as_played_label">सुना हुआ मार्क करें</string>
     <string name="play_this_to_seek_position_message">पोज़ीशन पर जाने के लिए, आपको एपिसोड चलाने की ज़रूरत हैं</string>
     <plurals name="marked_as_played_message">
@@ -698,8 +687,6 @@
     <string name="episode">एपिसोड</string>
     <string name="feed">पॉडकास्ट</string>
     <string name="clear_queue_confirmation_msg">कंफर्म करें कि आप कतार से सब एपिसोड हटाना चाहते हैं।</string>
-    <string name="no_queue_items_inbox_has_items_label">कतार में कोई एपिसोड नहीं है, लेकिन नए एपिसोड आपका इंतज़ार कर रहे हैं!</string>
-    <string name="no_queue_items_inbox_has_items_button_label">इनबॉक्स में जाएं</string>
     <string name="no_archive_head_label">आर्कइव खाली</string>
     <string name="no_archive_label">आप मेन सब्सक्रिप्शन स्क्रीन से पॉडकास्ट आर्कइव कर सकते हैं।</string>
     <string name="theming">थीम</string>

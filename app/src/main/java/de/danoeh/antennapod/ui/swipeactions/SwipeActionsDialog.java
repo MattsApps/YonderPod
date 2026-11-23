@@ -64,14 +64,7 @@ public class SwipeActionsDialog {
         if (!tag.equals(CompletedDownloadsFragment.TAG)) {
             keys.add(new StartDownloadSwipeAction());
         }
-        if (!tag.equals(CompletedDownloadsFragment.TAG)
-                && ! tag.equals(QueueFragment.TAG)
-                && !tag.equals(PlaybackHistoryFragment.TAG)) {
-            keys.add(new RemoveFromInboxSwipeAction());
-        }
-        if (!tag.equals("NewEpisodesFragment")) {
-            keys.add(new DeleteSwipeAction());
-        }
+        keys.add(new DeleteSwipeAction());
         if (tag.equals(FavoritesFragment.TAG)) {
             keys.add(new RemoveFromFavoritesSwipeAction());
         } else {
@@ -80,16 +73,11 @@ public class SwipeActionsDialog {
         if (tag.equals(PlaybackHistoryFragment.TAG)) {
             keys.add(new RemoveFromHistorySwipeAction());
         }
-        if (!tag.equals("NewEpisodesFragment")) {
-            keys.add(new TogglePlaybackStateSwipeAction());
-        }
+        keys.add(new TogglePlaybackStateSwipeAction());
         keys.add(new ShareSwipeAction());
 
         String forFragment = "";
         switch (tag) {
-            case "NewEpisodesFragment":
-                forFragment = context.getString(R.string.inbox_label);
-                break;
             case AllEpisodesFragment.TAG:
                 forFragment = context.getString(R.string.episodes_label);
                 break;
@@ -202,7 +190,6 @@ public class SwipeActionsDialog {
         view.container.setAlpha(0.3f);
         view.secondaryActionButton.secondaryActionButton.setVisibility(View.GONE);
         view.dragHandle.setVisibility(View.GONE);
-        view.statusInbox.setVisibility(View.GONE);
         view.txtvTitle.setText("███████");
         view.txtvPosition.setText("█████");
     }

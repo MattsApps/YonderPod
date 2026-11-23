@@ -33,7 +33,7 @@ public class TogglePlaybackStateSwipeAction implements SwipeAction {
 
     @Override
     public void performAction(FeedItem item, Fragment fragment, FeedItemFilter filter) {
-        int newState = item.getPlayState() == FeedItem.UNPLAYED ? FeedItem.PLAYED : FeedItem.UNPLAYED;
+        int newState = item.isPlayed() ? FeedItem.UNPLAYED : FeedItem.PLAYED;
         FeedItemMenuHandler.markReadWithUndo(fragment, item, newState, willRemove(filter, item));
     }
 

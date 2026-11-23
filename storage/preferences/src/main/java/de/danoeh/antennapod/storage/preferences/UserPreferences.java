@@ -84,7 +84,6 @@ public abstract class UserPreferences {
     public static final String PREF_QUEUE_KEEP_SORTED_ORDER = "prefQueueKeepSortedOrder";
     public static final String PREF_NEW_EPISODES_ACTION = "prefNewEpisodesAction";
     private static final String PREF_DOWNLOADS_SORTED_ORDER = "prefDownloadSortedOrder";
-    private static final String PREF_INBOX_SORTED_ORDER = "prefInboxSortedOrder";
 
     // Episode
     public static final String PREF_SORT_ALL_EPISODES = "prefEpisodesSort";
@@ -951,15 +950,6 @@ public abstract class UserPreferences {
      */
     public static void setDownloadsSortedOrder(SortOrder sortOrder) {
         prefs.edit().putString(PREF_DOWNLOADS_SORTED_ORDER, "" + sortOrder.code).apply();
-    }
-
-    public static SortOrder getInboxSortedOrder() {
-        String sortOrderStr = prefs.getString(PREF_INBOX_SORTED_ORDER, "" + SortOrder.DATE_NEW_OLD.code);
-        return SortOrder.fromCodeString(sortOrderStr);
-    }
-
-    public static void setInboxSortedOrder(SortOrder sortOrder) {
-        prefs.edit().putString(PREF_INBOX_SORTED_ORDER, "" + sortOrder.code).apply();
     }
 
     public static SubscriptionsFilter getSubscriptionsFilter() {

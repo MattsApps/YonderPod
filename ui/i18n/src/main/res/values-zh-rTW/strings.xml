@@ -140,9 +140,6 @@
     </plurals>
     <string name="new_episode_notification_group_text">你訂閱的 Podcast 推出新單集了。</string>
     <!--Actions on feeds-->
-  <string name="remove_all_inbox_label">移除全部最新單集</string>
-    <string name="removed_all_inbox_msg">從最新單集移除全部集數</string>
-    <string name="remove_all_inbox_confirmation_msg">請確認要從最新單集中移除所有內容。</string>
     <string name="multi_select_mark_played_confirmation">請確認你要將所有選擇的集數標記為「已播放」。</string>
     <string name="multi_select_mark_unplayed_confirmation">請確認你要將所有選擇的集數標記為「未播放」。</string>
     <string name="show_info_label">顯示資料</string>
@@ -175,15 +172,11 @@
     <string name="pause_label">暫停</string>
     <string name="stream_label">串流播放</string>
     <string name="delete_label">刪除</string>
-    <string name="remove_inbox_label">從最新單集中移除</string>
     <string name="toggle_played_label">切換播放狀態</string>
     <string name="mark_read_no_media_label">標示為已讀</string>
     <string name="mark_unread_label_no_media">標示為未讀</string>
     <string name="add_to_queue_label">加入至待播清單</string>
     <string name="remove_from_queue_label">從待播清單中移除</string>
-    <plurals name="removed_from_inbox_batch_label">
-        <item quantity="other">已從最新集數中刪除 %d 集。</item>
-    </plurals>
     <string name="add_to_favorite_label">新增至最愛</string>
     <string name="show_transcript">顯示逐字稿</string>
     <string name="transcript">逐字稿</string>
@@ -282,7 +275,6 @@
     <string name="no_all_episodes_head_label">無內容</string>
     <string name="no_all_episodes_label">當你加入 Podcast 後，其中的各單集會顯示於此。</string>
     <string name="no_all_episodes_filtered_label">請嘗試清除過濾器，以查看更多集數。</string>
-    <string name="no_inbox_head_label">最新單集中沒有任何集數</string>
     <string name="no_inbox_label">當有新集數發佈時，就會顯示在這裡。你可以決定是否對它們感興趣。</string>
     <string name="no_subscriptions_head_label">無訂閱</string>
     <string name="no_subscriptions_label">請按下方加號來訂閱 Podcast。</string>
@@ -540,7 +532,6 @@
     <string name="status_downloading_label">正在下載這集</string>
     <string name="in_queue_label">在待播清單中</string>
     <string name="is_favorite_label">標記為最愛</string>
-    <string name="is_inbox_label">在最新單集中</string>
     <string name="is_played">已播放</string>
     <string name="load_next_page_label">載入下一頁</string>
     <string name="position">播放進度：%1$s</string>
@@ -770,7 +761,6 @@
     <plurals name="deleted_episode_message">
         <item quantity="other">已刪除 %d 個已下載的集數。</item>
     </plurals>
-    <string name="removed_from_inbox_message">從最新單集中移除</string>
     <string name="mark_as_played_label">標示為已播放</string>
     <plurals name="marked_as_played_message">
         <item quantity="other">已將 %d 集標示為已播放。</item>
@@ -797,8 +787,6 @@
     <plurals name="move_to_bottom_message">
         <item quantity="other">%d 集已移至底部。</item>
     </plurals>
-    <string name="no_queue_items_inbox_has_items_label">暫無已排定的單集，但有新單集等著你！</string>
-    <string name="no_queue_items_inbox_has_items_button_label">移至最新單集</string>
     <string name="archive_feed_label_noun">封存</string>
     <string name="restore_archive_label">復原</string>
     <string name="please_wait_before_refreshing">請等待一段時間後再重新載入 Podcasts 。</string>
@@ -864,12 +852,4 @@
     <string name="import_error_label">匯入錯誤</string>
     <string name="show_password_accessibility">顯示密碼</string>
     <string name="rss_address_invalid">您輸入的 RSS 地址無效。</string>
-    <string name="wearos_connected_to" tools:ignore="UnusedResources">已連接到 %s</string>
-    <string name="wearos_version" tools:ignore="UnusedResources">版本 %s</string>
-    <string name="wearos_phone_not_supported" tools:ignore="UnusedResources">手機不相容。請確保您的手機上運行的是 Google Play 上最新版本的 AntennaPod。</string>
-    <string name="wearos_no_items" tools:ignore="UnusedResources">沒有項目</string>
-    <string name="wearos_phone_not_reachable" tools:ignore="UnusedResources">無法連接手機。請確保您的手機在附近並已安裝 AntennaPod。</string>
-    <string name="wearos_play_on_phone" tools:ignore="UnusedResources">在手機上播放</string>
-    <string name="wearos_browse_phone" tools:ignore="UnusedResources">瀏覽手機</string>
-    <string name="wearos_open_on_phone" tools:ignore="UnusedResources">在手機上打開</string>
 </resources>

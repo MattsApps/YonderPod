@@ -48,7 +48,6 @@ public class EpisodeItemViewHolder extends RecyclerView.ViewHolder {
     private final TextView position;
     private final TextView duration;
     private final TextView size;
-    public final ImageView isInbox;
     public final ImageView isInQueue;
     private final ImageView isVideo;
     public final ImageView isFavorite;
@@ -78,7 +77,6 @@ public class EpisodeItemViewHolder extends RecyclerView.ViewHolder {
         progressBar = itemView.findViewById(R.id.progressBar);
         isInQueue = itemView.findViewById(R.id.ivInPlaylist);
         isVideo = itemView.findViewById(R.id.ivIsVideo);
-        isInbox = itemView.findViewById(R.id.statusInbox);
         isFavorite = itemView.findViewById(R.id.isFavorite);
         size = itemView.findViewById(R.id.size);
         separatorIcons = itemView.findViewById(R.id.separatorIcons);
@@ -101,7 +99,6 @@ public class EpisodeItemViewHolder extends RecyclerView.ViewHolder {
         }
         pubDate.setText(DateFormatter.formatAbbrev(activity, item.getPubDate()));
         pubDate.setContentDescription(DateFormatter.formatForAccessibility(item.getPubDate()));
-        isInbox.setVisibility(item.isNew() ? View.VISIBLE : View.GONE);
         isFavorite.setVisibility(item.isTagged(FeedItem.TAG_FAVORITE) ? View.VISIBLE : View.GONE);
         isInQueue.setVisibility(item.isTagged(FeedItem.TAG_QUEUE) ? View.VISIBLE : View.GONE);
         container.setAlpha(item.isPlayed() ? 0.5f : 1.0f);
@@ -198,7 +195,6 @@ public class EpisodeItemViewHolder extends RecyclerView.ViewHolder {
         item.setFeed(new Feed("", ""));
         container.setAlpha(0.1f);
         secondaryActionIcon.setImageDrawable(null);
-        isInbox.setVisibility(View.VISIBLE);
         isVideo.setVisibility(View.GONE);
         isFavorite.setVisibility(View.GONE);
         isInQueue.setVisibility(View.GONE);
@@ -261,11 +257,9 @@ public class EpisodeItemViewHolder extends RecyclerView.ViewHolder {
      * Hides the separator dot between icons and text if there are no icons.
      */
     public void hideSeparatorIfNecessary() {
-        boolean hasIcons = isInbox.getVisibility() == View.VISIBLE
-                || isInQueue.getVisibility() == View.VISIBLE
+        boolean hasIcons = isInQueue.getVisibility() == View.VISIBLE
                 || isVideo.getVisibility() == View.VISIBLE
-                || isFavorite.getVisibility() == View.VISIBLE
-                || isInbox.getVisibility() == View.VISIBLE;
+                || isFavorite.getVisibility() == View.VISIBLE;
         separatorIcons.setVisibility(hasIcons ? View.VISIBLE : View.GONE);
     }
 }

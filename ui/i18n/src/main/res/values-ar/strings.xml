@@ -170,9 +170,6 @@
     </plurals>
     <string name="new_episode_notification_group_text">حلقات جديدة من اشتراكاتك.</string>
     <!--Actions on feeds-->
-  <string name="remove_all_inbox_label">أزل الكل من صندوق الوارد</string>
-    <string name="removed_all_inbox_msg">أزيل الكل من صندوق الوارد</string>
-    <string name="remove_all_inbox_confirmation_msg">أكد رغبتك في إزالة الكل من صندوق الوارد.</string>
     <string name="multi_select_mark_played_confirmation">أكد رغبتك في تحديد جميع العناصر المختارة على أنها شُغّلت.</string>
     <string name="multi_select_mark_unplayed_confirmation">أكد رغبتك في تحديد جميع العناصر المختارة على أنها لم تشغل.</string>
     <string name="show_info_label">اظهر معلومات</string>
@@ -210,20 +207,11 @@
     <string name="pause_label">ايقاف مؤقت</string>
     <string name="stream_label">البث التدفقي</string>
     <string name="delete_label">احذف</string>
-    <string name="remove_inbox_label">أزل من صندوق الوارد</string>
     <string name="toggle_played_label">فعل حالة التشغيل</string>
     <string name="mark_read_no_media_label">علمها كمقروءة</string>
     <string name="mark_unread_label_no_media">علمها كغير مقروءة</string>
     <string name="add_to_queue_label">أضف للطابور</string>
     <string name="remove_from_queue_label">أزل من الطابور</string>
-    <plurals name="removed_from_inbox_batch_label">
-        <item quantity="zero">%d حلقة أزيلت من صندوق الوارد.</item>
-        <item quantity="one">%d حلقة أزيلت من صندوق الوارد.</item>
-        <item quantity="two">%d حلقتان أزيلتا من صندوق الوارد.</item>
-        <item quantity="few">%d حلقات أزيلت من صندوق الوارد.</item>
-        <item quantity="many">%d حلقات أزيلت من صندوق الوارد.</item>
-        <item quantity="other">%d حلقات أزيلت من صندوق الوارد.</item>
-    </plurals>
     <string name="add_to_favorite_label">اضافة للمفضلات</string>
     <string name="show_transcript">اظهر النسخة النصية</string>
     <string name="transcript">نسخة نصية</string>
@@ -327,7 +315,6 @@
     <string name="no_all_episodes_head_label">لا توجد حلقات</string>
     <string name="no_all_episodes_label">ستظهر الحلقة هنا بعد إضافتها.</string>
     <string name="no_all_episodes_filtered_label">امح المصفاة لرؤية المزيد من الحلقات.</string>
-    <string name="no_inbox_head_label">لا يوجد حلقات في صندوق الوارد</string>
     <string name="no_inbox_label">ستعرض الحلقات الجديدة هنا عند وصولها. يمكنك بعد ذلك تحديد ما إذا كنت مهتمًا بها.</string>
     <string name="no_subscriptions_head_label">لا توجد اشتراكات</string>
     <string name="no_subscriptions_label">للاشتراك في مسموعيَّة، اضغط على أيقونة علامة الإضافة أدناه.</string>
@@ -605,7 +592,6 @@
     <string name="status_downloading_label">يجري تنزيل الحلقة</string>
     <string name="in_queue_label">في الطابور</string>
     <string name="is_favorite_label">علمت كمفضلة</string>
-    <string name="is_inbox_label">في صندوق الوارد</string>
     <string name="is_played">شغلت</string>
     <string name="load_next_page_label">تحميل الصفحة التالية</string>
     <string name="position">موقع: %1$s</string>
@@ -853,7 +839,6 @@
         <item quantity="many">حذفت %d حلقة منزلة.</item>
         <item quantity="other">حذفت %d حلقة منزلة.</item>
     </plurals>
-    <string name="removed_from_inbox_message">أُزيل من صندوق الوارد</string>
     <string name="mark_as_played_label">علِّم كمشغل</string>
     <string name="play_this_to_seek_position_message">تحتاج لتشغيل الحلقة للانتقال لأي توقيت معين</string>
     <plurals name="marked_as_played_message">
@@ -927,8 +912,6 @@
     </plurals>
     <string name="episode">حلقة</string>
     <string name="feed">مسموعية</string>
-    <string name="no_queue_items_inbox_has_items_label">لا حلقات في الطابور، ولكن هناك حلقات جديدة تنتظرك!</string>
-    <string name="no_queue_items_inbox_has_items_button_label">اذهب إلى صندوق الوارد</string>
     <string name="no_archive_head_label">الأرشيف فارغ</string>
     <string name="no_archive_label">أرشف المسموعيات من صحفة الاشتراكات الرئيسية.</string>
     <string name="pref_global_default_episode_list_sort_order_title">ترتيب الفرز الافتراضي</string>
@@ -1021,12 +1004,4 @@
     <string name="release_schedule_multiple_per_day">أوقات متنوعة كل يوم</string>
     <string name="rss_address_invalid">عنوان RSS الذي أدخلته غير صالح.</string>
     <string name="cover_as_background">الغلاف كخلفية</string>
-    <string name="wearos_connected_to" tools:ignore="UnusedResources">متصل بـ%s</string>
-    <string name="wearos_version" tools:ignore="UnusedResources">إصدار %s</string>
-    <string name="wearos_phone_not_supported" tools:ignore="UnusedResources">الهاتف غير مُتوافَق. تأكد من استخدام احدث إصدار لـAntennaPod من Google Play على هاتفك.</string>
-    <string name="wearos_no_items" tools:ignore="UnusedResources">لا توجد عناصر</string>
-    <string name="wearos_phone_not_reachable" tools:ignore="UnusedResources">تعذّر الوصول للهاتف. تأكد من أنه هاتفك قريب وأن AntennaPod مثبّت.</string>
-    <string name="wearos_play_on_phone" tools:ignore="UnusedResources">تشغيل على الهاتف</string>
-    <string name="wearos_browse_phone" tools:ignore="UnusedResources">تصفح الهاتف</string>
-    <string name="wearos_open_on_phone" tools:ignore="UnusedResources">فتح على الهاتف</string>
 </resources>

@@ -485,7 +485,7 @@ public class QueueFragment extends Fragment implements MaterialToolbar.OnMenuIte
                 Menu menu = floatingSelectMenu.getMenu();
                 List<FeedItem> selectedItems = getSelectedItems();
                 FeedItemMenuHandler.onPrepareMenu(floatingSelectMenu.getMenu(), getSelectedItems(),
-                        R.id.add_to_queue_item, R.id.remove_inbox_item);
+                        R.id.add_to_queue_item);
 
                 Pair<Boolean, Boolean> canMove = canMove(queue, selectedItems);
                 menu.findItem(R.id.move_to_top_item).setVisible(canMove.first);
@@ -629,15 +629,12 @@ public class QueueFragment extends Fragment implements MaterialToolbar.OnMenuIte
         if (queue == null) {
             emptyView.hide();
         }
-        disposable = Observable.fromCallable(() -> {
-            boolean displayGoToInboxButton = DBReader.getTotalEpisodeCount(new FeedItemFilter(FeedItemFilter.NEW)) > 0;
-            return new Pair<>(DBReader.getQueue(), displayGoToInboxButton);
-        })
+        disposable = Observable.fromCallable(DBReader::getQueue)
                 .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(itemsAndDisplayButton -> {
+                .subscribe(items -> {
                     final boolean restoreScrollPosition = queue == null || queue.isEmpty();
-                    queue = itemsAndDisplayButton.first;
+                    queue = items;
                     if (SmartPlayQueueManager.getInstance().isPaused()) {
                         emptyView.setMessage(R.string.smartplay_paused_message);
                     }

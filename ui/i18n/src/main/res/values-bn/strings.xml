@@ -111,9 +111,6 @@
         <item quantity="other">নতুন পর্বগুলি</item>
     </plurals>
     <!--Actions on feeds-->
-  <string name="remove_all_inbox_label">ইনবক্স থেকে সব সরান</string>
-    <string name="removed_all_inbox_msg">ইনবক্স থেকে সব মুছে ফেলা হয়েছে</string>
-    <string name="remove_all_inbox_confirmation_msg">অনুগ্রহ করে নিশ্চিত করুন যে আপনি ইনবক্স থেকে সব সরাতে চান৷</string>
     <string name="multi_select_mark_played_confirmation">অনুগ্রহ করে নিশ্চিত করুন যে আপনি সমস্ত নির্বাচিত আইটেমকে প্লে হিসাবে চিহ্নিত করতে চান৷</string>
     <string name="multi_select_mark_unplayed_confirmation">অনুগ্রহ করে নিশ্চিত করুন যে আপনি সমস্ত নির্বাচিত আইটেমকে প্লে না করা হিসাবে চিহ্নিত করতে চান৷</string>
     <string name="show_info_label">তথ্য দেখান</string>
@@ -143,12 +140,7 @@
     <string name="pause_label">বিরতি দিন</string>
     <string name="stream_label">স্ট্রিম করুন</string>
     <string name="delete_label">মুছে ফেলুন</string>
-    <string name="remove_inbox_label">ইনবক্স থেকে মুছে ফেলুন</string>
     <string name="add_to_queue_label">সারিতে যোগ করুন</string>
-    <plurals name="removed_from_inbox_batch_label">
-        <item quantity="one">%d পর্ব ইনবক্স থেকে সরানো হয়েছে।</item>
-        <item quantity="other">%d পর্বগুলি ইনবক্স থেকে সরানো হয়েছে।</item>
-    </plurals>
     <string name="add_to_favorite_label">পছন্দগুলি-তে যোগ করুন</string>
     <string name="remove_from_favorite_label">পছন্দগুলি থেকে সরান</string>
     <string name="download_error_insufficient_space">আপনার ডিভাইসে যথেষ্ট পরিমাণ জায়গা নেই</string>
@@ -176,7 +168,6 @@
     <string name="increase_speed">স্পিড বাড়ান</string>
     <string name="decrease_speed">স্পিড কমান</string>
     <string name="media_type_video_label">ভিডিও</string>
-    <string name="is_inbox_label">ইনবক্স</string>
     <string name="is_played">প্লে করা হয়েছে</string>
     <string name="load_next_page_label">পরবর্তী পৃষ্ঠা লোড করুন</string>
     <string name="remaining_time">সময় বাকি আছে: %1$s</string>

@@ -142,9 +142,6 @@
     </plurals>
     <string name="new_episode_notification_group_text">Abonamentele dumneavoastră au episoade noi.</string>
     <!--Actions on feeds-->
-  <string name="remove_all_inbox_label">Elimină tot din inbox</string>
-    <string name="removed_all_inbox_msg">Totul a fost eliminat din inbox</string>
-    <string name="remove_all_inbox_confirmation_msg">Vă rugăm să confirmați faptul că doriți să eliminați tot conținutul din inbox.</string>
     <string name="multi_select_mark_played_confirmation">Vă rugăm să confirmați faptul că doriți să marcați toate elementele selectate ca redate.</string>
     <string name="multi_select_mark_unplayed_confirmation">Vă rugăm să confirmați faptul că doriți să marcați toate elementele selectate ca neredate.</string>
     <string name="show_info_label">Arată informații</string>
@@ -179,17 +176,11 @@
     <string name="pause_label">Pauză</string>
     <string name="stream_label">Stream</string>
     <string name="delete_label">Șterge</string>
-    <string name="remove_inbox_label">Elimină din inbox</string>
     <string name="toggle_played_label">Comută starea de redare</string>
     <string name="mark_read_no_media_label">Marcați ca citit</string>
     <string name="mark_unread_label_no_media">Marchează ca necitit</string>
     <string name="add_to_queue_label">Adaugă la coadă</string>
     <string name="remove_from_queue_label">Șterge din coadă</string>
-    <plurals name="removed_from_inbox_batch_label">
-        <item quantity="one">%d episod eliminat din inbox.</item>
-        <item quantity="few">%d episoade eliminate din inbox.</item>
-        <item quantity="other">%d de episoade eliminate din inbox.</item>
-    </plurals>
     <string name="add_to_favorite_label">Adăugă la favorite</string>
     <string name="show_transcript">Arată transcriptul</string>
     <string name="transcript">Transcript</string>
@@ -290,7 +281,6 @@
     <string name="no_all_episodes_head_label">Fără episoade</string>
     <string name="no_all_episodes_label">Când adăugati un podcast, episoadele vor apărea aici.</string>
     <string name="no_all_episodes_filtered_label">Încearcă să elimini din criteriile de filtrare pentru a vizualiza mai multe episoade.</string>
-    <string name="no_inbox_head_label">Nu există episoade în inbox</string>
     <string name="no_inbox_label">Când vor apărea episoade noi, acestea vor apărea aici. Apoi vei putea decide dacă ești interesat de aceste episoade sau nu.</string>
     <string name="no_subscriptions_head_label">Fără abonamente</string>
     <string name="no_subscriptions_label">Pentru a vă abona la un podcast, apăsați pe butonul \"plus\" de mai jos.</string>
@@ -536,7 +526,6 @@
     <string name="status_downloading_label">Episodul se descarcă</string>
     <string name="in_queue_label">În coada de redare</string>
     <string name="is_favorite_label">Marchează ca favorit</string>
-    <string name="is_inbox_label">În inbox</string>
     <string name="is_played">Redat</string>
     <string name="load_next_page_label">Încarcă următoarea pagină</string>
     <string name="position">Poziția: %1$s</string>
@@ -810,7 +799,6 @@
         <item quantity="few">%d episoade descărcate au fost șterse.</item>
         <item quantity="other">%d de episoade descărcate au fost șterse.</item>
     </plurals>
-    <string name="removed_from_inbox_message">Îndepărtat din imbox</string>
     <string name="mark_as_played_label">Marchează ca redat</string>
     <string name="play_this_to_seek_position_message">Pentru a sări la o poziție anume, trebuie să începi redarea episodului</string>
     <plurals name="marked_as_played_message">
@@ -859,7 +847,6 @@
     </plurals>
     <string name="episode">Episod</string>
     <string name="feed">Podcast</string>
-    <string name="no_queue_items_inbox_has_items_button_label">Mergi la inbox</string>
     <string name="no_archive_head_label">Nu există arhive</string>
     <string name="no_archive_label">Poți arhiva podcasturi din ecranul principal de abonamnete.</string>
     <string name="pref_automatic_download_queue_title">Descărcarea a fost adăugată în coada de descărcări</string>
@@ -890,7 +877,6 @@
         <item quantity="few">ore ce te așteaptă în lista de redare\nde la %1$d episoade</item>
         <item quantity="other">ore ce te așteaptă în lista de redare\nde la %1$d de episoade</item>
     </plurals>
-    <string name="no_queue_items_inbox_has_items_label">Nu mai sunt episoade programate, dar sunt alte episoade noi care te așteaptă!</string>
     <string name="sleep_timer_without_continuous_playback_message">În loc să activați cronometrul de sonm pentru un episod, vă rugăm să dezactivați \"redare contină\" în setări.</string>
     <plurals name="timer_exceeds_remaining_time_while_continuous_playback_disabled">
         <item quantity="one">Redarea contină este dezactivată și episodul curent mai are numai %1$d minut rămas</item>

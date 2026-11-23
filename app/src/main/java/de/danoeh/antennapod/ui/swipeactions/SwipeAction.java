@@ -14,7 +14,6 @@ public interface SwipeAction {
     String MOVE_TO_TOP = "MOVE_TO_TOP";
     String MOVE_TO_BOTTOM = "MOVE_TO_BOTTOM";
     String ADD_TO_QUEUE = "ADD_TO_QUEUE";
-    String REMOVE_FROM_INBOX = "REMOVE_FROM_INBOX";
     String START_DOWNLOAD = "START_DOWNLOAD";
     String MARK_FAV = "MARK_FAV";
     String REMOVE_FROM_FAVORITES = "REMOVE_FROM_FAVORITES";

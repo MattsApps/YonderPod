@@ -146,9 +146,6 @@
     </plurals>
     <string name="new_episode_notification_group_text">Is sutiscritziones tuas tenent episòdios noos.</string>
     <!--Actions on feeds-->
-  <string name="remove_all_inbox_label">Boga totu dae sa cartella de intrada</string>
-    <string name="removed_all_inbox_msg">Totu bogadu dae sa cartella de intrada</string>
-    <string name="remove_all_inbox_confirmation_msg">Cunfirma chi boles bogare totu dae sa cartella de intrada.</string>
     <string name="multi_select_mark_played_confirmation">Cunfirma chi boles marcare totu is cuntenutos seletzionados comente riproduidos.</string>
     <string name="multi_select_mark_unplayed_confirmation">Cunfirma chi boles marcare totu is cuntenutos seletzionados comente non riproduidos.</string>
     <string name="show_info_label">Ammustra informatzione</string>
@@ -182,16 +179,11 @@
     <string name="pause_label">Pone in pàusa</string>
     <string name="stream_label">Riprodui sena iscarrigare</string>
     <string name="delete_label">Cantzella</string>
-    <string name="remove_inbox_label">Boga dae sa cartella de intrada</string>
     <string name="toggle_played_label">Cuncàmbia s\'istadu de riprodutzione</string>
     <string name="mark_read_no_media_label">Sinna comente lèghidu</string>
     <string name="mark_unread_label_no_media">Sinna comente non lèghidu</string>
     <string name="add_to_queue_label">Agiunghe a sa lista</string>
     <string name="remove_from_queue_label">Boga dae sa lista</string>
-    <plurals name="removed_from_inbox_batch_label">
-        <item quantity="one">%d episòdiu bogadu dae sa cartella de intrada.</item>
-        <item quantity="other">%d episòdios bogados dae sa cartella de intrada.</item>
-    </plurals>
     <string name="add_to_favorite_label">Agiunghe a is preferidos</string>
     <string name="show_transcript">Ammustra sa trascritzione</string>
     <string name="transcript">Trascritzione</string>
@@ -291,7 +283,6 @@
     <string name="no_all_episodes_head_label">Nissunu episòdiu</string>
     <string name="no_all_episodes_label">Cando as a agiùnghere unu podcast, is episòdios ant a èssere ammustrados inoghe.</string>
     <string name="no_all_episodes_filtered_label">Proa a bogare su filtru pro bìdere àteros episòdios.</string>
-    <string name="no_inbox_head_label">Nissunu episòdiu in sa cartella de intrada</string>
     <string name="no_inbox_label">Comente arribent episòdios noos, ant a èssere ammustrados inoghe. Podes detzìdere si t\'interessant o nono.</string>
     <string name="no_subscriptions_head_label">Nissuna sutiscritzione</string>
     <string name="no_subscriptions_label">Pro ti sutascrìere a unu podcast, toca s\'icona \"+\" in bàsciu.</string>
@@ -553,7 +544,6 @@
     <string name="status_downloading_label">S\'iscarrigamentu de s\'episòdiu est in cursu</string>
     <string name="in_queue_label">In sa lista</string>
     <string name="is_favorite_label">Sinna comente preferidu</string>
-    <string name="is_inbox_label">In sa cartella de intrada</string>
     <string name="is_played">Riproduidu</string>
     <string name="load_next_page_label">Càrriga sa pàgina imbeniente</string>
     <string name="position">Positzione: %1$s</string>
@@ -793,8 +783,6 @@
     </plurals>
     <string name="episode">Episòdiu</string>
     <string name="feed">Podcast</string>
-    <string name="no_queue_items_inbox_has_items_label">Nissunu episòdiu in s\'elencu, però nch\'at episòdios noos chi t\'abetant!</string>
-    <string name="no_queue_items_inbox_has_items_button_label">Bae a sa cartella de intrada</string>
     <string name="no_archive_head_label">Nudda archiviadu</string>
     <string name="no_archive_label">Est possìbile a archiviare is podcasts dae s\'ischermu printzipale de is sutiscritziones.</string>
     <string name="pref_global_default_episode_list_sort_order_title">Critèriu de assentadura predefinidu</string>
@@ -847,7 +835,6 @@
         <item quantity="one">%d episòdiu iscarrigadu cantzelladu.</item>
         <item quantity="other">%d episòdios iscarrigados cantzellados.</item>
     </plurals>
-    <string name="removed_from_inbox_message">Cantzelladu dae sa cartella de intrada</string>
     <string name="mark_as_played_label">Sinna comente riproduidu</string>
     <string name="play_this_to_seek_position_message">Pro brincare a una positzione ispetzìfica, depes riproduire s\'episòdiu</string>
     <plurals name="marked_as_played_message">

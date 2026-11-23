@@ -142,9 +142,6 @@
     </plurals>
     <string name="new_episode_notification_group_text">Les vostres subscripcions tenen episodis nous.</string>
     <!--Actions on feeds-->
-  <string name="remove_all_inbox_label">Elimina-ho tot de la safata d\'entrada</string>
-    <string name="removed_all_inbox_msg">S\'ha eliminat tot de la safata d\'entrada</string>
-    <string name="remove_all_inbox_confirmation_msg">Confirmeu que voleu eliminar-ho tot de la safata d\'entrada.</string>
     <string name="multi_select_mark_played_confirmation">Confirmeu que voleu marcar tots els elements seleccionats com a reproduïts.</string>
     <string name="multi_select_mark_unplayed_confirmation">Confirmeu que voleu marcar tots els elements seleccionats com a no reproduïts.</string>
     <string name="show_info_label">Mostra informació</string>
@@ -179,17 +176,11 @@
     <string name="pause_label">Pausa</string>
     <string name="stream_label">Reprodueix sense baixar</string>
     <string name="delete_label">Esborra</string>
-    <string name="remove_inbox_label">Elimina de la Safata d\'entrada</string>
     <string name="toggle_played_label">Commuta l\'estat de reproducció</string>
     <string name="mark_read_no_media_label">Marca com a llegit</string>
     <string name="mark_unread_label_no_media">Marcar com a no llegit</string>
     <string name="add_to_queue_label">Afegiu a la cua</string>
     <string name="remove_from_queue_label">Suprimeix de la cua</string>
-    <plurals name="removed_from_inbox_batch_label">
-        <item quantity="one">%d episodi eliminat de la safata d\'entrada.</item>
-        <item quantity="many">%d episodis eliminats de la safata d\'entrada.</item>
-        <item quantity="other">%d episodis eliminats de la safata d\'entrada.</item>
-    </plurals>
     <string name="add_to_favorite_label">Afegiu a preferits</string>
     <string name="show_transcript">Mostra la transcripció</string>
     <string name="transcript">Transcripció</string>
@@ -290,7 +281,6 @@
     <string name="no_all_episodes_head_label">Sense episodis</string>
     <string name="no_all_episodes_label">En afegir un pòdcast els episodis apareixeran aquí.</string>
     <string name="no_all_episodes_filtered_label">Proveu a netejar el filtre per veure més episodis.</string>
-    <string name="no_inbox_head_label">Cap episodi a la safata d\'entrada</string>
     <string name="no_inbox_label">En arribar nous episodis, es mostraran aquí. Aleshores, pots decidir si t\'interessen o no.</string>
     <string name="no_subscriptions_head_label">No hi ha subscripcions</string>
     <string name="no_subscriptions_label">Per a subscriure\'t a un pòdcast, toqueu la icona + més avall.</string>
@@ -556,7 +546,6 @@
     <string name="status_downloading_label">S\'està baixant l\'episodi</string>
     <string name="in_queue_label">A la cua</string>
     <string name="is_favorite_label">Marcat com a preferit</string>
-    <string name="is_inbox_label">A la safata d\'entrada</string>
     <string name="is_played">Reproduït</string>
     <string name="load_next_page_label">Carrega la següent pàgina</string>
     <string name="position">Posició: %1$s</string>
@@ -814,7 +803,6 @@
         <item quantity="many">S\'han suprimit %d episodis baixats.</item>
         <item quantity="other">S\'han suprimit %d episodis baixats.</item>
     </plurals>
-    <string name="removed_from_inbox_message">S\'ha eliminat de la safata d\'entrada</string>
     <string name="mark_as_played_label">Marca com a reproduït</string>
     <string name="play_this_to_seek_position_message">Per a saltar a certa posició, heu de reproduir l\'episodi</string>
     <plurals name="move_to_top_message">
@@ -827,7 +815,6 @@
         <item quantity="many">S\'han mogut %d episodis al final.</item>
         <item quantity="other">S\'han mogut %d episodis al final.</item>
     </plurals>
-    <string name="no_queue_items_inbox_has_items_button_label">Ves a la safata d\'entrada</string>
     <plurals name="added_to_queue_message">
         <item quantity="one">S\'ha afegit %d episodi a la cua.</item>
         <item quantity="many">S\'han afegit %d episodis a la cua.</item>
@@ -845,7 +832,6 @@
     <string name="reset_playback_position_label">Restabliu la posició de reproducció</string>
     <string name="no_items_selected_message">No hi ha elements seleccionats</string>
     <string name="delete_local_feed_confirmation_dialog_message">En suprimir elimina l\'episodi de l\'AntennaPod i suprimeix el fitxer multimèdia de l\'emmagatzematge del dispositiu. No es pot tornar a descarregar a través d\'AntennaPod.</string>
-    <string name="no_queue_items_inbox_has_items_label">No hi ha episodis a la cúa, però hi ha nous episodis que t\'esperen!</string>
     <string name="please_wait_before_refreshing">Espereu un temps abans de tornar a refrescar els podcasts.</string>
     <string name="already_downloaded">L’episodi ja s’ha descarregat</string>
     <string name="tag_all">Totes</string>

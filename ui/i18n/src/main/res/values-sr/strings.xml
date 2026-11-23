@@ -143,7 +143,6 @@
     <string name="pause_label">Пауза</string>
     <string name="stream_label">Стримуј</string>
     <string name="delete_label">Избриши</string>
-    <string name="remove_inbox_label">Уклони из сандучета</string>
     <string name="mark_read_no_media_label">Означи као прочитано</string>
     <string name="add_to_queue_label">Додај у редослед</string>
     <string name="remove_from_queue_label">Уклони из редоследа</string>
@@ -210,7 +209,6 @@
     <string name="no_history_label">Када преслушате епизоду, она ће се појавити овде.</string>
     <string name="no_all_episodes_head_label">Нема епизода</string>
     <string name="no_all_episodes_label">Када додате подкаст, епизоде ће бити приказане овде.</string>
-    <string name="no_inbox_head_label">Нема епизода у сандучету</string>
     <string name="no_subscriptions_head_label">Нема претплата</string>
     <string name="no_subscriptions_label">Да бисте се претплатили на подкаст, додирните иконицу „плус“ испод.</string>
     <string name="project_pref">Пројекат</string>
@@ -407,7 +405,6 @@
     <string name="media_type_video_label">Видео</string>
     <string name="status_downloading_label">Епизода се преузима</string>
     <string name="is_favorite_label">Означено као омиљено</string>
-    <string name="is_inbox_label">У сандучету</string>
     <string name="is_played">Слушано</string>
     <string name="load_next_page_label">Учитај следећу страницу</string>
     <string name="prev_chapter">Претходно поглавље</string>
@@ -468,11 +465,6 @@
     <string name="subscriptions_label_short">Претплате</string>
     <string name="episode_notification">Обавештења о епизодама</string>
     <string name="statistics_today">Данас</string>
-    <plurals name="removed_from_inbox_batch_label">
-        <item quantity="one">%d епизода је уклоњена из сандучета.</item>
-        <item quantity="few">%d епизоде су уклоњене из сандучета.</item>
-        <item quantity="other">%d епизода је уклоњено из сандучета.</item>
-    </plurals>
     <string name="add_to_favorite_label">Додај у омиљено</string>
     <string name="show_transcript">Прикажи транскрипт</string>
     <string name="feed_title">Наслов подкаста</string>
@@ -503,11 +495,9 @@
     <string name="export_logs_menu_title">Извези детаљну евиденцију</string>
     <string name="home_surprise_title">Насумично</string>
     <string name="feed_new_episodes_action_summary_autodownload">Аутоматско преузимање је омогућено. Епизоде се додају у сандуче, а затим се пребацују у редослед након преузимања.</string>
-    <string name="removed_all_inbox_msg">Уклоњено све из сандучета</string>
     <string name="section_shown">Приказано</string>
     <string name="pref_favorite_keeps_episodes_sum">Задржите епизоде када су означене као омиљене</string>
     <string name="no_log_downloads_label">Евиденције преузимања ће се појавити овде када буду доступне.</string>
-    <string name="remove_all_inbox_label">Уклони све из сандучета</string>
     <string name="share_label">Дели</string>
     <string name="drawer_feed_counter_unplayed">Број неслушаних епизода</string>
     <string name="multi_select_mark_unplayed_confirmation">Потврдите да желите да означите све изабране предмете као неслушане.</string>
@@ -528,7 +518,6 @@
         <item quantity="other">%2$s има %1$d нових епизода</item>
     </plurals>
     <string name="share_file_label">Дели фајл</string>
-    <string name="remove_all_inbox_confirmation_msg">Потврдите да желите да уклоните све из сандучета.</string>
     <string name="download_error_error_unknown">Непозната грешка</string>
     <string name="download_error_forbidden">Сервер подкаста одбија да одговори.</string>
     <string name="confirm_mobile_feed_refresh_dialog_message">Освежавање подкаста преко мобилних података је онемогућено у подешавањима.\n\nИпак желите да освежите?</string>
@@ -775,7 +764,6 @@
         <item quantity="few">%d преузете епизоде је избрисано.</item>
         <item quantity="other">%d преузетих епизода је избрисано.</item>
     </plurals>
-    <string name="removed_from_inbox_message">Уклоњено из сандучета</string>
     <string name="mark_as_played_label">Означи као слушано</string>
     <string name="play_this_to_seek_position_message">Да бисте прешли на позиције, потребно је да пустите епизоду</string>
     <string name="mark_as_unplayed_label">Означи као неслушано</string>
@@ -805,8 +793,6 @@
         <item quantity="few">%d епизоде су премештене на дно.</item>
         <item quantity="other">%d епизода је премештено на дно.</item>
     </plurals>
-    <string name="no_queue_items_inbox_has_items_label">Нема заказаних епизода, али постоје нове епизоде које вас очекују!</string>
-    <string name="no_queue_items_inbox_has_items_button_label">Иди у сандуче</string>
     <string name="general_expand_button">Прошири</string>
     <string name="general_collapse_button">Умањи</string>
     <string name="archive_feed_label_noun">Архива</string>
