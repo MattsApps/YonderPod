@@ -15,7 +15,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:layout_marginEnd="@dimen/world_play_to_edge">
+        android:layout_marginStart="@dimen/world_play_to_edge"
+        android:layout_marginEnd="@dimen/world_play_to_edge"
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        android:paddingStart="24dp">
 
         <TextView
             android:id="@+id/worldFrom"
