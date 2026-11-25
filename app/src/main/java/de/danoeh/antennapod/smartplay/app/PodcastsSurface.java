@@ -55,7 +55,10 @@ public class PodcastsSurface extends WorldSurface {
             State state = new State();
             Set<Long> books = WorldOf.filesBooks(app);
             FeedMedia current = DBReader.getFeedMedia(PlaybackPreferences.getCurrentlyPlayingFeedMediaId());
-            List<FeedItem> queue = DBReader.getQueue();
+            SmartPlayQueueManager manager = SmartPlayQueueManager.getInstance();
+            // 1.0.5: while another world's Smart Play is highlighted, the playlist isn't Podcasts'.
+            boolean podcastsActive = manager == null || manager.getActiveId() == manager.podcastsId();
+            List<FeedItem> queue = podcastsActive ? DBReader.getQueue() : new ArrayList<>();
             FeedMedia last = isPodcast(current, books) ? current : WorldOf.lastPodcast(books);
             if (last != null) {
                 // 1.0.2: the last podcast played, resumed, even while another world plays.
@@ -91,8 +94,7 @@ public class PodcastsSurface extends WorldSurface {
                     }
                 }
             }
-            SmartPlayQueueManager manager = SmartPlayQueueManager.getInstance();
-            state.smartPlay = manager != null ? manager.getActiveName() : "";
+            state.smartPlay = manager != null ? manager.podcastsName() : "";
             return state;
         })
                 .subscribeOn(Schedulers.io())
@@ -159,14 +161,12 @@ public class PodcastsSurface extends WorldSurface {
                 Toast.makeText(requireContext(), getString(R.string.next_up_nothing_new, state.nothingNew),
                         Toast.LENGTH_SHORT).show();
             }
-            if (media == null) {
-                SmartPlayQueueManager manager = SmartPlayQueueManager.getInstance();
-                if (manager != null) {
-                    manager.rebuildNow();
-                }
-            } else if (isPlaying(media)) {
+            SmartPlayQueueManager manager = SmartPlayQueueManager.getInstance();
+            if (media != null && isPlaying(media)) {
                 pause();
-            } else {
+            } else if (manager != null) {
+                manager.playPodcasts(media);
+            } else if (media != null) {
                 new PlaybackServiceStarter(requireContext(), media).callEvenIfRunning(true).start();
             }
         });

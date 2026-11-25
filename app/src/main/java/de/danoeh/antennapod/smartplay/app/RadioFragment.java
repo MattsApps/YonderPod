@@ -33,6 +33,7 @@ import de.danoeh.antennapod.event.PlayerStatusEvent;
 import de.danoeh.antennapod.model.feed.FeedItem;
 import de.danoeh.antennapod.playback.service.PlaybackServiceStarter;
 import de.danoeh.antennapod.smartplay.radio.StreamLinks;
+import de.danoeh.antennapod.storage.preferences.NextUpPreferences;
 import de.danoeh.antennapod.storage.preferences.RadioPreferences;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Completable;
@@ -145,6 +146,7 @@ public class RadioFragment extends Fragment {
     public static void play(Context context, FeedItem station) {
         if (station.getMedia() != null) {
             Radio.setLastStation(context, station.getId());
+            NextUpPreferences.startWorld(station.getMedia().getId(), NextUpPreferences.WORLD_RADIO);
             new PlaybackServiceStarter(context, station.getMedia()).callEvenIfRunning(true).start();
         }
     }

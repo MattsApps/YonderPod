@@ -24,6 +24,7 @@ import de.danoeh.antennapod.playback.base.LiveBehind;
 import de.danoeh.antennapod.playback.service.PlaybackController;
 import de.danoeh.antennapod.playback.service.PlaybackServiceStarter;
 import de.danoeh.antennapod.storage.database.DBReader;
+import de.danoeh.antennapod.storage.preferences.NextUpPreferences;
 import de.danoeh.antennapod.storage.preferences.RadioPreferences;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Single;
@@ -38,6 +39,7 @@ public class RadioSurface extends WorldSurface {
         FeedItem station;
         String country = "";
         String shortName = "";
+        FeedItem recording;
         final List<FeedItem> ready = new ArrayList<>();
         final List<Waiting> waiting = new ArrayList<>();
     }
@@ -68,6 +70,15 @@ public class RadioSurface extends WorldSurface {
                 RadioPreferences.Station details = RadioPreferences.get(state.station.getId());
                 state.country = RadioBrowser.countryName(details.country, details.countryCode);
                 state.shortName = Radio.shortName(app, state.station);
+            }
+            FeedMedia last = DBReader.getFeedMedia(NextUpPreferences.getRadioLast());
+            if (last != null && !last.isLiveRadio()) {
+                FeedItem item = DBReader.getFeedItem(last.getItemId());
+                if (item != null && !item.isPlayed() && item.getMedia() != null && item.getFeed() != null
+                        && Recordings.isRecordingsFeed(item.getFeed())) {
+                    // 1.0.5: the last thing played from Radio was a recording, so the circle offers it.
+                    state.recording = item;
+                }
             }
             for (RecordingStore.Show show : RecordingStore.getInstance(app).getShows()) {
                 for (RecordingStore.Pending pending : Recordings.pendingFor(app, show.id)) {
@@ -107,7 +118,9 @@ public class RadioSurface extends WorldSurface {
         TextView hint = root.findViewById(R.id.worldHint);
         View live = root.findViewById(R.id.worldLive);
         FeedItem station = state.station;
-        if (station == null) {
+        if (state.recording != null) {
+            showRecording(state.recording, subtitle, title, hint, live);
+        } else if (station == null) {
             subtitle.setVisibility(View.GONE);
             live.setVisibility(View.INVISIBLE);
             showLivePause(false);
@@ -176,11 +189,40 @@ public class RadioSurface extends WorldSurface {
             ((TextView) row.findViewById(R.id.readyWhen)).setText(when(time(item)));
             row.setOnClickListener(v -> {
                 if (item.getMedia() != null) {
+                    NextUpPreferences.startWorld(item.getMedia().getId(), NextUpPreferences.WORLD_RADIO);
                     new PlaybackServiceStarter(requireContext(), item.getMedia()).callEvenIfRunning(true).start();
                 }
             });
             list.addView(row);
         }
+    }
+
+    private void showRecording(FeedItem item, TextView subtitle, TextView title, TextView hint, View live) {
+        FeedMedia media = item.getMedia();
+        subtitle.setText(when(time(item)));
+        subtitle.setVisibility(View.VISIBLE);
+        String name = item.getFeed().getTitle() != null ? item.getFeed().getTitle() : "";
+        title.setText(name.toLowerCase(Locale.getDefault()));
+        title.setTextSize(TypedValue.COMPLEX_UNIT_SP, name.length() > 12 ? 40 : 56);
+        hint.setVisibility(View.GONE);
+        live.setVisibility(View.INVISIBLE);
+        showLivePause(false);
+        showPlaying(isPlaying(media));
+        root.findViewById(R.id.worldPlay).setOnClickListener(v -> {
+            if (isPlaying(media)) {
+                pause();
+            } else {
+                NextUpPreferences.startWorld(media.getId(), NextUpPreferences.WORLD_RADIO);
+                new PlaybackServiceStarter(requireContext(), media).callEvenIfRunning(true).start();
+            }
+        });
+        View.OnClickListener open = v -> {
+            if (isCurrent(media)) {
+                openPlayer();
+            }
+        };
+        title.setOnClickListener(open);
+        subtitle.setOnClickListener(open);
     }
 
     /** Live pause's stack beside the play circle (placed by LivePauseFit): live, how far behind, stop. */
@@ -210,8 +252,10 @@ public class RadioSurface extends WorldSurface {
         })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(item -> new PlaybackServiceStarter(app, item.getMedia()).callEvenIfRunning(true).start(),
-                        error -> Log.e(TAG, Log.getStackTraceString(error)));
+                .subscribe(item -> {
+                    NextUpPreferences.startWorld(item.getMedia().getId(), NextUpPreferences.WORLD_RADIO);
+                    new PlaybackServiceStarter(app, item.getMedia()).callEvenIfRunning(true).start();
+                }, error -> Log.e(TAG, Log.getStackTraceString(error)));
     }
 
     private String when(long millis) {

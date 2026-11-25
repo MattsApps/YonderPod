@@ -40,7 +40,7 @@ public final class AddToSmartPlay {
             finish(done);
             return;
         }
-        Single.fromCallable(() -> SmartPlayStore.getInstance(activity).getAll())
+        Single.fromCallable(() -> AutoSmartPlays.visible(activity, SmartPlayStore.getInstance(activity).getAll()))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(smartPlays -> {

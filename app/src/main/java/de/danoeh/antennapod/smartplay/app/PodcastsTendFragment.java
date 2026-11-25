@@ -196,9 +196,9 @@ public class PodcastsTendFragment extends Fragment {
         Context app = requireContext().getApplicationContext();
         disposables.add(Single.fromCallable(() -> {
             State state = new State();
-            state.smartPlays = SmartPlayStore.getInstance(app).getAll();
+            state.smartPlays = AutoSmartPlays.visible(app, SmartPlayStore.getInstance(app).getAll());
             SmartPlayQueueManager manager = SmartPlayQueueManager.getInstance();
-            state.activeId = manager != null ? manager.getActiveId() : -1;
+            state.activeId = manager != null ? manager.podcastsId() : -1;
             state.newCounts = DBReader.getRecentUnplayedCounts(
                     System.currentTimeMillis() - TimeUnit.DAYS.toMillis(7));
             state.savedCounts = DBReader.getNavDrawerData(null, FeedOrder.ALPHABETICAL,
@@ -371,7 +371,7 @@ public class PodcastsTendFragment extends Fragment {
                 .setMessage(R.string.tend_smart_play_delete_message)
                 .setPositiveButton(R.string.yonder_button_delete, (dialog, which) ->
                         disposables.add(Completable.fromAction(() -> {
-                            if (SmartPlayStore.getInstance(app).getAll().size() <= 1) {
+                            if (AutoSmartPlays.visible(app, SmartPlayStore.getInstance(app).getAll()).size() <= 1) {
                                 return;
                             }
                             SmartPlayStore.getInstance(app).delete(smartPlay.getId());

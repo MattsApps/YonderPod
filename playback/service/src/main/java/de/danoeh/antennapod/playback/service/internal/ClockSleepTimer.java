@@ -55,6 +55,11 @@ public class ClockSleepTimer implements SleepTimer {
         }
     }
 
+    /** 1.0.5: live radio has no position ticks, so the player ticks the timer itself once a second. */
+    public void tick() {
+        playbackPositionUpdate(null);
+    }
+
     protected void vibrate() {
         final Vibrator vibrator;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {

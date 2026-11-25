@@ -35,6 +35,15 @@ public final class NextUpPreferences {
     private static final String KEY_LAST_FINISHED = "lastFinishedItemId";
     private static final String KEY_NOTHING_NEW = "nothingNewShow";
     private static final String KEY_DETOUR_KEPT = "detourKeptItemIds";
+    private static final String KEY_WORLD = "playingWorld";
+    private static final String KEY_WORLD_START = "worldStartMediaId";
+    private static final String KEY_RADIO_LAST = "radioLastMediaId";
+    /** Played from a Smart Play (Podcasts, or a book's or folder's own). */
+    public static final int WORLD_SMART_PLAY = 0;
+    /** Started from the Radio screen: a station or a recording. */
+    public static final int WORLD_RADIO = 1;
+    /** An added file started from the Files screen. */
+    public static final int WORLD_ADDED_FILES = 2;
 
     private static SharedPreferences prefs;
 
@@ -145,5 +154,31 @@ public final class NextUpPreferences {
             saved.append(saved.length() > 0 ? "," : "").append(id);
         }
         prefs.edit().putString(KEY_DETOUR_KEPT, saved.toString()).commit();
+    }
+
+    /**
+     * 1.0.5: pressing play in a world makes it the one played from. What was playing is left where it was and
+     * never comes back by itself, so a detour back to it is forgotten.
+     */
+    public static void startWorld(long mediaId, int world) {
+        SharedPreferences.Editor editor = prefs.edit().putInt(KEY_WORLD, world).putLong(KEY_WORLD_START, mediaId)
+                .putLong(KEY_DETOUR_RESUME, -1);
+        if (world == WORLD_RADIO) {
+            editor.putLong(KEY_RADIO_LAST, mediaId);
+        }
+        editor.commit();
+    }
+
+    public static int getWorld() {
+        return prefs != null ? prefs.getInt(KEY_WORLD, WORLD_SMART_PLAY) : WORLD_SMART_PLAY;
+    }
+
+    public static long getWorldStart() {
+        return prefs != null ? prefs.getLong(KEY_WORLD_START, -1) : -1;
+    }
+
+    /** The last thing played from the Radio screen: a station or a recording. */
+    public static long getRadioLast() {
+        return prefs != null ? prefs.getLong(KEY_RADIO_LAST, -1) : -1;
     }
 }

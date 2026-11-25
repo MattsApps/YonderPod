@@ -655,7 +655,9 @@ public class Media3PlaybackService extends MediaLibraryService {
                         currentHour)) {
                     int bedtime = SleepTimerPreferences.bedtimeMinutes();
                     if (bedtime == SleepTimerPreferences.EPISODE_ENDS) {
-                        startSleepTimer(SleepTimerType.EPISODES, 1);
+                        if (currentPlayable == null || !currentPlayable.isLiveRadio()) {
+                            startSleepTimer(SleepTimerType.EPISODES, 1);
+                        }
                     } else {
                         startSleepTimer(SleepTimerType.CLOCK, TimeUnit.MINUTES.toMillis(bedtime));
                     }
@@ -1252,6 +1254,9 @@ public class Media3PlaybackService extends MediaLibraryService {
                                 if (SkipUtils.skipEndingIfNecessary(this, currentPlayable, position, duration, speed)) {
                                     player.seekTo(player.getDuration());
                                 }
+                            } else if (sleepTimer instanceof ClockSleepTimer && player.isPlaying()) {
+                                // Live radio has no length, so no position ticks: count the sleep timer down here.
+                                ((ClockSleepTimer) sleepTimer).tick();
                             }
                         }, error -> Log.e(TAG, "Position observer error", error));
     }
@@ -1310,7 +1315,9 @@ public class Media3PlaybackService extends MediaLibraryService {
                     ChapterUtils.loadChapters(media, this, false);
                     if (media != null && media.getItem() != null && !media.getItem().isTagged(FeedItem.TAG_QUEUE)
                             && !media.isLiveRadio() && previousMediaId != PlaybackPreferences.NO_MEDIA_PLAYING
-                            && previousMediaId != mediaId) {
+                            && previousMediaId != mediaId && mediaId != NextUpPreferences.getWorldStart()
+                            && !(NextUpPreferences.getWorld() != NextUpPreferences.WORLD_SMART_PLAY
+                            && previousMediaId == NextUpPreferences.getWorldStart())) {
                         // A detour: the interrupted episode resumes after it, even if half-played ones are off.
                         NextUpPreferences.setDetourResume(previousMediaId);
                     }
@@ -1367,6 +1374,10 @@ public class Media3PlaybackService extends MediaLibraryService {
         playedDurationCountedUntil = playbackStartPosition;
 
         boolean radio = currentPlayable.isLiveRadio();
+        if (radio && sleepTimer instanceof EpisodeSleepTimer && sleepTimer.isActive()) {
+            // Live radio never ends, so an "end of episode" timer would never fire: it goes off.
+            disableSleepTimer();
+        }
         float speed = radio ? 1.0f : PlaybackSpeedUtils.getCurrentPlaybackSpeed(currentPlayable);
         player.setPlaybackSpeed(speed);
         // The show's own skip silence decides (1.0.1): a value saved for an earlier load no longer wins.
@@ -1899,7 +1910,8 @@ public class Media3PlaybackService extends MediaLibraryService {
                 || player == null || !player.isPlaying()) {
             return;
         }
-        boolean finishEpisode = SleepTimerPreferences.stopAtFinishEpisode();
+        // Live radio never finishes, so "finish the episode" stops at the set time there.
+        boolean finishEpisode = SleepTimerPreferences.stopAtFinishEpisode() && !isLiveStationLoaded();
         long trigger = SleepTimerPreferences.stopAtTrigger(now, finishEpisode ? 0 : SleepTimer.FADE_MILLIS);
         if (trigger < 0 || trigger <= previous || trigger > now) {
             return;

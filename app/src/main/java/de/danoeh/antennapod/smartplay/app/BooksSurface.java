@@ -23,6 +23,7 @@ import de.danoeh.antennapod.model.feed.FeedMedia;
 import de.danoeh.antennapod.model.feed.SortOrder;
 import de.danoeh.antennapod.playback.service.PlaybackServiceStarter;
 import de.danoeh.antennapod.storage.database.DBReader;
+import de.danoeh.antennapod.storage.preferences.NextUpPreferences;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Completable;
 import io.reactivex.rxjava3.core.Single;
@@ -232,6 +233,7 @@ public class BooksSurface extends WorldSurface {
             if (isPlaying(media)) {
                 pause();
             } else {
+                NextUpPreferences.startWorld(media.getId(), NextUpPreferences.WORLD_ADDED_FILES);
                 new PlaybackServiceStarter(requireContext().getApplicationContext(), media)
                         .callEvenIfRunning(true)
                         .start();

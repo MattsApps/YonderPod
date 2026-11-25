@@ -113,7 +113,8 @@ public class SleepTimerGridDialog extends BottomSheetDialogFragment {
                     }
                     MaterialButton button = root.findViewById(R.id.sleep_episode);
                     if (showEnd < 0) {
-                        button.setVisibility(View.GONE);
+                        // 1.0.5: live radio never ends, so "end of episode" is greyed out.
+                        button.setEnabled(false);
                         return;
                     }
                     button.setText(R.string.sleep_grid_show);

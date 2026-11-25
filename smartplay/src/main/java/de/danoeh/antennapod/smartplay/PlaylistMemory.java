@@ -215,6 +215,12 @@ public final class PlaylistMemory {
         carriedTo = newHighlight;
     }
 
+    /** 1.0.5: a world switch carries nothing: what was playing stays where it was, in its own world. */
+    public void dropCarry() {
+        carriedEpisode = -1;
+        carriedTo = -1;
+    }
+
     /** Half-played episodes that go on top of this Smart Play: its own, and the one carried into it. */
     public Set<Long> onTopIn(long smartPlayId) {
         Set<Long> ids = new HashSet<>();

@@ -146,28 +146,20 @@ public final class Recordings {
         return null;
     }
 
-    public static void setPlaysIn(Context context, RecordingStore.Show show, boolean own, Set<Long> others) {
-        SmartPlayStore store = SmartPlayStore.getInstance(context);
+    /**
+     * 1.0.5: a show plays in the Smart Plays chosen, or only in Radio with none. Its own Smart Play is no longer
+     * offered or made; an existing hidden one quietly stays underneath.
+     */
+    public static void setPlaysIn(Context context, RecordingStore.Show show, Set<Long> others) {
         SmartPlayQueueManager manager = SmartPlayQueueManager.getInstance();
         Set<Long> chosen = new LinkedHashSet<>(others);
         SmartPlayStore.StoredSmartPlay existing = ownSmartPlay(context, show.feedId);
-        if (own && existing == null) {
-            chosen.add(store.insert(SmartPlayDefinition.builder(show.name)
-                    .rule(SmartPlayRule.of(SmartPlayRule.Order.LATEST, 1, EpisodeSource.feed(show.feedId)))
-                    .build()));
-        } else if (own) {
+        if (existing != null && AutoSmartPlays.isHidden(context, existing)) {
             chosen.add(existing.getId());
         }
         show.playsIn = chosen;
         RecordingStore.getInstance(context).update(show);
-        if (!own && existing != null) {
-            store.delete(existing.getId());
-            SmartPlayHours.set(context, existing.getId(), null);
-            SmartPlayHours.reschedule(context);
-            manager.onSmartPlayDeleted(existing.getId());
-        } else {
-            manager.onSmartPlaysChanged();
-        }
+        manager.onSmartPlaysChanged();
         manager.rebuildNow();
         EventBus.getDefault().post(new Radio.ChangedEvent());
     }

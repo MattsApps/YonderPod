@@ -2,7 +2,6 @@ package de.danoeh.antennapod.smartplay.app;
 
 import android.content.Context;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
@@ -25,7 +24,6 @@ public final class PlayInDialog {
 
     private static final class Choices {
         RecordingStore.Show show;
-        boolean own;
         final List<SmartPlayStore.StoredSmartPlay> others = new ArrayList<>();
         Set<Long> chosen;
     }
@@ -45,25 +43,17 @@ public final class PlayInDialog {
         if (choices.show == null) {
             throw new IllegalStateException("Recorded show missing");
         }
-        SmartPlayStore.StoredSmartPlay own = Recordings.ownSmartPlay(context, feedId);
-        choices.own = own != null;
         choices.chosen = Recordings.playsIn(context, choices.show);
-        for (SmartPlayStore.StoredSmartPlay stored : SmartPlayStore.getInstance(context).getAll()) {
-            if (own == null || stored.getId() != own.getId()) {
-                choices.others.add(stored);
-            }
-        }
+        choices.others.addAll(AutoSmartPlays.visible(context, SmartPlayStore.getInstance(context).getAll()));
         return choices;
     }
 
     private static void ask(Context context, Choices choices, String showName) {
-        String[] labels = new String[choices.others.size() + 1];
-        boolean[] chosen = new boolean[choices.others.size() + 1];
-        labels[0] = context.getString(R.string.record_plays_in_own);
-        chosen[0] = choices.own;
+        String[] labels = new String[choices.others.size()];
+        boolean[] chosen = new boolean[choices.others.size()];
         for (int i = 0; i < choices.others.size(); i++) {
-            labels[i + 1] = choices.others.get(i).getDefinition().getName();
-            chosen[i + 1] = choices.chosen.contains(choices.others.get(i).getId());
+            labels[i] = choices.others.get(i).getDefinition().getName();
+            chosen[i] = choices.chosen.contains(choices.others.get(i).getId());
         }
         Context app = context.getApplicationContext();
         new MaterialAlertDialogBuilder(context)
@@ -72,15 +62,11 @@ public final class PlayInDialog {
                 .setPositiveButton(R.string.yonder_button_save, (dialog, which) -> {
                     Set<Long> others = new LinkedHashSet<>();
                     for (int i = 0; i < choices.others.size(); i++) {
-                        if (chosen[i + 1]) {
+                        if (chosen[i]) {
                             others.add(choices.others.get(i).getId());
                         }
                     }
-                    if (!chosen[0] && others.isEmpty()) {
-                        Toast.makeText(app, R.string.record_plays_in_none, Toast.LENGTH_LONG).show();
-                        return;
-                    }
-                    Completable.fromAction(() -> Recordings.setPlaysIn(app, choices.show, chosen[0], others))
+                    Completable.fromAction(() -> Recordings.setPlaysIn(app, choices.show, others))
                             .subscribeOn(Schedulers.io())
                             .subscribe(() -> { }, error -> Log.e(TAG, Log.getStackTraceString(error)));
                 })

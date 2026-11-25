@@ -4,16 +4,21 @@ import android.content.Context;
 
 import androidx.annotation.Nullable;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import de.danoeh.antennapod.model.feed.Feed;
 import de.danoeh.antennapod.model.feed.FeedItem;
+import de.danoeh.antennapod.model.feed.FeedItemFilter;
 import de.danoeh.antennapod.model.feed.FeedMedia;
+import de.danoeh.antennapod.model.feed.SortOrder;
 import de.danoeh.antennapod.playback.service.PlaybackService;
 import de.danoeh.antennapod.smartplay.worlds.WorldPages;
 import de.danoeh.antennapod.storage.database.DBReader;
+import de.danoeh.antennapod.storage.preferences.NextUpPreferences;
 import de.danoeh.antennapod.storage.preferences.PlaybackPreferences;
 import de.danoeh.antennapod.storage.preferences.UserPreferences;
 
@@ -44,6 +49,9 @@ final class WorldOf {
             return WorldSurface.RADIO;
         }
         FeedItem item = media.getItem();
+        if (item != null && isRadioRecording(media) && UserPreferences.isWorldShown(WorldPages.RADIO)) {
+            return WorldSurface.RADIO;
+        }
         if (item != null && UserPreferences.isWorldShown(WorldPages.BOOKS)) {
             Feed feed = item.getFeed();
             if (books.contains(item.getFeedId())
@@ -85,5 +93,68 @@ final class WorldOf {
             return !item.isPlayed() && followed ? media : null;
         }
         return null;
+    }
+
+    /** 1.0.5: a recording started from the Radio screen (or its extra part) is Radio, not Podcasts. */
+    static boolean isRadioRecording(FeedMedia media) {
+        if (NextUpPreferences.getWorld() != NextUpPreferences.WORLD_RADIO || media.getItem() == null) {
+            return false;
+        }
+        return media.getId() == NextUpPreferences.getWorldStart()
+                || NextUpPreferences.getDetourKept().contains(media.getItemId());
+    }
+
+    /** 1.0.5: what carries on in Radio (the next ready recording, then the station live) or among added files. */
+    @Nullable
+    static FeedItem next(Context context, FeedItem finished, int world) {
+        List<FeedItem> candidates = new ArrayList<>();
+        if (world == NextUpPreferences.WORLD_RADIO) {
+            for (RecordingStore.Show show : RecordingStore.getInstance(context).getShows()) {
+                Feed feed = DBReader.getFeed(show.feedId, false, 0, 0);
+                if (feed == null) {
+                    continue;
+                }
+                for (FeedItem item : DBReader.getFeedItemList(feed, new FeedItemFilter(FeedItemFilter.UNPLAYED),
+                        SortOrder.DATE_NEW_OLD, 0, Integer.MAX_VALUE)) {
+                    if (item.getItemIdentifier() == null || !Recordings.isTailGuid(item.getItemIdentifier())) {
+                        candidates.add(item);
+                    }
+                }
+            }
+            Collections.sort(candidates, (a, b) -> Long.compare(time(b), time(a)));
+        } else if (world == NextUpPreferences.WORLD_ADDED_FILES) {
+            for (Feed feed : DBReader.getFeedList()) {
+                if (feed.getState() == Feed.STATE_SUBSCRIBED && LocalFolders.isAddedFiles(feed)) {
+                    candidates.addAll(DBReader.getFeedItemList(feed, FeedItemFilter.unfiltered(),
+                            SortOrder.DATE_NEW_OLD, 0, Integer.MAX_VALUE));
+                }
+            }
+        }
+        int at = -1;
+        for (int i = 0; i < candidates.size(); i++) {
+            if (candidates.get(i).getId() == finished.getId()) {
+                at = i;
+            }
+        }
+        for (int step = 1; step <= candidates.size(); step++) {
+            FeedItem item = candidates.get(Math.floorMod(at + step, candidates.size()));
+            if (item.getId() != finished.getId() && item.getMedia() != null && !item.isPlayed()) {
+                return item;
+            }
+        }
+        if (world == NextUpPreferences.WORLD_RADIO) {
+            // No more ready recordings: we're in Radio, so the station the last one came from plays live.
+            RecordingStore.Show show = RecordingStore.getInstance(context).showForFeed(finished.getFeedId());
+            FeedItem station = show != null ? DBReader.getFeedItem(show.stationItemId) : null;
+            if (station != null && station.getMedia() != null) {
+                Radio.setLastStation(context, station.getId());
+                return station;
+            }
+        }
+        return null;
+    }
+
+    private static long time(FeedItem item) {
+        return item.getPubDate() != null ? item.getPubDate().getTime() : 0;
     }
 }

@@ -72,6 +72,22 @@ public final class NextUpRule {
     }
 
     /**
+     * 1.0.5: what comes next in Radio (the next ready recording) or among added files; when those run out in
+     * "keep playing", the Podcasts Smart Play. The app notes which world it is then.
+     */
+    public interface WorldNext {
+        @Nullable
+        FeedItem after(FeedItem finished, int world);
+    }
+
+    @Nullable
+    private static volatile WorldNext worldNext;
+
+    public static void setWorldNext(WorldNext next) {
+        worldNext = next;
+    }
+
+    /**
      * After an episode ended (ended) or the listener skipped to the next (skipped). queue is the playlist as
      * it was before the finished episode was taken out of it.
      */
@@ -85,6 +101,10 @@ public final class NextUpRule {
         int[] questions = {auto && !asked ? NextUpPreferences.QUESTION_CONTINUOUS : 0};
         String reason = "next in the playlist";
         FeedItem next;
+        int world = worldOf(finished);
+        if (world != NextUpPreferences.WORLD_SMART_PLAY) {
+            return inWorld(finished, world, auto, skipped, keep, byItself, queue, questions);
+        }
         if (!contains(queue, finished.getId())) {
             // A detour (0.9.36: never in any list): its recording's extra parts, then the episode it
             // interrupted, then the Smart Play carries on.
@@ -118,6 +138,52 @@ public final class NextUpRule {
                 + (next != null ? next.getTitle() : "nothing") + ", " + reason
                 + (play ? ", playing" : ", stopped") + (questions[0] != 0 ? ", asking " + questions[0] : ""));
         return new Choice(next, play, questions[0], nothingNew, reason);
+    }
+
+    /**
+     * 1.0.5: started from Radio or an added file on the Files screen. That world carries on (its recording's
+     * extra parts, then the next ready recording, or the next added file); what was left never comes back.
+     */
+    private static Choice inWorld(FeedItem finished, int world, boolean auto, boolean skipped, boolean keep,
+                                  boolean byItself, List<FeedItem> queue, int[] questions) {
+        FeedItem next = null;
+        String reason = "nothing more here";
+        if (world == NextUpPreferences.WORLD_RADIO) {
+            java.util.Set<Long> parts = NextUpPreferences.getDetourKept();
+            for (FeedItem item : queue) {
+                if (item.getId() != finished.getId() && parts.contains(item.getId())
+                        && take(item, byItself, questions)) {
+                    next = item;
+                    reason = "its extra part";
+                    break;
+                }
+            }
+        }
+        WorldNext hook = worldNext;
+        if (next == null && (auto || skipped) && hook != null) {
+            next = hook.after(finished, world);
+            reason = "next in this world, or Podcasts";
+        }
+        boolean play = next != null && (skipped || (keep && questions[0] == 0));
+        Log.d(TAG, "After " + finished.getTitle() + (skipped ? " (skipped)" : "") + " in world " + world + ": "
+                + (next != null ? next.getTitle() : "nothing") + ", " + reason
+                + (play ? ", playing" : ", stopped") + (questions[0] != 0 ? ", asking " + questions[0] : ""));
+        return new Choice(next, play, questions[0], null, reason);
+    }
+
+    /** Which world the finished item was played from: Radio or added files only if started there. */
+    private static int worldOf(FeedItem finished) {
+        int world = NextUpPreferences.getWorld();
+        FeedMedia media = finished.getMedia();
+        if (world == NextUpPreferences.WORLD_SMART_PLAY || media == null || media.isLiveRadio()) {
+            return NextUpPreferences.WORLD_SMART_PLAY;
+        }
+        if (media.getId() == NextUpPreferences.getWorldStart()
+                || (world == NextUpPreferences.WORLD_RADIO
+                && NextUpPreferences.getDetourKept().contains(finished.getId()))) {
+            return world;
+        }
+        return NextUpPreferences.WORLD_SMART_PLAY;
     }
 
     /**

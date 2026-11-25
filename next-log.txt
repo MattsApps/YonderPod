@@ -1,0 +1,50 @@
+11-25 05:45:48.661 I/ActivityManager( 1492): Background started FGS: Allowed [callingPackage: com.mattsapps.yonderpod; callingUid: 10431; uidState: NONE; uidBFSL: n/a; intent: Intent { act=android.intent.action.MEDIA_BUTTON dat=androidx://media3.session/... flg=0x10000000 xflg=0x4 cmp=com.mattsapps.yonderpod/de.danoeh.antennapod.playback.service.Media3PlaybackService (has extras) }; code:START_ACTIVITY_FLAG; tempAllowListReason:<,reasonCode:SYSTEM_ALLOW_LISTED,duration:9223372036854775807,callingUid:-1>; allowWiu:53; targetSdkVersion:36; callerTargetSdkVersion:36; startForegroundCount:0; bindFromPackage:null: isBindService:false]
+11-25 05:45:48.697 D/ActivityManager( 1492): Received SERVICE intent 0xe455dd4 Key{startForegroundService pkg=com.mattsapps.yonderpod intent=act=android.intent.action.MEDIA_BUTTON dat=androidx://media3.session/... xflg=0x4 cmp=com.mattsapps.yonderpod/de.danoeh.antennapod.playback.service.Media3PlaybackService flags=0x4000000 u=0} requestCode=85 from uid 10124
+11-25 05:45:48.710 I/ActivityManager( 1492): Start proc 27905:com.mattsapps.yonderpod/u0a431 for service {com.mattsapps.yonderpod/de.danoeh.antennapod.playback.service.Media3PlaybackService}
+11-25 05:45:53.151 D/ActivityManager( 1492): Received SERVICE intent 0xe455dd4 Key{startForegroundService pkg=com.mattsapps.yonderpod intent=act=android.intent.action.MEDIA_BUTTON dat=androidx://media3.session/... xflg=0x4 cmp=com.mattsapps.yonderpod/de.danoeh.antennapod.playback.service.Media3PlaybackService flags=0x4000000 u=0} requestCode=85 from uid 10124
+11-25 05:45:54.239 D/ActivityManager( 1492): Received SERVICE intent 0xe455dd4 Key{startForegroundService pkg=com.mattsapps.yonderpod intent=act=android.intent.action.MEDIA_BUTTON dat=androidx://media3.session/... xflg=0x4 cmp=com.mattsapps.yonderpod/de.danoeh.antennapod.playback.service.Media3PlaybackService flags=0x4000000 u=0} requestCode=85 from uid 10124
+11-25 05:45:55.121 D/ActivityManager( 1492): Received SERVICE intent 0xe455dd4 Key{startForegroundService pkg=com.mattsapps.yonderpod intent=act=android.intent.action.MEDIA_BUTTON dat=androidx://media3.session/... xflg=0x4 cmp=com.mattsapps.yonderpod/de.danoeh.antennapod.playback.service.Media3PlaybackService flags=0x4000000 u=0} requestCode=85 from uid 10124
+11-25 05:54:12.003 D/ActivityManager( 1492): Received SERVICE intent 0xe455dd4 Key{startForegroundService pkg=com.mattsapps.yonderpod intent=act=android.intent.action.MEDIA_BUTTON dat=androidx://media3.session/... xflg=0x4 cmp=com.mattsapps.yonderpod/de.danoeh.antennapod.playback.service.Media3PlaybackService flags=0x4000000 u=0} requestCode=85 from uid 10124
+11-25 05:56:28.044 I/ActivityManager( 1492): Background started FGS: Allowed [callingPackage: com.mattsapps.yonderpod; callingUid: 10431; uidState: TOP ; uidBFSL: [BFSL]; intent: Intent { act=android.intent.action.MEDIA_BUTTON flg=0x10000010 xflg=0x4 cmp=com.mattsapps.yonderpod/de.danoeh.antennapod.playback.service.Media3PlaybackService (has extras) }; code:PROC_STATE_TOP; tempAllowListReason:<,reasonCode:SYSTEM_ALLOW_LISTED,duration:9223372036854775807,callingUid:-1>; allowWiu:12; targetSdkVersion:36; callerTargetSdkVersion:36; startForegroundCount:0; bindFromPackage:null: isBindService:false]
+11-25 06:09:01.851 I/ActivityManager( 1492): Background started FGS: Allowed [callingPackage: com.mattsapps.yonderpod; callingUid: 10431; uidState: SVC ; uidBFSL: n/a; intent: Intent { act=android.intent.action.MEDIA_BUTTON cmp=com.mattsapps.yonderpod/de.danoeh.antennapod.playback.service.Media3PlaybackService }; code:TEMP_ALLOWED_WHILE_IN_USE; tempAllowListReason:<,reasonCode:SYSTEM_ALLOW_LISTED,duration:9223372036854775807,callingUid:-1>; allowWiu:70; targetSdkVersion:36; callerTargetSdkVersion:36; startForegroundCount:1; bindFromPackage:null: isBindService:false]
+11-25 06:34:35.777 I/ActivityManager( 1492): Background started FGS: Allowed [callingPackage: com.mattsapps.yonderpod; callingUid: 10431; uidState: TOP ; uidBFSL: [BFSL]; intent: Intent { act=androidx.media3.session.MediaSessionService xflg=0x4 cmp=com.mattsapps.yonderpod/de.danoeh.antennapod.playback.service.Media3PlaybackService }; code:PROC_STATE_TOP; tempAllowListReason:<,reasonCode:SYSTEM_ALLOW_LISTED,duration:9223372036854775807,callingUid:-1>; allowWiu:12; targetSdkVersion:36; callerTargetSdkVersion:36; startForegroundCount:2; bindFromPackage:null: isBindService:true]
+11-25 06:35:35.174 D/ActivityManager( 1492): Received SERVICE intent 0x36310f3 Key{startService pkg=com.mattsapps.yonderpod intent=act=android.intent.action.MEDIA_BUTTON dat=androidx://media3.session/... xflg=0x4 cmp=com.mattsapps.yonderpod/de.danoeh.antennapod.playback.service.Media3PlaybackService flags=0x4000000 u=0} requestCode=87 from uid 10124
+11-25 06:36:31.475 D/ActivityManager( 1492): Received SERVICE intent 0x36310f3 Key{startService pkg=com.mattsapps.yonderpod intent=act=android.intent.action.MEDIA_BUTTON dat=androidx://media3.session/... xflg=0x4 cmp=com.mattsapps.yonderpod/de.danoeh.antennapod.playback.service.Media3PlaybackService flags=0x4000000 u=0} requestCode=87 from uid 10124
+11-25 06:50:30.175 D/M3PlaybackService( 5053): Audio focus: playWhenReady false, reason 1
+11-25 06:55:45.403 D/ActivityManager( 1492): Received SERVICE intent 0xe455dd4 Key{startForegroundService pkg=com.mattsapps.yonderpod intent=act=android.intent.action.MEDIA_BUTTON dat=androidx://media3.session/... xflg=0x4 cmp=com.mattsapps.yonderpod/de.danoeh.antennapod.playback.service.Media3PlaybackService flags=0x4000000 u=0} requestCode=85 from uid 10124
+11-25 06:55:45.421 D/M3PlaybackService( 5053): Foreground: already, for widget
+11-25 06:55:45.448 D/M3PlaybackService( 5053): Foreground: already, for play
+11-25 06:55:45.449 D/M3PlaybackService( 5053): Audio focus: playWhenReady true, reason 1
+11-25 06:55:48.663 W/sapps.yonderpod( 5053): Long monitor contention with owner RxCachedThreadScheduler-37 (19351) at long de.danoeh.antennapod.smartplay.app.SmartPlayQueueManager.podcastsId()(SmartPlayQueueManager.java:355) waiters=1 in long de.danoeh.antennapod.smartplay.app.SmartPlayQueueManager.podcastsId() for 472ms
+11-25 06:55:48.689 D/M3PlaybackService( 5053): Foreground: playing in the foreground
+11-25 06:55:49.023 W/sapps.yonderpod( 5053): Long monitor contention with owner RxCachedThreadScheduler-37 (19351) at long de.danoeh.antennapod.smartplay.app.SmartPlayQueueManager.podcastsId()(SmartPlayQueueManager.java:355) waiters=0 in long de.danoeh.antennapod.smartplay.app.SmartPlayQueueManager.podcastsId() for 845ms
+11-25 06:56:18.001 D/M3PlaybackService( 5053): Foreground: already, for play
+11-25 06:56:18.058 D/M3PlaybackService( 5053): Sound: skip silence false, volume OFF
+11-25 06:56:18.095 D/SmartPlayQueue( 5053): Loaded George FM · Mon–Fri 6:40 am · Wed, 25 Nov, a detour
+11-25 06:56:21.561 D/M3PlaybackService( 5053): Foreground: playing in the foreground
+11-25 06:56:50.620 D/M3PlaybackService( 5053): Audio focus: playWhenReady false, reason 1
+11-25 06:57:03.937 D/M3PlaybackService( 5053): Foreground: already, for play
+11-25 06:57:03.938 D/M3PlaybackService( 5053): Audio focus: playWhenReady true, reason 1
+11-25 06:57:06.946 D/M3PlaybackService( 5053): Foreground: playing in the foreground
+11-25 07:00:11.645 D/M3PlaybackService( 5053): Foreground: playing in the foreground
+11-25 07:00:24.134 D/M3PlaybackService( 5053): Foreground: playing in the foreground
+11-25 07:00:48.457 D/SmartPlayQueue( 5053): Playing from Favourites
+11-25 07:00:48.514 D/NextUpRule( 5053): After George FM · Mon–Fri 6:40 am · Wed, 25 Nov in world 1: Browns Blunder, Putins Friends and Pinching Pay Equity Pennies, next in this world, or Podcasts, playing
+11-25 07:00:48.541 D/M3PlaybackService( 5053): Next: downloaded, skipped false, next in this world, or Podcasts
+11-25 07:00:48.544 D/M3PlaybackService( 5053): Sound: skip silence false, volume OFF
+11-25 07:00:48.546 D/M3PlaybackService( 5053): Foreground: already, for next
+11-25 07:00:48.553 D/SmartPlayQueue( 5053): Loaded Browns Blunder, Putins Friends and Pinching Pay Equity Pennies from the playlist
+11-25 07:00:51.928 D/M3PlaybackService( 5053): Foreground: playing in the foreground
+11-25 07:03:15.831 D/M3PlaybackService( 5053): Audio focus: playWhenReady false, reason 1
+11-25 07:03:50.482 D/SmartPlayQueue( 5053): Playing from So Much For The Afterglow, loaded episode on top
+11-25 07:03:50.821 D/M3PlaybackService( 5053): Foreground: already, for play
+11-25 07:03:50.822 D/M3PlaybackService( 5053): Audio focus: playWhenReady true, reason 1
+11-25 07:03:51.076 D/M3PlaybackService( 5053): Sound: skip silence false, volume OFF
+11-25 07:03:51.232 D/SmartPlayQueue( 5053): Loaded I Will Buy You A New Life from the playlist
+11-25 07:03:54.951 D/M3PlaybackService( 5053): Foreground: playing in the foreground
+11-25 07:07:50.499 D/NextUpRule( 5053): After I Will Buy You A New Life: Browns Blunder, Putins Friends and Pinching Pay Equity Pennies, next in the playlist, playing
+11-25 07:07:50.576 D/M3PlaybackService( 5053): Next: downloaded, skipped false, next in the playlist
+11-25 07:07:50.580 D/M3PlaybackService( 5053): Sound: skip silence false, volume OFF
+11-25 07:07:50.594 D/M3PlaybackService( 5053): Foreground: already, for next
+11-25 07:07:51.787 D/SmartPlayQueue( 5053): Loaded Browns Blunder, Putins Friends and Pinching Pay Equity Pennies from the playlist
+11-25 07:07:54.324 D/M3PlaybackService( 5053): Foreground: playing in the foreground

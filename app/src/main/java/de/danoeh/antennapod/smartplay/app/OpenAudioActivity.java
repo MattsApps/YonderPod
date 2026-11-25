@@ -13,6 +13,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.playback.service.PlaybackServiceStarter;
+import de.danoeh.antennapod.storage.preferences.NextUpPreferences;
 import de.danoeh.antennapod.ui.common.ThemeSwitcher;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Single;
@@ -62,6 +63,8 @@ public class OpenAudioActivity extends AppCompatActivity {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(result -> {
                     if (action == PLAY_NOW && result.item.getMedia() != null) {
+                        NextUpPreferences.startWorld(result.item.getMedia().getId(),
+                                NextUpPreferences.WORLD_ADDED_FILES);
                         new PlaybackServiceStarter(getApplicationContext(), result.item.getMedia())
                                 .callEvenIfRunning(true)
                                 .start();

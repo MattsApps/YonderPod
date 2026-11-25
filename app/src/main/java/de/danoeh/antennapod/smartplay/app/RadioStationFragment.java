@@ -35,6 +35,7 @@ import de.danoeh.antennapod.model.feed.FeedItemFilter;
 import de.danoeh.antennapod.model.feed.SortOrder;
 import de.danoeh.antennapod.playback.service.PlaybackServiceStarter;
 import de.danoeh.antennapod.storage.database.DBReader;
+import de.danoeh.antennapod.storage.preferences.NextUpPreferences;
 import de.danoeh.antennapod.storage.preferences.RadioPreferences;
 import de.danoeh.antennapod.ui.common.Converter;
 import de.danoeh.antennapod.ui.screen.feed.FeedItemlistFragment;
@@ -227,6 +228,7 @@ public class RadioStationFragment extends Fragment {
                 recording.setGravity(Gravity.CENTER_VERTICAL);
                 recording.setOnClickListener(v -> {
                     if (item.getMedia() != null) {
+                        NextUpPreferences.startWorld(item.getMedia().getId(), NextUpPreferences.WORLD_RADIO);
                         new PlaybackServiceStarter(requireContext(), item.getMedia()).callEvenIfRunning(true).start();
                     }
                 });

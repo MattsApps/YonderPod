@@ -1,5 +1,6 @@
 package de.danoeh.antennapod.smartplay.app;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -78,7 +79,9 @@ public class SmartPlaysFragment extends Fragment {
     }
 
     private void load() {
-        disposables.add(Observable.fromCallable(() -> SmartPlayStore.getInstance(requireContext()).getAll())
+        Context app = requireContext().getApplicationContext();
+        disposables.add(Observable.fromCallable(() ->
+                        AutoSmartPlays.visible(app, SmartPlayStore.getInstance(app).getAll()))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(result -> {

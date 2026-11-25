@@ -157,10 +157,6 @@ public final class RecordShowDialog {
         }, show.endMinute / 60, show.endMinute % 60, DateFormat.is24HourFormat(context))));
 
         mobile.setChecked(show.allowMobile);
-        CheckBox ownBox = new CheckBox(context);
-        ownBox.setText(R.string.record_plays_in_own);
-        ownBox.setChecked(isNew);
-        playsIn.addView(ownBox);
         List<SmartPlayStore.StoredSmartPlay> others = new ArrayList<>();
         List<CheckBox> otherBoxes = new ArrayList<>();
         boolean[] loaded = {false};
@@ -168,7 +164,6 @@ public final class RecordShowDialog {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(choices -> {
-                    ownBox.setChecked(isNew || choices.ownId >= 0);
                     for (SmartPlayStore.StoredSmartPlay other : choices.others) {
                         CheckBox box = new CheckBox(context);
                         box.setText(other.getDefinition().getName());
@@ -194,7 +189,6 @@ public final class RecordShowDialog {
             show.name = newName.isEmpty() ? Recordings.defaultName(context, station.getTitle(), show) : newName;
             show.zoneId = zones.get(Math.max(0, zone.getSelectedItemPosition()));
             show.allowMobile = mobile.isChecked();
-            boolean own = ownBox.isChecked();
             Set<Long> otherIds = new LinkedHashSet<>();
             for (int i = 0; i < otherBoxes.size(); i++) {
                 if (otherBoxes.get(i).isChecked()) {
@@ -211,7 +205,7 @@ public final class RecordShowDialog {
                     Recordings.sweep(app);
                 }
                 if (choose) {
-                    Recordings.setPlaysIn(app, show, own || !loaded[0], otherIds);
+                    Recordings.setPlaysIn(app, show, otherIds);
                 }
                 return show;
             })
@@ -224,10 +218,6 @@ public final class RecordShowDialog {
             // Problems keep the dialog open so the times can be fixed.
             if (show.weekdays == 0 || show.startMinute == show.endMinute) {
                 Toast.makeText(app, R.string.record_needs_times, Toast.LENGTH_LONG).show();
-                return;
-            }
-            if (loaded[0] && !ownBox.isChecked() && !anyChecked(otherBoxes)) {
-                Toast.makeText(app, R.string.record_plays_in_none, Toast.LENGTH_LONG).show();
                 return;
             }
             String zoneId = zones.get(Math.max(0, zone.getSelectedItemPosition()));
@@ -304,15 +294,6 @@ public final class RecordShowDialog {
         return ((endMinute - startMinute) % (24 * 60) + 24 * 60) % (24 * 60);
     }
 
-    private static boolean anyChecked(List<CheckBox> boxes) {
-        for (CheckBox box : boxes) {
-            if (box.isChecked()) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     /**
      * "stop today's recording". The station page's long press uses this; the notification's stop button
      * calls the same Recordings.stopToday.
@@ -377,7 +358,6 @@ public final class RecordShowDialog {
     }
 
     private static final class Choices {
-        long ownId = -1;
         final List<SmartPlayStore.StoredSmartPlay> others = new ArrayList<>();
         final Set<Long> chosen = new HashSet<>();
     }
@@ -385,15 +365,9 @@ public final class RecordShowDialog {
     private static Choices loadChoices(Context context, RecordingStore.Show show, boolean isNew) {
         Choices choices = new Choices();
         if (!isNew) {
-            SmartPlayStore.StoredSmartPlay own = Recordings.ownSmartPlay(context, show.feedId);
-            choices.ownId = own != null ? own.getId() : -1;
             choices.chosen.addAll(Recordings.playsIn(context, show));
         }
-        for (SmartPlayStore.StoredSmartPlay stored : SmartPlayStore.getInstance(context).getAll()) {
-            if (stored.getId() != choices.ownId) {
-                choices.others.add(stored);
-            }
-        }
+        choices.others.addAll(AutoSmartPlays.visible(context, SmartPlayStore.getInstance(context).getAll()));
         return choices;
     }
 

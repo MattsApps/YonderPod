@@ -6,6 +6,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
+import androidx.annotation.Nullable;
 import androidx.preference.PreferenceManager;
 
 import org.greenrobot.eventbus.EventBus;
@@ -45,6 +46,7 @@ import de.danoeh.antennapod.smartplay.download.DownloadEpisode;
 import de.danoeh.antennapod.smartplay.download.DownloadPlanner;
 import de.danoeh.antennapod.smartplay.download.ShowDownloadSettings;
 import de.danoeh.antennapod.net.common.NetworkUtils;
+import de.danoeh.antennapod.playback.service.NextUpRule;
 import de.danoeh.antennapod.playback.service.PlaybackServiceStarter;
 import de.danoeh.antennapod.storage.database.DBReader;
 import de.danoeh.antennapod.storage.database.DBWriter;
@@ -61,6 +63,8 @@ public class SmartPlayQueueManager {
     private static final String KEY_ACTIVE_ID = "activeId";
     private static final String KEY_ACTIVE_NAME = "activeName";
     private static final String KEY_PREVIOUS_ID = "previousId";
+    /** 1.0.5: the Smart Play the Podcasts world plays from (the last visible one highlighted). */
+    private static final String KEY_PODCASTS_ID = "podcastsId";
     private static final String KEY_PAUSED = "paused";
     private static final String KEY_FEED_QUEUE_ACTION_CLEARED = "feedQueueActionCleared";
     private static final String KEY_COUNTER_SET = "subscriptionCounterSet";
@@ -115,6 +119,22 @@ public class SmartPlayQueueManager {
             return;
         }
         instance = new SmartPlayQueueManager(context);
+        Context app = context.getApplicationContext();
+        NextUpRule.setWorldNext((finished, world) -> {
+            FeedItem next = WorldOf.next(app, finished, world);
+            if (next != null && next.getMedia() != null) {
+                NextUpPreferences.startWorld(next.getMedia().getId(), world);
+                return next;
+            }
+            if (!NextUpPreferences.keepPlaying()) {
+                return null;
+            }
+            next = instance.podcastsNext();
+            if (next != null && next.getMedia() != null) {
+                NextUpPreferences.startWorld(next.getMedia().getId(), NextUpPreferences.WORLD_SMART_PLAY);
+            }
+            return next;
+        });
         instance.start();
     }
 
@@ -233,10 +253,11 @@ public class SmartPlayQueueManager {
 
     public void activate(long smartPlayId, FeedMedia fallback) {
         executor.execute(() -> {
-            switchTo(smartPlayId);
+            switchWorldTo(smartPlayId);
             List<FeedItem> queue = DBReader.getQueue();
             FeedMedia media = !queue.isEmpty() ? queue.get(0).getMedia() : fallback;
             if (media != null) {
+                NextUpPreferences.startWorld(media.getId(), NextUpPreferences.WORLD_SMART_PLAY);
                 new Handler(Looper.getMainLooper()).post(() -> new PlaybackServiceStarter(context, media)
                         .callEvenIfRunning(true)
                         .start());
@@ -246,7 +267,7 @@ public class SmartPlayQueueManager {
 
     public void activateAndPlay(long smartPlayId, FeedItem chapter) {
         executor.execute(() -> {
-            switchTo(smartPlayId);
+            switchWorldTo(smartPlayId);
             try {
                 List<FeedItem> newQueue = new ArrayList<>();
                 newQueue.add(chapter);
@@ -259,10 +280,92 @@ public class SmartPlayQueueManager {
             } catch (Exception e) {
                 Log.e(TAG, "Could not put book first", e);
             }
+            NextUpPreferences.startWorld(chapter.getMedia().getId(), NextUpPreferences.WORLD_SMART_PLAY);
             new Handler(Looper.getMainLooper()).post(() -> new PlaybackServiceStarter(context, chapter.getMedia())
                     .callEvenIfRunning(true)
                     .start());
         });
+    }
+
+    /**
+     * 1.0.5: play on the Podcasts circle switches to the Podcasts Smart Play and plays media (null: its first).
+     * Whatever another world was playing stays paused where it was and doesn't come back by itself.
+     */
+    public void playPodcasts(@Nullable FeedMedia media) {
+        executor.execute(() -> {
+            long id = podcastsId();
+            if (id != state.getLong(KEY_ACTIVE_ID, -1)) {
+                switchWorldTo(id);
+            }
+            FeedMedia play = media;
+            if (play == null) {
+                FeedItem first = NextUpRule.firstInPlaylist(DBReader.getQueue());
+                if (first == null) {
+                    update(true);
+                    first = NextUpRule.firstInPlaylist(DBReader.getQueue());
+                }
+                play = first != null ? first.getMedia() : null;
+            }
+            if (play == null) {
+                return;
+            }
+            NextUpPreferences.startWorld(play.getId(), NextUpPreferences.WORLD_SMART_PLAY);
+            FeedMedia start = play;
+            new Handler(Looper.getMainLooper()).post(() -> new PlaybackServiceStarter(context, start)
+                    .callEvenIfRunning(true)
+                    .start());
+        });
+    }
+
+    /**
+     * 1.0.5: Radio or added files ran out in "keep playing": switch to the Podcasts Smart Play and return its
+     * first episode. Waits for the switch, so never call it on the executor.
+     */
+    @Nullable
+    FeedItem podcastsNext() {
+        try {
+            return executor.submit(() -> {
+                long id = podcastsId();
+                if (id != state.getLong(KEY_ACTIVE_ID, -1)) {
+                    switchWorldTo(id);
+                }
+                FeedItem first = NextUpRule.firstInPlaylist(DBReader.getQueue());
+                if (first == null) {
+                    update(true);
+                    first = NextUpRule.firstInPlaylist(DBReader.getQueue());
+                }
+                return first;
+            }).get(10, TimeUnit.SECONDS);
+        } catch (Exception e) {
+            Log.e(TAG, "Could not move on to Podcasts", e);
+            return null;
+        }
+    }
+
+    /** The Podcasts world's Smart Play: the last visible one highlighted, else the first visible one. */
+    public long podcastsId() {
+        List<SmartPlayStore.StoredSmartPlay> visible = AutoSmartPlays.visible(context, store.getAll());
+        if (visible.isEmpty()) {
+            synchronized (this) {
+                visible = AutoSmartPlays.visible(context, store.getAll());
+                if (visible.isEmpty()) {
+                    store.insert(SmartPlayLists.stuff());
+                    visible = AutoSmartPlays.visible(context, store.getAll());
+                }
+            }
+        }
+        long saved = state.getLong(KEY_PODCASTS_ID, -1);
+        for (SmartPlayStore.StoredSmartPlay stored : visible) {
+            if (stored.getId() == saved) {
+                return saved;
+            }
+        }
+        return visible.isEmpty() ? -1 : visible.get(0).getId();
+    }
+
+    public String podcastsName() {
+        SmartPlayStore.StoredSmartPlay stored = store.get(podcastsId());
+        return stored != null ? stored.getDefinition().getName() : "";
     }
 
     /** Active hours: moves the highlight at the boundary, without interrupting the loaded episode. */
@@ -290,11 +393,28 @@ public class SmartPlayQueueManager {
         update(true);
     }
 
+    /** 1.0.5: switching world. Like switchTo, but the loaded episode isn't carried into the new list. */
+    private void switchWorldTo(long smartPlayId) {
+        noteLoaded();
+        long old = state.getLong(KEY_ACTIVE_ID, -1);
+        if (old >= 0 && old != smartPlayId && state.getLong(KEY_QUEUE_OWNER, -1) == old) {
+            List<Long> queueIds = queueIds();
+            editMemory(m -> m.snapshot(old, queueIds));
+        }
+        setActive(smartPlayId);
+        editMemory(PlaylistMemory::dropCarry);
+        update(true);
+    }
+
     private void setActive(long smartPlayId) {
         long current = state.getLong(KEY_ACTIVE_ID, -1);
         SharedPreferences.Editor editor = state.edit().putLong(KEY_ACTIVE_ID, smartPlayId);
         if (current >= 0 && current != smartPlayId) {
             editor.putLong(KEY_PREVIOUS_ID, current);
+        }
+        SmartPlayStore.StoredSmartPlay stored = store.get(smartPlayId);
+        if (stored != null && !AutoSmartPlays.isHidden(context, stored)) {
+            editor.putLong(KEY_PODCASTS_ID, smartPlayId);
         }
         editor.apply();
     }
@@ -530,8 +650,8 @@ public class SmartPlayQueueManager {
 
     private SmartPlayDefinition activeSmartPlay() {
         List<SmartPlayStore.StoredSmartPlay> all = store.getAll();
-        if (all.isEmpty()) {
-            store.insert(SmartPlayLists.stuff());
+        if (all.isEmpty() || AutoSmartPlays.visible(context, all).isEmpty()) {
+            podcastsId();
             all = store.getAll();
         }
         long activeId = state.getLong(KEY_ACTIVE_ID, -1);
