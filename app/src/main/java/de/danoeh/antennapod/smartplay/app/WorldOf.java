@@ -25,8 +25,8 @@ import de.danoeh.antennapod.storage.preferences.UserPreferences;
 /**
  * Which world something belongs to (1.0.2: each world offers its own). Live radio is Radio. Books, own-audio
  * folders and Added files are Files while the Files world is shown (with it hidden they join Podcasts, as the
- * Podcasts screen already did for books). Everything else is Podcasts, including radio recordings, which play
- * from Smart Plays like episodes. Runs off the main thread: it may read the database.
+ * Podcasts screen already did for books). Radio recordings are Radio unless played inside a podcast smart play
+ * (1.0.7). Everything else is Podcasts. Runs off the main thread: it may read the database.
  */
 final class WorldOf {
     static final int NONE = -1;
@@ -95,13 +95,19 @@ final class WorldOf {
         return null;
     }
 
-    /** 1.0.5: a recording started from the Radio screen (or its extra part) is Radio, not Podcasts. */
+    /**
+     * 1.0.7: a radio recording belongs to Radio unless it was played inside a podcast smart play (noted by the
+     * player as each recording starts, NextUpPreferences.noteRecordingStarted). 1.0.5 worked this out from the
+     * world being played from now, so a recording played from its show's page, the next recording in Radio, and
+     * every recording once another world was played all counted as podcasts.
+     */
     static boolean isRadioRecording(FeedMedia media) {
-        if (NextUpPreferences.getWorld() != NextUpPreferences.WORLD_RADIO || media.getItem() == null) {
+        FeedItem item = media.getItem();
+        if (item == null) {
             return false;
         }
-        return media.getId() == NextUpPreferences.getWorldStart()
-                || NextUpPreferences.getDetourKept().contains(media.getItemId());
+        Feed feed = item.getFeed() != null ? item.getFeed() : DBReader.getFeed(item.getFeedId(), false, 0, 0);
+        return Recordings.isRecordingsFeed(feed) && !NextUpPreferences.isPodcastRecording(item.getId());
     }
 
     /** 1.0.5: what carries on in Radio (the next ready recording, then the station live) or among added files. */

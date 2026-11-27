@@ -1321,6 +1321,7 @@ public class Media3PlaybackService extends MediaLibraryService {
                         // A detour: the interrupted episode resumes after it, even if half-played ones are off.
                         NextUpPreferences.setDetourResume(previousMediaId);
                     }
+                    noteRecordingWorld(media);
                     return media;
                 })
                         .subscribeOn(Schedulers.io())
@@ -1350,6 +1351,29 @@ public class Media3PlaybackService extends MediaLibraryService {
                     ? player.getCurrentMediaItem().mediaId
                     : "null"), e);
         }
+    }
+
+    /**
+     * 1.0.7: a radio recording belongs to Radio unless it's played inside a podcast smart play, that is, loaded
+     * from the playlist while playing from a smart play (not a detour or a detour's extra part). Every route
+     * that starts a recording comes through here, so the world is noted once, as it starts.
+     */
+    private static void noteRecordingWorld(FeedMedia media) {
+        if (media == null || media.getItem() == null || media.isLiveRadio()) {
+            return;
+        }
+        FeedItem item = media.getItem();
+        Feed feed = item.getFeed() != null ? item.getFeed() : DBReader.getFeed(item.getFeedId(), false, 0, 0);
+        if (feed == null || feed.getDownloadUrl() == null
+                || !feed.getDownloadUrl().startsWith(Feed.RECORDINGS_URL_PREFIX)) {
+            return;
+        }
+        boolean inSmartPlay = NextUpPreferences.getWorld() == NextUpPreferences.WORLD_SMART_PLAY
+                && item.isTagged(FeedItem.TAG_QUEUE)
+                && !NextUpPreferences.getDetourKept().contains(item.getId());
+        NextUpPreferences.noteRecordingStarted(item.getId(), media.getId(), inSmartPlay);
+        Log.d(TAG, "Recording " + media.getEpisodeTitle() + (inSmartPlay ? " plays in a smart play (Podcasts)"
+                : " belongs to Radio"));
     }
 
     @OptIn(markerClass = UnstableApi.class)

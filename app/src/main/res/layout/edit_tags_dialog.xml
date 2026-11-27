@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- 1.0.7: every existing category is a row to tap (chosen ones in the highlight colour with a tick). Only the
+     list scrolls; the new-category box and the download line stay under it. The keyboard comes up only when
+     the new-category box is tapped. -->
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:orientation="vertical"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
     android:padding="16dp">
 
     <CheckBox
@@ -23,29 +28,42 @@
         android:paddingBottom="16dp"
         android:text="@string/multi_feed_common_tags_info" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/tagsRecycler"
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/categoriesScroll"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:requiresFadingEdge="vertical"
+        android:fadingEdgeLength="24dp"
+        android:scrollbars="vertical">
+
+        <LinearLayout
+            android:id="@+id/categoriesList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:divider="?android:attr/dividerHorizontal"
+            android:showDividers="middle" />
+
+    </androidx.core.widget.NestedScrollView>
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/newTagTextInput"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
         app:endIconMode="custom"
         app:endIconDrawable="@drawable/ic_add"
         app:endIconContentDescription="@string/add_tag"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
-        <AutoCompleteTextView
+        <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/newTagEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/add_tag"
-            android:layout_weight="1"
             android:padding="16dp"
             android:inputType="text"
-            android:ems="10" />
+            android:imeOptions="actionDone" />
 
     </com.google.android.material.textfield.TextInputLayout>
 

@@ -2,16 +2,26 @@ package de.danoeh.antennapod.ui.screen.feed.preferences;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.MotionEvent;
+import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.View;
-import android.widget.ArrayAdapter;
+import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.fragment.app.DialogFragment;
-import androidx.recyclerview.widget.GridLayoutManager;
+import com.google.android.material.color.MaterialColors;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.databinding.EditTagsDialogBinding;
@@ -25,14 +35,13 @@ import de.danoeh.antennapod.storage.database.DBReader;
 import de.danoeh.antennapod.storage.database.DBWriter;
 import de.danoeh.antennapod.storage.database.NavDrawerData;
 import de.danoeh.antennapod.storage.preferences.UserPreferences;
-import de.danoeh.antennapod.ui.SimpleChipAdapter;
 import de.danoeh.antennapod.ui.common.Keyboard;
-import de.danoeh.antennapod.ui.common.ItemOffsetDecoration;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -44,7 +53,8 @@ public class TagSettingsDialog extends DialogFragment {
     private static final String ARG_NEW_SUBSCRIPTION = "new_subscription";
     private List<String> displayedTags;
     private EditTagsDialogBinding viewBinding;
-    private SimpleChipAdapter adapter;
+    /** Every category: the existing ones, plus any typed here. */
+    private List<String> allTags;
 
     public static TagSettingsDialog newInstanceForNewSubscription(List<FeedPreferences> preferencesList) {
         TagSettingsDialog fragment = newInstance(preferencesList);
@@ -72,40 +82,25 @@ public class TagSettingsDialog extends DialogFragment {
         }
         displayedTags = new ArrayList<>(commonTags);
         displayedTags.remove(FeedPreferences.TAG_ROOT);
+        allTags = new ArrayList<>(displayedTags);
 
         viewBinding = EditTagsDialogBinding.inflate(getLayoutInflater());
-        viewBinding.tagsRecycler.setLayoutManager(new GridLayoutManager(getContext(), 2));
-        viewBinding.tagsRecycler.addItemDecoration(new ItemOffsetDecoration(getContext(), 4));
-        adapter = new SimpleChipAdapter(getContext()) {
-            @Override
-            protected List<String> getChips() {
-                return displayedTags;
-            }
-
-            @Override
-            protected void onRemoveClicked(int position) {
-                displayedTags.remove(position);
-                notifyDataSetChanged();
-            }
-        };
-        viewBinding.tagsRecycler.setAdapter(adapter);
         viewBinding.rootFolderCheckbox.setChecked(commonTags.contains(FeedPreferences.TAG_ROOT));
         viewBinding.rootFolderCheckbox.setVisibility(UserPreferences.isBottomNavigationEnabled()
                 ? View.GONE : View.VISIBLE);
 
-        viewBinding.newTagTextInput.setEndIconOnClickListener(v ->
-                addTag(viewBinding.newTagEditText.getText().toString().trim()));
-
-        loadTags();
-        viewBinding.newTagEditText.setThreshold(1);
-        viewBinding.newTagEditText.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                viewBinding.newTagEditText.showDropDown();
-                viewBinding.newTagEditText.requestFocus();
-                return false;
+        viewBinding.newTagTextInput.setEndIconOnClickListener(v -> addTypedTag(true));
+        viewBinding.newTagEditText.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                addTypedTag(false);
+                return true;
             }
+            return false;
         });
+
+        showCategories();
+        loadTags();
+        keepListAboveKeyboard();
 
         if (feedPreferencesList.size() > 1) {
             viewBinding.commonTagsInfo.setVisibility(View.VISIBLE);
@@ -119,11 +114,133 @@ public class TagSettingsDialog extends DialogFragment {
         }
         dialog.setTitle(newSubscription ? R.string.smartplay_choose_categories : R.string.feed_tags_label);
         dialog.setPositiveButton(R.string.yonder_button_ok, (d, input) -> {
-            addTag(viewBinding.newTagEditText.getText().toString().trim());
+            String typed = viewBinding.newTagEditText.getText() != null
+                    ? viewBinding.newTagEditText.getText().toString().trim() : "";
+            if (!TextUtils.isEmpty(typed)) {
+                choose(typed);
+            }
             updatePreferencesTags(feedPreferencesList, commonTags);
         });
         dialog.setNegativeButton(newSubscription ? R.string.smartplay_skip : R.string.cancel_label, null);
-        return dialog.create();
+        Dialog created = dialog.create();
+        // 1.0.7: tapping outside (often to get rid of the keyboard) mustn't throw the choice away.
+        created.setCanceledOnTouchOutside(false);
+        return created;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        Window window = getDialog() != null ? getDialog().getWindow() : null;
+        if (window != null) {
+            // 1.0.7: no keyboard when the dialog opens (picking an existing category is the usual case); when
+            // the new-category box is tapped, the dialog shrinks above the keyboard instead of being covered.
+            window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN
+                    | WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+        }
+    }
+
+    /** One row per category, in name order; a chosen one in the highlight colour with a tick. */
+    private void showCategories() {
+        if (viewBinding == null || !isAdded()) {
+            return;
+        }
+        Context context = requireContext();
+        Collections.sort(allTags, String.CASE_INSENSITIVE_ORDER);
+        LinearLayout list = viewBinding.categoriesList;
+        list.removeAllViews();
+        int primary = MaterialColors.getColor(list, android.R.attr.textColorPrimary);
+        int highlight = MaterialColors.getColor(list, R.attr.colorPrimary);
+        float density = getResources().getDisplayMetrics().density;
+        TypedValue ripple = new TypedValue();
+        context.getTheme().resolveAttribute(android.R.attr.selectableItemBackground, ripple, true);
+        for (String tag : allTags) {
+            boolean chosen = displayedTags.contains(tag);
+            TextView row = new TextView(context);
+            row.setText(tag);
+            row.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
+            row.setTextColor(chosen ? highlight : primary);
+            row.setMinHeight((int) (48 * density));
+            row.setGravity(Gravity.CENTER_VERTICAL);
+            row.setPadding((int) (4 * density), 0, (int) (4 * density), 0);
+            row.setBackgroundResource(ripple.resourceId);
+            if (chosen) {
+                Drawable tick = AppCompatResources.getDrawable(context, R.drawable.ic_check);
+                if (tick != null) {
+                    tick = DrawableCompat.wrap(tick.mutate());
+                    DrawableCompat.setTint(tick, highlight);
+                }
+                row.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, tick, null);
+            }
+            row.setOnClickListener(v -> {
+                if (displayedTags.contains(tag)) {
+                    displayedTags.remove(tag);
+                } else {
+                    displayedTags.add(tag);
+                }
+                showCategories();
+            });
+            list.addView(row, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT));
+        }
+        viewBinding.categoriesScroll.setVisibility(allTags.isEmpty() ? View.GONE : View.VISIBLE);
+    }
+
+    /**
+     * The list takes at most 40% of the screen space left visible (measured each layout, so it shrinks when
+     * the keyboard comes up) and scrolls inside that, keeping the box and the download line in view.
+     */
+    private void keepListAboveKeyboard() {
+        View root = viewBinding.getRoot();
+        root.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
+            if (viewBinding == null) {
+                return;
+            }
+            Rect visible = new Rect();
+            root.getWindowVisibleDisplayFrame(visible);
+            int most = (int) (visible.height() * 0.4f);
+            int wanted = viewBinding.categoriesList.getHeight() > most ? most : ViewGroup.LayoutParams.WRAP_CONTENT;
+            ViewGroup.LayoutParams params = viewBinding.categoriesScroll.getLayoutParams();
+            if (params.height != wanted) {
+                params.height = wanted;
+                viewBinding.categoriesScroll.setLayoutParams(params);
+            }
+        });
+    }
+
+    /** The plus or the keyboard's done: adds and chooses what's typed. */
+    private void addTypedTag(boolean fromPlus) {
+        String name = viewBinding.newTagEditText.getText() != null
+                ? viewBinding.newTagEditText.getText().toString().trim() : "";
+        if (TextUtils.isEmpty(name) || FeedPreferences.TAG_UNTAGGED.equals(name)) {
+            if (fromPlus) {
+                viewBinding.newTagEditText.requestFocus();
+                Keyboard.show(getContext(), viewBinding.newTagEditText);
+            }
+            return;
+        }
+        choose(name);
+        viewBinding.newTagEditText.setText("");
+        showCategories();
+    }
+
+    /** Chooses a category by name; a name matching an existing one (any capitals) chooses that one. */
+    private void choose(String name) {
+        if (FeedPreferences.TAG_UNTAGGED.equals(name)) {
+            return;
+        }
+        for (String existing : allTags) {
+            if (existing.equalsIgnoreCase(name)) {
+                name = existing;
+                break;
+            }
+        }
+        if (!allTags.contains(name)) {
+            allTags.add(name);
+        }
+        if (!displayedTags.contains(name)) {
+            displayedTags.add(name);
+        }
     }
 
     private void showDownloadRules(long feedId) {
@@ -156,23 +273,15 @@ public class TagSettingsDialog extends DialogFragment {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         result -> {
-                            ArrayAdapter<String> acAdapter = new ArrayAdapter<String>(getContext(),
-                                    R.layout.single_tag_text_view, result);
-                            viewBinding.newTagEditText.setAdapter(acAdapter);
+                            for (String tag : result) {
+                                if (!allTags.contains(tag)) {
+                                    allTags.add(tag);
+                                }
+                            }
+                            showCategories();
                         }, error -> {
                             Log.e(TAG, Log.getStackTraceString(error));
                         });
-    }
-
-    private void addTag(String name) {
-        if (TextUtils.isEmpty(name) || displayedTags.contains(name) || FeedPreferences.TAG_UNTAGGED.equals(name)) {
-            viewBinding.newTagEditText.requestFocus();
-            Keyboard.show(getContext(), viewBinding.newTagEditText);
-            return;
-        }
-        displayedTags.add(name);
-        viewBinding.newTagEditText.setText("");
-        adapter.notifyDataSetChanged();
     }
 
     private void updatePreferencesTags(List<FeedPreferences> feedPreferencesList, Set<String> commonTags) {

@@ -6,7 +6,9 @@ import android.content.SharedPreferences;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -38,6 +40,9 @@ public final class NextUpPreferences {
     private static final String KEY_WORLD = "playingWorld";
     private static final String KEY_WORLD_START = "worldStartMediaId";
     private static final String KEY_RADIO_LAST = "radioLastMediaId";
+    private static final String KEY_PODCAST_RECORDINGS = "podcastRecordingItemIds";
+    /** Recordings are gone within 48 hours, so a short memory is plenty. */
+    private static final int PODCAST_RECORDINGS_KEPT = 30;
     /** Played from a Smart Play (Podcasts, or a book's or folder's own). */
     public static final int WORLD_SMART_PLAY = 0;
     /** Started from the Radio screen: a station or a recording. */
@@ -175,6 +180,46 @@ public final class NextUpPreferences {
 
     public static long getWorldStart() {
         return prefs != null ? prefs.getLong(KEY_WORLD_START, -1) : -1;
+    }
+
+    /**
+     * 1.0.7: radio recordings belong to Radio unless played inside a podcast smart play. Noted once, when a
+     * recording starts playing (any route: Radio, a show's page, the notification, the widget, Android Auto):
+     * played from a smart play's list it counts as a podcast; played any other way it's Radio's last played.
+     */
+    public static void noteRecordingStarted(long itemId, long mediaId, boolean inSmartPlay) {
+        List<Long> ids = podcastRecordings();
+        ids.remove(Long.valueOf(itemId));
+        SharedPreferences.Editor editor = prefs.edit();
+        if (inSmartPlay) {
+            ids.add(0, itemId);
+            while (ids.size() > PODCAST_RECORDINGS_KEPT) {
+                ids.remove(ids.size() - 1);
+            }
+        } else {
+            editor.putLong(KEY_RADIO_LAST, mediaId);
+        }
+        StringBuilder saved = new StringBuilder();
+        for (long id : ids) {
+            saved.append(saved.length() > 0 ? "," : "").append(id);
+        }
+        editor.putString(KEY_PODCAST_RECORDINGS, saved.toString()).commit();
+    }
+
+    /** 1.0.7: whether this recording was last played inside a podcast smart play. */
+    public static boolean isPodcastRecording(long itemId) {
+        return podcastRecordings().contains(itemId);
+    }
+
+    private static List<Long> podcastRecordings() {
+        List<Long> ids = new ArrayList<>();
+        String saved = prefs != null ? prefs.getString(KEY_PODCAST_RECORDINGS, "") : "";
+        for (String id : saved.split(",")) {
+            if (!id.isEmpty()) {
+                ids.add(Long.parseLong(id));
+            }
+        }
+        return ids;
     }
 
     /** The last thing played from the Radio screen: a station or a recording. */

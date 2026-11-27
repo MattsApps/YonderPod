@@ -217,7 +217,7 @@
         <item quantity="other">%d followed shows refreshed.</item>
     </plurals>
     <string name="edit_tags">edit categories</string>
-    <string name="add_tag">Add category</string>
+    <string name="add_tag">new category</string>
     <string name="rename_tag_label">rename category</string>
     <string name="delete_tag_label">delete category</string>
     <string name="delete_tag_confirmation">Please confirm that you want to delete the category \"%1$s\".</string>
