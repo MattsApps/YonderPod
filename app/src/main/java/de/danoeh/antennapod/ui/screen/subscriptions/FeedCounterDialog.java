@@ -16,7 +16,7 @@ public class FeedCounterDialog {
     public static void showDialog(Context context) {
         MaterialAlertDialogBuilder dialog = new MaterialAlertDialogBuilder(context);
         dialog.setTitle(context.getString(R.string.pref_nav_drawer_feed_counter_title));
-        dialog.setNegativeButton(android.R.string.cancel, (d, listener) -> d.dismiss());
+        dialog.setNegativeButton(R.string.cancel_label, (d, listener) -> d.dismiss());
 
         int selected = UserPreferences.getFeedCounterSetting().id;
         List<String> entryValues =

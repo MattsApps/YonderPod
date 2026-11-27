@@ -25,12 +25,14 @@ import androidx.media3.exoplayer.SeekParameters;
 import androidx.media3.exoplayer.drm.DrmSessionManagerProvider;
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory;
 import androidx.media3.exoplayer.source.MediaSource;
+import androidx.media3.exoplayer.util.EventLogger;
 import androidx.media3.exoplayer.upstream.LoadErrorHandlingPolicy;
 import androidx.media3.extractor.DefaultExtractorsFactory;
 import androidx.media3.extractor.mp3.Mp3Extractor;
 import de.danoeh.antennapod.net.common.NetworkUtils;
 import de.danoeh.antennapod.net.common.UserAgentInterceptor;
 import de.danoeh.antennapod.playback.base.MediaItemAdapter;
+import de.danoeh.antennapod.playback.service.BuildConfig;
 import de.danoeh.antennapod.playback.service.LiveBufferDataSource;
 import de.danoeh.antennapod.playback.service.R;
 import de.danoeh.antennapod.smartplay.radio.RecordingCipher;
@@ -53,7 +55,7 @@ public class ExoPlayerUtils {
                     new LeastRecentlyUsedCacheEvictor(100 * 1024 * 1024),
                     new StandaloneDatabaseProvider(context));
         }
-        return new ExoPlayer.Builder(context)
+        ExoPlayer player = new ExoPlayer.Builder(context)
                 .setLoadControl(new DefaultLoadControl.Builder()
                         .setBufferDurationsMs(
                                 (int) TimeUnit.HOURS.toMillis(1),
@@ -70,6 +72,10 @@ public class ExoPlayerUtils {
                 .setSeekParameters(SeekParameters.EXACT)
                 .setHandleAudioBecomingNoisy(UserPreferences.isPauseOnHeadsetDisconnect())
                 .build();
+        if (BuildConfig.DEBUG) {
+            player.addAnalyticsListener(new EventLogger());
+        }
+        return player;
     }
 
     public static void releaseCache() {

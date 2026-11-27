@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 
 import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.model.feed.Feed;
@@ -135,7 +134,7 @@ public class RadioSurface extends WorldSurface {
             subtitle.setText(state.country.isEmpty() ? name : getString(R.string.detail_joined, name,
                     state.country));
             subtitle.setVisibility(View.VISIBLE);
-            title.setText(state.shortName.toLowerCase(Locale.getDefault()));
+            title.setText(state.shortName);
             title.setTextSize(TypedValue.COMPLEX_UNIT_SP, state.shortName.length() > 12 ? 40 : 56);
             hint.setVisibility(View.GONE);
             FeedMedia media = station.getMedia();
@@ -202,7 +201,7 @@ public class RadioSurface extends WorldSurface {
         subtitle.setText(when(time(item)));
         subtitle.setVisibility(View.VISIBLE);
         String name = item.getFeed().getTitle() != null ? item.getFeed().getTitle() : "";
-        title.setText(name.toLowerCase(Locale.getDefault()));
+        title.setText(name);
         title.setTextSize(TypedValue.COMPLEX_UNIT_SP, name.length() > 12 ? 40 : 56);
         hint.setVisibility(View.GONE);
         live.setVisibility(View.INVISIBLE);

@@ -20,7 +20,6 @@ import androidx.media3.common.Player;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import de.danoeh.antennapod.model.feed.FeedMedia;
@@ -354,7 +353,7 @@ public abstract class WidgetUpdater {
         views.setTextColor(R.id.txtvSmartPlay, palette.secondary);
         views.setTextColor(R.id.butRew, palette.text);
         views.setTextColor(R.id.butFastForward, palette.text);
-        views.setTextViewText(R.id.txtvSmartPlay, smartPlay.toLowerCase(Locale.getDefault()));
+        views.setTextViewText(R.id.txtvSmartPlay, smartPlay);
         views.setTextViewText(R.id.butRew, context.getString(R.string.widget_rewind_seconds,
                 UserPreferences.getRewindSecs()));
         views.setTextViewText(R.id.butFastForward, context.getString(R.string.widget_forward_seconds,

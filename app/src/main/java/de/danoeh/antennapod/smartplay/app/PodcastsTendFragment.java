@@ -280,7 +280,7 @@ public class PodcastsTendFragment extends Fragment {
                 TextViewCompat.setTextAppearance(block, R.style.Widget_WildInk_Block_Accent);
                 block.setBackgroundResource(R.drawable.wildink_block_accent);
             }
-            block.setText(smartPlay.getDefinition().getName().toLowerCase(Locale.getDefault()));
+            block.setText(smartPlay.getDefinition().getName());
             block.setOnClickListener(v -> {
                 if (active) {
                     TendRows.open(this, new QueueFragment());

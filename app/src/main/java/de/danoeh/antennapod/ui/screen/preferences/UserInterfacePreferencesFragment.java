@@ -111,7 +111,7 @@ public class UserInterfacePreferencesFragment extends AnimatedPreferenceFragment
             if (newValue instanceof Boolean && !(Boolean) newValue) {
                 new MaterialAlertDialogBuilder(getContext())
                         .setMessage(R.string.bottom_navigation_deprecation_warning)
-                        .setPositiveButton(android.R.string.ok, null)
+                        .setPositiveButton(R.string.yonder_button_ok, null)
                         .show();
             }
             if (newValue instanceof Boolean) {

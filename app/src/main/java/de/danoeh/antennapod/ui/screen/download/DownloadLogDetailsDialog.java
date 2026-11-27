@@ -63,7 +63,7 @@ public class DownloadLogDetailsDialog extends DialogFragment {
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         MaterialAlertDialogBuilder dialog = new MaterialAlertDialogBuilder(getContext());
         dialog.setTitle(R.string.download_error_details);
-        dialog.setPositiveButton(android.R.string.ok, null);
+        dialog.setPositiveButton(R.string.yonder_button_ok, null);
         dialog.setNeutralButton(R.string.copy_to_clipboard, (copyDialog, which) ->
                 ClipboardUtils.copyText(viewBinding.getRoot(), R.string.download_error_details, clipboardContent));
 

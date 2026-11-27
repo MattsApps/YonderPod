@@ -9,7 +9,6 @@ import java.util.Collections;
 import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.databinding.FeeditemlistHeaderBinding;
 import de.danoeh.antennapod.model.feed.Feed;
-import de.danoeh.antennapod.playback.service.PlaybackServiceStarter;
 import de.danoeh.antennapod.ui.common.Converter;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Completable;
@@ -71,12 +70,6 @@ public final class BookPanel {
                     progress.chapters, Converter.getDurationStringLocalized(context.getResources(),
                             progress.millisLeft, false)));
         }
-        header.bookContinue.setVisibility(progress.isFinished() ? View.GONE : View.VISIBLE);
-        header.bookContinue.setOnClickListener(v -> {
-            if (progress.next != null && progress.next.getMedia() != null) {
-                new PlaybackServiceStarter(context, progress.next.getMedia()).callEvenIfRunning(true).start();
-            }
-        });
         header.bookListen.setVisibility(progress.isFinished() ? View.GONE : View.VISIBLE);
         header.bookListen.setOnClickListener(v -> Completable.fromAction(() ->
                         Books.listen(context.getApplicationContext(), feed))

@@ -298,14 +298,6 @@
                 android:orientation="horizontal">
 
                 <Button
-                    android:id="@+id/bookContinue"
-                    style="@style/Widget.Material3.Button.TextButton"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/book_continue" />
-
-                <Button
                     android:id="@+id/bookBookmarks"
                     style="@style/Widget.Material3.Button.TextButton"
                     android:layout_width="0dp"

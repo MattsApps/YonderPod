@@ -38,7 +38,7 @@ public abstract class EditUrlSettingsDialog {
         new MaterialAlertDialogBuilder(activity)
                 .setView(binding.getRoot())
                 .setTitle(R.string.edit_url_menu)
-                .setPositiveButton(android.R.string.ok, (d, input) ->
+                .setPositiveButton(R.string.yonder_button_ok, (d, input) ->
                         showConfirmAlertDialog(String.valueOf(binding.textInput.getText())))
                 .setNegativeButton(R.string.cancel_label, null)
                 .show();
@@ -60,7 +60,7 @@ public abstract class EditUrlSettingsDialog {
         AlertDialog alertDialog = new MaterialAlertDialogBuilder(activity)
                 .setTitle(R.string.edit_url_menu)
                 .setMessage(R.string.edit_url_confirmation_msg)
-                .setPositiveButton(android.R.string.ok, (d, input) -> {
+                .setPositiveButton(R.string.yonder_button_ok, (d, input) -> {
                     onConfirmed(feed.getDownloadUrl(), url);
                     setUrl(url);
                 })
@@ -73,13 +73,13 @@ public abstract class EditUrlSettingsDialog {
             public void onTick(long millisUntilFinished) {
                 alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setText(
                         String.format(Locale.getDefault(), "%s (%d)",
-                                activity.getString(android.R.string.ok), millisUntilFinished / 1000 + 1));
+                                activity.getString(R.string.yonder_button_ok), millisUntilFinished / 1000 + 1));
             }
 
             @Override
             public void onFinish() {
                 alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
-                alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setText(android.R.string.ok);
+                alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setText(R.string.yonder_button_ok);
             }
         }.start();
     }

@@ -73,7 +73,6 @@ public class FeedSettingsPreferenceFragment extends PreferenceFragmentCompat {
     private static final String PREF_SCREEN = "feedSettingsScreen";
     private static final String PREF_AUTHENTICATION = "authentication";
     private static final String PREF_AUTO_DELETE = "autoDelete";
-    private static final String PREF_NEW_EPISODES_ACTION = "feedNewEpisodesAction";
     private static final String PREF_FEED_PLAYBACK_SPEED = "feedPlaybackSpeed";
     private static final String PREF_AUTO_SKIP = "feedAutoSkip";
     private static final String PREF_NOTIFICATION = "episodeNotification";
@@ -155,7 +154,6 @@ public class FeedSettingsPreferenceFragment extends PreferenceFragmentCompat {
                     setupPreferences();
                     updateAutoDeleteSummary();
                     updateAutoDownloadEnabledSummary();
-                    updateNewEpisodesActionSummary();
 
                     setupYonderDownloads();
                     findPreference(PREF_RECONNECT_LOCAL_FOLDER).setVisible(feed.isLocalFeed()
@@ -310,21 +308,6 @@ public class FeedSettingsPreferenceFragment extends PreferenceFragmentCompat {
             return false;
         });
         setupSound();
-        findPreference(PREF_NEW_EPISODES_ACTION).setOnPreferenceClickListener(preference -> {
-            boolean isAutoDownload = feed.getPreferences().isAutoDownload(UserPreferences.isEnableAutodownloadGlobal());
-            if (isAutoDownload && !feed.isLocalFeed()) {
-                EventBus.getDefault().post(new MessageEvent(getString(R.string.feed_new_episodes_action_snackbar)));
-                return true;
-            }
-            return false;
-        });
-        findPreference(PREF_NEW_EPISODES_ACTION).setOnPreferenceChangeListener((preference, newValue) -> {
-            int code = Integer.parseInt((String) newValue);
-            feedPreferences.setNewEpisodesAction(FeedPreferences.NewEpisodesAction.fromCode(code));
-            DBWriter.setFeedPreferences(feedPreferences);
-            updateNewEpisodesActionSummary();
-            return false;
-        });
         SwitchPreferenceCompat keepUpdated = findPreference("keepUpdated");
         keepUpdated.setChecked(feedPreferences.getKeepUpdated());
         keepUpdated.setVisible(feed.isLocalFeed() || feed.isAppManaged());
@@ -340,7 +323,6 @@ public class FeedSettingsPreferenceFragment extends PreferenceFragmentCompat {
                     FeedPreferences.AutoDownloadSetting.fromInteger(Integer.parseInt((String) newValue)));
             DBWriter.setFeedPreferences(feedPreferences);
             updateAutoDownloadEnabledSummary();
-            updateNewEpisodesActionSummary();
             return false;
         });
         findPreference(PREF_TAGS).setOnPreferenceClickListener(preference -> {
@@ -378,14 +360,14 @@ public class FeedSettingsPreferenceFragment extends PreferenceFragmentCompat {
         findPreference(PREF_RECONNECT_LOCAL_FOLDER).setOnPreferenceClickListener(preference -> {
             MaterialAlertDialogBuilder alert = new MaterialAlertDialogBuilder(getContext());
             alert.setMessage(R.string.reconnect_local_folder_warning);
-            alert.setPositiveButton(android.R.string.ok, (dialog, which) -> {
+            alert.setPositiveButton(R.string.yonder_button_ok, (dialog, which) -> {
                 try {
                     addLocalFolderLauncher.launch(currentFolder());
                 } catch (ActivityNotFoundException e) {
                     Log.e(TAG, "No activity found. Should never happen...");
                 }
             });
-            alert.setNegativeButton(android.R.string.cancel, null);
+            alert.setNegativeButton(R.string.cancel_label, null);
             alert.show();
             return true;
         });
@@ -404,32 +386,6 @@ public class FeedSettingsPreferenceFragment extends PreferenceFragmentCompat {
         };
         autoDeletePreference.setSummary(summary);
         autoDeletePreference.setValue("" + feedPreferences.getAutoDeleteAction().code);
-    }
-
-    private void updateNewEpisodesActionSummary() {
-        if (feed == null || feed.getPreferences() == null) {
-            return;
-        }
-        ListPreference newEpisodesAction = findPreference(PREF_NEW_EPISODES_ACTION);
-        boolean isAutoDownload = feed.getPreferences().isAutoDownload(UserPreferences.isEnableAutodownloadGlobal());
-        if (isAutoDownload && !feed.isLocalFeed()) {
-            newEpisodesAction.setSummary(R.string.feed_new_episodes_action_summary_autodownload);
-            return;
-        }
-        newEpisodesAction.setEnabled(true);
-        newEpisodesAction.setValue("" + feedPreferences.getNewEpisodesAction().code);
-        int globalStringResource = switch (UserPreferences.getNewEpisodesAction()) {
-            case ADD_TO_INBOX -> R.string.feed_new_episodes_action_add_to_inbox;
-            case ADD_TO_QUEUE -> R.string.feed_new_episodes_action_add_to_queue;
-            default -> R.string.feed_new_episodes_action_nothing;
-        };
-        String summary = switch (feedPreferences.getNewEpisodesAction()) {
-            case GLOBAL -> getString(R.string.global_default_with_value, getString(globalStringResource));
-            case ADD_TO_INBOX -> getString(R.string.feed_new_episodes_action_add_to_inbox);
-            case ADD_TO_QUEUE -> getString(R.string.feed_new_episodes_action_add_to_queue);
-            default -> getString(R.string.feed_new_episodes_action_nothing);
-        };
-        newEpisodesAction.setSummary(summary);
     }
 
     private void updateAutoDownloadEnabledSummary() {
@@ -489,7 +445,7 @@ public class FeedSettingsPreferenceFragment extends PreferenceFragmentCompat {
                 .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        () -> EventBus.getDefault().post(new MessageEvent(getString(android.R.string.ok))),
+                        () -> EventBus.getDefault().post(new MessageEvent(getString(R.string.yonder_button_ok))),
                         error -> EventBus.getDefault().post(new MessageEvent(error.getLocalizedMessage())));
     }
 
@@ -621,7 +577,7 @@ public class FeedSettingsPreferenceFragment extends PreferenceFragmentCompat {
         new MaterialAlertDialogBuilder(getContext())
                 .setTitle(R.string.playback_speed)
                 .setView(viewBinding.getRoot())
-                .setPositiveButton(android.R.string.ok, (dialog, which) -> {
+                .setPositiveButton(R.string.yonder_button_ok, (dialog, which) -> {
                     float newSpeed = viewBinding.useGlobalCheckbox.isChecked()
                             ? FeedPreferences.SPEED_USE_GLOBAL : viewBinding.seekBar.getCurrentSpeed();
                     feedPreferences.setFeedPlaybackSpeed(newSpeed);

@@ -85,7 +85,7 @@ public class StatisticsFilterDialog {
             dialogBinding.timeToSpinner.setSelection(filterDatesTo.first.length - 2);
         });
 
-        builder.setPositiveButton(android.R.string.ok, (dialog, which) -> {
+        builder.setPositiveButton(R.string.yonder_button_ok, (dialog, which) -> {
             includeMarkedAsPlayed = dialogBinding.includeMarkedCheckbox.isChecked();
             if (includeMarkedAsPlayed) {
                 // We do not know the date at which something was marked as played, so filtering does not make sense

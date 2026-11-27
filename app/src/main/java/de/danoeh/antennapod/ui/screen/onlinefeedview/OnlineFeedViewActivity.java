@@ -138,7 +138,7 @@ public class OnlineFeedViewActivity extends AppCompatActivity {
 
     private void showSpotifyOnly(String name) {
         runOnUiThread(() -> new MaterialAlertDialogBuilder(OnlineFeedViewActivity.this)
-                .setNeutralButton(android.R.string.ok, (dialog, which) -> finish())
+                .setNeutralButton(R.string.yonder_button_ok, (dialog, which) -> finish())
                 .setTitle(R.string.moving_spotify_only_title)
                 .setMessage(name == null || name.isEmpty() ? getString(R.string.moving_spotify_only_unknown)
                         : getString(R.string.moving_spotify_only, name))
@@ -148,7 +148,7 @@ public class OnlineFeedViewActivity extends AppCompatActivity {
 
     private void showNoPodcastFoundError() {
         runOnUiThread(() -> new MaterialAlertDialogBuilder(OnlineFeedViewActivity.this)
-                .setNeutralButton(android.R.string.ok, (dialog, which) -> finish())
+                .setNeutralButton(R.string.yonder_button_ok, (dialog, which) -> finish())
                 .setTitle(R.string.error_label)
                 .setMessage(R.string.null_value_podcast_error)
                 .setOnDismissListener(dialog1 -> finish())
@@ -416,7 +416,7 @@ public class OnlineFeedViewActivity extends AppCompatActivity {
             } else {
                 builder.setMessage(R.string.download_error_error_unknown);
             }
-            builder.setPositiveButton(android.R.string.ok, (dialog, which) -> dialog.cancel());
+            builder.setPositiveButton(R.string.yonder_button_ok, (dialog, which) -> dialog.cancel());
             if (getIntent().getBooleanExtra(ARG_WAS_MANUAL_URL, false)) {
                 builder.setNeutralButton(R.string.edit_url_menu, (dialog, which) -> editUrl());
             }

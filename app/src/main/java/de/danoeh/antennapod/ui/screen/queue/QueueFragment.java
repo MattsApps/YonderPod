@@ -41,7 +41,6 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 
 import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.actionbutton.PauseActionButton;
@@ -543,7 +542,7 @@ public class QueueFragment extends Fragment implements MaterialToolbar.OnMenuIte
         }
         String episodes = getResources().getQuantityString(R.plurals.num_episodes, queue.size(), queue.size());
         String time = Converter.getDurationStringLocalized(getResources(), timeLeft, false);
-        smartPlayBlock.setText(SmartPlayQueueManager.getInstance().getActiveName().toLowerCase(Locale.getDefault()));
+        smartPlayBlock.setText(SmartPlayQueueManager.getInstance().getActiveName());
         infoBar.setText(getString(R.string.playlist_summary, episodes, time));
 
         if (recyclerAdapter.inActionMode()) {
@@ -616,7 +615,7 @@ public class QueueFragment extends Fragment implements MaterialToolbar.OnMenuIte
                             })
                             .setNeutralButton(R.string.smartplay_manage, (dialog, which) ->
                                     ((MainActivity) getActivity()).loadChildFragment(new SmartPlaysFragment()))
-                            .setNegativeButton(android.R.string.cancel, null)
+                            .setNegativeButton(R.string.cancel_label, null)
                             .show();
                 }, error -> Log.e(TAG, Log.getStackTraceString(error)));
     }

@@ -26,7 +26,7 @@
         android:paddingStart="24dp"
         android:paddingEnd="8dp">
 
-        <de.danoeh.antennapod.ui.common.LowercaseTextView
+        <TextView
             android:id="@+id/sheetName"
             android:layout_width="0dp"
             android:layout_height="wrap_content"

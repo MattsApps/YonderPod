@@ -283,7 +283,7 @@ public class PreferenceActivity extends ToolbarActivity implements SearchPrefere
             MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(this);
             builder.setTitle(R.string.feed_settings_label);
             builder.setMessage(R.string.pref_feed_settings_dialog_msg);
-            builder.setPositiveButton(android.R.string.ok, null);
+            builder.setPositiveButton(R.string.yonder_button_ok, null);
             builder.show();
         } else if (screen == R.xml.preferences_notifications) {
             openScreen(screen);

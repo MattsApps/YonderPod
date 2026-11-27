@@ -25,7 +25,6 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.activity.MainActivity;
@@ -167,7 +166,7 @@ public class RadioStationFragment extends Fragment {
             getParentFragmentManager().popBackStack();
             return;
         }
-        name.setText(loaded.shortName.toLowerCase(Locale.getDefault()));
+        name.setText(loaded.shortName);
         name.setTextSize(TypedValue.COMPLEX_UNIT_SP, loaded.shortName.length() > 12 ? 40 : 56);
         String details = RadioFragment.details(requireContext(), RadioPreferences.get(station.getId()));
         info.setText(details.isEmpty() ? station.getTitle() : getString(R.string.detail_joined,

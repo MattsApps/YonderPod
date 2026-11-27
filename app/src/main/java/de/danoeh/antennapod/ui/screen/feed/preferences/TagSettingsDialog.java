@@ -1,6 +1,7 @@
 package de.danoeh.antennapod.ui.screen.feed.preferences;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -18,6 +19,7 @@ import de.danoeh.antennapod.model.feed.Feed;
 import de.danoeh.antennapod.model.feed.FeedCounter;
 import de.danoeh.antennapod.model.feed.FeedOrder;
 import de.danoeh.antennapod.model.feed.FeedPreferences;
+import de.danoeh.antennapod.smartplay.app.DownloadSettingsDialog;
 import de.danoeh.antennapod.smartplay.app.UpdateScheduler;
 import de.danoeh.antennapod.storage.database.DBReader;
 import de.danoeh.antennapod.storage.database.DBWriter;
@@ -112,13 +114,28 @@ public class TagSettingsDialog extends DialogFragment {
         MaterialAlertDialogBuilder dialog = new MaterialAlertDialogBuilder(getContext());
         dialog.setView(viewBinding.getRoot());
         boolean newSubscription = getArguments().getBoolean(ARG_NEW_SUBSCRIPTION, false);
+        if (newSubscription && feedPreferencesList.size() == 1) {
+            showDownloadRules(feedPreferencesList.get(0).getFeedID());
+        }
         dialog.setTitle(newSubscription ? R.string.smartplay_choose_categories : R.string.feed_tags_label);
-        dialog.setPositiveButton(android.R.string.ok, (d, input) -> {
+        dialog.setPositiveButton(R.string.yonder_button_ok, (d, input) -> {
             addTag(viewBinding.newTagEditText.getText().toString().trim());
             updatePreferencesTags(feedPreferencesList, commonTags);
         });
         dialog.setNegativeButton(newSubscription ? R.string.smartplay_skip : R.string.cancel_label, null);
         return dialog.create();
+    }
+
+    private void showDownloadRules(long feedId) {
+        Context context = requireContext();
+        Runnable load = () -> DownloadSettingsDialog.loadSummary(context, feedId, summary -> {
+            if (viewBinding != null) {
+                viewBinding.downloadRulesLine.setText(context.getString(R.string.follow_download_line, summary));
+            }
+        });
+        load.run();
+        viewBinding.downloadRulesLine.setVisibility(View.VISIBLE);
+        viewBinding.downloadRulesLine.setOnClickListener(v -> DownloadSettingsDialog.show(context, feedId, load));
     }
 
     private void loadTags() {

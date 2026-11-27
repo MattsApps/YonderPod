@@ -10,7 +10,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import de.danoeh.antennapod.R;
 import de.danoeh.antennapod.model.feed.FeedItem;
@@ -76,7 +75,7 @@ public final class AddToSmartPlay {
         manager.addToPlaylist(smartPlay.getId(), episodes);
         Toast.makeText(activity.getApplicationContext(), activity.getResources().getQuantityString(
                 R.plurals.add_to_smart_play_done, episodes.size(), episodes.size(),
-                smartPlay.getDefinition().getName().toLowerCase(Locale.getDefault())), Toast.LENGTH_SHORT).show();
+                smartPlay.getDefinition().getName()), Toast.LENGTH_SHORT).show();
         finish(done);
     }
 

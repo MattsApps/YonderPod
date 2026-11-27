@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.util.AttributeSet;
 import androidx.preference.MultiSelectListPreference;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import de.danoeh.antennapod.ui.preferences.R;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -24,7 +25,7 @@ public class MaterialMultiSelectListPreference extends MultiSelectListPreference
         MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getContext());
         builder.setTitle(getTitle());
         builder.setIcon(getDialogIcon());
-        builder.setNegativeButton(getNegativeButtonText(), null);
+        builder.setNegativeButton(R.string.cancel_label, null);
 
         boolean[] selected = new boolean[getEntries().length];
         CharSequence[] values = getEntryValues();
@@ -33,7 +34,7 @@ public class MaterialMultiSelectListPreference extends MultiSelectListPreference
         }
         builder.setMultiChoiceItems(getEntries(), selected,
                 (DialogInterface dialog, int which, boolean isChecked) -> selected[which] = isChecked);
-        builder.setPositiveButton(android.R.string.ok, (dialog, which) -> {
+        builder.setPositiveButton(R.string.yonder_button_ok, (dialog, which) -> {
             Set<String> selectedValues = new HashSet<>();
             for (int i = 0; i < values.length; i++) {
                 if (selected[i]) {

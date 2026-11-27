@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.AttributeSet;
 import androidx.preference.ListPreference;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import de.danoeh.antennapod.ui.preferences.R;
 
 public class MaterialListPreference extends ListPreference {
 
@@ -23,7 +24,7 @@ public class MaterialListPreference extends ListPreference {
         MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getContext());
         builder.setTitle(getTitle());
         builder.setIcon(getDialogIcon());
-        builder.setNegativeButton(getNegativeButtonText(), null);
+        builder.setNegativeButton(R.string.cancel_label, null);
 
         CharSequence[] values = getEntryValues();
         int selected = -1;

@@ -8,9 +8,7 @@ import de.danoeh.antennapod.model.download.DownloadResult;
 import de.danoeh.antennapod.model.feed.Feed;
 import de.danoeh.antennapod.model.feed.FeedItem;
 import de.danoeh.antennapod.model.feed.FeedItemFilter;
-import de.danoeh.antennapod.model.feed.FeedPreferences;
 import de.danoeh.antennapod.model.feed.SortOrder;
-import de.danoeh.antennapod.storage.preferences.UserPreferences;
 import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
@@ -145,27 +143,7 @@ public abstract class FeedDatabaseWriter {
                             || priorMostRecentDate.before(item.getPubDate())
                             || priorMostRecentDate.equals(item.getPubDate());
                     if (savedFeed.getState() == Feed.STATE_SUBSCRIBED && shouldPerformNewEpisodesAction) {
-                        FeedPreferences.NewEpisodesAction action = savedFeed.getPreferences().getNewEpisodesAction();
-                        if (action == FeedPreferences.NewEpisodesAction.GLOBAL) {
-                            action = UserPreferences.getNewEpisodesAction();
-                        }
-                        FeedPreferences.AutoDownloadSetting autoDownload = savedFeed.getPreferences().getAutoDownload();
-                        if (!savedFeed.isLocalFeed() && (autoDownload == FeedPreferences.AutoDownloadSetting.ENABLED
-                                || (autoDownload == FeedPreferences.AutoDownloadSetting.GLOBAL
-                                        && UserPreferences.isEnableAutodownloadGlobal()))) {
-                            // Auto download currently only considers episodes in the inbox
-                            action = FeedPreferences.NewEpisodesAction.ADD_TO_INBOX;
-                        }
-                        switch (action) {
-                            case ADD_TO_INBOX:
-                                item.setNew();
-                                break;
-                            case ADD_TO_QUEUE:
-                                itemsToAddToQueue.add(item);
-                                break;
-                            default:
-                                break;
-                        }
+                        item.setNew();
                     }
                 }
             }

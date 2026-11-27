@@ -17,10 +17,13 @@ import java.util.Locale;
 import java.util.Set;
 
 import de.danoeh.antennapod.R;
+import de.danoeh.antennapod.model.feed.Feed;
 import de.danoeh.antennapod.net.discovery.ItunesPodcastSearcher;
 import de.danoeh.antennapod.net.discovery.ItunesTopListLoader;
 import de.danoeh.antennapod.net.discovery.PodcastSearchResult;
+import de.danoeh.antennapod.storage.database.DBReader;
 import de.danoeh.antennapod.ui.appstartintent.OnlineFeedviewActivityStarter;
+import de.danoeh.antennapod.ui.screen.feed.preferences.TagSettingsDialog;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.schedulers.Schedulers;
@@ -112,7 +115,9 @@ public class FindPodcastsFragment extends FindFragment {
             ItunesPodcastSearcher searcher = new ItunesPodcastSearcher();
             String url = searcher.urlNeedsLookup(podcast.feedUrl)
                     ? searcher.lookupUrl(podcast.feedUrl).blockingGet() : podcast.feedUrl;
-            return Follow.subscribe(app, url, podcast.title, podcast.imageUrl);
+            Feed followed = Follow.subscribe(app, url, podcast.title, podcast.imageUrl);
+            Feed withPreferences = DBReader.getFeed(followed.getId(), false, 0, 0);
+            return withPreferences != null ? withPreferences : followed;
         })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -120,6 +125,12 @@ public class FindPodcastsFragment extends FindFragment {
                     onDone.run();
                     Toast.makeText(app, app.getString(R.string.find_following_toast, podcast.title),
                             Toast.LENGTH_SHORT).show();
+                    if (feed.getPreferences() != null && isAdded() && !isStateSaved()
+                            && CategoryPrompt.consume(app, feed.getId())) {
+                        TagSettingsDialog.newInstanceForNewSubscription(
+                                Collections.singletonList(feed.getPreferences()))
+                                .show(getChildFragmentManager(), TagSettingsDialog.TAG);
+                    }
                 }, error -> {
                     Log.e(TAG, Log.getStackTraceString(error));
                     Toast.makeText(app, R.string.find_error, Toast.LENGTH_LONG).show();

@@ -22,7 +22,7 @@ public class TimeRangeDialog extends MaterialAlertDialogBuilder {
         super(context);
         view = new TimeRangeView(context, from, to);
         setView(view);
-        setPositiveButton(android.R.string.ok, null);
+        setPositiveButton(R.string.yonder_button_ok, null);
     }
 
     public int getFrom() {

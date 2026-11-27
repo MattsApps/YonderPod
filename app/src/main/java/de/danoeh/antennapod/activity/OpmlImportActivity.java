@@ -165,7 +165,7 @@ public class OpmlImportActivity extends ToolbarActivity {
         if (uri == null) {
             new MaterialAlertDialogBuilder(this)
                     .setMessage(R.string.opml_import_error_no_file)
-                    .setPositiveButton(android.R.string.ok, null)
+                    .setPositiveButton(R.string.yonder_button_ok, null)
                     .show();
             return;
         }
@@ -230,7 +230,7 @@ public class OpmlImportActivity extends ToolbarActivity {
                 } else {
                     new MaterialAlertDialogBuilder(this)
                             .setMessage(R.string.opml_import_ask_read_permission)
-                            .setPositiveButton(android.R.string.ok, (dialog, which) ->
+                            .setPositiveButton(R.string.yonder_button_ok, (dialog, which) ->
                                     requestPermission())
                             .setNegativeButton(R.string.cancel_label, (dialog, which) ->
                                     finish())
@@ -285,7 +285,7 @@ public class OpmlImportActivity extends ToolbarActivity {
                             errorMessage.setSpan(new ForegroundColorSpan(0x88888888),
                                     userReadable.length(), total.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                             alert.setMessage(errorMessage);
-                            alert.setPositiveButton(android.R.string.ok, (dialog, which) -> finish());
+                            alert.setPositiveButton(R.string.yonder_button_ok, (dialog, which) -> finish());
                             alert.show();
                         });
     }

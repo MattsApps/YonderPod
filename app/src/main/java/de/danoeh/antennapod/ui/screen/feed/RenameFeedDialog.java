@@ -44,7 +44,7 @@ public class RenameFeedDialog {
         AlertDialog dialog = new MaterialAlertDialogBuilder(activity)
                 .setView(binding.getRoot())
                 .setTitle(feed != null ? R.string.rename_feed_label : R.string.rename_tag_label)
-                .setPositiveButton(android.R.string.ok, (d, input) -> {
+                .setPositiveButton(R.string.yonder_button_ok, (d, input) -> {
                     String newTitle = binding.textInput.getText().toString();
                     if (feed != null) {
                         feed.setCustomTitle(newTitle);

@@ -221,7 +221,7 @@ public class ProxyDialog {
             dialog.getButton(AlertDialog.BUTTON_POSITIVE).setText(R.string.proxy_test_label);
         } else {
             testSuccessful = true;
-            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setText(android.R.string.ok);
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setText(R.string.yonder_button_ok);
         }
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
     }

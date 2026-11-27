@@ -102,7 +102,7 @@ public class FeedMultiSelectActionHandler {
         new MaterialAlertDialogBuilder(activity)
                 .setTitle(R.string.playback_speed)
                 .setView(viewBinding.getRoot())
-                .setPositiveButton(android.R.string.ok, (dialog, which) -> {
+                .setPositiveButton(R.string.yonder_button_ok, (dialog, which) -> {
                     float newSpeed = viewBinding.useGlobalCheckbox.isChecked()
                             ? FeedPreferences.SPEED_USE_GLOBAL : viewBinding.seekBar.getCurrentSpeed();
                     saveFeedPreferences(feedPreferences -> feedPreferences.setFeedPlaybackSpeed(newSpeed));

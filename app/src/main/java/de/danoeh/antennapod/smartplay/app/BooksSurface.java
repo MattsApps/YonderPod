@@ -11,7 +11,6 @@ import androidx.annotation.Nullable;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -161,7 +160,7 @@ public class BooksSurface extends WorldSurface {
         String bookAuthor = book.getAuthor();
         author.setText(bookAuthor);
         author.setVisibility(bookAuthor == null || bookAuthor.isEmpty() ? View.GONE : View.VISIBLE);
-        title.setText(book.getTitle() != null ? book.getDisplayTitle().toLowerCase(Locale.getDefault()) : "");
+        title.setText(book.getTitle() != null ? book.getDisplayTitle() : "");
         hint.setVisibility(View.GONE);
         chapterBox.setVisibility(View.VISIBLE);
         progressRow.setVisibility(View.VISIBLE);
@@ -213,7 +212,7 @@ public class BooksSurface extends WorldSurface {
                             View chapterBox, View progressRow) {
         FeedMedia media = item.getMedia();
         author.setVisibility(View.GONE);
-        title.setText(item.getTitle() != null ? item.getTitle().toLowerCase(Locale.getDefault()) : "");
+        title.setText(item.getTitle() != null ? item.getTitle() : "");
         hint.setVisibility(View.GONE);
         chapterBox.setVisibility(View.INVISIBLE);
         progressRow.setVisibility(View.VISIBLE);

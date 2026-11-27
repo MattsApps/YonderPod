@@ -19,7 +19,7 @@ public class FeedSortDialog {
     public static void showDialog(Context context) {
         MaterialAlertDialogBuilder dialog = new MaterialAlertDialogBuilder(context);
         dialog.setTitle(context.getString(R.string.sort));
-        dialog.setNegativeButton(android.R.string.cancel, (d, listener) -> d.dismiss());
+        dialog.setNegativeButton(R.string.cancel_label, (d, listener) -> d.dismiss());
 
         int selected = UserPreferences.getFeedOrder().id;
         List<String> entryValues =

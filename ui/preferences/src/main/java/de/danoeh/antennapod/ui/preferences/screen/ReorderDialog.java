@@ -36,7 +36,7 @@ public abstract class ReorderDialog {
         builder.setView(viewBinding.getRoot());
         configureRecyclerView(viewBinding.recyclerView);
 
-        builder.setPositiveButton(android.R.string.ok, (dialog, which) -> onConfirmed());
+        builder.setPositiveButton(R.string.yonder_button_ok, (dialog, which) -> onConfirmed());
         builder.setNegativeButton(R.string.cancel_label, null);
         builder.setNeutralButton(R.string.reset, (dialog, which) -> onReset());
         builder.show();

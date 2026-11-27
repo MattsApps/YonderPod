@@ -252,7 +252,7 @@ public class DiscoveryFragment extends Fragment implements Toolbar.OnMenuItemCli
                 }
             });
 
-            builder.setPositiveButton(android.R.string.ok, (dialogInterface, i) -> {
+            builder.setPositiveButton(R.string.yonder_button_ok, (dialogInterface, i) -> {
                 String countryName = editText.getText().toString();
                 if (countryNameCodes.containsKey(countryName)) {
                     countryCode = countryNameCodes.get(countryName);

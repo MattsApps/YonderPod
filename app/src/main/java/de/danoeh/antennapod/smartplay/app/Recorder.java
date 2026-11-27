@@ -22,6 +22,7 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import de.danoeh.antennapod.smartplay.radio.AdtsFrames;
 import de.danoeh.antennapod.smartplay.radio.AudioSniff;
 import de.danoeh.antennapod.smartplay.radio.HlsSegments;
 import de.danoeh.antennapod.smartplay.radio.Mp4AudioWriter;
@@ -311,16 +312,23 @@ public final class Recorder {
             }
             out.write(mp4.header());
             byte[] frame = new byte[track.buffer.capacity()];
-            for (int i = 0; i < mp4.getSampleCount(); i++) {
+            int written = 0;
+            while (written < mp4.getSampleCount()) {
                 track.buffer.clear();
                 int size = track.extractor.readSampleData(track.buffer, 0);
-                if (size != mp4.getSampleSize(i)) {
-                    throw new IOException("The audio read differently the second time");
+                if (size < 0) {
+                    throw new IOException("The audio ended early the second time");
                 }
                 track.buffer.position(0);
                 track.buffer.limit(size);
                 track.buffer.get(frame, 0, size);
-                out.write(frame, 0, size);
+                for (int[] payload : AdtsFrames.payloads(frame, size)) {
+                    if (written >= mp4.getSampleCount() || payload[1] != mp4.getSampleSize(written)) {
+                        throw new IOException("The audio read differently the second time");
+                    }
+                    out.write(frame, payload[0], payload[1]);
+                    written++;
+                }
                 track.extractor.advance();
             }
             return true;
@@ -350,13 +358,28 @@ public final class Recorder {
             csd.duplicate().get(config);
             Mp4AudioWriter mp4 = new Mp4AudioWriter(track.format.getInteger(MediaFormat.KEY_SAMPLE_RATE),
                     track.format.getInteger(MediaFormat.KEY_CHANNEL_COUNT), config);
+            byte[] frame = new byte[track.buffer.capacity()];
+            long frameMicros = 1024L * 1_000_000L / track.format.getInteger(MediaFormat.KEY_SAMPLE_RATE);
+            boolean logged = false;
             while (true) {
                 track.buffer.clear();
                 int size = track.extractor.readSampleData(track.buffer, 0);
                 if (size < 0) {
                     break;
                 }
-                mp4.addSample(size, track.extractor.getSampleTime());
+                track.buffer.position(0);
+                track.buffer.limit(size);
+                track.buffer.get(frame, 0, size);
+                List<int[]> payloads = AdtsFrames.payloads(frame, size);
+                if (!logged) {
+                    Log.d(TAG, "Remux: first sample " + size + " bytes, " + payloads.size() + " frame(s), "
+                            + (payloads.get(0)[0] > 0 ? "ADTS headers removed" : "bare AAC"));
+                    logged = true;
+                }
+                long time = track.extractor.getSampleTime();
+                for (int k = 0; k < payloads.size(); k++) {
+                    mp4.addSample(payloads.get(k)[1], time + k * frameMicros);
+                }
                 track.extractor.advance();
             }
             return mp4.getSampleCount() > 0 ? mp4 : null;

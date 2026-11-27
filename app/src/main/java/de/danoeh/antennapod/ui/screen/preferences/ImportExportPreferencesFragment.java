@@ -215,7 +215,7 @@ public class ImportExportPreferencesFragment extends AnimatedPreferenceFragment 
         builder.setTitle(R.string.successful_import_label);
         builder.setMessage(R.string.import_ok);
         builder.setCancelable(false);
-        builder.setPositiveButton(android.R.string.ok, (dialogInterface, i) -> forceRestart());
+        builder.setPositiveButton(R.string.yonder_button_ok, (dialogInterface, i) -> forceRestart());
         builder.show();
     }
 
@@ -238,7 +238,7 @@ public class ImportExportPreferencesFragment extends AnimatedPreferenceFragment 
     private void showExportErrorDialog(final Throwable error) {
         progressDialog.dismiss();
         final MaterialAlertDialogBuilder alert = new MaterialAlertDialogBuilder(getContext());
-        alert.setPositiveButton(android.R.string.ok, (dialog, which) -> dialog.dismiss());
+        alert.setPositiveButton(R.string.yonder_button_ok, (dialog, which) -> dialog.dismiss());
         alert.setTitle(R.string.export_error_label);
         alert.setMessage(error.getMessage());
         alert.show();
@@ -247,7 +247,7 @@ public class ImportExportPreferencesFragment extends AnimatedPreferenceFragment 
     private void showImportErrorDialog(final Throwable error) {
         progressDialog.dismiss();
         final MaterialAlertDialogBuilder alert = new MaterialAlertDialogBuilder(getContext());
-        alert.setPositiveButton(android.R.string.ok, (dialog, which) -> dialog.dismiss());
+        alert.setPositiveButton(R.string.yonder_button_ok, (dialog, which) -> dialog.dismiss());
         alert.setTitle(R.string.import_error_label);
         alert.setMessage(error.getMessage());
         alert.show();
