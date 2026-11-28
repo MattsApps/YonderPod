@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 1.0.8: turns round its centre while an indeterminate ProgressBar shows it (widgets can't run animations
+     of their own, but a ProgressBar's indeterminate drawable keeps turning on the home screen). -->
+<rotate xmlns:android="http://schemas.android.com/apk/res/android"
+    android:drawable="@drawable/widget_hourglass"
+    android:fromDegrees="0"
+    android:toDegrees="360"
+    android:pivotX="50%"
+    android:pivotY="50%" />

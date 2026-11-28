@@ -31,6 +31,7 @@ import de.danoeh.antennapod.model.feed.FeedItem;
 import de.danoeh.antennapod.model.feed.FeedItemFilter;
 import de.danoeh.antennapod.model.feed.FeedMedia;
 import de.danoeh.antennapod.model.feed.SortOrder;
+import de.danoeh.antennapod.playback.base.ColdStart;
 import de.danoeh.antennapod.playback.base.LiveBehind;
 import de.danoeh.antennapod.playback.base.MediaItemAdapter;
 import de.danoeh.antennapod.storage.preferences.ControlsPreferences;
@@ -378,10 +379,15 @@ public class MediaLibrarySessionCallback implements MediaLibraryService.MediaLib
             boolean fallbackToRecentEpisode) {
         SettableFuture<MediaSession.MediaItemsWithStartPosition> future = SettableFuture.create();
         Maybe.fromCallable(() -> {
+            ColdStart.play("what plays next: deciding");
             FeedMedia media = DBReader.getFeedMedia(PlaybackPreferences.getCurrentlyPlayingFeedMediaId());
-            if (media == null) {
+            if (media != null) {
+                ColdStart.play("what plays next decided: the loaded episode resumes (no smart play rebuild)");
+            } else {
                 // Nothing loaded: the central "what plays next" rule chooses, as for every other route.
                 NextUpRule.Choice choice = NextUpRule.whenNothingLoaded();
+                ColdStart.play("what plays next decided: " + (choice.item != null ? choice.reason : "nothing")
+                        + " (no smart play rebuild)");
                 if (choice.item != null) {
                     media = choice.item.getMedia();
                 } else if (choice.nothingNewShow != null && !fallbackToRecentEpisode) {

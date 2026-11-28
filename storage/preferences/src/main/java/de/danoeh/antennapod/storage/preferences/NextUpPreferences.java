@@ -40,7 +40,8 @@ public final class NextUpPreferences {
     private static final String KEY_WORLD = "playingWorld";
     private static final String KEY_WORLD_START = "worldStartMediaId";
     private static final String KEY_RADIO_LAST = "radioLastMediaId";
-    private static final String KEY_PODCAST_RECORDINGS = "podcastRecordingItemIds";
+    // 1.0.8: keyed by media id (1.0.7's "podcastRecordingItemIds" held item ids and is no longer read).
+    private static final String KEY_PODCAST_RECORDINGS = "podcastRecordingMediaIds";
     /** Recordings are gone within 48 hours, so a short memory is plenty. */
     private static final int PODCAST_RECORDINGS_KEPT = 30;
     /** Played from a Smart Play (Podcasts, or a book's or folder's own). */
@@ -170,6 +171,12 @@ public final class NextUpPreferences {
                 .putLong(KEY_DETOUR_RESUME, -1);
         if (world == WORLD_RADIO) {
             editor.putLong(KEY_RADIO_LAST, mediaId);
+            // 1.0.8: a recording started from Radio is Radio's, even if it was noted as a podcast before and
+            // is already loaded (the player doesn't load it again, so it isn't noted again).
+            List<Long> ids = podcastRecordings();
+            if (ids.remove(Long.valueOf(mediaId))) {
+                editor.putString(KEY_PODCAST_RECORDINGS, join(ids));
+            }
         }
         editor.commit();
     }
@@ -183,32 +190,29 @@ public final class NextUpPreferences {
     }
 
     /**
-     * 1.0.7: radio recordings belong to Radio unless played inside a podcast smart play. Noted once, when a
-     * recording starts playing (any route: Radio, a show's page, the notification, the widget, Android Auto):
-     * played from a smart play's list it counts as a podcast; played any other way it's Radio's last played.
+     * 1.0.7: radio recordings belong to Radio unless played inside a podcast smart play. Noted when a recording
+     * starts playing (1.0.8: also when one plays next by itself, and when it's played from a smart play's list
+     * while already loaded): played from a smart play's list it counts as a podcast; played any other way it's
+     * Radio's last played.
      */
-    public static void noteRecordingStarted(long itemId, long mediaId, boolean inSmartPlay) {
+    public static void noteRecordingStarted(long mediaId, boolean inSmartPlay) {
         List<Long> ids = podcastRecordings();
-        ids.remove(Long.valueOf(itemId));
+        ids.remove(Long.valueOf(mediaId));
         SharedPreferences.Editor editor = prefs.edit();
         if (inSmartPlay) {
-            ids.add(0, itemId);
+            ids.add(0, mediaId);
             while (ids.size() > PODCAST_RECORDINGS_KEPT) {
                 ids.remove(ids.size() - 1);
             }
         } else {
             editor.putLong(KEY_RADIO_LAST, mediaId);
         }
-        StringBuilder saved = new StringBuilder();
-        for (long id : ids) {
-            saved.append(saved.length() > 0 ? "," : "").append(id);
-        }
-        editor.putString(KEY_PODCAST_RECORDINGS, saved.toString()).commit();
+        editor.putString(KEY_PODCAST_RECORDINGS, join(ids)).commit();
     }
 
-    /** 1.0.7: whether this recording was last played inside a podcast smart play. */
-    public static boolean isPodcastRecording(long itemId) {
-        return podcastRecordings().contains(itemId);
+    /** 1.0.7: whether this recording (by media id since 1.0.8) was last played inside a podcast smart play. */
+    public static boolean isPodcastRecording(long mediaId) {
+        return podcastRecordings().contains(mediaId);
     }
 
     private static List<Long> podcastRecordings() {
@@ -220,6 +224,14 @@ public final class NextUpPreferences {
             }
         }
         return ids;
+    }
+
+    private static String join(List<Long> ids) {
+        StringBuilder saved = new StringBuilder();
+        for (long id : ids) {
+            saved.append(saved.length() > 0 ? "," : "").append(id);
+        }
+        return saved.toString();
     }
 
     /** The last thing played from the Radio screen: a station or a recording. */

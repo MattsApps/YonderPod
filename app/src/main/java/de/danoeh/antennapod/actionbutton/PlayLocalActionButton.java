@@ -35,6 +35,7 @@ public class PlayLocalActionButton extends ItemActionButton {
             return;
         }
 
+        RadioRoute.beforePlay(item);
         new PlaybackServiceStarter(context, media)
                 .callEvenIfRunning(true)
                 .start();

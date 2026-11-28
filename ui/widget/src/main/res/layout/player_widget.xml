@@ -210,6 +210,20 @@
             android:importantForAccessibility="no"
             android:src="@drawable/wildink_play_centred" />
 
+            <!-- 1.0.8: the turning hourglass while a widget play is starting; it takes the play symbol's place. -->
+            <ProgressBar
+                android:id="@+id/butStarting"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:layout_gravity="top|start"
+                android:layout_marginStart="4dp"
+                android:layout_marginTop="4dp"
+                android:indeterminate="true"
+                android:indeterminateDrawable="@drawable/widget_hourglass_turning"
+                android:indeterminateDuration="1600"
+                android:importantForAccessibility="no"
+                android:visibility="gone" />
+
     </FrameLayout>
 
 </FrameLayout>

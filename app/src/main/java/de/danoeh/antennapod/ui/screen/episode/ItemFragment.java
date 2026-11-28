@@ -43,6 +43,8 @@ import de.danoeh.antennapod.event.MessageEvent;
 import de.danoeh.antennapod.event.PlayerStatusEvent;
 import de.danoeh.antennapod.model.feed.Feed;
 import de.danoeh.antennapod.model.feed.FeedItem;
+import de.danoeh.antennapod.smartplay.app.Recordings;
+import de.danoeh.antennapod.smartplay.app.SmartPlayQueueManager;
 import de.danoeh.antennapod.model.feed.FeedMedia;
 import de.danoeh.antennapod.net.download.serviceinterface.DownloadServiceInterface;
 import de.danoeh.antennapod.playback.service.PlaybackController;
@@ -78,6 +80,7 @@ public class ItemFragment extends Fragment {
 
     private static final String TAG = "ItemFragment";
     private static final String ARG_FEEDITEM = "feeditem";
+    private static final String ARG_FROM_SMART_PLAY = "from_smart_play";
 
     /**
      * Creates a new instance of an ItemFragment
@@ -86,15 +89,22 @@ public class ItemFragment extends Fragment {
      * @return The ItemFragment instance
      */
     public static ItemFragment newInstance(long feeditem) {
+        return newInstance(feeditem, false);
+    }
+
+    /** 1.0.8: fromSmartPlay when opened from a smart play's list (a plain tap on a playlist row). */
+    public static ItemFragment newInstance(long feeditem, boolean fromSmartPlay) {
         ItemFragment fragment = new ItemFragment();
         Bundle args = new Bundle();
         args.putLong(ARG_FEEDITEM, feeditem);
+        args.putBoolean(ARG_FROM_SMART_PLAY, fromSmartPlay);
         fragment.setArguments(args);
         return fragment;
     }
 
     private boolean itemsLoaded = false;
     private long itemId;
+    private boolean fromSmartPlay;
     private FeedItem item;
     private String webviewData;
 
@@ -107,6 +117,7 @@ public class ItemFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         itemId = getArguments().getLong(ARG_FEEDITEM);
+        fromSmartPlay = getArguments().getBoolean(ARG_FROM_SMART_PLAY, false);
     }
 
     @Override
@@ -156,6 +167,11 @@ public class ItemFragment extends Fragment {
                 return;
             } else if (actionButton1 == null) {
                 return; // Not loaded yet
+            }
+            if (playsInSmartPlayList()) {
+                // 1.0.8: opened from a smart play's list, a recording plays as the row's play button plays it.
+                SmartPlayQueueManager.getInstance().playFromList(item);
+                return;
             }
             actionButton1.onClick(getContext());
         });
@@ -286,6 +302,17 @@ public class ItemFragment extends Fragment {
                 .apply(options)
                 .into(viewBinding.imgvCover);
         updateButtons();
+    }
+
+    /**
+     * 1.0.8: a radio recording whose page was opened from a smart play's list, still in that list: play counts
+     * as part of the list (a podcast), and the list carries on after it. Opened any other way, play is Radio's.
+     */
+    private boolean playsInSmartPlayList() {
+        return fromSmartPlay && item != null && item.getFeed() != null && Recordings.isRecordingsFeed(item.getFeed())
+                && item.isTagged(FeedItem.TAG_QUEUE)
+                && (actionButton1 instanceof PlayActionButton || actionButton1 instanceof PlayLocalActionButton
+                || actionButton1 instanceof StreamActionButton);
     }
 
     private void updateButtons() {

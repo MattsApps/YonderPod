@@ -1,5 +1,6 @@
 package de.danoeh.antennapod;
 
+import de.danoeh.antennapod.playback.base.ColdStart;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -46,7 +47,10 @@ public class ClientConfigurator {
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }
+        long t = ColdStart.now();
         PodDBAdapter.init(context);
+        ColdStart.timed("database", t);
+        t = ColdStart.now();
         UserPreferences.init(context);
         UsageStatistics.init(context);
         PlaybackPreferences.init(context);
@@ -54,7 +58,11 @@ public class ClientConfigurator {
         if (wasPlaying) {
             PlaybackPreferences.setCurrentPlayerStatus(PlaybackPreferences.PLAYER_STATUS_PAUSED);
         }
+        ColdStart.timed("preferences", t);
+        t = ColdStart.now();
         SslProviderInstaller.install(context);
+        ColdStart.timed("security provider install", t);
+        t = ColdStart.now();
         NetworkUtils.init(context);
         DownloadServiceInterface.setImpl(new DownloadServiceInterfaceImpl());
         FeedUpdateManager.setInstance(new YonderFeedUpdateManager());
@@ -62,14 +70,24 @@ public class ClientConfigurator {
         AutoDownloadManager.setInstance(new YonderAutoDownloadManager(context));
         AntennapodHttpClient.setCacheDirectory(new File(context.getCacheDir(), "okhttp"));
         AntennapodHttpClient.setProxyConfig(UserPreferences.getProxyConfig());
+        ColdStart.timed("network and downloads setup", t);
+        t = ColdStart.now();
         SleepTimerPreferences.init(context);
         ControlsPreferences.init(context);
         NextUpPreferences.init(context);
         RadioPreferences.init(context);
+        ColdStart.timed("more preferences", t);
+        t = ColdStart.now();
         NotificationUtils.createChannels(context);
+        ColdStart.timed("notification channels", t);
+        t = ColdStart.now();
         SmartPlayQueueManager.init(context);
+        ColdStart.timed("smart play manager", t);
+        t = ColdStart.now();
         BookTopUpWorker.init(context);
         UpdateScheduler.init(context);
+        ColdStart.timed("background jobs (book top-up, refresh schedule)", t);
+        t = ColdStart.now();
         ImportedPlayState.init(context);
         // Killed during live pause (paused or behind live): the widget still shows the live pause layout,
         // so redraw it as the station paused at live, as after any kill.
@@ -77,6 +95,7 @@ public class ClientConfigurator {
         if (wasPlaying || wasLivePause) {
             WidgetUpdaterWorker.enqueueWork(context);
         }
+        ColdStart.timed("imported play state, live pause leftovers", t);
         initialized = true;
     }
 }

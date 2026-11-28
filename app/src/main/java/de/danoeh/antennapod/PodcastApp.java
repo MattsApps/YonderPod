@@ -1,5 +1,6 @@
 package de.danoeh.antennapod;
 
+import de.danoeh.antennapod.playback.base.ColdStart;
 import android.app.Application;
 import android.util.Log;
 
@@ -14,6 +15,10 @@ public class PodcastApp extends Application {
 
     @Override
     public void onCreate() {
+        // 1.0.8: cold-start timing. Before this, Android starts the process and runs the content providers
+        // (WorkManager's start-up among them), so this line's time is how long that took.
+        ColdStart.stage("Application setup starts (process start is 0 ms)");
+        long setupStart = ColdStart.now();
         super.onCreate();
         Thread.setDefaultUncaughtExceptionHandler(new CrashReportExceptionHandler());
         RxJavaErrorHandlerSetup.setupRxJavaErrorHandler();
@@ -30,6 +35,9 @@ public class PodcastApp extends Application {
 
         DynamicColors.applyToActivitiesIfAvailable(this);
         ClientConfigurator.initialize(this);
+        long upgrades = ColdStart.now();
         PreferenceUpgrader.checkUpgrades(this);
+        ColdStart.timed("preference upgrades", upgrades);
+        ColdStart.timed("Application setup ends", setupStart);
     }
 }

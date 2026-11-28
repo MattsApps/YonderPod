@@ -89,9 +89,9 @@ public class EpisodeItemListAdapter extends SelectableAdapter<EpisodeItemViewHol
             if (!inActionMode()) {
                 if (mainActivityRef.get() instanceof MainActivity) {
                     ((MainActivity) mainActivityRef.get())
-                            .loadChildFragment(ItemPagerFragment.newInstance(episodes, item));
+                            .loadChildFragment(ItemPagerFragment.newInstance(episodes, item, isSmartPlayList()));
                 } else {
-                    ItemPagerFragment fragment = ItemPagerFragment.newInstance(episodes, item);
+                    ItemPagerFragment fragment = ItemPagerFragment.newInstance(episodes, item, isSmartPlayList());
                     mainActivityRef.get().getSupportFragmentManager()
                             .beginTransaction()
                             .replace(R.id.fragmentContainer, fragment, "Items")
@@ -130,6 +130,14 @@ public class EpisodeItemListAdapter extends SelectableAdapter<EpisodeItemViewHol
 
         afterBindViewHolder(holder, pos);
         holder.hideSeparatorIfNecessary();
+    }
+
+    /**
+     * 1.0.8: whether this list is a smart play's list (the playlist). An episode page opened from it plays a
+     * radio recording as part of that list, as the row's play button does.
+     */
+    protected boolean isSmartPlayList() {
+        return false;
     }
 
     protected void beforeBindViewHolder(EpisodeItemViewHolder holder, int pos) {

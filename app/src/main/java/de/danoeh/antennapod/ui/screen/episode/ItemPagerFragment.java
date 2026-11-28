@@ -39,6 +39,7 @@ import java.util.List;
 public class ItemPagerFragment extends Fragment implements MaterialToolbar.OnMenuItemClickListener {
     private static final String ARG_FEEDITEMS = "feeditems";
     private static final String ARG_FEEDITEM_POS = "feeditem_pos";
+    private static final String ARG_FROM_SMART_PLAY = "from_smart_play";
     private static final String KEY_PAGER_ID = "pager_id";
     private ViewPager2 pager;
 
@@ -57,6 +58,12 @@ public class ItemPagerFragment extends Fragment implements MaterialToolbar.OnMen
      * @return The ItemFragment instance
      */
     public static ItemPagerFragment newInstance(List<FeedItem> allItems, FeedItem currentItem) {
+        return newInstance(allItems, currentItem, false);
+    }
+
+    /** 1.0.8: fromSmartPlay when opened from a smart play's list (a plain tap on a playlist row). */
+    public static ItemPagerFragment newInstance(List<FeedItem> allItems, FeedItem currentItem,
+                                                boolean fromSmartPlay) {
         int position = 0;
         long[] ids = new long[allItems.size()];
         for (int i = 0; i < allItems.size(); i++) {
@@ -69,6 +76,7 @@ public class ItemPagerFragment extends Fragment implements MaterialToolbar.OnMen
         Bundle args = new Bundle();
         args.putLongArray(ARG_FEEDITEMS, ids);
         args.putInt(ARG_FEEDITEM_POS, position);
+        args.putBoolean(ARG_FROM_SMART_PLAY, fromSmartPlay);
         fragment.setArguments(args);
         return fragment;
     }
@@ -206,7 +214,8 @@ public class ItemPagerFragment extends Fragment implements MaterialToolbar.OnMen
         @NonNull
         @Override
         public Fragment createFragment(int position) {
-            return ItemFragment.newInstance(feedItems[position]);
+            return ItemFragment.newInstance(feedItems[position],
+                    getArguments() != null && getArguments().getBoolean(ARG_FROM_SMART_PLAY, false));
         }
 
         @Override

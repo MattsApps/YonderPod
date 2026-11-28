@@ -51,6 +51,7 @@ public class PlayActionButton extends ItemActionButton {
             EventBus.getDefault().post(new MessageEvent(context.getString(R.string.error_file_not_found)));
             return;
         }
+        RadioRoute.beforePlay(item);
         new PlaybackServiceStarter(context, media)
                 .callEvenIfRunning(true)
                 .start();

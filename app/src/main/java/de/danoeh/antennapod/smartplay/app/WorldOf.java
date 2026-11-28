@@ -107,7 +107,7 @@ final class WorldOf {
             return false;
         }
         Feed feed = item.getFeed() != null ? item.getFeed() : DBReader.getFeed(item.getFeedId(), false, 0, 0);
-        return Recordings.isRecordingsFeed(feed) && !NextUpPreferences.isPodcastRecording(item.getId());
+        return Recordings.isRecordingsFeed(feed) && !NextUpPreferences.isPodcastRecording(media.getId());
     }
 
     /** 1.0.5: what carries on in Radio (the next ready recording, then the station live) or among added files. */

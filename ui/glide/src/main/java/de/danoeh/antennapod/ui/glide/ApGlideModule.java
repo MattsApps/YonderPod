@@ -2,6 +2,8 @@ package de.danoeh.antennapod.ui.glide;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.os.Process;
+import android.os.SystemClock;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -31,6 +33,7 @@ public class ApGlideModule extends AppGlideModule {
 
     @Override
     public void applyOptions(@NonNull Context context, @NonNull GlideBuilder builder) {
+        coldStart("image loader (Glide) starting, on first use");
         builder.setDefaultRequestOptions(new RequestOptions()
                 .format(DecodeFormat.PREFER_ARGB_8888)
                 .diskCacheStrategy(DiskCacheStrategy.ALL));
@@ -50,5 +53,11 @@ public class ApGlideModule extends AppGlideModule {
         registry.append(String.class, InputStream.class, new NoHttpStringLoader.StreamFactory());
 
         registry.append(EmbeddedChapterImage.class, ByteBuffer.class, new ChapterImageModelLoader.Factory(context));
+        coldStart("image loader (Glide) ready");
+    }
+
+    /** 1.0.8: cold-start timing (the ColdStart tag, ms since the process started). Glide starts once a process. */
+    private static void coldStart(String what) {
+        Log.i("ColdStart", (SystemClock.elapsedRealtime() - Process.getStartElapsedRealtime()) + " ms: " + what);
     }
 }

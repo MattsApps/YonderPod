@@ -39,6 +39,7 @@ public class StreamActionButton extends ItemActionButton {
         }
         UsageStatistics.logAction(UsageStatistics.ACTION_STREAM);
 
+        RadioRoute.beforePlay(item);
         new PlaybackServiceStarter(context, media)
                 .callEvenIfRunning(true)
                 .start();

@@ -569,6 +569,14 @@ public class SmartPlayQueueManager {
                 DBWriter.setQueue(newQueue).get();
                 FeedMedia media = fresh.getMedia();
                 if (media != null) {
+                    // 1.0.8: playing from a smart play's list plays from a smart play, whatever world was
+                    // played from before; a recording played here counts as a podcast, even if it's already
+                    // loaded (the player doesn't load it again, so it wouldn't be noted again).
+                    NextUpPreferences.startWorld(media.getId(), NextUpPreferences.WORLD_SMART_PLAY);
+                    if (Recordings.isRecordingsFeed(fresh.getFeed() != null ? fresh.getFeed()
+                            : DBReader.getFeed(fresh.getFeedId(), false, 0, 0))) {
+                        NextUpPreferences.noteRecordingStarted(media.getId(), true);
+                    }
                     new Handler(Looper.getMainLooper()).post(() -> new PlaybackServiceStarter(context, media)
                             .callEvenIfRunning(true)
                             .start());

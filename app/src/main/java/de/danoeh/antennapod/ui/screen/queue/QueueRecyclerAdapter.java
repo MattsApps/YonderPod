@@ -36,6 +36,11 @@ public class QueueRecyclerAdapter extends EpisodeItemListAdapter {
     }
 
     @Override
+    protected boolean isSmartPlayList() {
+        return true;
+    }
+
+    @Override
     @SuppressLint("ClickableViewAccessibility")
     protected void afterBindViewHolder(EpisodeItemViewHolder holder, int pos) {
         if (!dragDropEnabled) {

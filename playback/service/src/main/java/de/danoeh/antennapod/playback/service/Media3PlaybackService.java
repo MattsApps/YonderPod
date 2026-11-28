@@ -16,6 +16,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Bundle;
 import android.os.PowerManager;
+import android.os.SystemClock;
 import android.service.notification.StatusBarNotification;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -39,6 +40,7 @@ import androidx.media3.common.Player;
 import androidx.media3.common.util.UnstableApi;
 import androidx.media3.common.util.Util;
 import androidx.media3.exoplayer.ExoPlayer;
+import androidx.media3.exoplayer.analytics.AnalyticsListener;
 import androidx.media3.session.DefaultMediaNotificationProvider;
 import androidx.media3.session.MediaLibraryService;
 import androidx.media3.session.MediaSession;
@@ -70,6 +72,7 @@ import de.danoeh.antennapod.model.feed.FeedPreferences;
 import de.danoeh.antennapod.model.feed.VolumeAdaptionSetting;
 import de.danoeh.antennapod.net.common.NetworkUtils;
 import de.danoeh.antennapod.net.download.serviceinterface.AutoDownloadManager;
+import de.danoeh.antennapod.playback.base.ColdStart;
 import de.danoeh.antennapod.playback.base.LiveBehind;
 import de.danoeh.antennapod.playback.base.MediaItemAdapter;
 import de.danoeh.antennapod.playback.base.PlayerStatus;
@@ -166,6 +169,8 @@ public class Media3PlaybackService extends MediaLibraryService {
     private boolean foregroundLogged = false;
     private boolean notForegroundWarned = false;
     private String idleReason = "";
+    // 1.0.8: when playback last paused (elapsedRealtime), for the idle stop's log line; 0 while playing.
+    private long pausedAt = 0;
     // Live pause (0.9.26): set while a live station is paused with a buffer, or playing behind live.
     @Nullable
     private LiveBuffer liveBuffer;
@@ -187,6 +192,7 @@ public class Media3PlaybackService extends MediaLibraryService {
     @UnstableApi
     @Override
     public void onCreate() {
+        ColdStart.stage("player service created");
         super.onCreate();
         LiveBuffer.deleteLeftovers(this);
         EventBus.getDefault().register(this);
@@ -201,6 +207,12 @@ public class Media3PlaybackService extends MediaLibraryService {
         setMediaNotificationProvider(notificationProvider);
 
         exoPlayer = ExoPlayerUtils.buildPlayer(this);
+        exoPlayer.addAnalyticsListener(new AnalyticsListener() {
+            @Override
+            public void onAudioPositionAdvancing(@NonNull EventTime eventTime, long playoutStartSystemTimeMs) {
+                ColdStart.firstAudio();
+            }
+        });
         duckingFocus = new DuckingFocus(this, duckingListener);
         exoPlayer.addListener(new Player.Listener() {
             @Override
@@ -428,6 +440,7 @@ public class Media3PlaybackService extends MediaLibraryService {
             keepServiceRunningWhileCasting();
             loadCurrentMediaWhileCasting();
         }
+        ColdStart.stage("player service ready (player and media session built)");
     }
 
     private boolean isLiveStationLoaded() {
@@ -524,7 +537,17 @@ public class Media3PlaybackService extends MediaLibraryService {
                 @NonNull MediaSession.ControllerInfo controllerInfo, @NonNull Intent intent) {
             KeyEvent keyEvent = intent.getParcelableExtra(Intent.EXTRA_KEY_EVENT);
             String source = intent.getStringExtra(MediaButtonStarter.EXTRA_MEDIA_BUTTON_SOURCE);
-            if (keyEvent != null && MediaButtonStarter.MEDIA_BUTTON_SOURCE_APP.equals(source)) {
+            if (keyEvent != null && MediaButtonStarter.MEDIA_BUTTON_SOURCE_WIDGET.equals(source)
+                    && isPlayPauseKey(keyEvent.getKeyCode())) {
+                if (WidgetUpdater.isStarting()) {
+                    // 1.0.8: a second widget tap while a play is starting is ignored, not taken as pause.
+                    Log.d(TAG, "Widget: play/pause ignored, a play is still starting");
+                    return true;
+                }
+                if (!player.getPlayWhenReady()) {
+                    markStarting();
+                }
+            } else if (keyEvent != null && MediaButtonStarter.MEDIA_BUTTON_SOURCE_APP.equals(source)) {
                 if (keyEvent.getKeyCode() == KeyEvent.KEYCODE_MEDIA_NEXT) {
                     skipToNextEpisode();
                     return true;
@@ -577,6 +600,11 @@ public class Media3PlaybackService extends MediaLibraryService {
         @Override
         public void onPlaybackStateChanged(int playbackState) {
             if (playbackState == Player.STATE_BUFFERING) {
+                ColdStart.play("player prepare started (buffering)");
+            } else if (playbackState == Player.STATE_READY) {
+                ColdStart.play("player ready");
+            }
+            if (playbackState == Player.STATE_BUFFERING) {
                 EventBus.getDefault().post(BufferUpdateEvent.started());
                 PlaybackService.isRunning = player.getPlayWhenReady(); // Immediately show as playing
                 updatePlaybackPreferences();
@@ -618,10 +646,16 @@ public class Media3PlaybackService extends MediaLibraryService {
             }
             PlaybackService.isRunning = !Util.shouldShowPlayButton(player);
             updatePlaybackPreferences();
+            if (!playWhenReady) {
+                clearStarting("paused or stopped");
+            }
         }
 
         @Override
         public void onIsPlayingChanged(boolean isPlaying) {
+            if (isPlaying) {
+                clearStarting("the sound started");
+            }
             PlaybackService.isRunning = !Util.shouldShowPlayButton(player);
             updateLiveBehind(false);
             if (isPlaying && player.getCurrentMediaItem() != null) {
@@ -629,12 +663,16 @@ public class Media3PlaybackService extends MediaLibraryService {
                 saveCurrentPosition();
             }
             if (PlaybackService.isRunning) {
+                pausedAt = 0;
                 lastPositionSaveTime = System.currentTimeMillis();
                 setupPositionObserver();
                 playingSince = System.currentTimeMillis();
                 foregroundLogged = false;
                 notForegroundWarned = false;
             } else {
+                if (pausedAt == 0) {
+                    pausedAt = SystemClock.elapsedRealtime();
+                }
                 cancelPositionObserver();
                 saveCurrentPosition();
             }
@@ -694,6 +732,7 @@ public class Media3PlaybackService extends MediaLibraryService {
         @Override
         public void onPlayerError(@NonNull PlaybackException error) {
             PlaybackService.isRunning = false;
+            clearStarting("playing failed");
             if (liveBuffer == null && ranOutOfAudio(error)) {
                 noteEnd("Ran out of audio (" + error.getErrorCodeName() + ", " + error.getCause()
                         + "), counted as finished");
@@ -726,6 +765,7 @@ public class Media3PlaybackService extends MediaLibraryService {
         }
         if (startsPlayback(intent)) {
             String source = intent.getStringExtra(MediaButtonStarter.EXTRA_MEDIA_BUTTON_SOURCE);
+            ColdStart.play((source != null ? source : "media button") + " tap arrived at the player service");
             goForeground(source != null ? source : "media button");
         }
         // Media3 sends itself a start request each time it goes (or stays) in the foreground, so while
@@ -743,9 +783,69 @@ public class Media3PlaybackService extends MediaLibraryService {
         if (keyEvent == null || keyEvent.getAction() != KeyEvent.ACTION_DOWN) {
             return false;
         }
-        int keyCode = keyEvent.getKeyCode();
+        return isPlayPauseKey(keyEvent.getKeyCode());
+    }
+
+    private static boolean isPlayPauseKey(int keyCode) {
         return keyCode == KeyEvent.KEYCODE_MEDIA_PLAY || keyCode == KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE
                 || keyCode == KeyEvent.KEYCODE_HEADSETHOOK;
+    }
+
+    /**
+     * 1.0.8: a widget play is starting. Every widget shows the turning hourglass from now until the sound starts
+     * (onIsPlayingChanged), playing fails (onPlayerError), something pauses it, or STARTING_MAX_MS passes; a
+     * second widget play/pause tap in that time is ignored.
+     */
+    private void markStarting() {
+        WidgetUpdater.setStarting(true);
+        foregroundHandler.removeCallbacks(startingTimeout);
+        foregroundHandler.postDelayed(startingTimeout, WidgetUpdater.STARTING_MAX_MS);
+        Log.d(TAG, "Widget: starting, hourglass shown");
+        ColdStart.play("widget shows the hourglass");
+        redrawWidget();
+    }
+
+    private void clearStarting(String why) {
+        foregroundHandler.removeCallbacks(startingTimeout);
+        if (!WidgetUpdater.isStarting()) {
+            return;
+        }
+        WidgetUpdater.setStarting(false);
+        Log.d(TAG, "Widget: hourglass gone, " + why);
+        redrawWidget();
+    }
+
+    private final Runnable startingTimeout = new Runnable() {
+        @Override
+        public void run() {
+            // The safety net: nothing has sounded within 10 s. The play that's still trying is stopped, so the
+            // circle shows play again and the next tap starts afresh (still trying, it would show pause).
+            WidgetUpdater.setStarting(false);
+            Log.d(TAG, "Widget: hourglass gone, no sound within " + WidgetUpdater.STARTING_MAX_MS / 1000
+                    + " s, stopped trying");
+            if (player != null && player.getPlayWhenReady() && !player.isPlaying()) {
+                if (isLiveStationLoaded()) {
+                    player.stop();
+                } else {
+                    player.pause();
+                }
+            }
+            redrawWidget();
+        }
+    };
+
+    /** Redraws the widgets now, from the player if something is loaded, otherwise from what was last played. */
+    private void redrawWidget() {
+        if (currentPlayable != null && player != null) {
+            updateWidgetNow();
+            return;
+        }
+        Schedulers.io().scheduleDirect(() -> {
+            FeedMedia media = DBReader.getFeedMedia(PlaybackPreferences.getCurrentlyPlayingFeedMediaId());
+            WidgetUpdater.updateWidget(this, media == null ? new WidgetUpdater.WidgetState(PlayerStatus.STOPPED)
+                    : new WidgetUpdater.WidgetState(media, PlayerStatus.PAUSED, media.getPosition(),
+                    media.getDuration(), PlaybackSpeedUtils.getCurrentPlaybackSpeed(media)));
+        });
     }
 
     @OptIn(markerClass = UnstableApi.class)
@@ -875,6 +975,15 @@ public class Media3PlaybackService extends MediaLibraryService {
         foregroundHandler.postDelayed(idleCheck, IDLE_CHECK_DELAY_MS);
     }
 
+    /** 1.0.8: for the idle stop's log line: how long since playback paused, or nothing if it never played. */
+    private String sincePause() {
+        if (pausedAt == 0) {
+            return ", nothing had played";
+        }
+        long seconds = (SystemClock.elapsedRealtime() - pausedAt) / 1000;
+        return ", " + (seconds / 60) + " min " + (seconds % 60) + " s after the pause";
+    }
+
     private final Runnable idleCheck = new Runnable() {
         @Override
         @OptIn(markerClass = UnstableApi.class)
@@ -882,7 +991,7 @@ public class Media3PlaybackService extends MediaLibraryService {
             if (!isPlayerIdle()) {
                 return;
             }
-            Log.d(TAG, "Idle: stopping the player service (" + idleReason + ")");
+            Log.d(TAG, "Idle: stopping the player service (" + idleReason + ")" + sincePause());
             saveCurrentPosition();
             if (Build.VERSION.SDK_INT >= 29 && isForeground()) {
                 pauseAllPlayersAndStopSelf();
@@ -1181,6 +1290,8 @@ public class Media3PlaybackService extends MediaLibraryService {
     @Override
     public void onDestroy() {
         PlaybackService.isRunning = false;
+        foregroundHandler.removeCallbacks(startingTimeout);
+        WidgetUpdater.setStarting(false);
         if (liveBuffer != null) {
             liveBuffer.stop();
             liveBuffer = null;
@@ -1355,8 +1466,9 @@ public class Media3PlaybackService extends MediaLibraryService {
 
     /**
      * 1.0.7: a radio recording belongs to Radio unless it's played inside a podcast smart play, that is, loaded
-     * from the playlist while playing from a smart play (not a detour or a detour's extra part). Every route
-     * that starts a recording comes through here, so the world is noted once, as it starts.
+     * from the playlist while playing from a smart play (not a detour or a detour's extra part). Noted as it
+     * loads, and (1.0.8) when the "what plays next" rule moves on to it. Radio routes start the Radio world
+     * first (1.0.8: the show page and episode page too), so they're never "playing from a smart play".
      */
     private static void noteRecordingWorld(FeedMedia media) {
         if (media == null || media.getItem() == null || media.isLiveRadio()) {
@@ -1371,7 +1483,7 @@ public class Media3PlaybackService extends MediaLibraryService {
         boolean inSmartPlay = NextUpPreferences.getWorld() == NextUpPreferences.WORLD_SMART_PLAY
                 && item.isTagged(FeedItem.TAG_QUEUE)
                 && !NextUpPreferences.getDetourKept().contains(item.getId());
-        NextUpPreferences.noteRecordingStarted(item.getId(), media.getId(), inSmartPlay);
+        NextUpPreferences.noteRecordingStarted(media.getId(), inSmartPlay);
         Log.d(TAG, "Recording " + media.getEpisodeTitle() + (inSmartPlay ? " plays in a smart play (Podcasts)"
                 : " belongs to Radio"));
     }
@@ -1769,6 +1881,11 @@ public class Media3PlaybackService extends MediaLibraryService {
             NextUpRule.Choice choice = NextUpRule.afterEpisode(item, ended, wasSkipped, queue,
                     Media3PlaybackService::rebuiltQueue);
             NextUpPreferences.setNothingNew(choice.nothingNewShow);
+            if (choice.item != null && choice.item.getMedia() != null) {
+                // 1.0.8: a recording that plays next by itself is noted too (Radio in Radio, a podcast in a
+                // smart play's list); it's switched to before it loads, so the load doesn't note it.
+                noteRecordingWorld(DBReader.getFeedMedia(choice.item.getMedia().getId()));
+            }
             MediaItem mediaItem = choice.item != null ? MediaItemAdapter.fromPlayable(
                     Media3PlaybackService.this, choice.item.getMedia(), false) : null;
             return new Pair<>(choice, mediaItem);

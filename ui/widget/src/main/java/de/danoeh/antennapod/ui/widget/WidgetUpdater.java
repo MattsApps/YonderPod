@@ -3,12 +3,14 @@ package de.danoeh.antennapod.ui.widget;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.util.Log;
 import android.util.SizeF;
 import android.util.TypedValue;
@@ -56,6 +58,22 @@ public abstract class WidgetUpdater {
     private static final String SMART_PLAY_PREFS = "SmartPlayState";
     private static final String KEY_ACTIVE_NAME = "activeName";
     private static final int PROGRESS_WIDTH = 300;
+    /** 1.0.8: the longest the hourglass shows, even if the player never says it started or failed. */
+    public static final long STARTING_MAX_MS = 10_000;
+    private static volatile long startingUntil = 0;
+
+    /**
+     * 1.0.8: a widget play is starting (from the tap reaching the player until the sound starts): every widget
+     * shows a turning hourglass in the play circle instead of play or pause. Clears itself after
+     * STARTING_MAX_MS. The caller redraws the widgets.
+     */
+    public static void setStarting(boolean starting) {
+        startingUntil = starting ? SystemClock.elapsedRealtime() + STARTING_MAX_MS : 0;
+    }
+
+    public static boolean isStarting() {
+        return startingUntil > SystemClock.elapsedRealtime();
+    }
 
     public static class WidgetState {
         final Playable media;
@@ -154,6 +172,14 @@ public abstract class WidgetUpdater {
         views.setTextColor(R.id.txtvTitle, palette.text);
         boolean playing = widgetState.status == PlayerStatus.PLAYING;
         views.setImageViewResource(R.id.butPlay, playing ? R.drawable.wildink_pause : R.drawable.wildink_play_centred);
+        // 1.0.8: set both ways every time, since the home screen may lay a new picture over the old one.
+        boolean starting = isStarting();
+        views.setViewVisibility(R.id.butPlay, starting ? View.GONE : View.VISIBLE);
+        views.setViewVisibility(R.id.butStarting, starting ? View.VISIBLE : View.GONE);
+        if (Build.VERSION.SDK_INT >= 31) {
+            views.setColorStateList(R.id.butStarting, "setIndeterminateTintList",
+                    ColorStateList.valueOf(palette.onAccent));
+        }
         views.setContentDescription(R.id.butPlayCircle,
                 context.getString(playing ? R.string.pause_label : R.string.play_label));
         if (widgetState.media != null) {
